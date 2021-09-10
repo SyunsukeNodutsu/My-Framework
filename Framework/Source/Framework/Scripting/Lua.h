@@ -5,10 +5,11 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-// Lua操作.管理
+// Lua操作
 namespace Lua
 {
     // @brief スタックに積まれている型を表示
-    // @param L 表示したいスタックを所持しているlua_State
-    void ShowStack(lua_State* L);
+    // @param state 表示したいスタックを所持しているlua_State
+    void ShowStack(lua_State* state);
+
 }

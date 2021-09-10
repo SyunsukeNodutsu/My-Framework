@@ -177,7 +177,11 @@ public:
 	void SetEnable(bool enable) { m_enable = enable; }
 
 	// @brief ノード検索：文字列
-	const ModelData::Node* FindDataNode(std::string& name) const;
+	// @param name 取得したいノードの名前
+	// @return 成功...ノード 失敗...null
+	const ModelData::Node* FindDataNode(std::string& name) const {
+		return (m_spModel) ? m_spModel->FindNode(name) : nullptr;
+	}
 	const Node* FindNode(std::string name) const;
 	Node* FindWorkNode(std::string name);
 

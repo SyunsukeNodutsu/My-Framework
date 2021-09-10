@@ -3,12 +3,12 @@
 //-----------------------------------------------------------------------------
 // スタックに積まれている型を表示
 //-----------------------------------------------------------------------------
-void Lua::ShowStack(lua_State* L)
+void Lua::ShowStack(lua_State* state)
 {
     DebugLog("ShowStack---------------------------------------\n");
 
     // スタック数を取得
-    const int num = lua_gettop(L);
+    const int num = lua_gettop(state);
     if (num == 0) {
         DebugLog("No stack.\n");
         DebugLog("------------------------------------------------\n");
@@ -20,7 +20,7 @@ void Lua::ShowStack(lua_State* L)
         std::string str = std::to_string(i) + "(" + std::to_string(-num + i - 1) + ") ";
         DebugLog(str.c_str());
 
-        int type = lua_type(L, i);
+        int type = lua_type(state, i);
         switch (type)
         {
         case LUA_TNIL:
@@ -28,7 +28,7 @@ void Lua::ShowStack(lua_State* L)
             break;
         case LUA_TBOOLEAN:
             DebugLog("BOOLEAN ");
-            DebugLog(lua_toboolean(L, i) ? "true" : "false");
+            DebugLog(lua_toboolean(state, i) ? "true" : "false");
             DebugLog("\n");
             break;
         case LUA_TLIGHTUSERDATA:
@@ -36,12 +36,12 @@ void Lua::ShowStack(lua_State* L)
             break;
         case LUA_TNUMBER:
             DebugLog("NUMBER ");
-            DebugLog(std::to_string(lua_tonumber(L, i)).c_str());
+            DebugLog(std::to_string(lua_tonumber(state, i)).c_str());
             DebugLog("\n");
             break;
         case LUA_TSTRING:
             DebugLog("STRING ");
-            str = lua_tostring(L, i);
+            str = lua_tostring(state, i);
             DebugLog(str.c_str());
             DebugLog("\n");
             break;

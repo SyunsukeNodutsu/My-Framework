@@ -152,11 +152,10 @@ void ModelData::CreateMaterials(std::shared_ptr<KdGLTFModel>& model)
 			dstMaterial.m_normalTexture->Create(texturepath.string());
 		}
 		// 金属性 粗さ
-		dstMaterial.m_metallicRoughnessTexture = std::make_shared<Texture>();
-		texturepath.replace_filename(srcMaterial.m_metallicRoughnessTexture);
-		if (dstMaterial.m_metallicRoughnessTexture->Create(texturepath.string()) == false) {
-			DebugLog("読み込めなかったので白テクスチャを割り当てます\n");
-			dstMaterial.m_metallicRoughnessTexture = D3D.GetWhiteTex();
+		if (!srcMaterial.m_metallicRoughnessTexture.empty()) {
+			dstMaterial.m_metallicRoughnessTexture = std::make_shared<Texture>();
+			texturepath.replace_filename(srcMaterial.m_metallicRoughnessTexture);
+			dstMaterial.m_metallicRoughnessTexture->Create(texturepath.string());
 		}
 		// エミッシブ
 		if (!srcMaterial.m_emissiveTexture.empty()) {
@@ -231,14 +230,6 @@ bool ModelWork::Load(const std::string& fileName)
 }
 
 //-----------------------------------------------------------------------------
-// データノード検索：文字列
-//-----------------------------------------------------------------------------
-const ModelData::Node* ModelWork::FindDataNode(std::string& name) const
-{
-	return (m_spModel) ? m_spModel->FindNode(name) : nullptr;
-}
-
-//-----------------------------------------------------------------------------
 // ノード検索：文字列
 //-----------------------------------------------------------------------------
 const ModelWork::Node* ModelWork::FindNode(std::string name) const
@@ -248,7 +239,6 @@ const ModelWork::Node* ModelWork::FindNode(std::string name) const
 		if (node.m_name == name)
 			return &node;
 	}
-
 	return nullptr;
 }
 

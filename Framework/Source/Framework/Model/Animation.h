@@ -84,8 +84,8 @@ public:
 
 private:
 
-	std::shared_ptr<AnimationData>	m_spAnimation = nullptr;	// 再生するアニメーションデータ
-	float							m_time = 0.0f;
-	bool							m_isLoop = false;
+	std::shared_ptr<AnimationData>	m_spAnimation;	// 再生するアニメーションデータ
+	float							m_time;
+	bool							m_isLoop;
 
 };
