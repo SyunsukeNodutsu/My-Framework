@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{c3580e6c-5cf6-426c-af0b-6d703c65680d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application">
+      <UniqueIdentifier>{1dfe108a-c4da-4609-88c8-e4595f9ba8c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework">
+      <UniqueIdentifier>{d73aca6d-b67e-473a-9cdb-9dfa921e9285}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Shader">
+      <UniqueIdentifier>{43d65101-ebd5-4ae1-856f-45c68995d268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Shader\Sprite">
+      <UniqueIdentifier>{25215b79-3588-4ff4-a855-f506b41c471f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Input">
+      <UniqueIdentifier>{a4849f6d-ca62-49cc-b385-bb812f1168ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\DirectX">
+      <UniqueIdentifier>{1f2c0d59-ae90-458c-8eda-1c4b28d56cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Window">
+      <UniqueIdentifier>{73931ef0-f64e-4b5f-af46-6dd7072e1b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Utility">
+      <UniqueIdentifier>{b0192caf-8f51-4130-bdae-2b9459e10216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Scripting">
+      <UniqueIdentifier>{e847911b-34a9-4c66-b762-a0566017bc3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{8afbb06b-4208-4609-bc52-9d0ee6ac3966}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{f059ad7b-08b2-47ca-b325-4e9a02f6bc5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Shader\Model">
+      <UniqueIdentifier>{7aeac5c0-41bd-446c-a5dd-4740886f340f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Model">
+      <UniqueIdentifier>{a3473c29-e625-4bfc-8133-962ed4f324c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Component">
+      <UniqueIdentifier>{ca412629-ba23-472c-89f9-8e62e49d502b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Effekseer">
+      <UniqueIdentifier>{427798cb-9087-4a09-9914-f9bad410fa26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application\GameObjects">
+      <UniqueIdentifier>{7233e325-f80c-4cf0-8668-ea0dd621370e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Audio">
+      <UniqueIdentifier>{b880aba7-4fbc-47fd-8800-d9b6d48ea948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\AI">
+      <UniqueIdentifier>{0275aec8-d76b-4a61-86b9-259a8168f36c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application\Camera">
+      <UniqueIdentifier>{6fae8896-2072-4bdc-98e9-b8fb9d715e94}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\RawInput.cpp">
+      <Filter>Source\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Window\Window.cpp">
+      <Filter>Source\Framework\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Scripting\Lua.cpp">
+      <Filter>Source\Framework\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\Device.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\Renderer.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\Texture.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\Buffer.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp">
+      <Filter>Source\Framework\Shader\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\gltfLoader\KdGLTFLoader.cpp">
+      <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\Model\ModelShader.cpp">
+      <Filter>Source\Framework\Shader\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Model\Animation.cpp">
+      <Filter>Source\Framework\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Model\Model.cpp">
+      <Filter>Source\Framework\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\CubeMapGenerator.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp">
+      <Filter>Source\Framework\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\main.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\GameSystem.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\GameObjects\GameObject.cpp">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\XInput.cpp">
+      <Filter>Source\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\GameObjects\GenerateGameObject.cpp">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\AI\WayPoint.cpp">
+      <Filter>Source\Framework\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\Easing.cpp">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Audio.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\GraphicsDeviceChild.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\Mouse.cpp">
+      <Filter>Source\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\Keyboard.cpp">
+      <Filter>Source\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\DirectX\Camera.cpp">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
+      <Filter>Source\Application\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Camera\TPSCamera.cpp">
+      <Filter>Source\Application\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Model\Mesh.cpp">
+      <Filter>Source\Framework\Model</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Framework.h">
+      <Filter>Source\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Window\Window.h">
+      <Filter>Source\Framework\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Utility.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\FpsTimer.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Enums.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Scripting\Lua.h">
+      <Filter>Source\Framework\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Timer.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\Device.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\Renderer.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\Texture.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\Buffer.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h">
+      <Filter>Source\Framework\Shader\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\gltfLoader\KdGLTFLoader.h">
+      <Filter>Library</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Cpuid.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\Model\ModelShader.h">
+      <Filter>Source\Framework\Shader\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Model\Animation.h">
+      <Filter>Source\Framework\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Model\Model.h">
+      <Filter>Source\Framework\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\CubeMapGenerator.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\ShaderManager.h">
+      <Filter>Source\Framework\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\main.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameSystem.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameObjects\GameObject.h">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\RawInput.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\KeyCode.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\XInput.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Types.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameObjects\StageMap.h">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\AI\WayPoint.h">
+      <Filter>Source\Framework\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\AI\WayPointNavigator.h">
+      <Filter>Source\Framework\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\Easing.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\EasingType.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Audio.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\GraphicsDeviceChild.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\Mouse.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\Keyboard.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\DirectX\Camera.h">
+      <Filter>Source\Framework\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Camera\FPSCamera.h">
+      <Filter>Source\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Camera\TPSCamera.h">
+      <Filter>Source\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Model\Mesh.h">
+      <Filter>Source\Framework\Model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
+      <Filter>Source\Framework\Shader</Filter>
+    </None>
+    <None Include="Scripting\Test.lua">
+      <Filter>Scripting</Filter>
+    </None>
+    <None Include="Scripting\Test2.lua">
+      <Filter>Scripting</Filter>
+    </None>
+    <None Include="Source\Framework\Shader\Sprite\SpriteShader.hlsli">
+      <Filter>Source\Framework\Shader\Sprite</Filter>
+    </None>
+    <None Include="Source\Framework\Shader\Model\ModelShader.hlsli">
+      <Filter>Source\Framework\Shader\Model</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
+      <Filter>Source\Framework\Shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_VS.hlsl">
+      <Filter>Source\Framework\Shader\Sprite</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Model\ModelShader_VS.hlsl">
+      <Filter>Source\Framework\Shader\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Model\ModelShader_PS.hlsl">
+      <Filter>Source\Framework\Shader\Model</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,251 @@
+﻿#include "SpriteShader.h"
+
+//-----------------------------------------------------------------------------
+// コンストラクタ
+//-----------------------------------------------------------------------------
+SpriteShader::SpriteShader()
+	: m_cpVS(nullptr)
+	, m_cpVLayout(nullptr)
+	, m_cpPS(nullptr)
+	, m_prevProjMat(mfloat4x4::Identity)
+	, m_isBegin(false)
+	, m_cb0()
+	, m_tempFixedVertexBuffer()
+	, m_tempVertexBuffer()
+{
+}
+
+//-----------------------------------------------------------------------------
+// 初期化
+//-----------------------------------------------------------------------------
+bool SpriteShader::Initialize()
+{
+	HRESULT hr = S_FALSE;
+
+	//-------------------------------------
+	// 頂点シェーダ
+	//-------------------------------------
+	{
+		// コンパイル済みのシェーダーヘッダーファイルをインクルード
+		#include "SpriteShader_VS.shaderinc"
+
+		// 頂点シェーダー作成
+		hr = D3D.GetDevice()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "頂点シェーダー作成失敗");
+			return false;
+		}
+
+		// １頂点の詳細な情報
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		// 頂点インプットレイアウト作成
+		hr = D3D.GetDevice()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpVLayout.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "CreateInputLayout失敗");
+			return false;
+		}
+	}
+
+	//-------------------------------------
+	// ピクセルシェーダ
+	//-------------------------------------
+	{
+		// コンパイル済みのシェーダーヘッダーファイルをインクルード
+		#include "SpriteShader_PS.shaderinc"
+
+		hr = D3D.GetDevice()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "ピクセルシェーダー作成失敗");
+			return false;
+		}
+	}
+
+	//-------------------------------------
+	// 定数バッファ作成
+	//-------------------------------------
+
+	if (!m_cb0.Create()) {
+		assert(0 && "エラー：コンスタントバッファ作成失敗.");
+		return false;
+	}
+
+	m_cb0.SetToDevice(4);
+
+	//-------------------------------------
+	// DrawVertices用頂点バッファを作成
+	//-------------------------------------
+	UINT bufferSize = 80;
+	for (int i = 0; i < 10; i++)
+	{
+		m_tempFixedVertexBuffer[i].Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, D3D11_USAGE_DYNAMIC, nullptr);
+		bufferSize *= 2;// 容量を倍にしていく
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// 開始
+//-----------------------------------------------------------------------------
+void SpriteShader::Begin(bool linear, bool disableZBuffer)
+{
+	// 既にBeginしている
+	if (m_isBegin) return;
+	m_isBegin = true;
+
+	//---------------------------------------
+	// 2D用正射影行列作成
+	//---------------------------------------
+	UINT pNumVierports = 1;
+	D3D11_VIEWPORT vp;
+	D3D.GetDeviceContext()->RSGetViewports(&pNumVierports, &vp);
+
+	// 射影行列を保存しておく
+	m_prevProjMat = D3D.GetRenderer().GetSaveState().mProj;
+	D3D.GetRenderer().SetProjMatrix(DirectX::XMMatrixOrthographicLH(vp.Width, vp.Height, 0, 1));
+
+	//---------------------------------------
+	// 使用するステートをセット
+	//---------------------------------------
+	// Z判定、Z書き込み無効のステートをセット
+	if (disableZBuffer)
+		D3D.GetRenderer().SetDepthStencil(false, false);
+
+	// Samplerステートをセット
+	D3D.GetRenderer().SetSampler(
+		linear ? SS_FilterMode::eLinear : SS_FilterMode::ePoint,
+		SS_AddressMode::eWrap
+	);
+
+	// Rasterizerステートをセット
+	D3D.GetRenderer().SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
+
+	//---------------------------------------
+	// シェーダ
+	//---------------------------------------
+
+	D3D.GetDeviceContext()->VSSetShader(m_cpVS.Get(), 0, 0);
+	D3D.GetDeviceContext()->IASetInputLayout(m_cpVLayout.Get());
+
+	D3D.GetDeviceContext()->PSSetShader(m_cpPS.Get(), 0, 0);
+}
+
+//-----------------------------------------------------------------------------
+// 終了
+//-----------------------------------------------------------------------------
+void SpriteShader::End()
+{
+	if (!m_isBegin) return;
+	m_isBegin = false;
+
+	//
+	D3D.GetRenderer().SetProjMatrix(m_prevProjMat);
+
+	//---------------------------------------
+	// 記憶してたステートに戻す
+	//---------------------------------------
+	D3D.GetRenderer().SetDepthStencil(true, true);
+	D3D.GetRenderer().SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
+	D3D.GetRenderer().SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
+}
+
+//-----------------------------------------------------------------------------
+// 2D画像描画
+//-----------------------------------------------------------------------------
+void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cfloat4x4* color)
+{
+	if (!m_isBegin)
+		return;
+
+	if (texture == nullptr)
+		return;
+
+	//
+	D3D.GetRenderer().SetWorldMatrix(mfloat4x4::Identity);
+
+	// テクスチャ(ShaderResourceView)セット
+	D3D.GetDeviceContext()->PSSetShaderResources(0, 1, texture->SRVAddress());
+
+	// 色
+	if (color)
+		m_cb0.Work().m_color = *color;
+	m_cb0.Write();
+
+	D3D11_TEXTURE2D_DESC desc = {};
+	texture->GetResource()->GetDesc(&desc);
+	float width = static_cast<float>(desc.Width);
+	float height = static_cast<float>(desc.Height);
+
+	// 頂点作成
+	float x_01 = position.x;
+	float y_01 = position.y;
+	float x_02 = position.x + width;
+	float y_02 = position.y + height;
+
+	// 基準点(Pivot)ぶんずらす
+	float2 pivot = float2(0.5f);
+	x_01 -= pivot.x * width;
+	x_02 -= pivot.x * width;
+	y_01 -= pivot.y * height;
+	y_02 -= pivot.y * height;
+
+	// 左上 -> 右上 -> 左下 -> 右下
+	Vertex vertex[] = {
+		{ float3(x_01, y_01, 0), float2(0, 1) },
+		{ float3(x_01, y_02, 0), float2(0, 0) },
+		{ float3(x_02, y_01, 0), float2(1, 1) },
+		{ float3(x_02, y_02, 0), float2(1, 0) },
+	};
+
+	// 描画
+	DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
+
+	// セットしたテクスチャを解除しておく
+	ID3D11ShaderResourceView* null_srv = nullptr;
+	D3D.GetDeviceContext()->PSSetShaderResources(0, 1, &null_srv);
+}
+
+//-----------------------------------------------------------------------------
+// 最終的な描画
+//-----------------------------------------------------------------------------
+void SpriteShader::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
+{
+	D3D.GetDeviceContext()->IASetPrimitiveTopology(topology);
+
+	UINT size = vertexCount * stride;
+
+	// 最適な固定長バッファを検索
+	Buffer* buffer = nullptr;
+	for (auto&& n : m_tempFixedVertexBuffer)
+	{
+		if (size < n.GetSize())
+		{
+			buffer = &n;
+			break;
+		}
+	}
+	// 可変長のバッファを使用
+	if (buffer == nullptr)
+	{
+		buffer = &m_tempVertexBuffer;
+
+		// 頂点バッファのサイズが小さいときは、リサイズのため再作成する
+		if (m_tempVertexBuffer.GetSize() < size)
+			m_tempVertexBuffer.Create(D3D11_BIND_VERTEX_BUFFER, size, D3D11_USAGE_DYNAMIC, nullptr);
+	}
+
+	// 全頂点をバッファに書き込み(DISCARD指定)
+	buffer->WriteData(pVertexStream, size);
+
+	// 頂点バッファーをデバイスへセット
+	{
+		UINT offset = 0;
+		D3D.GetDeviceContext()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+	}
+
+	D3D.GetDeviceContext()->Draw(vertexCount, 0);
+}
