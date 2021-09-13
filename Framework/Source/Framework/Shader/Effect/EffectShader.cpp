@@ -87,8 +87,8 @@ bool EffectShader::Initialize()
 	Buffer tmpBuff = {};
 	for (int i = 0; i < 6; i++)
 	{
-		tmpBuff.Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, nullptr);
-		m_vertexBuffers.push_back(tmpBuff);
+		//tmpBuff.Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, nullptr);
+		//m_vertexBuffers.push_back(tmpBuff);
 
 		bufferSize *= 2;// 容量を倍にしていく
 	}
@@ -140,7 +140,7 @@ void EffectShader::DrawVertices(const std::vector<Vertex>& vertices, D3D_PRIMITI
 
 	// 全頂点書き込み
 	// TODO: ここなんか無駄っぽい
-	buffer->Write(&vertices[0], totalSize);
+	buffer->WriteData(&vertices[0], totalSize);
 
 	// デバイスに頂点情報設定
 	UINT offset = 0;
@@ -161,86 +161,14 @@ void EffectShader::DrawModel(ModelWork* modelWork)
 	if (modelWork == nullptr)
 		return;
 
-	if (modelWork->GetModelData() == nullptr)
+	if (modelWork->GetData() == nullptr)
 		return;
 
-	modelWork->CalcWorldMatrixes();
+	modelWork->CalcNodeMatrices();
 
 	// 全ノードのメッシュ描画
-	for (UINT nodeIndex = 0; nodeIndex < modelWork->GetModelData()->GetNodes().size(); nodeIndex++)
+	for (UINT nodeIndex = 0; nodeIndex < modelWork->GetData()->GetOriginalNodes().size(); nodeIndex++)
 	{
-		DrawMesh(
-			&modelWork->GetModelData()->GetNodes()[nodeIndex],
-			modelWork->GetModelData()->GetMaterials(),
-			&modelWork->GetMatrixes()[nodeIndex]
-		);
+
 	}
-}
-
-//-----------------------------------------------------------------------------
-// メッシュ描画
-//-----------------------------------------------------------------------------
-void EffectShader::DrawMesh(const Node* node, const std::vector<Material>& materials, const mfloat4x4* matrix)
-{
-	if (node == nullptr)
-		return;
-
-	if (!node->isMesh)
-		return;
-
-	//--------------------------------------------------
-	// インデックス.頂点情報
-	//--------------------------------------------------
-
-	// シェーダに頂点バッファを設定
-	UINT oneSize = sizeof(ModelVertex);
-	UINT offset = 0;
-	D3D.GetDeviceContext()->IASetVertexBuffers(0, 1, node->vertexBuffer.GetAddress(), &oneSize, &offset);
-
-	// シェーダにインデックスバッファを設定
-	D3D.GetDeviceContext()->IASetIndexBuffer(node->indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-	// モデル描画用 頂点レイアウト設定
-	D3D.GetDeviceContext()->IASetInputLayout(m_cpInputLayout_model.Get());
-
-	//--------------------------------------------------
-	// 描画
-	//--------------------------------------------------
-
-	// 頂点情報の扱い
-	D3D.GetDeviceContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// 原点からのズレを加味
-	matrix ?
-		D3D.GetRenderer().SetWorldMatrix(*matrix) :
-		D3D.GetRenderer().SetWorldMatrix(node->localTransform);
-
-	// サブセット毎に描画
-	for (auto&& subset : node->subset)
-		DrawSubset(node, materials[subset.materialIndex], subset);
-}
-
-//-----------------------------------------------------------------------------
-// サブセット描画
-//-----------------------------------------------------------------------------
-void EffectShader::DrawSubset(const Node* node, const Material& material, const Subset& subset)
-{
-	if (node == nullptr)
-		return;
-
-	if (!node->isMesh)
-		return;
-
-	// テクスチャ設定
-	material.m_spBaseColorTexture ?
-		D3D.GetRenderer().SetTexture(material.m_spBaseColorTexture.get()) :
-		D3D.GetRenderer().SetDefaultTexture();
-
-	material.m_cd11_Material.SetToDevice(Renderer::use_slot_material);
-
-	D3D.GetDeviceContext()->DrawIndexed(
-		subset.faceCount * 3,	// 描画する頂点数
-		subset.faceIndex * 3,	// 設定された頂点情報の何番目から使用するか
-		0						// 設定された頂点情報の何番目が先頭か(高速化の手段用)
-	);
 }

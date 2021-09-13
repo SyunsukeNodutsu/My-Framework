@@ -32,7 +32,7 @@ private:
 	std::shared_ptr<TPSCamera> m_spCamera;
 	Animator	m_animator;
 	float		m_zoom;
-	float3 m_rotation;
+	float3		m_rotation;
 
 private:
 
@@ -42,5 +42,23 @@ private:
 	// @brief 体の回転更新
 	// @param moveVec カメラを加味した移動ベクトル
 	void RotateBody(const float3& moveVec);
+
+	class StateBase {
+	public:
+		virtual void Update(float deltaTime, Human& owner) = 0;
+	};
+	class StateNull : public StateBase {
+	public:
+		virtual void Update(float deltaTime, Human& owner) override {}
+	};
+	class StateWait : public StateBase{
+	public:
+		virtual void Update(float deltaTime, Human& owner) override;
+	};
+	class StateMove : public StateBase {
+	public:
+		virtual void Update(float deltaTime, Human& owner) override;
+	};
+	std::shared_ptr<StateBase> m_spState;
 
 };

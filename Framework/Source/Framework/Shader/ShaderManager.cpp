@@ -12,6 +12,10 @@ ShaderManager::ShaderManager()
 //-----------------------------------------------------------------------------
 void ShaderManager::Initialize()
 {
+	// EffectShader
+	m_spEffectShader = std::make_shared<EffectShader>();
+	m_spEffectShader->Initialize();
+
 	// ModelShader
 	m_spModelShader = std::make_shared<ModelShader>();
 	m_spModelShader->Initialize();

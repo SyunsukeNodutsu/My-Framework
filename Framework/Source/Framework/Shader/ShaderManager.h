@@ -2,9 +2,10 @@
 // File: ShaderManager.h
 //
 // シェーダーの管理
-// Device classから移動
+// TODO: Shader基底クラスの作成
 //-----------------------------------------------------------------------------
 #pragma once
+#include "Effect/EffectShader.h"
 #include "Model/ModelShader.h"
 #include "Sprite/SpriteShader.h"
 
@@ -26,6 +27,10 @@ public:
 		static ShaderManager instance; return instance;
 	}
 
+	// @brief Effectシェーダを返す
+	// @return Effectシェーダ
+	EffectShader& GetEffectShader() const { return *m_spEffectShader; }
+
 	// @brief Modelシェーダを返す
 	// @return Modelシェーダ
 	ModelShader& GetModelShader() const { return *m_spModelShader; }
@@ -36,6 +41,7 @@ public:
 
 private:
 
+	std::shared_ptr<EffectShader>	m_spEffectShader;	// Effect描画シェーダ
 	std::shared_ptr<ModelShader>	m_spModelShader;	// 3Dモデル描画シェーダ
 	std::shared_ptr<SpriteShader>	m_spSpriteShader;	// 画像描画用シェーダ
 

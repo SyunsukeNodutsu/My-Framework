@@ -789,23 +789,23 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 					// 値
 					if (sampler.interpolation == "STEP")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 3 + 0);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 3 + 1);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 3 + 2) * -1;
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 3 + 0);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 3 + 1);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 3 + 2) * -1;
 						destAnimNode->m_translations.push_back(v);
 					}
 					else if (sampler.interpolation == "LINEAR")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 3 + 0);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 3 + 1);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 3 + 2) * -1;
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 3 + 0);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 3 + 1);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 3 + 2) * -1;
 						destAnimNode->m_translations.push_back(v);
 					}
 					else if (sampler.interpolation == "CUBICSPLINE")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 9 + 3);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 9 + 4);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 9 + 5) * -1;
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 9 + 3);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 9 + 4);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 9 + 5) * -1;
 						destAnimNode->m_translations.push_back(v);
 					}
 				}
@@ -825,23 +825,23 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 					// 値
 					if (sampler.interpolation == "STEP")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 3 + 0);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 3 + 1);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 3 + 2);
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 3 + 0);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 3 + 1);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 3 + 2);
 						destAnimNode->m_scales.push_back(v);
 					}
 					else if (sampler.interpolation == "LINEAR")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 3 + 0);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 3 + 1);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 3 + 2);
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 3 + 0);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 3 + 1);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 3 + 2);
 						destAnimNode->m_scales.push_back(v);
 					}
 					else if (sampler.interpolation == "CUBICSPLINE")
 					{
-						v.m_vec.x = valueGetter.GetValue_Float(ki * 9 + 3);
-						v.m_vec.y = valueGetter.GetValue_Float(ki * 9 + 4);
-						v.m_vec.z = valueGetter.GetValue_Float(ki * 9 + 5);
+						v.m_numVec.x = valueGetter.GetValue_Float(ki * 9 + 3);
+						v.m_numVec.y = valueGetter.GetValue_Float(ki * 9 + 4);
+						v.m_numVec.z = valueGetter.GetValue_Float(ki * 9 + 5);
 						destAnimNode->m_scales.push_back(v);
 					}
 				}
@@ -860,26 +860,26 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 
 					if (sampler.interpolation == "STEP")
 					{
-						q.m_quat.y = valueGetter.GetValue_Float(ki * 4 + 1) * -1;
-						q.m_quat.x = valueGetter.GetValue_Float(ki * 4 + 0) * -1;
-						q.m_quat.z = valueGetter.GetValue_Float(ki * 4 + 2);
-						q.m_quat.w = valueGetter.GetValue_Float(ki * 4 + 3);
+						q.m_numRot.y = valueGetter.GetValue_Float(ki * 4 + 1) * -1;
+						q.m_numRot.x = valueGetter.GetValue_Float(ki * 4 + 0) * -1;
+						q.m_numRot.z = valueGetter.GetValue_Float(ki * 4 + 2);
+						q.m_numRot.w = valueGetter.GetValue_Float(ki * 4 + 3);
 						destAnimNode->m_rotations.push_back(q);
 					}
 					else if (sampler.interpolation == "LINEAR")
 					{
-						q.m_quat.x = valueGetter.GetValue_Float(ki * 4 + 0) * -1;
-						q.m_quat.y = valueGetter.GetValue_Float(ki * 4 + 1) * -1;
-						q.m_quat.z = valueGetter.GetValue_Float(ki * 4 + 2);
-						q.m_quat.w = valueGetter.GetValue_Float(ki * 4 + 3);
+						q.m_numRot.x = valueGetter.GetValue_Float(ki * 4 + 0) * -1;
+						q.m_numRot.y = valueGetter.GetValue_Float(ki * 4 + 1) * -1;
+						q.m_numRot.z = valueGetter.GetValue_Float(ki * 4 + 2);
+						q.m_numRot.w = valueGetter.GetValue_Float(ki * 4 + 3);
 						destAnimNode->m_rotations.push_back(q);
 					}
 					else if (sampler.interpolation == "CUBICSPLINE")
 					{
-						q.m_quat.x = valueGetter.GetValue_Float(ki * 12 + 4) * -1;
-						q.m_quat.y = valueGetter.GetValue_Float(ki * 12 + 5) * -1;
-						q.m_quat.z = valueGetter.GetValue_Float(ki * 12 + 6);
-						q.m_quat.w = valueGetter.GetValue_Float(ki * 12 + 7);
+						q.m_numRot.x = valueGetter.GetValue_Float(ki * 12 + 4) * -1;
+						q.m_numRot.y = valueGetter.GetValue_Float(ki * 12 + 5) * -1;
+						q.m_numRot.z = valueGetter.GetValue_Float(ki * 12 + 6);
+						q.m_numRot.w = valueGetter.GetValue_Float(ki * 12 + 7);
 						destAnimNode->m_rotations.push_back(q);
 					}
 				}

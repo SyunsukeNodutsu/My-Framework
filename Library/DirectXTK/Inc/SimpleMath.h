@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------
 // SimpleMath.h -- Simplified C++ Math wrapper for DirectXMath
 //
 // Copyright (c) Microsoft Corporation.
@@ -530,6 +530,14 @@ namespace DirectX
 
             Vector3 Translation() const  noexcept { return Vector3(_41, _42, _43); }
             void Translation(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
+
+            Vector3 Scale() const noexcept {
+                return {
+                    this->Right().Length(),
+                    this->Up().Length(),
+                    this->Backward().Length(),
+                };
+            };
 
             // Matrix operations
             bool Decompose(Vector3& scale, Quaternion& rotation, Vector3& translation) noexcept;

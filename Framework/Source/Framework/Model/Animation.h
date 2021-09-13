@@ -1,22 +1,24 @@
 ﻿//-----------------------------------------------------------------------------
 // File: Animation.h
 //
-// アニメーション管理
+// データ   ... AnimationData
+// ロジック ... Animator
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Utility/Timer.h"
 
 // アニメーションキー(クォータニオン
 struct AnimKeyQuaternion
 {
 	float		m_time = 0;		// 時間
-	qfloat4x4	m_quat;			// クォータニオンデータ
+	qfloat4x4	m_numRot;		// クォータニオンデータ
 };
 
 // アニメーションキー(ベクトル
 struct AnimKeyVector3
 {
 	float		m_time = 0;		// 時間
-	float3		m_vec;			// 3Dベクトルデータ
+	float3		m_numVec;		// 数ベクトルデータ
 };
 
 // アニメーション データ
@@ -67,23 +69,57 @@ public:
 
 	// @brief アニメーション再生が終了かどうかを返す
 	// @return 終了...true
-	bool IsAnimationEnd() const
-	{
+	bool IsAnimationEnd() const {
 		if (m_spAnimation == nullptr || m_time >= m_spAnimation->m_maxLength)
 			return true;
-
 		return false;
 	}
 
 	// @brief アニメーションの更新
 	// @param nodes モデルノード
 	// @param speed 再生速度
-	void AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed = 1.0f);
+	// @param brendWeight ブレンド重み
+	void AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed = 1.0f, float brendWeight = 1.0f);
 
 private:
 
-	std::shared_ptr<AnimationData>	m_spAnimation;	// 再生するアニメーションデータ
+	std::shared_ptr<AnimationData>	m_spAnimation;		// アニメーションデータ
 	float							m_time;
 	bool							m_isLoop;
 
+};
+
+// ブレンドアニメーター
+class BlendAnimator
+{
+public:
+
+	// @brief コンストラクタ
+	BlendAnimator();
+
+	// @brief アニメーション更新
+	// @param nodes モデルノード
+	// @param speed 速度
+	void AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed = 1.0f);
+
+	// @brief アニメーション登録
+	// @param data 設定するアニメーションデータ
+	// @param changeSec 切り替えのtick秒
+	// @param loop ループ再生？
+	void SetAnimation(std::shared_ptr<AnimationData>& data, float changeTick = 0.5f, bool loop = true);
+
+	// @brief 終了しているかを返す
+	// @return 終了...true
+	bool IsAnimationEnd() const {
+		if (m_pNowAnimator && !m_pNextAnimator->IsAnimationEnd())
+			return false;
+		return true;
+	}
+
+private:
+
+	std::unique_ptr<Animator>	m_pNowAnimator;		// 現在再生中のアニメーション
+	std::unique_ptr<Animator>	m_pNextAnimator;	// 次に遷移するアニメーション
+	CommonTimer					m_timer;			// 時間計測
+	float						m_changeTick;		// 遷移に要するTick秒
 };

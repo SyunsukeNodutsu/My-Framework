@@ -40,13 +40,13 @@ bool AnimationData::Node::InterpolateTranslations(float3& result, float time)
 	// 先頭のキーなら、先頭のデータを返す
 	if (keyIdx == 0)
 	{
-		result = m_translations.front().m_vec;
+		result = m_translations.front().m_numVec;
 		return true;
 	}
 	// 配列外のキーなら、最後のデータを返す
 	else if (keyIdx >= m_translations.size())
 	{
-		result = m_translations.back().m_vec;
+		result = m_translations.back().m_numVec;
 		return true;
 	}
 	// それ以外(中間の時間)なら、その時間の値を補間計算で求める
@@ -57,7 +57,7 @@ bool AnimationData::Node::InterpolateTranslations(float3& result, float time)
 		// 前のキーと次のキーの時間から、0～1間の時間を求める
 		float f = (time - prev.m_time) / (next.m_time - prev.m_time);
 		// 補間
-		result = DirectX::XMVectorLerp(prev.m_vec, next.m_vec, f);
+		result = float3::Lerp(prev.m_numVec, next.m_numVec, f);
 	}
 	return true;
 }
@@ -76,12 +76,12 @@ bool AnimationData::Node::InterpolateRotations(qfloat4x4& result, float time)
 	// 先頭のキーなら、先頭のデータを返す
 	if (keyIdx == 0)
 	{
-		result = m_rotations.front().m_quat;
+		result = m_rotations.front().m_numRot;
 	}
 	// 配列外のキーなら、最後のデータを返す
 	else if (keyIdx >= m_rotations.size())
 	{
-		result = m_rotations.back().m_quat;
+		result = m_rotations.back().m_numRot;
 	}
 	// それ以外(中間の時間)なら、その時間の値を補間計算で求める
 	else
@@ -91,7 +91,7 @@ bool AnimationData::Node::InterpolateRotations(qfloat4x4& result, float time)
 		// 前のキーと次のキーの時間から、0～1間の時間を求める
 		float f = (time - prev.m_time) / (next.m_time - prev.m_time);
 		// 補間
-		result = DirectX::XMQuaternionSlerp(prev.m_quat, next.m_quat, f);
+		result = qfloat4x4::Slerp(prev.m_numRot, next.m_numRot, f);
 	}
 	return true;
 }
@@ -110,13 +110,13 @@ bool AnimationData::Node::InterpolateScales(float3& result, float time)
 	// 先頭のキーなら、先頭のデータを返す
 	if (keyIdx == 0)
 	{
-		result = m_scales.front().m_vec;
+		result = m_scales.front().m_numVec;
 		return true;
 	}
 	// 配列外のキーなら、最後のデータを返す
 	else if (keyIdx >= m_scales.size())
 	{
-		result = m_scales.back().m_vec;
+		result = m_scales.back().m_numVec;
 		return true;
 	}
 	// それ以外(中間の時間)なら、その時間の値を補間計算で求める
@@ -127,7 +127,7 @@ bool AnimationData::Node::InterpolateScales(float3& result, float time)
 		// 前のキーと次のキーの時間から、0～1間の時間を求める
 		float f = (time - prev.m_time) / (next.m_time - prev.m_time);
 		// 補間
-		result = DirectX::XMVectorLerp(prev.m_vec, next.m_vec, f);
+		result = float3::Lerp(prev.m_numVec, next.m_numVec, f);
 	}
 	return true;
 }
@@ -193,7 +193,7 @@ Animator::Animator()
 //-----------------------------------------------------------------------------
 // アニメーション更新
 //-----------------------------------------------------------------------------
-void Animator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed)
+void Animator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed, float brendWeight)
 {
 	if (m_spAnimation == nullptr)
 		return;
@@ -203,12 +203,39 @@ void Animator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed)
 		// 対応するモデルノードのインデックス
 		UINT idx = node.m_nodeOffset;
 
-		auto prev = nodes[idx].m_localTransform;
+		if (brendWeight >= 1.0f)
+		{
+			// ブレンドの比重が1以上ならそのまま補完
+			node.Interpolate(nodes[idx].m_localTransform, m_time);
+		}
+		else
+		{
+			// ブレンド用行列生成
+			mfloat4x4 brendAnim = mfloat4x4::Identity;
+			node.Interpolate(brendAnim, m_time);
 
-		// アニメーションデータによる行列補間
-		node.Interpolate(nodes[idx].m_localTransform, m_time);
+			// 拡大率補完
+			float3 scale = float3::Lerp(
+				nodes[idx].m_localTransform.Scale(),
+				brendAnim.Scale(), brendWeight
+			);
+			nodes[idx].m_localTransform.CreateScale(scale);
 
-		prev = nodes[idx].m_localTransform;
+			// 回転補完
+			qfloat4x4 rot = qfloat4x4::Slerp(
+				qfloat4x4::CreateFromRotationMatrix(nodes[idx].m_localTransform),
+				qfloat4x4::CreateFromRotationMatrix(brendAnim), brendWeight
+			);
+			mfloat4x4 rotate = mfloat4x4::CreateFromQuaternion(rot);
+			nodes[idx].m_localTransform *= rotate;
+
+			// 座標補完
+			float3 trans = float3::Lerp(
+				nodes[idx].m_localTransform.Translation(),
+				brendAnim.Translation(), brendWeight
+			);
+			nodes[idx].m_localTransform.Translation(trans);
+		}
 	}
 
 	m_time += speed;
@@ -216,4 +243,70 @@ void Animator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed)
 	// 終了 or ループ
 	if (m_time >= m_spAnimation->m_maxLength)
 		m_time = (m_isLoop) ? 0.0f : m_spAnimation->m_maxLength;
+}
+
+
+
+//=============================================================================
+//
+// BlendAnimator
+//
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// コンストラクタ
+//-----------------------------------------------------------------------------
+BlendAnimator::BlendAnimator()
+	: m_pNowAnimator(nullptr)
+	, m_pNextAnimator(nullptr)
+	, m_timer()
+	, m_changeTick(0.5f)
+{
+}
+
+//-----------------------------------------------------------------------------
+// アニメーション更新
+//-----------------------------------------------------------------------------
+void BlendAnimator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed)
+{
+	// アニメーション 更新
+	if (m_pNowAnimator)
+		m_pNowAnimator->AdvanceTime(nodes, speed);
+
+	if (m_pNextAnimator)
+	{
+		float brendProgress = static_cast<float>(m_timer.GetElapsedSeconds() / m_changeTick);
+
+		m_pNextAnimator->AdvanceTime(nodes, speed, brendProgress);
+
+		if (brendProgress >= m_changeTick)
+		{
+			// 遷移先のアニメーションユニットを再生中のアニメーションに置き換え
+			m_pNowAnimator = std::move(m_pNextAnimator);
+			// 遷移先(ブレンド先)をクリア
+			m_pNextAnimator = nullptr;
+
+			m_timer.Record();
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// アニメーション登録
+//-----------------------------------------------------------------------------
+void BlendAnimator::SetAnimation(std::shared_ptr<AnimationData>& data, float changeTick, bool loop)
+{
+	if (data == nullptr)
+		return;
+
+	if (m_pNextAnimator)
+		m_pNextAnimator = std::move(m_pNextAnimator);
+
+	m_pNextAnimator = std::make_unique<Animator>();
+	m_pNextAnimator->SetAnimation(data, loop);
+
+	if (changeTick <= 0.0f)
+		changeTick = 0.1f;
+
+	m_timer.Record();
 }

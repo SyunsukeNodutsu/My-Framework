@@ -32,8 +32,10 @@ void Human::Initialize()
 		GAMESYSTEM.SetCamera(m_spCamera);
 	}
 
-	auto data = m_modelWork.GetAnimation("Walk");
-	m_animator.SetAnimation(data, true);
+	m_spState = std::make_shared<StateWait>();
+
+	auto data = m_modelWork.GetAnimation("Stand");
+	m_animator.SetAnimation(data);
 }
 
 //-----------------------------------------------------------------------------
@@ -57,15 +59,12 @@ void Human::Update(float deltaTime)
 		m_spCamera->SetEnable(enable);
 	}
 
-	// 移動
-	UpdateMove(deltaTime);
+	m_spState->Update(deltaTime, *this);
 
 	// アニメーション
 	float animationSpeed = 60.0f;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift))
-		animationSpeed *= 1.6f;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Control))
-		animationSpeed *= 0.6f;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift)) animationSpeed *= 1.6f;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Control)) animationSpeed *= 0.6f;
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 
@@ -146,4 +145,45 @@ void Human::RotateBody(const float3& moveVec)
 
 	m_rotation.y += rotateRadian;
 	m_transform.SetAngle(m_rotation);
+}
+
+void Human::StateWait::Update(float deltaTime, Human& owner)
+{
+	float3 moveVec = float3::Zero;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	moveVec.Normalize();
+
+	if (moveVec.LengthSquared() >= 0.01f)
+	{
+		owner.m_spState = nullptr;
+		owner.m_spState = std::make_shared<StateMove>();
+
+		auto data = owner.m_modelWork.GetAnimation("Walk");
+		owner.m_animator.SetAnimation(data);
+	}
+}
+
+void Human::StateMove::Update(float deltaTime, Human& owner)
+{
+	owner.UpdateMove(deltaTime);
+
+	// TODO: fix
+	float3 moveVec = float3::Zero;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	moveVec.Normalize();
+
+	if (moveVec.LengthSquared() == 0)
+	{
+		owner.m_spState = nullptr;
+		owner.m_spState = std::make_shared<StateWait>();
+
+		auto data = owner.m_modelWork.GetAnimation("Stand");
+		owner.m_animator.SetAnimation(data);
+	}
 }
