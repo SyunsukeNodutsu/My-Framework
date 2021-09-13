@@ -33,6 +33,7 @@ private:
 	Animator	m_animator;
 	float		m_zoom;
 	float3		m_rotation;
+	float		m_operationStopTick;
 
 private:
 

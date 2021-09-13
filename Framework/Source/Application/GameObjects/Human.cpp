@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 Human::Human()
 	: m_spCamera(nullptr)
-	, m_zoom(6)
+	, m_zoom(2)
 {
 }
 
@@ -23,10 +23,12 @@ void Human::Initialize()
 		m_spCamera->Initialize();
 		m_spCamera->SetClampAngleX(-75.0f, 90.0f);
 		//m_spCamera->SetProjectionMatrix(60.0f);
-		m_spCamera->SetAngle(45, -0);
+		m_spCamera->SetAngle(0, 0);
 
 		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -m_zoom));
-		m_spCamera->SetLocalGazePosition(float3(0.0f, 1.0f, 0.0f));
+		m_spCamera->SetLocalGazePosition(float3(0.0f, 1.4f, 0.0f));
+
+		m_spCamera->SetEnable(false);
 
 		// GameSystemにもカメラをシェアさせる
 		GAMESYSTEM.SetCamera(m_spCamera);
@@ -52,7 +54,7 @@ void Human::Finalize()
 void Human::Update(float deltaTime)
 {
 	// Escでカメラ操作切り替え
-	static bool enable = true;
+	static bool enable = false;
 	if (RAW_INPUT.GetKeyboard()->IsPressed(KeyCode::Escape))
 	{
 		enable = !enable;
@@ -73,7 +75,7 @@ void Human::Update(float deltaTime)
 	{
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
 
-		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -m_zoom));
+		m_spCamera->SetLocalPos(float3(1.0f, 0.0f, -m_zoom));
 		m_spCamera->Update();
 		m_spCamera->SetCameraMatrix(trans);
 	}
@@ -84,9 +86,9 @@ void Human::Update(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::Draw(float deltaTime)
 {
-	D3D.GetRenderer().SetDitherEnable(true);
+	//D3D.GetRenderer().SetDitherEnable(true);
 	GameObject::Draw(deltaTime);
-	D3D.GetRenderer().SetDitherEnable(false);
+	//D3D.GetRenderer().SetDitherEnable(false);
 }
 
 //-----------------------------------------------------------------------------
@@ -97,7 +99,7 @@ void Human::UpdateMove(float deltaTime)
 	float moveSpd = 0.006f;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift))
 		moveSpd *= 2;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Control))
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Alt))
 		moveSpd *= 0.4f;
 
 	float3 moveVec;

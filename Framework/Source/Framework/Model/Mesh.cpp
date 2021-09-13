@@ -28,7 +28,7 @@ void Mesh::SetToDevice() const
 	// インデックスバッファセット
 	D3D.GetDeviceContext()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	//プリミティブ・トポロジーをセット
+	// プリミティブ・トポロジーをセット
 	D3D.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -115,8 +115,8 @@ void Mesh::DrawSubset(int subsetNo) const
 
 	// 描画
 	D3D.GetDeviceContext()->DrawIndexed(
-		m_subsets[subsetNo].m_faceCount * 3,
-		m_subsets[subsetNo].m_faceStart * 3,
+		m_subsets[subsetNo].m_faceCount * 3,// 頂点数
+		m_subsets[subsetNo].m_faceStart * 3,// 頂点の開始位置
 		0
 	);
 }

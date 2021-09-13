@@ -19,9 +19,6 @@
     <Filter Include="Source\Framework\Input">
       <UniqueIdentifier>{a4849f6d-ca62-49cc-b385-bb812f1168ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\DirectX">
-      <UniqueIdentifier>{1f2c0d59-ae90-458c-8eda-1c4b28d56cbc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\Window">
       <UniqueIdentifier>{73931ef0-f64e-4b5f-af46-6dd7072e1b76}</UniqueIdentifier>
     </Filter>
@@ -64,6 +61,12 @@
     <Filter Include="Source\Framework\Shader\Effect">
       <UniqueIdentifier>{827afbf7-612d-4155-af7c-19670b547315}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Direct3D">
+      <UniqueIdentifier>{1f2c0d59-ae90-458c-8eda-1c4b28d56cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\imGui">
+      <UniqueIdentifier>{2f7c5625-1415-444e-8aca-3d6b599d9f2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -82,16 +85,16 @@
       <Filter>Source\Framework\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\Device.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\Renderer.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\Texture.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\Buffer.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp">
       <Filter>Source\Framework\Shader\Sprite</Filter>
@@ -109,7 +112,7 @@
       <Filter>Source\Framework\Model</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\CubeMapGenerator.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp">
       <Filter>Source\Framework\Shader</Filter>
@@ -142,7 +145,7 @@
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\GraphicsDeviceChild.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Input\Mouse.cpp">
       <Filter>Source\Framework\Input</Filter>
@@ -151,7 +154,7 @@
       <Filter>Source\Framework\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\Camera.cpp">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
       <Filter>Source\Application\Camera</Filter>
@@ -167,6 +170,27 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Effect\EffectShader.cpp">
       <Filter>Source\Framework\Shader\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_demo.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_draw.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_impl_dx11.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_impl_win32.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_widgets.cpp">
+      <Filter>Library\imGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\imGui\imgui_tables.cpp">
+      <Filter>Library\imGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,16 +219,16 @@
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\Device.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\Renderer.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\Texture.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\Buffer.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h">
       <Filter>Source\Framework\Shader\Sprite</Filter>
@@ -225,7 +249,7 @@
       <Filter>Source\Framework\Model</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\CubeMapGenerator.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h">
       <Filter>Source\Framework\Shader</Filter>
@@ -273,7 +297,7 @@
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\GraphicsDeviceChild.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Input\Mouse.h">
       <Filter>Source\Framework\Input</Filter>
@@ -282,7 +306,7 @@
       <Filter>Source\Framework\Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\Camera.h">
-      <Filter>Source\Framework\DirectX</Filter>
+      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\FPSCamera.h">
       <Filter>Source\Application\Camera</Filter>
@@ -304,6 +328,30 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Effect\EffectShader.h">
       <Filter>Source\Framework\Shader\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imstb_truetype.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imconfig.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imgui.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imgui_impl_dx11.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imgui_impl_win32.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imgui_internal.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imstb_rectpack.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imstb_textedit.h">
+      <Filter>Library\imGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

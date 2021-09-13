@@ -15,17 +15,13 @@ Texture2D g_normalTexture       : register(t3); // 法線マップ(テクスチャ)
 // サンプラ
 SamplerState g_samplerState : register(s0);
 
-// ディザパターン
-// Bayer Matrixに当てはまるってことだと思う
-static const int g_ditherPattern[4][4] =
-{
-    { 0, 32, 8, 40 },
+// ディザパターン(Bayer Matrix)
+static const int g_ditherPattern[4][4] = {
+    {  0, 32,  8, 40 },
     { 48, 16, 56, 21 },
-    { 12, 44, 4, 36 },
+    { 12, 44,  4, 36 },
     { 60, 28, 52, 20 },
 };
-
-
 
 // @brief BlinnPhong NDF
 // @param lightDir ライトの方向
@@ -57,30 +53,10 @@ float GGX(float3 lightDir, float3 vCam, float3 normal, float roughness)
 	
     float alpha = roughness * roughness;
     float d = NdotH * NdotH * (alpha * alpha - 1) + 1;
-    d = max(0.000001, PI * d * d);
+    d = max(0.000001f, PI * d * d);
 
     return (alpha * alpha) / d;
 }
-
-// @brief 高さFog ※参考：https://iquilezles.org/www/articles/fog/fog.htm
-// @param rgb 元の色
-// @param distance カメラとの距離
-// @param rayOri カメラ座標
-// @param rayDir カメラ方向
-float3 HeightFog(in float3 rgb, in float distance, in float3 rayOri, in float3 rayDir)
-{
-    // シーンの世界スケールに合わせて計算
-    // ※通常はシーンの高さを基準に色を付ける
-    float c = 0.2;
-    float b = 0.08;
-    
-    float fogAmount = c * exp(-rayOri.y * b) * (1.0 - exp(-distance * rayDir.y * b)) / rayDir.y;
-    
-    // fog colorは距離fogと合わせた方が自然かも
-    return lerp(rgb, g_height_fog_color, fogAmount);
-}
-
-
 
 //-----------------------------------------------------------------------------
 // ピクセルシェーダー
@@ -126,37 +102,38 @@ float4 main(VertexOutput In) : SV_TARGET
     float camDist = length(vCam); // カメラ - ピクセル距離
     vCam = normalize(vCam);
     
-    float3 wN = g_normalTexture.Sample(g_samplerState, In.uv).rgb;
-    wN = wN * 2.0f - 1.0f;
-    //wN = normalize(wN);
-    
+    //------------------------------------------
+    // 法線
+    //------------------------------------------
     // 3x3行列化(回転行列)
-    row_major float3x3 mTBN =
-    {
+    row_major float3x3 mTBN = {
         normalize(In.wTangent),  // X軸
         normalize(In.wBinormal), // Y軸
         normalize(In.wNormal),   // Z軸
     };
+    float3 wN = g_normalTexture.Sample(g_samplerState, In.uv).rgb;
+    wN = wN * 2.0f - 1.0f; // (0～1)->(-1～1)
+    
 	// 面の向きを考慮した方向へ変換
-    wN = mul(wN, mTBN); // wNベクトルをmTBNで変換
-    wN = normalize(wN); // 法線ベクトルを正規化
+    wN = normalize(mul(wN, mTBN));
+    wN = normalize(wN);
+    
+    //return float4(wN, 1);
     
     //------------------------------------------
-    // 材質色 todo:
+    // 材質色
     //------------------------------------------
-    
-    // メタリック/ラフネステクスチャ
-    float4 mrColor = g_mrTexture.Sample(g_samplerState, In.uv);
-    // 金属性
-    float metallic = mrColor.b * g_material.m_metallic;
-    // 粗さ
-    float roughuness = mrColor.g * g_material.m_roughness;
     
     // 材質色
-    float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor;
+    float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
+    
+    // メタリック/ラフネス テクスチャ
+    float4 mrColor = g_mrTexture.Sample(g_samplerState, In.uv);
+    float metallic   = mrColor.b * g_material.m_metallic;   // 金属性
+    float roughuness = mrColor.g * g_material.m_roughness;  // 粗さ
     
     // アルファテスト
-    if (baseColor.a <= 0.0)
+    if (baseColor.a <= 0.0f)
         discard;
     
     //==========================================
@@ -215,17 +192,6 @@ float4 main(VertexOutput In) : SV_TARGET
 		// エミッシブ
 		//------------------------------------------
         diffuseColor += g_emissiveTexture.Sample(g_samplerState, In.uv).rgb * g_material.m_emissive;
-        
-        //------------------------------------------
-        // IBL
-        //------------------------------------------
-        const float mipLevels       = 10.0f;// IBL Mipmapレベル数
-        const float IBLIntensity    = 0.8f; // IBL強度
-        
-        // IBL拡散反射光
-        
-        // IBL鏡面反射光
-        
     }
     else
     {
@@ -250,40 +216,8 @@ float4 main(VertexOutput In) : SV_TARGET
         // ピクセルカメラ間の距離
         float dist = distance(cameraPos, In.wPosition.xyz);
         
-        float fog = saturate(1.0 / exp(dist * g_distance_fog_rate));
+        float fog = saturate(1.0f / exp(dist * g_distance_fog_rate));
         color.rgb = lerp(g_distance_fog_color, color.rgb, fog);
-    }
-    
-    //------------------------------------------
-    // 高さFog
-    //------------------------------------------
-    if (g_height_fog_enable)
-    {
-        // ピクセルカメラ間の距離
-        float dist = distance(cameraPos, In.wPosition.xyz);
-        
-        float3 rayDir = In.wPosition.xyz - cameraPos;
-        rayDir = normalize(rayDir);
-        
-        float3 fog = HeightFog(color, dist, cameraPos, rayDir);
-        color.rgb = fog;
-    }
-    
-    //------------------------------------------
-    // Mie散乱
-    //------------------------------------------
-    if (g_mie_streuung_enable)
-    {
-        
-    }
-    
-    //------------------------------------------
-    // Rayleigh散乱
-    //------------------------------------------
-    float g_rayleigh_streuung_enable = 0; // todo:
-    if (g_rayleigh_streuung_enable)
-    {
-        
     }
     
     //------------------------------------------

@@ -82,8 +82,8 @@ bool Application::Initialize(int width, int height)
 #endif
 
 	// 解像度はさすがにフルHD以上
-	constexpr int resolution_width = 1920;	// 1280-1920-2560
-	constexpr int resolution_height = 1080; //  720-1080-1440
+	constexpr int resolution_width = 1536;	// 1280-1920-2560
+	constexpr int resolution_height = 864; //  720-1080-1440
 
 	// Direct3D初期化
 	std::string errorMessage = {};
@@ -99,6 +99,29 @@ bool Application::Initialize(int width, int height)
 	// フルスクリーン
 	if (isFullScreen)
 		D3D.GetSwapChain()->SetFullscreenState(TRUE, 0);
+
+	//--------------------------------------------------
+	// ImGui初期化
+	//--------------------------------------------------
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	// ImGuiの外観設定
+	ImGui::StyleColorsClassic();
+
+	ImGui_ImplWin32_Init(g_window.GetWndHandle());
+	ImGui_ImplDX11_Init(D3D.GetDevice(), D3D.GetDeviceContext());
+
+	ImFontConfig config;
+	config.MergeMode = true;
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontDefault();
+	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, io.Fonts->GetGlyphRangesJapanese());
+
+	// iniファイル不要
+	io.IniFilename = NULL;
 
 	//--------------------------------------------------
 	// その他 初期化
@@ -125,6 +148,10 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	GAMESYSTEM.Finalize();
 	AUDIO.Finalize();
 	D3D.Release();
@@ -139,7 +166,7 @@ void Application::Release()
 void Application::Execute()
 {
 	// 初期設定(ウィンドウ作成、Direct3D初期化など)
-	if (Initialize(1280, 720) == false)
+	if (Initialize(1536, 864) == false)
 		return;
 
 	//--------------------------------------------------
@@ -183,6 +210,13 @@ void Application::Execute()
 		//
 		//----------------------------------------
 
+		// ImGui開始
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::ShowDemoWindow(nullptr);
+
 		// 更新
 		GAMESYSTEM.Update();
 
@@ -193,6 +227,10 @@ void Application::Execute()
 			GAMESYSTEM.Draw();
 			// 2D想定
 			GAMESYSTEM.Draw2D();
+
+			// ImGui描画
+			ImGui::Render();
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
 		D3D.End();
 

@@ -20,15 +20,19 @@ VertexOutput main(
     VertexOutput ret = (VertexOutput)0;
     
     ret.position = mul(position, g_world_matrix);
-    ret.wPosition = float4(ret.position.xyz, 1);
-    ret.position = mul(ret.wPosition, g_view_matrix);
+    ret.wPosition = ret.position.xyz;
+    ret.position = mul(ret.position, g_view_matrix);
     ret.position = mul(ret.position, g_proj_matrix);
 	
     ret.uv = uv;
     
+    // ñ@ê¸
     ret.wNormal = normalize(mul(normal, (float3x3) g_world_matrix));
+    // ê⁄ê¸
     ret.wTangent = normalize(mul(tangent, (float3x3) g_world_matrix));
-    ret.wBinormal = cross(ret.wNormal, ret.wTangent);
+    // è]ê⁄ê¸
+    float3 binormal = cross(normal, tangent);
+    ret.wBinormal = normalize(mul(binormal, (float3x3) g_world_matrix));
     
     ret.color = color;
 

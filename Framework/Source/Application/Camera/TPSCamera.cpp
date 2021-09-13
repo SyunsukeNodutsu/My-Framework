@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 // カメラ行列の設定
 //-----------------------------------------------------------------------------
-void TPSCamera::SetCameraMatrix(const mfloat4x4& mWorld)
+void TPSCamera::SetCameraMatrix(const mfloat4x4& worldMatrix)
 {
 	// 視線調整用の移動行列
 	mfloat4x4 gazeTrans;
@@ -15,5 +15,5 @@ void TPSCamera::SetCameraMatrix(const mfloat4x4& mWorld)
 	mfloat4x4 rotation;
 	rotation = GetRotationMatrix();
 
-	Camera::SetCameraMatrix(localPos * rotation * gazeTrans * mWorld);
+	Camera::SetCameraMatrix(localPos * rotation * gazeTrans * worldMatrix);
 }

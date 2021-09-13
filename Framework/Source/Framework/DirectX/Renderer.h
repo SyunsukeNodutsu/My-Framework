@@ -206,6 +206,13 @@ private:
 		float tmp[2];
 	};
 
+	// シェーダーデバッグ
+	struct cdShaderDebug
+	{
+		float showNormal;
+		float tmp[3];
+	};
+
 	// ステート記憶/復元用
 	struct SaveState
 	{

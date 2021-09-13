@@ -17,6 +17,7 @@ namespace KeyCode
         Tab = 0x9,
         Shift = 0x10,// TODO: 左右判定ができない
         Control = 0x11,
+        Alt = 0x12,// Alt(Menu)
 
         Enter = 0xd,
 

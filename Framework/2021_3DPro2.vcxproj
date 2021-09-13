@@ -20,6 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\gltfLoader\KdGLTFLoader.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_demo.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_draw.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_tables.cpp" />
+    <ClCompile Include="..\Library\imGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp" />
     <ClCompile Include="Source\Application\Camera\TPSCamera.cpp" />
     <ClCompile Include="Source\Application\GameObjects\GameObject.cpp" />
@@ -61,6 +68,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\gltfLoader\KdGLTFLoader.h" />
+    <ClInclude Include="..\Library\imGui\imconfig.h" />
+    <ClInclude Include="..\Library\imGui\imgui.h" />
+    <ClInclude Include="..\Library\imGui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Library\imGui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Library\imGui\imgui_internal.h" />
+    <ClInclude Include="..\Library\imGui\imstb_rectpack.h" />
+    <ClInclude Include="..\Library\imGui\imstb_textedit.h" />
+    <ClInclude Include="..\Library\imGui\imstb_truetype.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
     <ClInclude Include="Source\Application\Camera\TPSCamera.h" />
     <ClInclude Include="Source\Application\GameObjects\GameObject.h" />
@@ -373,6 +388,8 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -394,6 +411,8 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

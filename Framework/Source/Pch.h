@@ -21,7 +21,7 @@
 
 #include <SDKDDKVer.h> // 最新のSDKを自動的に定義する
 #include <windows.h>
-#pragma comment(lib, "winmm.lib")// TODO: WindowInfoで必要っぽい？
+#pragma comment(lib, "winmm.lib")
 
 // Windows Runtime Library(ComPtr)
 #include <wrl.h>
@@ -72,12 +72,20 @@
 //
 //--------------------------------------------------
 
-// 文字列変換 string converter
+// string converter (文字列変換)
 #include "../../Library/strconv.h"
 
 // Lua
 #include <lua.hpp>
 #pragma comment(lib, "lua53.lib")
+
+// imGui
+#include "../../Library/imGui/imgui.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_PLACEMENT_NEW
+#include "../../Library/imGui/imgui_internal.h"
+#include "../../Library/imGui/imgui_impl_win32.h"
+#include "../../Library/imGui/imgui_impl_dx11.h"
 
 //--------------------------------------------------
 //

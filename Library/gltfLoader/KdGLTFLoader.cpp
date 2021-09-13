@@ -521,7 +521,7 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				// 接線
 				if (srcPrimitive.attributes.count("TANGENT") > 0)
 				{
-					// 接線ゲッター
+					// 法線ゲッター
 					GLTFBufferGetter tangentGetter(&model, srcPrimitive.attributes["TANGENT"]);
 
 					for (UINT vi = 0; vi < destPrimitive->Vertices.size(); vi++) {
@@ -533,11 +533,10 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				}
 				else
 				{
-					DebugLog("接線取得失敗.--------\n");
-					DebugLog(std::string("model path: " + path + "\n").c_str());
-					DebugLog(std::string("node name: " + model.nodes[nodei].name + "\n").c_str());
-					DebugLog(std::string("meshe name: " + model.meshes[msi].name + "\n").c_str());
-					DebugLog("---------------------\n");
+					auto& nName = destNode->m_name;
+					DebugLog(std::string("[WARNING]接線が取得できませんでした. model path: "
+						+ path + " node name: " + nName + "\n").c_str()
+					);
 				}
 
 				// UV
@@ -727,13 +726,13 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 			}
 		}
 
-		// メッシュの全頂点の接線を計算する
+		/*// メッシュの全頂点の接線を計算する
 		for (auto&& v : destNode->m_mesh.m_vertices)
 		{
 			v.m_tangent.Cross({ 0,1,0 }, v.m_normal);
 			if (v.m_tangent.x == 0 && v.m_tangent.y == 0 && v.m_tangent.z == 0)
 				v.m_tangent.Cross({ 0,0,-1 }, v.m_normal);
-		}
+		}*/
 	}
 
 	//----------------------------------
