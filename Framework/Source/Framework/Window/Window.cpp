@@ -51,7 +51,7 @@ bool Window::Create(int clientWidth, int clientHeight, const std::string& titleN
 	//--------------------------------------------------
 	m_hWnd = CreateWindowW(
 		m_className.c_str(), m_titleName.c_str(),
-		WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME,
+		WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, 0, clientWidth, clientHeight,
 		nullptr, nullptr, hInstance,
 		this// MDIチャイルドウィンドウを作成する際に指定 ここがnullptrだとcallbackウィンドウプロシージャが呼ばれない

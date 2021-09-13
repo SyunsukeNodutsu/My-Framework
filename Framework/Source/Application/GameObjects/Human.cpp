@@ -96,19 +96,21 @@ void Human::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateMove(float deltaTime)
 {
-	float moveSpd = 0.006f;
+	float moveSpd = 10;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift))
 		moveSpd *= 2;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Alt))
 		moveSpd *= 0.4f;
 
 	float3 moveVec;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 	moveVec *= moveSpd;
+
+	moveVec *= deltaTime;
 
 	if (m_spCamera)
 		moveVec = moveVec.TransformNormal(moveVec, m_spCamera->GetRotationYMatrix());
