@@ -72,7 +72,7 @@ public:
 
 	// @brief アニメーションデータ取得
 	// @param name アニメーションの名前
-	// @return 成功...モデルのアニメーションデータ失敗...null
+	// @return 成功...モデルのアニメーションデータ 失敗...null
 	const std::shared_ptr<AnimationData> GetAnimation(const std::string& name) const;
 
 	// @brief アニメーションデータ取得
@@ -82,9 +82,16 @@ public:
 		return index >= m_spAnimations.size() ? nullptr : m_spAnimations[index];
 	}
 
-	// それぞれのノードのインデックスリスト取得
+	// @brief RootノードのみのIndex配列を返す
+	// @return ノードのIndex配列
 	const std::vector<int>& GetRootNodeIndices() const { return m_rootNodeIndices; }
+
+	// @brief ボーンノードのみのIndex配列を返す
+	// @return ノードのIndex配列
 	const std::vector<int>& GetBoneNodeIndices() const { return m_boneNodeIndices; }
+
+	// @brief メッシュが存在するノードのみのIndex配列を返す
+	// @return ノードのIndex配列
 	const std::vector<int>& GetMeshNodeIndices() const { return m_meshNodeIndices; }
 
 private:
@@ -131,7 +138,7 @@ public:
 	// ノード：活動中変化する可能性のあるデータ、検索用の名前
 	struct Node
 	{
-		std::string		m_name;		// ノード名
+		std::string	m_name;			// ノード名
 
 		mfloat4x4 m_localTransform;	// 直属の親ボーンからの行列
 		mfloat4x4 m_worldTransform;	// 原点からの行列
@@ -139,7 +146,6 @@ public:
 		void copy(const ModelData::Node& node)
 		{
 			m_name = node.m_name;
-
 			m_localTransform = node.m_localTransform;
 			m_worldTransform = node.m_worldTransform;
 		}
@@ -230,7 +236,9 @@ private:
 
 private:
 
-	// 再帰呼び出し用計算関数
-	void recCalcNodeMatrices(int nodeIdx, int parentNodeIdx = -1);
+	// @brief 再帰呼び出し用計算関数
+	// @param nodeIndex
+	// @param parentNodeIndex
+	void recCalcNodeMatrices(int nodeIndex, int parentNodeIndex = -1);
 
 };

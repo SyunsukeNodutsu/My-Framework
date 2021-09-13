@@ -213,10 +213,7 @@ void Animator::AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed)
 
 	m_time += speed;
 
+	// 終了 or ループ
 	if (m_time >= m_spAnimation->m_maxLength)
-	{
-		m_time = (m_isLoop)
-			? 0.0f							// ループ
-			: m_spAnimation->m_maxLength;	// 終了
-	}
+		m_time = (m_isLoop) ? 0.0f : m_spAnimation->m_maxLength;
 }

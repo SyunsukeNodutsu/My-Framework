@@ -24,6 +24,8 @@ public:
 	void Begin();
 
 	// @brief モデル描画
+	// @param model 描画するモデル
+	// @param worldMatrix モデルのワールド行列
 	void DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix = mfloat4x4::Identity);
 
 	// @brief メッシュ描画
@@ -37,12 +39,14 @@ private:
 	ComPtr<ID3D11PixelShader>	m_cpPS;			// ピクセルシェーダ
 	ComPtr<ID3D11InputLayout>	m_cpInputLayout;// 頂点入力レイアウト
 
-	// 大気
+	// マテリアル
 	struct cdMaterial
 	{
 		float4	m_baseColor;
+		float3	m_emissive;
+		float	m_metallic;
 		float	m_roughness;
-		float tmp[3];
+		float	tmp[3];
 	};
 	ConstantBuffer<cdMaterial> m_cd11Material;
 

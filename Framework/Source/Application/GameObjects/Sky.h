@@ -26,13 +26,6 @@ public:
 		m_transform.SetWorldMatrix(matrix);
 	}
 
-	// @brief 描画
-	void Draw(float deltaTime) override
-	{
-
-	//	SHADER.GetModelShader().Begin();
-	}
-
 private:
 
 };

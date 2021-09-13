@@ -159,6 +159,10 @@ struct Material
 	// @brief コンストラクタ
 	Material()
 	{
+		m_baseColorTexture			= D3D.GetWhiteTex();
+		m_metallicRoughnessTexture	= D3D.GetWhiteTex();
+		m_emissiveTexture			= D3D.GetWhiteTex();
+		m_normalTexture				= D3D.GetNormalTex();
 	}
 
 };

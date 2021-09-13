@@ -81,23 +81,6 @@ private:
 	mutable bool		m_needUpdateMatrix;	// 行列を更新する必要があるか？
 };
 
-// システム用 分類分け
-enum SystemTAG
-{
-	// カリングなどに使用
-	eStatic		= 1,
-	eDynamic	= 1 << 1,
-};
-
-// AI用 分類わけ
-enum AITAG
-{
-	ePlayer		= 1,		// 自身
-	eAllies		= 1 << 1,	// 味方
-	eEnemy		= 1 << 2,	// 敵
-	eNeutral	= 1 << 3,	// 中立
-};
-
 // ゲームオブジェクト
 class GameObject
 {

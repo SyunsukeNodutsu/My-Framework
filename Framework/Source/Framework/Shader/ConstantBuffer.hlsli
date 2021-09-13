@@ -34,10 +34,16 @@ cbuffer cdObject : register(b10)
 }
 
 // マテリアル
+struct Material
+{
+    float4  m_baseColor; // 色
+    float3  m_emissive;  // 自己発行
+    float   m_metallic;  // 金属性
+    float   m_roughness; // 粗さ
+};
 cbuffer cdObject : register(b11)
 {
-    float4  g_baseColor;    // 色
-    float   g_roughness;    // 粗さ
+    Material g_material;
 }
 
 // 時間

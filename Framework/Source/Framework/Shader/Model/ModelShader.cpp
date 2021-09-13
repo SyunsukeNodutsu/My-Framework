@@ -32,10 +32,11 @@ bool ModelShader::Initialize()
 		// 1頂点の詳細な情報
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layout =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,	0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,	0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
 		hr = D3D.GetDevice()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
@@ -115,7 +116,7 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 	if (mesh == nullptr)
 		return;
 
-	// メッシュ情報をセット
+	// メッシュ情報を転送
 	mesh->SetToDevice();
 
 	for (UINT subi = 0; subi < mesh->GetSubsets().size(); subi++)
@@ -125,31 +126,20 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 
 		const Material& material = materials[mesh->GetSubsets()[subi].m_materialNo];
 
-		//-----------------------
-		// マテリアル情報を定数バッファへ書き込む
-		//-----------------------
-		/*m_cb1_Material.Work().BaseColor = material.BaseColor;
-		m_cb1_Material.Work().Emissive = material.Emissive;
-		m_cb1_Material.Work().Metallic = material.Metallic;
-		m_cb1_Material.Work().Roughness = material.Roughness;
-		m_cb1_Material.Write();*/
-
+		// マテリアル情報を転送
 		m_cd11Material.Work().m_baseColor = material.m_baseColor;
+		m_cd11Material.Work().m_emissive  = material.m_emissive;
+		m_cd11Material.Work().m_metallic  = material.m_metallic;
 		m_cd11Material.Work().m_roughness = material.m_roughness;
 		m_cd11Material.Write();
 
-		//-----------------------
 		// テクスチャセット
-		//-----------------------
-		ID3D11ShaderResourceView* srvs[4] = {};
+		D3D.GetRenderer().SetTexture(material.m_baseColorTexture.get(), 0);
+		D3D.GetRenderer().SetTexture(material.m_emissiveTexture.get(), 1);
+		D3D.GetRenderer().SetTexture(material.m_metallicRoughnessTexture.get(), 2);
+		D3D.GetRenderer().SetTexture(material.m_normalTexture.get(), 3);
 
-		//D3D.GetDeviceContext()->PSSetShaderResources(0, _countof(srvs), srvs);
-
-		D3D.GetRenderer().SetTexture(material.m_baseColorTexture.get());
-
-		//-----------------------
 		// サブセット描画
-		//-----------------------
 		mesh->DrawSubset(subi);
 	}
 }

@@ -159,6 +159,9 @@
     <ClCompile Include="Source\Framework\Model\Mesh.cpp">
       <Filter>Source\Framework\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\GameObjects\Human.cpp">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -283,6 +286,15 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Model\Mesh.h">
       <Filter>Source\Framework\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameObjects\Human.h">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameObjects\Tank.h">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\GameObjects\Sky.h">
+      <Filter>Source\Application\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

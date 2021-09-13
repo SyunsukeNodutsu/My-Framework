@@ -69,9 +69,7 @@ public:
 	// @return 終了...true
 	bool IsAnimationEnd() const
 	{
-		if (m_spAnimation == nullptr)
-			return true;
-		if (m_time >= m_spAnimation->m_maxLength)
+		if (m_spAnimation == nullptr || m_time >= m_spAnimation->m_maxLength)
 			return true;
 
 		return false;

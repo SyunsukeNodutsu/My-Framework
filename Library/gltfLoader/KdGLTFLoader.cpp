@@ -12,7 +12,7 @@
 
 static void Dump(const tinygltf::Model& model);
 
-using namespace DirectX;
+//using namespace DirectX;
 
 //===================================================
 // ファイル名から拡張子を取得
@@ -456,7 +456,7 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 		// 作業データ
 		struct GLTFPrimitive
 		{
-			std::vector<MeshVertex>			Vertices;
+			std::vector<MeshVertex>				Vertices;
 			std::vector<MeshFace>				Faces;
 
 			UINT								MaterialNo = 0;
@@ -521,7 +521,7 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				// 接線
 				if (srcPrimitive.attributes.count("TANGENT") > 0)
 				{
-					// 法線ゲッター
+					// 接線ゲッター
 					GLTFBufferGetter tangentGetter(&model, srcPrimitive.attributes["TANGENT"]);
 
 					for (UINT vi = 0; vi < destPrimitive->Vertices.size(); vi++) {
@@ -530,6 +530,14 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 						tan.y = tangentGetter.GetValue_Float(vi * 3 + 1);
 						tan.z = tangentGetter.GetValue_Float(vi * 3 + 2) * -1;
 					}
+				}
+				else
+				{
+					DebugLog("接線取得失敗.--------\n");
+					DebugLog(std::string("model path: " + path + "\n").c_str());
+					DebugLog(std::string("node name: " + model.nodes[nodei].name + "\n").c_str());
+					DebugLog(std::string("meshe name: " + model.meshes[msi].name + "\n").c_str());
+					DebugLog("---------------------\n");
 				}
 
 				// UV
@@ -645,16 +653,13 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				}
 			}
 
-			/*
-			//
-			std::vector<Math::Vector3> tangentList;
+			/* std::vector<float3> tangentList;
 			tangentList.resize(posList.size());
 			ComputeTangentFrame((UINT*)&destPrimitive->Faces[0], destPrimitive->Faces.size(), &posList[0], &normalList[0], &uvList[0], posList.size(), &tangentList[0], nullptr, nullptr);
 			for (UINT vi = 0; vi < destPrimitive->Vertices.size(); vi++)
 			{
-				destPrimitive->Vertices[vi].Tangent = tangentList[vi];
-			}
-			*/
+				destPrimitive->Vertices[vi].m_tangent = tangentList[vi];
+			}*/
 		}
 
 		// マテリアルソート
@@ -720,6 +725,14 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 
 				offset += destNode->m_mesh.m_subsets[pi].m_faceCount;
 			}
+		}
+
+		// メッシュの全頂点の接線を計算する
+		for (auto&& v : destNode->m_mesh.m_vertices)
+		{
+			v.m_tangent.Cross({ 0,1,0 }, v.m_normal);
+			if (v.m_tangent.x == 0 && v.m_tangent.y == 0 && v.m_tangent.z == 0)
+				v.m_tangent.Cross({ 0,0,-1 }, v.m_normal);
 		}
 	}
 

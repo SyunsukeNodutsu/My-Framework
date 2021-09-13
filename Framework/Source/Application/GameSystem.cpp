@@ -32,7 +32,7 @@ void GameSystem::Initialize()
 	Cpuid::Research();
 
 	// 大照明設定
-	D3D.GetRenderer().SetDirectionalLightDir(float3(1, -1, 1));
+	D3D.GetRenderer().SetDirectionalLightDir(float3(1, -1, 0));
 	// ディザリング設定
 	D3D.GetRenderer().SetDitherEnable(false);
 
@@ -41,16 +41,10 @@ void GameSystem::Initialize()
 	// TODO: 外部ファイルへ
 	//--------------------------------------------------
 	{
-		// カメラ作成
-		//AddGameObject("MainCamera");
-		// 人型
-		//AddGameObject("Human");
-		// スカイスフィア
-		//AddGameObject("Sky");
-		// 地形
+		AddGameObject("Human");
+		AddGameObject("Sky");
 		AddGameObject("StageMap");
-		// 戦車
-		//AddGameObject("Tank");
+		AddGameObject("Tank");
 	}
 
 	for (auto& object : m_spObjectList)
@@ -142,14 +136,14 @@ void GameSystem::Draw()
 {
 	const float deltaTime = static_cast<float>(m_fpsTimer.GetDeltaTime());
 
+	// カメラ情報をGPUに転送
+	if (m_spCamera)
+		m_spCamera->SetToShader();
+
 	SHADER.GetModelShader().Begin();
 
 	for (auto& object : m_spObjectList)
 		object->Draw(deltaTime);
-
-	// カメラ情報をGPUに転送
-	if (m_spCamera)
-		m_spCamera->SetToShader();
 }
 
 //-----------------------------------------------------------------------------

@@ -37,10 +37,8 @@ public:
 
 	// @brief 単一のインスタンスを返す
 	// @return シングルトン・インスタンス
-	static GameSystem& GetInstance()
-	{
-		static GameSystem instance;
-		return instance;
+	static GameSystem& GetInstance() {
+		static GameSystem instance; return instance;
 	}
 
 	// @brief 使用カメラの設定

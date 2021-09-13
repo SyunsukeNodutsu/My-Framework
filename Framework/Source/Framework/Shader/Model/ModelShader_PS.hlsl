@@ -17,10 +17,11 @@ SamplerState g_samplerState : register(s0);
 
 // ディザパターン
 // Bayer Matrixに当てはまるってことだと思う
-static const int g_ditherPattern[4][4] = {
-    {  0, 32,  8, 40 },
+static const int g_ditherPattern[4][4] =
+{
+    { 0, 32, 8, 40 },
     { 48, 16, 56, 21 },
-    { 12, 44,  4, 36 },
+    { 12, 44, 4, 36 },
     { 60, 28, 52, 20 },
 };
 
@@ -84,7 +85,7 @@ float3 HeightFog(in float3 rgb, in float distance, in float3 rayOri, in float3 r
 //-----------------------------------------------------------------------------
 // ピクセルシェーダー
 //-----------------------------------------------------------------------------
-float4 main( VertexOutput In ) : SV_TARGET
+float4 main(VertexOutput In) : SV_TARGET
 {
     //------------------------------------------
     // ディザパターンを使用したディザリング
@@ -125,21 +126,34 @@ float4 main( VertexOutput In ) : SV_TARGET
     float camDist = length(vCam); // カメラ - ピクセル距離
     vCam = normalize(vCam);
     
+    float3 wN = g_normalTexture.Sample(g_samplerState, In.uv).rgb;
+    wN = wN * 2.0f - 1.0f;
+    //wN = normalize(wN);
+    
+    // 3x3行列化(回転行列)
+    row_major float3x3 mTBN =
+    {
+        normalize(In.wTangent),  // X軸
+        normalize(In.wBinormal), // Y軸
+        normalize(In.wNormal),   // Z軸
+    };
+	// 面の向きを考慮した方向へ変換
+    wN = mul(wN, mTBN); // wNベクトルをmTBNで変換
+    wN = normalize(wN); // 法線ベクトルを正規化
+    
     //------------------------------------------
     // 材質色 todo:
     //------------------------------------------
     
     // メタリック/ラフネステクスチャ
-    float4 mrColor = 0;
-    
+    float4 mrColor = g_mrTexture.Sample(g_samplerState, In.uv);
     // 金属性
-    float metallic = 0;
-    
+    float metallic = mrColor.b * g_material.m_metallic;
     // 粗さ
-    float roughuness = 0;
+    float roughuness = mrColor.g * g_material.m_roughness;
     
-    // ベースカラーテクスチャ
-    float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_baseColor;
+    // 材質色
+    float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor;
     
     // アルファテスト
     if (baseColor.a <= 0.0)
@@ -167,8 +181,7 @@ float4 main( VertexOutput In ) : SV_TARGET
         // Diffuse(拡散反射光)
         {
             // 法線
-            float3 vN = normalize(In.normal);
-            float Dot = dot(vN, -g_directional_light_dir);
+            float Dot = dot(wN, -g_directional_light_dir);
         
             // 正規化Lambert
             Dot = saturate(Dot);
@@ -183,34 +196,31 @@ float4 main( VertexOutput In ) : SV_TARGET
         // Specular(鏡面反射光)
         {
 			// ラフネスから、GGX用のSpecularPowerを求める
-            float smoothness = 1.0 - g_roughness; // ラフネスを逆転させ「滑らか」さにする
+            float smoothness = 1.0f - roughuness; // ラフネスを逆転させ「滑らか」さにする
             float specPower = pow(2, 13 * smoothness); // 1～8192
 	  
             // GGX
-            float spec = GGX(g_directional_light_dir, vCam, In.normal, g_roughness);
-            
-			// Blinn-Phong NDF
-            //float spec = BlinnPhong(g_directional_light_dir, vCam, In.normal, specPower);
+            float spec = GGX(g_directional_light_dir, vCam, wN, roughuness);
             
             // 光の色 * 反射光の強さ * 材質の反射色 * 正規化係数 * 透明率
-            specularColor += (g_directional_light_color * spec) * 0.06 * baseColor.a;
+            specularColor += (g_directional_light_color * spec) * 0.06f * baseColor.a;
         }
     
         //------------------------------------------
         // 環境光
         //------------------------------------------
-        diffuseColor += g_ambient_power * baseColor.rgb * baseColor.a;
+        diffuseColor += 0.8f * baseColor.rgb * baseColor.a;
         
         //------------------------------------------
 		// エミッシブ
 		//------------------------------------------
-        //diffuseColor += g_emissiveTex.Sample(g_ss, In.UV).rgb * g_Material.Emissive;
+        diffuseColor += g_emissiveTexture.Sample(g_samplerState, In.uv).rgb * g_material.m_emissive;
         
         //------------------------------------------
         // IBL
         //------------------------------------------
-        const float mipLevels = 10;     // IBL Mipmapレベル数
-        const float IBLIntensity = 0.8; // IBL強度
+        const float mipLevels       = 10.0f;// IBL Mipmapレベル数
+        const float IBLIntensity    = 0.8f; // IBL強度
         
         // IBL拡散反射光
         
@@ -270,7 +280,7 @@ float4 main( VertexOutput In ) : SV_TARGET
     //------------------------------------------
     // Rayleigh散乱
     //------------------------------------------
-    float g_rayleigh_streuung_enable = 0;// todo:
+    float g_rayleigh_streuung_enable = 0; // todo:
     if (g_rayleigh_streuung_enable)
     {
         

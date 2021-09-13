@@ -44,11 +44,13 @@ bool ModelData::Load(const std::string& filepath)
 //-----------------------------------------------------------------------------
 // アニメーションデータ取得：文字列検索
 //-----------------------------------------------------------------------------
-const std::shared_ptr<AnimationData> ModelData::GetAnimation(const std::string& animName) const
+const std::shared_ptr<AnimationData> ModelData::GetAnimation(const std::string& name) const
 {
 	for (auto&& result : m_spAnimations)
-		if (result->m_name == animName)
+	{
+		if (result->m_name == name)
 			return result;
+	}
 	return nullptr;
 }
 
@@ -265,6 +267,7 @@ void ModelWork::SetModel(const std::shared_ptr<ModelData>& rModel)
 
 	// ノードのコピーを生成
 	m_coppiedNodes.resize(nodeSize);
+
 	for (UINT i = 0; i < nodeSize; ++i)
 		m_coppiedNodes[i].copy(rModel->GetOriginalNodes()[i]);
 }
@@ -279,13 +282,12 @@ void ModelWork::CalcNodeMatrices()
 		return;
 	}
 
-	// 全ボーン行列を書き込み
 	for (auto&& nodeIdx : m_spModel->GetRootNodeIndices())
 		recCalcNodeMatrices(nodeIdx);
 
 	for (auto&& nodeIdx : m_spModel->GetBoneNodeIndices())
 	{
-		//if (nodeIdx >= StandardShader::maxBoneBufferSize) { assert(0 && "転送できるボーンの上限数を超えました"); return; }
+		if (nodeIdx >= /*StandardShader::maxBoneBufferSize*/200) { assert(0 && "転送できるボーンの上限数を超えました"); return; }
 
 		// ノード内からボーン情報を取得
 		auto& data = m_spModel->GetOriginalNodes()[nodeIdx];

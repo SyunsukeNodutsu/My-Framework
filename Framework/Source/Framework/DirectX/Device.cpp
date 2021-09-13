@@ -221,7 +221,7 @@ bool Device::Create( const HWND& hWnd, bool isUseHDR, int width, int height, boo
 		srdata.SysMemSlicePitch = 0;
 
 		m_texNormal = std::make_shared<Texture>();
-		//m_texNormal->Create(1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, 1, &srdata);
+		m_texNormal->Create("Resource/Texture/Blue1x1.bmp");
 	}
 
 	return true;
