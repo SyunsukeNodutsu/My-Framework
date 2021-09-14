@@ -31,6 +31,9 @@ public:
 	// @brief 2D描画
 	void Draw2D();
 
+	// @brief imGui描画
+	void DrawImGui();
+
 	//--------------------------------------------------
 	// 取得・設定
 	//--------------------------------------------------
@@ -50,10 +53,6 @@ private:
 	FpsTimer				m_fpsTimer;	// FPS管理
 	std::shared_ptr<Camera> m_spCamera;	// カメラ
 
-	// デバッグ用SpriteFont
-	std::unique_ptr<DirectX::SpriteBatch>	m_upSpriteBatch;
-	std::unique_ptr<DirectX::SpriteFont>	m_upSpriteFont;
-
 	// 登場GameObjectリスト
 	std::list<std::shared_ptr<GameObject>>	m_spObjectList;
 
@@ -67,10 +66,6 @@ private:
 	// @brief GameObjectをシーンに追加
 	// @param name 追加するGameObjectのクラス名
 	void AddGameObject(const std::string& name);
-
-	// SpriteFontによる文字列描画
-	// ※TODO: 後で移動(クラス化)
-	void DrawSpriteString(std::string string, float2 position, float scaling = 1.0f, cfloat4x4 color = cfloat4x4::Black);
 
 };
 

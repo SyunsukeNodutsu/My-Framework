@@ -99,7 +99,7 @@ void Human::UpdateMove(float deltaTime)
 	float moveSpd = 10;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift))
 		moveSpd *= 2;
-	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Alt))
+	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Control))
 		moveSpd *= 0.4f;
 
 	float3 moveVec;

@@ -7,7 +7,7 @@ Camera::Camera()
 	: m_cameraMatrix(mfloat4x4::Identity)
 	, m_viewMatrix(mfloat4x4::Identity)
 	, m_projMatrix(mfloat4x4::Identity)
-	, m_dirtyCam(false)
+	, m_dirtyCamera(false)
 	, m_dirtyProj(false)
 {
 }
@@ -18,7 +18,7 @@ Camera::Camera()
 void Camera::SetToShader()
 {
 	// カメラが変更されていれば更新
-	if (m_dirtyCam)
+	if (m_dirtyCamera)
 	{
 		m_viewMatrix = m_cameraMatrix.Invert();
 		D3D.GetRenderer().SetViewMatrix(m_viewMatrix);
@@ -76,5 +76,5 @@ void Camera::ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, flo
 void Camera::SetCameraMatrix(const mfloat4x4& mCam)
 {
 	m_cameraMatrix = mCam;
-	m_dirtyCam = true;// 変更flg ON
+	m_dirtyCamera = true;
 }

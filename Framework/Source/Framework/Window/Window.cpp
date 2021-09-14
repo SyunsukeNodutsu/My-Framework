@@ -116,6 +116,105 @@ bool Window::ProcessMessage()
 }
 
 //-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+bool Window::OpenFileDialog(std::string& filepath, const std::string& title, const char* filters)
+{
+	// 現在のカレントディレクトリ保存
+	auto current = std::filesystem::current_path();
+	// ファイル名のみ
+	auto filename = std::filesystem::path(filepath).filename();
+
+	// 結果用
+	static char fname[1000];
+	strcpy_s(fname, sizeof(fname), filename.string().c_str());
+
+	// デフォルトフォルダ
+	std::string dir;
+	if (filepath.size() == 0)
+	{
+		dir = current.string() + "\\";
+	}
+	else {
+		auto path = std::filesystem::absolute(filepath);
+		dir = path.parent_path().string() + "\\";
+	}
+
+	OPENFILENAMEA o;
+	ZeroMemory(&o, sizeof(o));
+
+	o.lStructSize = sizeof(o);									// 構造体サイズ
+	o.hwndOwner = nullptr;										// 親ウィンドウのハンドル
+	o.lpstrInitialDir = dir.c_str();							// 初期フォルダー
+	o.lpstrFile = fname;										// 取得したファイル名を保存するバッファ
+	o.nMaxFile = sizeof(fname);									// 取得したファイル名を保存するバッファサイズ
+	o.lpstrFilter = filters;									// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
+	o.lpstrDefExt = "";
+	o.lpstrTitle = title.c_str();
+	o.nFilterIndex = 1;
+	if (GetOpenFileNameA(&o))
+	{
+		// カレントディレクトリを元に戻す
+		std::filesystem::current_path(current);
+		// 相対パスへ変換
+		filepath = std::filesystem::relative(fname).string();
+		return true;
+	}
+	std::filesystem::current_path(current);	// カレントディレクトリを元に戻す
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+bool Window::SaveFileDialog(std::string& filepath, const std::string& title, const char* filters, const std::string& defExt)
+{
+	// 現在のカレントディレクトリ保存
+	auto current = std::filesystem::current_path();
+	// ファイル名のみ
+	auto filename = std::filesystem::path(filepath).filename();
+
+	// 結果用
+	static char fname[1000];
+	strcpy_s(fname, sizeof(fname), filename.string().c_str());
+
+	// デフォルトフォルダ
+	std::string dir;
+	if (filepath.size() == 0)
+	{
+		dir = current.string() + "\\";
+	}
+	else {
+		auto path = std::filesystem::absolute(filepath);
+		dir = path.parent_path().string() + "\\";
+	}
+
+	OPENFILENAMEA o;
+	ZeroMemory(&o, sizeof(o));
+
+	o.lStructSize = sizeof(o);									// 構造体サイズ
+	o.hwndOwner = nullptr;										// 親ウィンドウのハンドル
+	o.lpstrInitialDir = dir.c_str();						// 初期フォルダー
+	o.lpstrFile = fname;										// 取得したファイル名を保存するバッファ
+	o.nMaxFile = sizeof(fname);									// 取得したファイル名を保存するバッファサイズ
+	o.lpstrFilter = filters;									// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
+	o.lpstrDefExt = defExt.c_str();
+	o.lpstrTitle = title.c_str();
+	o.nFilterIndex = 1;
+	o.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+	if (GetSaveFileNameA(&o))
+	{
+		// カレントディレクトリを元に戻す
+		std::filesystem::current_path(current);
+		// 相対パスへ変換
+		filepath = std::filesystem::relative(fname).string();
+		return true;
+	}
+	std::filesystem::current_path(current);	// カレントディレクトリを元に戻す
+	return false;
+}
+
+//-----------------------------------------------------------------------------
 // ウィンドウ関数(Static関数)
 //-----------------------------------------------------------------------------
 LRESULT CALLBACK Window::callWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -174,18 +273,6 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 		HDC hdc = BeginPaint(hwnd, &ps);
 		// TODO: hdcを使用する描画コードをここに追加
 		EndPaint(hwnd, &ps);
-	}
-	break;
-
-	case WM_SIZE:
-	{
-		// TODO: 無意味かも 検証
-		if (wparam == SIZE_MAXIMIZED)
-		{
-			auto info = GetWinInfo();
-			auto rcClient = info.rcClient;// クライアントサイズ
-			SetClientSize((rcClient.right - rcClient.left), (rcClient.bottom - rcClient.top));
-		}
 	}
 	break;
 

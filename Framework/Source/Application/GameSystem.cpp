@@ -10,8 +10,6 @@
 GameSystem::GameSystem()
 	: m_fpsTimer()
 	, m_spCamera(nullptr)
-	, m_upSpriteBatch(nullptr)
-	, m_upSpriteFont(nullptr)
 	, m_spObjectList()
 {
 }
@@ -21,10 +19,6 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
-	// SpriteFont作成
-	m_upSpriteBatch = std::make_unique<DirectX::SpriteBatch>(D3D.GetDeviceContext());
-	m_upSpriteFont = std::make_unique<DirectX::SpriteFont>(D3D.GetDevice(), L"Resource/Font/myfile.spritefont");
-
 	// テスト用テクスチャ
 	spTexture = std::make_shared<Texture>();
 	spTexture->Create("Resource/Texture/screen_toggle.png");
@@ -116,6 +110,9 @@ void GameSystem::Update()
 			mpos.y >= srect.y - 50 && mpos.y <= srect.y)
 			D3D.GetSwapChain()->SetFullscreenState(!isFullscreen, 0);
 	}
+
+	if (RAW_INPUT.GetKeyboard()->IsPressed(KeyCode::O))
+		AUDIO.StopAllSound();
 }
 
 //-----------------------------------------------------------------------------
@@ -171,39 +168,86 @@ void GameSystem::Draw2D()
 	);
 
 	SHADER.GetSpriteShader().End();
+}
 
-	//--------------------------------------------------
-	// Sprite font
-	//--------------------------------------------------
+//-----------------------------------------------------------------------------
+// imGui描画
+//-----------------------------------------------------------------------------
+void GameSystem::DrawImGui()
+{
+	// 
+	static bool no_titlebar		= false;
+	static bool no_scrollbar	= false;
+	static bool no_menu			= false;
+	static bool no_move			= false;
+	static bool no_resize		= false;
+	static bool no_close		= false;
+	static bool no_background	= false;
 
-	// 記憶用のステートを取得し SpriteBatch Begin() 呼び出し
-	auto saveState = D3D.GetRenderer().GetSaveState();
-	m_upSpriteBatch->Begin(DirectX::SpriteSortMode::SpriteSortMode_Deferred, saveState.BS.Get(), saveState.SS.Get(), saveState.DS.Get(), saveState.RS.Get());
+	ImGuiWindowFlags window_flags = 0;
+	if (no_titlebar)        window_flags |= ImGuiWindowFlags_NoTitleBar;
+	if (no_scrollbar)       window_flags |= ImGuiWindowFlags_NoScrollbar;
+	if (!no_menu)           window_flags |= ImGuiWindowFlags_MenuBar;
+	if (no_move)            window_flags |= ImGuiWindowFlags_NoMove;
+	if (no_resize)          window_flags |= ImGuiWindowFlags_NoResize;
+	if (no_background)      window_flags |= ImGuiWindowFlags_NoBackground;
 
-	auto fps = m_fpsTimer.GetFPS();
-	auto totalSecond = m_fpsTimer.GetTotalTime();
+	if (!ImGui::Begin("Debug", nullptr, window_flags))
+	{
+		// 最適化のために ウィンドウが折りたたまれている場合は初期化
+		ImGui::End();
+		return;
+	}
 
-	DrawSpriteString(Cpuid::m_brand, float2(0, 0));
-	DrawSpriteString(wide_to_sjis(D3D.GetAdapterName()), float2(0, 30));
-	DrawSpriteString("FPS: " + std::to_string(fps), float2(0, 60));
-	DrawSpriteString("totalSecond: " + std::to_string(totalSecond), float2(0, 90));
-	DrawSpriteString("deltaTime: " + std::to_string(deltaTime), float2(0, 120));
+	ImGui::Text(Cpuid::m_brand.c_str());
+	ImGui::Text(wide_to_sjis(D3D.GetAdapterName()).c_str());
 
-	RECT clientRect = APP.g_window.GetWinInfo().rcClient;
-	DrawSpriteString("width: " + std::to_string(clientRect.right - clientRect.left), float2(0, 150));
-	DrawSpriteString("height: " + std::to_string(clientRect.bottom - clientRect.top), float2(0, 180));
+	ImGui::Text(std::string("Fps: " + std::to_string(m_fpsTimer.GetFPS())).c_str());
+	ImGui::Text(std::string("DeltaTime: " + std::to_string(m_fpsTimer.GetDeltaTime())).c_str());
+	ImGui::Text(std::string("TotalTime: " + std::to_string(m_fpsTimer.GetTotalTime())).c_str());
 
-	auto m_pos = RAW_INPUT.GetMouse()->GetMousePos();
-	DrawSpriteString("pos.x: " + std::to_string(m_pos.x), float2(0, 210));
-	DrawSpriteString("pos.y: " + std::to_string(m_pos.y), float2(0, 240));
+	ImGui::Text(std::string("Volume: " + std::to_string(AUDIO.GetUserSettingVolume())).c_str());
 
-	auto volume = AUDIO.GetUserSettingVolume();
-	DrawSpriteString("volume: " + std::to_string(volume), float2(0, 270));
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Menu"))
+		{
+			if (ImGui::MenuItem("Quit", "Alt+F4")) { APP.End(); }
 
-	auto cameraPos = D3D.GetRenderer().GetCameraPos();
-	DrawSpriteString("cameraPos: x->" + std::to_string(cameraPos.x) + "y->" + std::to_string(cameraPos.y) + "->" + std::to_string(cameraPos.z), float2(0, 300));
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Examples"))
+		{
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Tools"))
+		{
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
 
-	m_upSpriteBatch->End();
+	if (ImGui::CollapsingHeader("Window options"))
+	{
+		if (ImGui::BeginTable("split", 2))
+		{
+			ImGui::TableNextColumn(); ImGui::Checkbox("No titlebar", &no_titlebar);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No scrollbar", &no_scrollbar);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No menu", &no_menu);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No move", &no_move);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No resize", &no_resize);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No close", &no_close);
+			ImGui::TableNextColumn(); ImGui::Checkbox("No background", &no_background);
+			ImGui::EndTable();
+		}
+	}
+
+	ImGui::Separator();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImGui::ColorEdit4("##color", (float*)&style.Colors[ImGuiCol_WindowBg], ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
+
+	ImGui::End();
 }
 
 //-----------------------------------------------------------------------------
@@ -216,15 +260,4 @@ void GameSystem::AddGameObject(const std::string& name)
 		return;
 
 	m_spObjectList.push_back(object);
-}
-
-//-----------------------------------------------------------------------------
-// SpriteFontによる文字列描画
-//-----------------------------------------------------------------------------
-void GameSystem::DrawSpriteString(std::string string, float2 position, float scaling, cfloat4x4 color)
-{
-	if ((m_upSpriteFont == nullptr) || (m_upSpriteBatch == nullptr))
-		return;
-
-	m_upSpriteFont->DrawString(m_upSpriteBatch.get(), string.c_str(), position, color, 0, float2(0, 0), scaling);
 }

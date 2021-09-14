@@ -4,9 +4,6 @@
 // CPUID情報取得
 // https://gist.github.com/t-mat/3769328
 // https://docs.microsoft.com/ja-jp/cpp/intrinsics/cpuid-cpuidex?view=msvc-160
-//
-// EditHistory:
-//  2021/07/02 初回作成
 //-----------------------------------------------------------------------------
 #pragma once
 

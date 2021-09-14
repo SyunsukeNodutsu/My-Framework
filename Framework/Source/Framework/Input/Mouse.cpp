@@ -34,7 +34,7 @@ void Mouse::Finalize(HWND hwnd)
     m_deviceMouse.hwndTarget    = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceMouse, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        MessageBoxA(nullptr, "Register MouseDevices failed.", "Failed", MB_OK);
+        DebugLog("[WARNING]Register MouseDevices failed.");
 }
 
 //-----------------------------------------------------------------------------

@@ -55,7 +55,7 @@ bool Renderer::Initialize()
 	m_cd10Light.Work().m_ambient_power = 0.6f;
 
 	// 大気のパラメータを設定
-	m_cd13Atmosphere.Work().m_distance_fog_enable = 0;
+	m_cd13Atmosphere.Work().m_distance_fog_enable = 1;
 	m_cd13Atmosphere.Work().m_distance_fog_color = float3(0.5f, 0.6f, 0.7f);
 	m_cd13Atmosphere.Work().m_distance_fog_rate = 0.004f;
 

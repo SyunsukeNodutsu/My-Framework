@@ -61,7 +61,7 @@ float GGX(float3 lightDir, float3 vCam, float3 normal, float roughness)
 //-----------------------------------------------------------------------------
 // ピクセルシェーダー
 //-----------------------------------------------------------------------------
-float4 main(VertexOutput In) : SV_TARGET
+float4 main( VertexOutput In ) : SV_TARGET
 {
     //------------------------------------------
     // ディザパターンを使用したディザリング
@@ -105,20 +105,20 @@ float4 main(VertexOutput In) : SV_TARGET
     //------------------------------------------
     // 法線
     //------------------------------------------
-    // 3x3行列化(回転行列)
+    // タンジェントスペース
     row_major float3x3 mTBN = {
         normalize(In.wTangent),  // X軸
         normalize(In.wBinormal), // Y軸
         normalize(In.wNormal),   // Z軸
     };
-    float3 wN = g_normalTexture.Sample(g_samplerState, In.uv).rgb;
-    wN = wN * 2.0f - 1.0f; // (0～1)->(-1～1)
+    float3 normal = g_normalTexture.Sample(g_samplerState, In.uv).rgb;
+    normal = normal * 2.0f - 1.0f; // (0～1)->(-1～1)
     
 	// 面の向きを考慮した方向へ変換
-    wN = normalize(mul(wN, mTBN));
-    wN = normalize(wN);
+    normal = normalize(mul(normal, mTBN));
+    normal = normalize(normal);
     
-    //return float4(wN, 1);
+    //return float4(normal, 1);
     
     //------------------------------------------
     // 材質色
@@ -157,8 +157,7 @@ float4 main(VertexOutput In) : SV_TARGET
         
         // Diffuse(拡散反射光)
         {
-            // 法線
-            float Dot = dot(wN, -g_directional_light_dir);
+            float Dot = dot(normal, -g_directional_light_dir);
         
             // 正規化Lambert
             Dot = saturate(Dot);
@@ -177,7 +176,7 @@ float4 main(VertexOutput In) : SV_TARGET
             float specPower = pow(2, 13 * smoothness); // 1～8192
 	  
             // GGX
-            float spec = GGX(g_directional_light_dir, vCam, wN, roughuness);
+            float spec = GGX(g_directional_light_dir, vCam, normal, roughuness);
             
             // 光の色 * 反射光の強さ * 材質の反射色 * 正規化係数 * 透明率
             specularColor += (g_directional_light_color * spec) * 0.06f * baseColor.a;
@@ -196,7 +195,7 @@ float4 main(VertexOutput In) : SV_TARGET
     else
     {
         // ライト無効の際はベースカラーをそのまま使用
-        diffuseColor = baseColor.rgb;
+        return baseColor;
     }
     
     // 拡散色と反射色を混ぜる

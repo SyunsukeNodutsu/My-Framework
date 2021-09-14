@@ -121,7 +121,7 @@ bool Application::Initialize(int width, int height)
 	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, io.Fonts->GetGlyphRangesJapanese());
 
 	// iniファイル不要
-	io.IniFilename = NULL;
+	//io.IniFilename = NULL;
 
 	//--------------------------------------------------
 	// その他 初期化
@@ -169,9 +169,11 @@ void Application::Execute()
 	if (Initialize(1536, 864) == false)
 		return;
 
-	//--------------------------------------------------
+	//==================================================
+	// 
 	// ゲームループ
-	//--------------------------------------------------
+	// 
+	//==================================================
 
 	while (1)
 	{
@@ -179,9 +181,7 @@ void Application::Execute()
 			break;
 
 		//----------------------------------------
-		//
 		// ウィンドウ関係の処理
-		//
 		//----------------------------------------
 
 		// ウィンドウのメッセージを処理する
@@ -192,9 +192,7 @@ void Application::Execute()
 			break;
 
 		//----------------------------------------
-		//
 		// ゲームサウンド処理
-		//
 		//----------------------------------------
 
 		// カメラ座標
@@ -205,9 +203,7 @@ void Application::Execute()
 		AUDIO.Update(camera_pos, camera_dir);
 
 		//----------------------------------------
-		//
 		// ゲーム処理
-		//
 		//----------------------------------------
 
 		// ImGui開始
@@ -229,6 +225,7 @@ void Application::Execute()
 			GAMESYSTEM.Draw2D();
 
 			// ImGui描画
+			GAMESYSTEM.DrawImGui();
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
@@ -238,8 +235,10 @@ void Application::Execute()
 		GAMESYSTEM.LateUpdate();
 	}
 
-	//--------------------------------------------------
+	//==================================================
+	// 
 	// アプリケーション解放
-	//--------------------------------------------------
+	// 
+	//==================================================
 	Release();
 }

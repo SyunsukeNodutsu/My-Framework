@@ -13,7 +13,7 @@ public:
 	// @brief コンストラクタ
 	Camera();
 
-	// @brief カメラ情報(ビュー・射影行列など)をシェーダへセット
+	// @brief GPUに転送
 	void SetToShader();
 
 	// @brief ワールド座標をスクリーン座標に変換
@@ -51,7 +51,8 @@ protected:
 
 private:
 
-	bool m_dirtyCam;
-	bool m_dirtyProj;
+	// ダーティーフラグ
+	bool m_dirtyCamera;	// カメラ行列
+	bool m_dirtyProj;	// 射影行列
 
 };

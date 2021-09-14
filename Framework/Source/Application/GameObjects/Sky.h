@@ -26,6 +26,14 @@ public:
 		m_transform.SetWorldMatrix(matrix);
 	}
 
+	// @brief 描画
+	void Draw(float deltaTime)
+	{
+		D3D.GetRenderer().SetLightEnable(false);
+		GameObject::Draw(deltaTime);
+		D3D.GetRenderer().SetLightEnable(true);
+	}
+
 private:
 
 };

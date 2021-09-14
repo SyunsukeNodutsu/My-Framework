@@ -20,7 +20,6 @@
 #include "DDSTextureLoader.h" // DDS形式(圧縮状態で扱い可能)
 #include "WICTextureLoader.h" // BMP PNG とか
 #include <SimpleMath.h>
-#include <SpriteFont.h>
 #include <Audio.h>
 
 // Effekseer

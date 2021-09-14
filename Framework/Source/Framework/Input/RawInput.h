@@ -47,7 +47,7 @@ public:
 	// 設定
 	//--------------------------------------------------
 
-	// @brief メッセージループからのWindowsメッセージを解析する
+	// @brief Windowsメッセージを解析する
 	// @param lparam 解析するmessage情報
 	void ParseMessage(void* lparam);
 

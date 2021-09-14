@@ -214,7 +214,7 @@ bool Device::Create( const HWND& hWnd, bool isUseHDR, int width, int height, boo
 	// 1x1のZ向き法線マップ作成
 	//--------------------------------------------------
 	{
-		auto col = cfloat4x4(0.5f, 0.5, 1.0f, 1).RGBA();
+		auto col = cfloat4x4(0.5f, 0.5f, 1.0f, 1).RGBA();
 		D3D11_SUBRESOURCE_DATA srdata;
 		srdata.pSysMem = &col;
 		srdata.SysMemPitch = 4;

@@ -79,7 +79,10 @@ public:
 
 	// @brief ライトのON.OFFを設定
 	// @param onoff ONかOFF
-	inline void SetLightEnable(bool onoff) { m_cd10Light.Work().m_enable = onoff; }
+	inline void SetLightEnable(bool onoff) {
+		m_cd10Light.Work().m_enable = onoff;
+		m_cd10Light.Write();
+	}
 
 	// @brief ライトの方向を設定
 	// @param v 方向 関数内で正規化します

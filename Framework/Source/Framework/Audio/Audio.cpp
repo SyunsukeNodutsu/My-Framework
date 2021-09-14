@@ -12,17 +12,18 @@
 bool SoundEffect::Load(const std::string& filepath)
 {
 	auto engine = AUDIO.GetAudioEngine().get();
+	if (engine == nullptr)
+		return false;
 
-	if (engine != nullptr)
+	try
 	{
-		try {
-			std::wstring wfilepath = sjis_to_wide(filepath);
-			m_soundEffect = std::make_unique<DirectX::SoundEffect>(engine, wfilepath.c_str());
-		}
-		catch (...) {
-			assert(0 && "エラー：音源ファイルが見つかりません.");
-			return false;
-		}
+		std::wstring wfilepath = sjis_to_wide(filepath);
+		m_soundEffect = std::make_unique<DirectX::SoundEffect>(engine, wfilepath.c_str());
+	}
+	catch (...)
+	{
+		assert(0 && "エラー：音源ファイルが見つかりません.");
+		return false;
 	}
 	return true;
 }
@@ -40,12 +41,16 @@ bool SoundEffect::Load(const std::string& filepath)
 //-----------------------------------------------------------------------------
 void SoundInstance::Initialize(const std::shared_ptr<SoundEffect>& soundEffect)
 {
+	if (done)
+		return;
 	if (soundEffect == nullptr)
 		return;
 
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags = DirectX::SoundEffectInstance_Default;
 	m_instance = (soundEffect->CreateInstance(flags));
 	m_soundData = soundEffect;
+
+	done = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -56,12 +61,10 @@ void SoundInstance::Play(bool loop)
 	if (m_instance == nullptr)
 		return;
 
-	Stop();
-
+	m_instance->Stop();
 	m_instance->Play(loop);
 
-	// 再生時にリストに登録する
-	AUDIO.AddPlayList(shared_from_this());
+	AUDIO.AddPlayList(shared_from_this()); // 再生時リストに登録
 }
 
 //-----------------------------------------------------------------------------
@@ -99,6 +102,8 @@ bool SoundInstance::IsPlaying()
 //-----------------------------------------------------------------------------
 void SoundInstance3D::Initialize(const std::shared_ptr<SoundEffect>& soundEffect)
 {
+	if (done)
+		return;
 	if (m_instance == nullptr)
 		return;
 
@@ -107,13 +112,14 @@ void SoundInstance3D::Initialize(const std::shared_ptr<SoundEffect>& soundEffect
 	m_instance = (soundEffect->CreateInstance(flags));
 	m_soundData = soundEffect;
 
-	return;
 	// エミッター設定
 	m_emitter.InnerRadius		= 2.0f;
 	m_emitter.InnerRadiusAngle	= X3DAUDIO_PI / 4.0f;
 	m_emitter.pVolumeCurve		= NULL;
 	m_emitter.CurveDistanceScaler = 10.0f;// ワールド定義の単位 ※修正.定数に
 	m_emitter.DopplerScaler		= 60.0f;
+
+	done = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -176,16 +182,15 @@ AudioManager::AudioManager()
 void AudioManager::Initialize()
 {
 	// AudioEngine初期化
-	DirectX::AUDIO_ENGINE_FLAGS eflags =
-		DirectX::AudioEngine_EnvironmentalReverb |
-		DirectX::AudioEngine_ReverbUseFilters;
+	DirectX::AUDIO_ENGINE_FLAGS eflags = DirectX::AudioEngine_ReverbUseFilters;
+		/*DirectX::AudioEngine_EnvironmentalReverb |
+		DirectX::AudioEngine_ReverbUseFilters;*/
 
 	m_audioEngine = std::make_unique<DirectX::AudioEngine>(eflags);
-	m_audioEngine->SetReverb(DirectX::Reverb_Default);
-
-	m_listener.OrientFront = float3::Forward;
-
+	m_audioEngine->SetReverb(DirectX::Reverb_Off);
 	m_audioEngine->SetMasterVolume(m_userVolume);
+
+	m_listener.OrientFront = float3::Backward;
 }
 
 //-----------------------------------------------------------------------------
@@ -195,6 +200,7 @@ void AudioManager::Finalize()
 {
 	StopAllSound();
 
+	//m_audioEngine->TrimVoicePool();
 	m_audioEngine = nullptr;
 	m_playList.clear();
 }

@@ -29,8 +29,7 @@ public:
 
 	// @brief インスタンスの生成
 	// @param flag フラグ設定
-	std::unique_ptr<DirectX::SoundEffectInstance> CreateInstance(DirectX::SOUND_EFFECT_INSTANCE_FLAGS flag)
-	{
+	std::unique_ptr<DirectX::SoundEffectInstance> CreateInstance(DirectX::SOUND_EFFECT_INSTANCE_FLAGS flag) {
 		return (m_soundEffect)
 			? m_soundEffect->CreateInstance(flag)
 			: nullptr;
@@ -45,7 +44,8 @@ private:
 	// サウンドエフェクト
 	std::unique_ptr<DirectX::SoundEffect> m_soundEffect;
 
-	// コピー禁止用:単一のデータはコピーできない
+private:
+
 	SoundEffect(const SoundEffect& src) = delete;
 	void operator=(const SoundEffect& src) = delete;
 
@@ -92,7 +92,11 @@ protected:
 	// 再生サウンドの元データ
 	std::shared_ptr<SoundEffect> m_soundData;
 
-	// コピー禁止用
+	// 初期化完了？
+	bool done = false;
+
+private:
+
 	SoundInstance(const SoundInstance& src) = delete;
 	void operator=(const SoundInstance& src) = delete;
 
@@ -129,7 +133,8 @@ protected:
 	// エミッター 主に3Dサウンドソースの定義
 	DirectX::AudioEmitter m_emitter;
 
-	// コピー禁止用
+private:
+
 	SoundInstance3D(const SoundInstance3D& src) = delete;
 	void operator=(const SoundInstance3D& src) = delete;
 };

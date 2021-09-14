@@ -192,6 +192,9 @@
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp">
       <Filter>Library\imGui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\ShaderBase.cpp">
+      <Filter>Source\Framework\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -352,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="..\Library\imGui\imstb_textedit.h">
       <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\ShaderBase.h">
+      <Filter>Source\Framework\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

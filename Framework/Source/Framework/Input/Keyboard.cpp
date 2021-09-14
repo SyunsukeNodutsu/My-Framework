@@ -14,7 +14,7 @@ void Keyboard::Initialize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        MessageBoxA(nullptr, "Register KeyboardDevices failed.", "Failed", MB_OK);
+        DebugLog("[WARNING]Register KeyboardDevices failed.");
 
     m_isDown.fill(false);
     m_isPressed.fill(false);
@@ -36,7 +36,7 @@ void Keyboard::Finalize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        MessageBoxA(nullptr, "Register KeyboardDevices failed.", "Failed", MB_OK);
+        DebugLog("[WARNING]Register KeyboardDevices failed.");
 }
 
 //-----------------------------------------------------------------------------
