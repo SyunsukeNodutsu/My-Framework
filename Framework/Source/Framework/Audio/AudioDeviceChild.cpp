@@ -9,6 +9,5 @@ void AudioDeviceChild::SetAudioDevice(AudioDevice* device)
 {
 	if (device == nullptr)
 		return;
-
 	g_audioDevice = device;
 }

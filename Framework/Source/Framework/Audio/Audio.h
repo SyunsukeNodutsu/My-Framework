@@ -1,242 +1,109 @@
-﻿//-----------------------------------------------------------------------------
-// File: Audio.h
-//
-// 音管理
-//-----------------------------------------------------------------------------
-#pragma once
+﻿#pragma once
+#include <memory>
+#include <string>
+#include <vector>
 
-// 音量を個別に設定する予定
-enum SOUND_TAG
+namespace wiAudio
 {
-	eSE			 = 0,		// 効果音
-	eBGM		 = 1,		// BGM("バックグラウンドミュージック"らしい)
-	eEnvironment = 1 << 1,	// 環境音
-	eVoice		 = 1 << 2,	// 声
-};
-
-//==================================================
-// サウンドデータを扱う サウンドの元データクラス
-//==================================================
-class SoundEffect
-{
-public:
-
-	// @brief コンストラクタ
-	SoundEffect() {}
-
-	// @brief デストラクタ
-	~SoundEffect() { m_soundEffect = nullptr; }
-
-	// @brief インスタンスの生成
-	// @param flag フラグ設定
-	std::unique_ptr<DirectX::SoundEffectInstance> CreateInstance(DirectX::SOUND_EFFECT_INSTANCE_FLAGS flag) {
-		return (m_soundEffect)
-			? m_soundEffect->CreateInstance(flag)
-			: nullptr;
-	}
-
-	// @brief WAVEサウンド読み込み
-	// @param filepath 音源ファイル
-	bool Load(const std::string& filepath);
-
-private:
-
-	// サウンドエフェクト
-	std::unique_ptr<DirectX::SoundEffect> m_soundEffect;
-
-private:
-
-	SoundEffect(const SoundEffect& src) = delete;
-	void operator=(const SoundEffect& src) = delete;
-
-};
-
-//==================================================
-// サウンドの再生インスタンスクラス(鳴らす度に生成)
-//==================================================
-class SoundInstance : public std::enable_shared_from_this<SoundInstance>
-{
-public:
-
-	// @brief コンストラクタ
-	SoundInstance() {}
-
-	// @brief 初期化
-	virtual void Initialize(const std::shared_ptr<SoundEffect>& soundEffect);
-
-	// @brief 再生
-	// @param loop ループ再生？
-	virtual void Play(bool loop = false);
-
-	// @brief 停止
-	void Stop() { if (m_instance) { m_instance->Stop(); } }
-
-	// @brief 一時停止
-	void Pause() { if (m_instance) { m_instance->Pause(); } }
-
-	// @brief 再開
-	void Resume() { if (m_instance) { m_instance->Resume(); } }
-
-	// @brief ボリューム設定
-	// @param vol ボリューム(1.0が100%)
-	void SetVolume(float vol);
-
-	// @brief 再生中かどうか返す
-	bool IsPlaying();
-
-protected:
-
-	// サウンドの再生インスタンス
-	std::unique_ptr<DirectX::SoundEffectInstance> m_instance;
-
-	// 再生サウンドの元データ
-	std::shared_ptr<SoundEffect> m_soundData;
-
-	// 初期化完了？
-	bool done = false;
-
-private:
-
-	SoundInstance(const SoundInstance& src) = delete;
-	void operator=(const SoundInstance& src) = delete;
-
-};
-
-//==================================================
-// 3Dサウンド再生用のインスタンス
-//==================================================
-class SoundInstance3D : public SoundInstance
-{
-public:
-
-	// @brief コンストラクタ
-	SoundInstance3D() {}
-
-	// @brief 初期化
-	// @param soundEffect インスタンス生成ソース
-	void Initialize(const std::shared_ptr<SoundEffect>& soundEffect) override;
-
-	// @brief 再生
-	// @param loop ループ再生？
-	void Play(bool loop = false) override;
-
-	// @brief 座標設定
-	// @param position 座標
-	void SetPos(const float3& position);
-
-	// @brief 減衰倍率設定
-	// @param val 1:通常 (範囲:FLT_MIN～FLT_MAX)
-	void SetCurveDistanceScaler(float val);
-
-protected:
-
-	// エミッター 主に3Dサウンドソースの定義
-	DirectX::AudioEmitter m_emitter;
-
-private:
-
-	SoundInstance3D(const SoundInstance3D& src) = delete;
-	void operator=(const SoundInstance3D& src) = delete;
-};
-
-//==================================================
-// ゲーム内の音を管理するクラス
-//==================================================
-class AudioManager
-{
-public:
-
-	// @brief 初期化
 	void Initialize();
 
-	// @brief 解放
-	void Finalize();
-
-	// @brief 更新
-	// @param position リスナーの座標
-	// @param dir リスナーの方向
-	void Update(const float3& position, const float3& dir);
-
-	// @brief 再生
-	// @param filepath 音源ファイル名
-	// @param loop ループ再生？
-	bool Play(const std::string& filepath, bool loop = false);
-
-	// @brief 再生
-	// @param filepath 音源ファイル名
-	// @param position エミッター座標
-	// @param loop ループ再生？
-	bool Play3D(const std::string& filepath, const float3& position, bool loop = false);
-
-	// @brief 再生リストに追加
-	// @param sound 追加する音源インスタンス
-	void AddPlayList(const std::shared_ptr<SoundInstance>& sound)
+	enum SUBMIX_TYPE
 	{
-		if (!sound.get())
-			return;
-		m_playList[(UINT)(sound.get())] = sound;
-	}
+		SUBMIX_TYPE_SOUNDEFFECT,
+		SUBMIX_TYPE_MUSIC,
+		SUBMIX_TYPE_USER0,
+		SUBMIX_TYPE_USER1,
+		SUBMIX_TYPE_COUNT,
 
-	// @brief 再生リスト停止
-	void StopAllSound();
+		ENUM_FORCE_UINT32 = 0xFFFFFFFF, // submix type can be serialized
+	};
 
-	//--------------------------------------------------
-	// 取得
-	//--------------------------------------------------
-
-	// @brief 単一のインスタンスを返す
-	// @return シングルトン・インスタンス
-	static AudioManager& GetInstance()
+	struct Sound
 	{
-		static AudioManager instance;
-		return instance;
-	}
+		std::shared_ptr<void> internal_state;
+		inline bool IsValid() const { return internal_state.get() != nullptr; }
+	};
+	struct SoundInstance
+	{
+		std::shared_ptr<void> internal_state;
+		inline bool IsValid() const { return internal_state.get() != nullptr; }
 
-	// @brief オーディオエンジンを返す
-	// @return AudioEngine
-	std::unique_ptr<DirectX::AudioEngine>& GetAudioEngine() { return m_audioEngine; }
+		SUBMIX_TYPE type = SUBMIX_TYPE_SOUNDEFFECT;
+		float loop_begin = 0;	// loop region begin in seconds (0 = from beginning)
+		float loop_length = 0;	// loop region legth in seconds (0 = until the end)
 
-	// @brief オーディオリスナーを返す
-	// @return AudioListener
-	DirectX::AudioListener& GetListener() { return m_listener; }
+		enum FLAGS
+		{
+			EMPTY = 0,
+			ENABLE_REVERB = 1 << 0,
+		};
+		uint32_t _flags = EMPTY;
 
-	// @brief ユーザー設定の音量を返す
-	// @return ユーザー設定の音量
-	const float GetUserSettingVolume() const { return m_userVolume; }
+		inline void SetEnableReverb(bool value = true) { if (value) { _flags |= ENABLE_REVERB; } else { _flags &= ~ENABLE_REVERB; } }
+		inline bool IsEnableReverb() const { return _flags & ENABLE_REVERB; }
+	};
 
-	//--------------------------------------------------
-	// 設定
-	//--------------------------------------------------
+	bool CreateSound(const std::string& filename, Sound* sound);
+	bool CreateSound(const std::vector<uint8_t>& data, Sound* sound);
+	bool CreateSound(const uint8_t* data, size_t size, Sound* sound);
+	bool CreateSoundInstance(const Sound* sound, SoundInstance* instance);
 
-	// @brief マスター音量設定
-	// @param val 設定する音量
-	void SetUserSettingVolume(float val) {
-		m_userVolume = val;
-		m_audioEngine->SetMasterVolume(m_userVolume);
-	}
+	void Play(SoundInstance* instance);
+	void Pause(SoundInstance* instance);
+	void Stop(SoundInstance* instance);
+	void SetVolume(float volume, SoundInstance* instance = nullptr);
+	float GetVolume(const SoundInstance* instance = nullptr);
+	void ExitLoop(SoundInstance* instance);
 
-private:
+	void SetSubmixVolume(SUBMIX_TYPE type, float volume);
+	float GetSubmixVolume(SUBMIX_TYPE type);
 
-	// オーディオエンジン
-	std::unique_ptr<DirectX::AudioEngine> m_audioEngine;
+	struct SoundInstance3D
+	{
+		float3 listenerPos		= float3(0, 0, 0);
+		float3 listenerUp		= float3(0, 1, 0);
+		float3 listenerFront	= float3(0, 0, 1);
+		float3 listenerVelocity = float3(0, 0, 0);
+		float3 emitterPos		= float3(0, 0, 0);
+		float3 emitterUp		= float3(0, 1, 0);
+		float3 emitterFront		= float3(0, 0, 1);
+		float3 emitterVelocity	= float3(0, 0, 0);
+		float emitterRadius = 0;
+	};
+	void Update3D(SoundInstance* instance, const SoundInstance3D& instance3D);
 
-	// オーディオリスナー
-	DirectX::AudioListener m_listener;
-
-	// 再生リスト
-	std::map<UINT, std::shared_ptr<SoundInstance>> m_playList;
-
-	// ユーザー設定の音量 ※マスター音量に設定
-	float m_userVolume;
-
-private:
-
-	// @brief コンストラクタ
-	AudioManager();
-
-};
-
-//--------------------------------------------------
-// #defines: インスタンスの取得
-//--------------------------------------------------
-#define AUDIO AudioManager::GetInstance()
+	enum REVERB_PRESET
+	{
+		REVERB_PRESET_DEFAULT,
+		REVERB_PRESET_GENERIC,
+		REVERB_PRESET_FOREST,
+		REVERB_PRESET_PADDEDCELL,
+		REVERB_PRESET_ROOM,
+		REVERB_PRESET_BATHROOM,
+		REVERB_PRESET_LIVINGROOM,
+		REVERB_PRESET_STONEROOM,
+		REVERB_PRESET_AUDITORIUM,
+		REVERB_PRESET_CONCERTHALL,
+		REVERB_PRESET_CAVE,
+		REVERB_PRESET_ARENA,
+		REVERB_PRESET_HANGAR,
+		REVERB_PRESET_CARPETEDHALLWAY,
+		REVERB_PRESET_HALLWAY,
+		REVERB_PRESET_STONECORRIDOR,
+		REVERB_PRESET_ALLEY,
+		REVERB_PRESET_CITY,
+		REVERB_PRESET_MOUNTAINS,
+		REVERB_PRESET_QUARRY,
+		REVERB_PRESET_PLAIN,
+		REVERB_PRESET_PARKINGLOT,
+		REVERB_PRESET_SEWERPIPE,
+		REVERB_PRESET_UNDERWATER,
+		REVERB_PRESET_SMALLROOM,
+		REVERB_PRESET_MEDIUMROOM,
+		REVERB_PRESET_LARGEROOM,
+		REVERB_PRESET_MEDIUMHALL,
+		REVERB_PRESET_LARGEHALL,
+		REVERB_PRESET_PLATE,
+	};
+	void SetReverb(REVERB_PRESET preset);
+}

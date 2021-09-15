@@ -138,9 +138,6 @@
     <ClCompile Include="Source\Framework\Utility\Easing.cpp">
       <Filter>Source\Framework\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Audio.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
@@ -194,6 +191,24 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\ShaderBase.cpp">
       <Filter>Source\Framework\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Sound.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Music.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Audio.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\GameObjects\Tank.cpp">
+      <Filter>Source\Application\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\ImGuiSystem.cpp">
+      <Filter>Source\Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,9 +308,6 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Audio.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
@@ -358,6 +370,21 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\ShaderBase.h">
       <Filter>Source\Framework\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDevice.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Sound.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Music.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Audio.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\ImGuiSystem.h">
+      <Filter>Source\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

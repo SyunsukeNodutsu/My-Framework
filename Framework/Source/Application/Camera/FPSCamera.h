@@ -42,7 +42,7 @@ public:
 	}
 
 	// @brief 回転行列を返す
-	// @return
+	// @return 回転行列
 	const mfloat4x4 GetRotationMatrix();
 
 	// @brief を返す
@@ -50,7 +50,7 @@ public:
 	const mfloat4x4 GetRotationYMatrix();
 
 	// @brief 回転ベクトルを返す
-	// @return
+	// @return 回転ベクトル
 	const float3& GetRotationAngles() const { return m_degAngle; }
 
 	// @brief を返す

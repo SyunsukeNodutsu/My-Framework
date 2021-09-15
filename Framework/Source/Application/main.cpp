@@ -120,6 +120,11 @@ bool Application::Initialize(int width, int height)
 	io.Fonts->AddFontDefault();
 	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, io.Fonts->GetGlyphRangesJapanese());
 
+	// 初期スタイル
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.Colors[ImGuiCol_Text]		= ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
+
 	// iniファイル不要
 	//io.IniFilename = NULL;
 
@@ -132,10 +137,6 @@ bool Application::Initialize(int width, int height)
 
 	// 入力 RawInputAPI
 	RAW_INPUT.Initialize();
-
-	// オーディオ
-	AUDIO.Initialize();
-	AUDIO.SetUserSettingVolume(0.3f);
 
 	// GameSystem初期化
 	GAMESYSTEM.Initialize();
@@ -153,7 +154,6 @@ void Application::Release()
 	ImGui::DestroyContext();
 
 	GAMESYSTEM.Finalize();
-	AUDIO.Finalize();
 	D3D.Release();
 	RAW_INPUT.Finalize();
 
@@ -200,7 +200,7 @@ void Application::Execute()
 		// カメラZ軸方向
 		float3 camera_dir = float3(0, 0, 1);
 
-		AUDIO.Update(camera_pos, camera_dir);
+		//AUDIO.Update(camera_pos, camera_dir);
 
 		//----------------------------------------
 		// ゲーム処理
@@ -211,7 +211,7 @@ void Application::Execute()
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::ShowDemoWindow(nullptr);
+		//ImGui::ShowDemoWindow(nullptr);
 
 		// 更新
 		GAMESYSTEM.Update();

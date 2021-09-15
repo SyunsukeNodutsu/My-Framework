@@ -5,10 +5,7 @@
 // オーディオ処理を行うクラスに継承
 //-----------------------------------------------------------------------------
 #pragma once
-#include "Audio.h"
-
-// todo
-class AudioDevice {};
+#include "AudioDevice.h"
 
 // オーディオ管理の子クラス
 class AudioDeviceChild
