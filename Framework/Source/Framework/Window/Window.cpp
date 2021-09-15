@@ -257,12 +257,15 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wparam, lparam))
 		return true;
 
+	GetWindowInfo(m_hWnd, &m_windowInfo);
+	
 	switch (message)
 	{
 	// 生入力情報取得
 	case WM_INPUT:
 	{
-		RAW_INPUT.ParseMessage((void*)lparam);
+		if (m_windowInfo.dwWindowStatus == WS_ACTIVECAPTION)
+			RAW_INPUT.ParseMessage((void*)lparam);
 	}
 	break;
 

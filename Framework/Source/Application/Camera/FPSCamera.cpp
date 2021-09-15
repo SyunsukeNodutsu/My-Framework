@@ -1,6 +1,7 @@
 ﻿#include "FPSCamera.h"
+#include "../main.h"
 
-const POINT FPSCamera::s_fixMousePos = { 640, 360 };
+const float2 FPSCamera::s_fixMousePos = float2(769, 432);
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -18,8 +19,6 @@ FPSCamera::FPSCamera()
 //-----------------------------------------------------------------------------
 void FPSCamera::Initialize()
 {
-	// マウスを固定位置に移動
-	SetCursorPos(s_fixMousePos.x, s_fixMousePos.y);
 	// マウス表示OFF
 	RAW_INPUT.GetMouse()->SetCursorShow(false);
 }
@@ -33,16 +32,14 @@ void FPSCamera::Update()
 		return;
 
 	{
-		// マウスでカメラを回転させる処理
-		POINT nowPos;
-		GetCursorPos(&nowPos);
+		float2 nowPos = RAW_INPUT.GetMouse()->GetMousePos();
 
 		POINT mouseMove;
 
 		mouseMove.x = nowPos.x - s_fixMousePos.x;
 		mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-		SetCursorPos(s_fixMousePos.x, s_fixMousePos.y);
+		RAW_INPUT.GetMouse()->SetAt(s_fixMousePos, APP.g_window.GetWndHandle());
 
 		// カメラを回転させる処理
 		m_degAngle.x += mouseMove.y * 0.1f;

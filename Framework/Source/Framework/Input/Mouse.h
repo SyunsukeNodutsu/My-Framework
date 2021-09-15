@@ -57,6 +57,9 @@ public:
         else { while (ShowCursor(FALSE) >= 0) {} }
     }
 
+    // マウス座標を設定
+    void SetAt(float2 position, HWND hwnd = nullptr, bool abs = false);
+
     //--------------------------------------------------
     // マウスボタン判定
     //--------------------------------------------------
@@ -120,9 +123,10 @@ private:
     RAWINPUTDEVICE  m_deviceMouse;
 
     // マウス状態
-    State           m_state;        // 現在のマウス状態
-    State           m_lastState;    // 1フレーム前のマウス状態
+    State m_state;      // 現在のマウス状態
+    State m_lastState;  // 1フレーム前のマウス状態
 
+    // マウス座標
     float2 m_mousePos;
 
 private:

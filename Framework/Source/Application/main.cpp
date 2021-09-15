@@ -1,5 +1,6 @@
 ﻿#include "main.h"
 #include "GameSystem.h"
+#include "ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // メインエントリ
@@ -103,30 +104,7 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 	// ImGui初期化
 	//--------------------------------------------------
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
-	// ImGuiの外観設定
-	ImGui::StyleColorsClassic();
-
-	ImGui_ImplWin32_Init(g_window.GetWndHandle());
-	ImGui_ImplDX11_Init(D3D.GetDevice(), D3D.GetDeviceContext());
-
-	ImFontConfig config;
-	config.MergeMode = true;
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontDefault();
-	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, io.Fonts->GetGlyphRangesJapanese());
-
-	// 初期スタイル
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.Colors[ImGuiCol_Text]		= ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
-
-	// iniファイル不要
-	//io.IniFilename = NULL;
+	IMGUISYSTEM.Initialize();
 
 	//--------------------------------------------------
 	// その他 初期化
@@ -149,11 +127,9 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-
+	IMGUISYSTEM.Finalize();
 	GAMESYSTEM.Finalize();
+
 	D3D.Release();
 	RAW_INPUT.Finalize();
 
@@ -205,14 +181,7 @@ void Application::Execute()
 		//----------------------------------------
 		// ゲーム処理
 		//----------------------------------------
-
-		// ImGui開始
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
-		//ImGui::ShowDemoWindow(nullptr);
-
+		
 		// 更新
 		GAMESYSTEM.Update();
 
@@ -224,8 +193,9 @@ void Application::Execute()
 			// 2D想定
 			GAMESYSTEM.Draw2D();
 
-			// ImGui描画
-			GAMESYSTEM.DrawImGui();
+			// ImGui 描画
+			IMGUISYSTEM.Begin();
+			IMGUISYSTEM.DrawImGui();
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}

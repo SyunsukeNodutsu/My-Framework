@@ -31,9 +31,6 @@ public:
 	// @brief 2D描画
 	void Draw2D();
 
-	// @brief imGui描画
-	void DrawImGui();
-
 	//--------------------------------------------------
 	// 取得・設定
 	//--------------------------------------------------
@@ -48,9 +45,12 @@ public:
 	// @param camera 設定するカメラ
 	void SetCamera(std::shared_ptr<Camera> camera) { m_spCamera = camera; }
 
+public:
+
+	FpsTimer				g_fpsTimer;	// FPS管理
+
 private:
 
-	FpsTimer				m_fpsTimer;	// FPS管理
 	std::shared_ptr<Camera> m_spCamera;	// カメラ
 
 	// 登場GameObjectリスト

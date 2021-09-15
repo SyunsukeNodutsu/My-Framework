@@ -14,7 +14,7 @@ void Keyboard::Initialize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]Register KeyboardDevices failed.");
+        DebugLog("[WARNING]キーボードデバイスの登録解除に失敗しました.\n");
 
     m_isDown.fill(false);
     m_isPressed.fill(false);
@@ -36,7 +36,7 @@ void Keyboard::Finalize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]Register KeyboardDevices failed.");
+        DebugLog("[WARNING]マウスデバイスの登録解除に失敗しました.\n");
 }
 
 //-----------------------------------------------------------------------------

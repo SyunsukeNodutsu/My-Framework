@@ -62,7 +62,7 @@ public:
 	//--------------------------------------------------
 
 	// 画面中央に留まるカーソル位置
-	static const POINT s_fixMousePos;
+	static const float2 s_fixMousePos;
 
 protected:
 

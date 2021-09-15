@@ -71,6 +71,36 @@ void Mouse::ParseMouseData(RAWMOUSE mouse, HWND hwnd)
 }
 
 //-----------------------------------------------------------------------------
+// マウス座標設定
+//-----------------------------------------------------------------------------
+void Mouse::SetAt(float2 position, HWND hwnd, bool abs)
+{
+    // ウィンドウがフォーカスされていない場合は何もしない
+    if (GetFocus() != hwnd)
+        return;
+
+    POINT pt = { position.x, position.y };
+
+    if (!abs) {
+        m_mousePos.x = position.x;
+        m_mousePos.y = position.y;
+    }
+    else {
+        POINT pt2 = { 0, 0 };
+        ClientToScreen(hwnd, &pt2);
+        m_mousePos.x = position.x - pt2.x;
+        m_mousePos.y = position.y - pt2.y;
+    }
+
+    // TODO:
+    //m_delta.x = 0;
+    //m_delta.y = 0;
+
+    if (!abs) ClientToScreen(hwnd, &pt);
+    SetCursorPos(pt.x, pt.y);
+}
+
+//-----------------------------------------------------------------------------
 // 押されている間を返す
 //-----------------------------------------------------------------------------
 bool Mouse::IsDown(MouseButton mkey)
