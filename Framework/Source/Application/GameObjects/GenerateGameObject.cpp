@@ -4,16 +4,13 @@
 #include "StageMap.h"
 #include "Tank.h"
 
+#include "../ImGuiSystem.h"
+
 //-----------------------------------------------------------------------------
 // GameObject生成
 //-----------------------------------------------------------------------------
 std::shared_ptr<GameObject> GenerateGameObject(const std::string& name)
 {
-	if (name.empty()) {
-		assert(0 && "エラー：nameが不正です.");
-		return nullptr;
-	}
-
 	std::shared_ptr<GameObject> result = nullptr;
 
 	// 名前から作成
@@ -24,6 +21,10 @@ std::shared_ptr<GameObject> GenerateGameObject(const std::string& name)
 
 	if (result)
 		result->Awake();
+
+	IMGUISYSTEM.AddLog(std::string("INFO: Generate actor. name: " + name).c_str());
+	if (result == nullptr)
+		IMGUISYSTEM.AddLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
 
 	return result;
 }

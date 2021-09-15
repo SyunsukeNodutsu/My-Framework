@@ -1,4 +1,5 @@
 ﻿#include "KdGLTFLoader.h"
+#include "../../Framework/Source/Application/ImGuiSystem.h"
 
 // TinyGLTF
 #define TINYGLTF_IMPLEMENTATION
@@ -534,8 +535,9 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				else
 				{
 					auto& nName = destNode->m_name;
-					DebugLog(std::string("[WARNING]接線が取得できませんでした. model path: "
-						+ path + " node name: " + nName + "\n").c_str()
+					IMGUISYSTEM.AddLog(std::string(
+						"WARNING: Could not obtain tangent line. model path: "
+						+ path + " node name: " + nName).c_str()
 					);
 				}
 

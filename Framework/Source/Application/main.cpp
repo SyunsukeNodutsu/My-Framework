@@ -110,6 +110,9 @@ bool Application::Initialize(int width, int height)
 	// その他 初期化
 	//--------------------------------------------------
 
+	// ゲームオーディオ
+	AUDIO.Initialize();
+
 	// シェーダー
 	SHADER.Initialize();
 
@@ -130,6 +133,7 @@ void Application::Release()
 	IMGUISYSTEM.Finalize();
 	GAMESYSTEM.Finalize();
 
+	AUDIO.Finalize();
 	D3D.Release();
 	RAW_INPUT.Finalize();
 
@@ -172,11 +176,11 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ座標
-		float3 camera_pos = float3(0, 0, 0);
+		float3 camera_pos = D3D.GetRenderer().GetCameraPos();
 		// カメラZ軸方向
 		float3 camera_dir = float3(0, 0, 1);
 
-		//AUDIO.Update(camera_pos, camera_dir);
+		AUDIO.Update(camera_pos, camera_dir);
 
 		//----------------------------------------
 		// ゲーム処理

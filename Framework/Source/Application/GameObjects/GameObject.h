@@ -148,6 +148,10 @@ public:
 	// @return 有効...true 無効...false
 	bool IsEnable() const { return m_isEnable; }
 
+	// @brief 設定された名前を返す
+	// @return Actor name
+	const std::string& GetName() const { return m_name; }
+
 protected:
 
 	ModelWork	m_modelWork;	// モデル管理

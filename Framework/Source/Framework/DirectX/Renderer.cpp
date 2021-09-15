@@ -44,6 +44,10 @@ bool Renderer::Initialize()
 		assert(0 && "エラー：コンスタントバッファ作成失敗.");
 		return false;
 	}
+	if (!m_cd14ShaderDebug.Create()) {
+		assert(0 && "エラー：コンスタントバッファ作成失敗.");
+		return false;
+	}
 
 	// 指定スロットにバッファを設定
 	m_cd8WorldMatrix.SetToDevice(use_slot_world_matrix);
@@ -51,6 +55,13 @@ bool Renderer::Initialize()
 	m_cd10Light.SetToDevice(use_slot_light);
 	m_cd12Time.SetToDevice(use_slot_time);
 	m_cd13Atmosphere.SetToDevice(use_slot_atmosphere);
+	m_cd14ShaderDebug.SetToDevice(7);
+
+	m_cd14ShaderDebug.Work().g_show_base_color = 0;
+	m_cd14ShaderDebug.Work().g_show_normal = 0;
+	m_cd14ShaderDebug.Work().g_show_emissive = 0;
+	m_cd14ShaderDebug.Work().g_show_metallic_rough = 0;
+	m_cd14ShaderDebug.Write();
 
 	m_cd10Light.Work().m_ambient_power = 0.6f;
 

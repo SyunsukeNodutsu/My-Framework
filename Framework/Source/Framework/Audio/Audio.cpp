@@ -1,596 +1,288 @@
 ﻿#include "Audio.h"
 
-#include <vector>
+//=============================================================================
+//
+// SoundEffect
+//
+//=============================================================================
 
-#define STB_VORBIS_HEADER_ONLY
-
-// ヘルパー
-#define arraysize(a) (sizeof(a) / sizeof(a[0]))
-
-#include<iostream>
-#include<fstream> // 追加
-bool FileRead(const std::string& fileName, std::vector<uint8_t>& data)
+//-----------------------------------------------------------------------------
+// 音データの読み込み
+//-----------------------------------------------------------------------------
+bool SoundEffect::Load(const std::string& filepath)
 {
-	std::ifstream file(fileName, std::ios::binary | std::ios::ate);
-	if (file.is_open())
+	auto engine = AUDIO.GetAudioEngine().get();
+
+	if (engine != nullptr)
 	{
-		size_t dataSize = (size_t)file.tellg();
-		file.seekg(0, file.beg);
-		data.resize(dataSize);
-		file.read((char*)data.data(), dataSize);
-		file.close();
-		return true;
+		try {
+			std::wstring wfilepath = sjis_to_wide(filepath);
+			m_soundEffect = std::make_unique<DirectX::SoundEffect>(engine, wfilepath.c_str());
+		}
+		catch (...) {
+			assert(0 && "エラー：音源ファイルが見つかりません.");
+			return false;
+		}
 	}
-	return false;
+	return true;
 }
 
-#ifdef _WIN32
 
-#include <wrl/client.h> // ComPtr
-#include <xaudio2.h>
-#include <xaudio2fx.h>
-#include <x3daudio.h>
-#pragma comment(lib,"xaudio2.lib")
 
-//Little-Endian things:
-#define fourccRIFF 'FFIR'
-#define fourccDATA 'atad'
-#define fourccFMT ' tmf'
-#define fourccWAVE 'EVAW'
-#define fourccXWMA 'AMWX'
-#define fourccDPDS 'sdpd'
+//=============================================================================
+//
+// SoundInstance
+//
+//=============================================================================
 
-namespace wiAudio
+//-----------------------------------------------------------------------------
+// 初期化
+//-----------------------------------------------------------------------------
+void SoundInstance::Initialize(const std::shared_ptr<SoundEffect>& soundEffect)
 {
-	static const XAUDIO2FX_REVERB_I3DL2_PARAMETERS reverbPresets[] =
-	{
-		XAUDIO2FX_I3DL2_PRESET_DEFAULT,
-		XAUDIO2FX_I3DL2_PRESET_GENERIC,
-		XAUDIO2FX_I3DL2_PRESET_FOREST,
-		XAUDIO2FX_I3DL2_PRESET_PADDEDCELL,
-		XAUDIO2FX_I3DL2_PRESET_ROOM,
-		XAUDIO2FX_I3DL2_PRESET_BATHROOM,
-		XAUDIO2FX_I3DL2_PRESET_LIVINGROOM,
-		XAUDIO2FX_I3DL2_PRESET_STONEROOM,
-		XAUDIO2FX_I3DL2_PRESET_AUDITORIUM,
-		XAUDIO2FX_I3DL2_PRESET_CONCERTHALL,
-		XAUDIO2FX_I3DL2_PRESET_CAVE,
-		XAUDIO2FX_I3DL2_PRESET_ARENA,
-		XAUDIO2FX_I3DL2_PRESET_HANGAR,
-		XAUDIO2FX_I3DL2_PRESET_CARPETEDHALLWAY,
-		XAUDIO2FX_I3DL2_PRESET_HALLWAY,
-		XAUDIO2FX_I3DL2_PRESET_STONECORRIDOR,
-		XAUDIO2FX_I3DL2_PRESET_ALLEY,
-		XAUDIO2FX_I3DL2_PRESET_CITY,
-		XAUDIO2FX_I3DL2_PRESET_MOUNTAINS,
-		XAUDIO2FX_I3DL2_PRESET_QUARRY,
-		XAUDIO2FX_I3DL2_PRESET_PLAIN,
-		XAUDIO2FX_I3DL2_PRESET_PARKINGLOT,
-		XAUDIO2FX_I3DL2_PRESET_SEWERPIPE,
-		XAUDIO2FX_I3DL2_PRESET_UNDERWATER,
-		XAUDIO2FX_I3DL2_PRESET_SMALLROOM,
-		XAUDIO2FX_I3DL2_PRESET_MEDIUMROOM,
-		XAUDIO2FX_I3DL2_PRESET_LARGEROOM,
-		XAUDIO2FX_I3DL2_PRESET_MEDIUMHALL,
-		XAUDIO2FX_I3DL2_PRESET_LARGEHALL,
-		XAUDIO2FX_I3DL2_PRESET_PLATE,
-	};
+	if (soundEffect == nullptr)
+		return;
 
-	struct AudioInternal
-	{
-		bool success = false;
-		Microsoft::WRL::ComPtr<IXAudio2> audioEngine;
-		IXAudio2MasteringVoice* masteringVoice = nullptr;
-		XAUDIO2_VOICE_DETAILS masteringVoiceDetails = {};
-		IXAudio2SubmixVoice* submixVoices[SUBMIX_TYPE_COUNT] = {};
-		X3DAUDIO_HANDLE audio3D = {};
-		Microsoft::WRL::ComPtr<IUnknown> reverbEffect;
-		IXAudio2SubmixVoice* reverbSubmix = nullptr;
+	DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags = DirectX::SoundEffectInstance_Default;
+	m_instance = (soundEffect->CreateInstance(flags));
+	m_soundData = soundEffect;
+}
 
-		AudioInternal()
+//-----------------------------------------------------------------------------
+// 再生
+//-----------------------------------------------------------------------------
+void SoundInstance::Play(bool loop)
+{
+	if (m_instance == nullptr)
+		return;
+
+	Stop();
+
+	m_instance->Play(loop);
+
+	// 再生時にリストに登録する
+	AUDIO.AddPlayList(shared_from_this());
+}
+
+//-----------------------------------------------------------------------------
+// 音量設定
+//-----------------------------------------------------------------------------
+void SoundInstance::SetVolume(float vol)
+{
+	if (m_instance == nullptr)
+		return;
+
+	m_instance->SetVolume(vol);
+}
+
+//-----------------------------------------------------------------------------
+// 再生しているか返す
+//-----------------------------------------------------------------------------
+bool SoundInstance::IsPlaying()
+{
+	if (m_instance == nullptr)
+		return false;
+
+	return (m_instance->GetState() == DirectX::SoundState::PLAYING);
+}
+
+
+
+//=============================================================================
+//
+// SoundInstance3D
+//
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// 初期化
+//-----------------------------------------------------------------------------
+void SoundInstance3D::Initialize(const std::shared_ptr<SoundEffect>& soundEffect)
+{
+	if (m_instance == nullptr)
+		return;
+
+	DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags = DirectX::SoundEffectInstance_Default |
+		DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters;
+	m_instance = (soundEffect->CreateInstance(flags));
+	m_soundData = soundEffect;
+
+	return;
+	// エミッター設定
+	m_emitter.InnerRadius = 2.0f;
+	m_emitter.InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
+	m_emitter.pVolumeCurve = NULL;
+	m_emitter.CurveDistanceScaler = 10.0f;// ワールド定義の単位 ※修正.定数に
+	m_emitter.DopplerScaler = 60.0f;
+}
+
+//-----------------------------------------------------------------------------
+// 3D再生
+//-----------------------------------------------------------------------------
+void SoundInstance3D::Play(bool loop)
+{
+	if (m_instance == nullptr)
+		return;
+
+	SoundInstance::Play(loop);
+}
+
+//-----------------------------------------------------------------------------
+// 座標設定
+//-----------------------------------------------------------------------------
+void SoundInstance3D::SetPos(const float3& position)
+{
+	if (m_instance == nullptr)
+		return;
+
+	m_emitter.SetPosition(position);
+	m_instance->Apply3D(AUDIO.GetListener(), m_emitter, false);
+}
+
+//-----------------------------------------------------------------------------
+// 減衰率設定
+//-----------------------------------------------------------------------------
+void SoundInstance3D::SetCurveDistanceScaler(float val)
+{
+	if (m_instance == nullptr)
+		return;
+
+	m_emitter.CurveDistanceScaler = val;
+	m_instance->Apply3D(AUDIO.GetListener(), m_emitter, false);
+}
+
+
+
+//=============================================================================
+//
+// AudioManager
+//
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// コンストラクタ
+//-----------------------------------------------------------------------------
+AudioManager::AudioManager()
+	: m_audioEngine(nullptr)
+	, m_listener()
+	, m_playList()
+	, m_userVolume(1.0f)
+{
+}
+
+//-----------------------------------------------------------------------------
+// 初期化
+//-----------------------------------------------------------------------------
+void AudioManager::Initialize()
+{
+	// AudioEngine初期化
+	DirectX::AUDIO_ENGINE_FLAGS eflags =
+		DirectX::AudioEngine_EnvironmentalReverb |
+		DirectX::AudioEngine_ReverbUseFilters;
+
+	m_audioEngine = std::make_unique<DirectX::AudioEngine>(eflags);
+	m_audioEngine->SetReverb(DirectX::Reverb_Default);
+
+	m_listener.OrientFront = float3::Forward;
+
+	m_audioEngine->SetMasterVolume(m_userVolume);
+}
+
+//-----------------------------------------------------------------------------
+// 解放
+//-----------------------------------------------------------------------------
+void AudioManager::Finalize()
+{
+	StopAllSound();
+
+	m_audioEngine = nullptr;
+	m_playList.clear();
+}
+
+//-----------------------------------------------------------------------------
+// 更新
+//-----------------------------------------------------------------------------
+void AudioManager::Update(const float3& position, const float3& dir)
+{
+	// エンジンの更新 ※無意味
+	if (m_audioEngine != nullptr)
+		m_audioEngine->Update();
+
+	// リスナーの更新
+	m_listener.SetPosition(position);
+	m_listener.OrientFront = dir;
+
+	// 再生中じゃないインスタンスは終了したと判断してリストから削除
+	for (auto iter = m_playList.begin(); iter != m_playList.end();)
+	{
+		if (!iter->second->IsPlaying())
 		{
-			HRESULT hr;
-			hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-			assert(SUCCEEDED(hr));
-
-			hr = XAudio2Create(&audioEngine, 0, XAUDIO2_USE_DEFAULT_PROCESSOR);
-			assert(SUCCEEDED(hr));
-
-#ifdef _DEBUG
-			XAUDIO2_DEBUG_CONFIGURATION debugConfig = {};
-			debugConfig.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
-			debugConfig.BreakMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
-			audioEngine->SetDebugConfiguration(&debugConfig);
-#endif // _DEBUG
-
-			hr = audioEngine->CreateMasteringVoice(&masteringVoice);
-			assert(SUCCEEDED(hr));
-
-			if (masteringVoice == nullptr)
-			{
-				//wiBackLog::post("Failed to create XAudio2 mastering voice!");
-				return;
-			}
-
-			masteringVoice->GetVoiceDetails(&masteringVoiceDetails);
-
-			// Without clamping sample rate, it was crashing 32bit 192kHz audio devices
-			if (masteringVoiceDetails.InputSampleRate > 48000)
-				masteringVoiceDetails.InputSampleRate = 48000;
-
-			for (int i = 0; i < SUBMIX_TYPE_COUNT; ++i)
-			{
-				hr = audioEngine->CreateSubmixVoice(
-					&submixVoices[i],
-					masteringVoiceDetails.InputChannels,
-					masteringVoiceDetails.InputSampleRate,
-					0, 0, 0, 0);
-				assert(SUCCEEDED(hr));
-			}
-
-			DWORD channelMask;
-			masteringVoice->GetChannelMask(&channelMask);
-			hr = X3DAudioInitialize(channelMask, X3DAUDIO_SPEED_OF_SOUND, audio3D);
-			assert(SUCCEEDED(hr));
-
-			// Reverb setup:
-			{
-				hr = XAudio2CreateReverb(&reverbEffect);
-				assert(SUCCEEDED(hr));
-
-				XAUDIO2_EFFECT_DESCRIPTOR effects[] = { { reverbEffect.Get(), TRUE, 1 } };
-				XAUDIO2_EFFECT_CHAIN effectChain = { arraysize(effects), effects };
-				hr = audioEngine->CreateSubmixVoice(
-					&reverbSubmix,
-					1, // reverb is mono
-					masteringVoiceDetails.InputSampleRate,
-					0, 0, nullptr, &effectChain);
-				assert(SUCCEEDED(hr));
-
-				XAUDIO2FX_REVERB_PARAMETERS native;
-				ReverbConvertI3DL2ToNative(&reverbPresets[REVERB_PRESET_DEFAULT], &native);
-				HRESULT hr = reverbSubmix->SetEffectParameters(0, &native, sizeof(native));
-				assert(SUCCEEDED(hr));
-			}
-
-			success = SUCCEEDED(hr);
+			iter = m_playList.erase(iter);
+			continue;
 		}
-		~AudioInternal()
-		{
-
-			if (reverbSubmix != nullptr)
-				reverbSubmix->DestroyVoice();
-
-			for (int i = 0; i < SUBMIX_TYPE_COUNT; ++i)
-			{
-				if (submixVoices[i] != nullptr)
-					submixVoices[i]->DestroyVoice();
-			}
-
-			if (masteringVoice != nullptr)
-				masteringVoice->DestroyVoice();
-
-			audioEngine->StopEngine();
-
-			CoUninitialize();
-		}
-	};
-	std::shared_ptr<AudioInternal> audio;
-
-	struct SoundInternal
-	{
-		std::shared_ptr<AudioInternal> audio;
-		WAVEFORMATEX wfx = {};
-		std::vector<uint8_t> audioData;
-	};
-	struct SoundInstanceInternal
-	{
-		std::shared_ptr<AudioInternal> audio;
-		std::shared_ptr<SoundInternal> soundinternal;
-		IXAudio2SourceVoice* sourceVoice = nullptr;
-		XAUDIO2_VOICE_DETAILS voiceDetails = {};
-		std::vector<float> outputMatrix;
-		std::vector<float> channelAzimuths;
-		XAUDIO2_BUFFER buffer = {};
-
-		~SoundInstanceInternal()
-		{
-			sourceVoice->Stop();
-			sourceVoice->DestroyVoice();
-		}
-	};
-	SoundInternal* to_internal(const Sound* param)
-	{
-		return static_cast<SoundInternal*>(param->internal_state.get());
-	}
-	SoundInstanceInternal* to_internal(const SoundInstance* param)
-	{
-		return static_cast<SoundInstanceInternal*>(param->internal_state.get());
-	}
-
-	void Initialize()
-	{
-		audio = std::make_shared<AudioInternal>();
-
-		if (audio->success)
-		{
-			//wiBackLog::post("wiAudio Initialized");
-		}
-	}
-
-	bool FindChunk(const uint8_t* data, DWORD fourcc, DWORD& dwChunkSize, DWORD& dwChunkDataPosition)
-	{
-		size_t pos = 0;
-
-		DWORD dwChunkType;
-		DWORD dwChunkDataSize;
-		DWORD dwRIFFDataSize = 0;
-		DWORD dwFileType;
-		DWORD bytesRead = 0;
-		DWORD dwOffset = 0;
-
-		while (true)
-		{
-			memcpy(&dwChunkType, data + pos, sizeof(DWORD));
-			pos += sizeof(DWORD);
-			memcpy(&dwChunkDataSize, data + pos, sizeof(DWORD));
-			pos += sizeof(DWORD);
-
-			switch (dwChunkType)
-			{
-			case fourccRIFF:
-				dwRIFFDataSize = dwChunkDataSize;
-				dwChunkDataSize = 4;
-				memcpy(&dwFileType, data + pos, sizeof(DWORD));
-				pos += sizeof(DWORD);
-				break;
-
-			default:
-				pos += dwChunkDataSize;
-			}
-
-			dwOffset += sizeof(DWORD) * 2;
-
-			if (dwChunkType == fourcc)
-			{
-				dwChunkSize = dwChunkDataSize;
-				dwChunkDataPosition = dwOffset;
-				return true;
-			}
-
-			dwOffset += dwChunkDataSize;
-
-			if (bytesRead >= dwRIFFDataSize) return false;
-
-		}
-
-		return true;
-
-	}
-
-	bool CreateSound(const std::string& filename, Sound* sound)
-	{
-		std::vector<uint8_t> filedata;
-		bool success = FileRead(filename, filedata);
-		if (!success)
-		{
-			return false;
-		}
-		return CreateSound(filedata, sound);
-	}
-	bool CreateSound(const std::vector<uint8_t>& data, Sound* sound)
-	{
-		return CreateSound(data.data(), data.size(), sound);
-	}
-	bool CreateSound(const uint8_t* data, size_t size, Sound* sound)
-	{
-		std::shared_ptr<SoundInternal> soundinternal = std::make_shared<SoundInternal>();
-		soundinternal->audio = audio;
-		sound->internal_state = soundinternal;
-
-		DWORD dwChunkSize;
-		DWORD dwChunkPosition;
-
-		bool success;
-
-		success = FindChunk(data, fourccRIFF, dwChunkSize, dwChunkPosition);
-		if (success)
-		{
-			// Wav decoder:
-			DWORD filetype;
-			memcpy(&filetype, data + dwChunkPosition, sizeof(DWORD));
-			if (filetype != fourccWAVE)
-			{
-				assert(0);
-				return false;
-			}
-
-			success = FindChunk(data, fourccFMT, dwChunkSize, dwChunkPosition);
-			if (!success)
-			{
-				assert(0);
-				return false;
-			}
-			memcpy(&soundinternal->wfx, data + dwChunkPosition, dwChunkSize);
-			soundinternal->wfx.wFormatTag = WAVE_FORMAT_PCM;
-
-			success = FindChunk(data, fourccDATA, dwChunkSize, dwChunkPosition);
-			if (!success)
-			{
-				assert(0);
-				return false;
-			}
-
-			soundinternal->audioData.resize(dwChunkSize);
-			memcpy(soundinternal->audioData.data(), data + dwChunkPosition, dwChunkSize);
-		}
-		else
-		{
-		//	// Ogg decoder:
-		//	int channels = 0;
-		//	int sample_rate = 0;
-		//	short* output = nullptr;
-		//	int samples = stb_vorbis_decode_memory(data, (int)size, &channels, &sample_rate, &output);
-		//	if (samples < 0)
-		//	{
-		//		assert(0);
-		//		return false;
-		//	}
-
-		//	// WAVEFORMATEX: https://docs.microsoft.com/en-us/previous-versions/dd757713(v=vs.85)?redirectedfrom=MSDN
-		//	soundinternal->wfx.wFormatTag = WAVE_FORMAT_PCM;
-		//	soundinternal->wfx.nChannels = (WORD)channels;
-		//	soundinternal->wfx.nSamplesPerSec = (DWORD)sample_rate;
-		//	soundinternal->wfx.wBitsPerSample = sizeof(short) * 8;
-		//	soundinternal->wfx.nBlockAlign = (WORD)channels * sizeof(short); // is this right?
-		//	soundinternal->wfx.nAvgBytesPerSec = soundinternal->wfx.nSamplesPerSec * soundinternal->wfx.nBlockAlign;
-
-		//	size_t output_size = (size_t)samples * sizeof(short);
-		//	soundinternal->audioData.resize(output_size);
-		//	memcpy(soundinternal->audioData.data(), output, output_size);
-
-		//	free(output);
-		}
-
-		return true;
-	}
-	bool CreateSoundInstance(const Sound* sound, SoundInstance* instance)
-	{
-		HRESULT hr;
-		const auto& soundinternal = std::static_pointer_cast<SoundInternal>(sound->internal_state);
-		std::shared_ptr<SoundInstanceInternal> instanceinternal = std::make_shared<SoundInstanceInternal>();
-		instance->internal_state = instanceinternal;
-
-		instanceinternal->audio = audio;
-		instanceinternal->soundinternal = soundinternal;
-
-		XAUDIO2_SEND_DESCRIPTOR SFXSend[] = {
-			{ XAUDIO2_SEND_USEFILTER, audio->submixVoices[instance->type] },
-			{ XAUDIO2_SEND_USEFILTER, audio->reverbSubmix }, // this should be last to enable/disable reverb simply
-		};
-		XAUDIO2_VOICE_SENDS SFXSendList = {
-			instance->IsEnableReverb() ? arraysize(SFXSend) : 1,
-			SFXSend
-		};
-
-		hr = audio->audioEngine->CreateSourceVoice(&instanceinternal->sourceVoice, &soundinternal->wfx,
-			0, XAUDIO2_DEFAULT_FREQ_RATIO, NULL, &SFXSendList, NULL);
-		if (FAILED(hr))
-		{
-			assert(0);
-			return false;
-		}
-
-		instanceinternal->sourceVoice->GetVoiceDetails(&instanceinternal->voiceDetails);
-
-		instanceinternal->outputMatrix.resize(size_t(instanceinternal->voiceDetails.InputChannels) * size_t(audio->masteringVoiceDetails.InputChannels));
-		instanceinternal->channelAzimuths.resize(instanceinternal->voiceDetails.InputChannels);
-		for (size_t i = 0; i < instanceinternal->channelAzimuths.size(); ++i)
-		{
-			instanceinternal->channelAzimuths[i] = X3DAUDIO_2PI * float(i) / float(instanceinternal->channelAzimuths.size());
-		}
-
-		instanceinternal->buffer.AudioBytes = (UINT32)soundinternal->audioData.size();
-		instanceinternal->buffer.pAudioData = soundinternal->audioData.data();
-		instanceinternal->buffer.Flags = XAUDIO2_END_OF_STREAM;
-		instanceinternal->buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
-		instanceinternal->buffer.LoopBegin = UINT32(instance->loop_begin * audio->masteringVoiceDetails.InputSampleRate);
-		instanceinternal->buffer.LoopLength = UINT32(instance->loop_length * audio->masteringVoiceDetails.InputSampleRate);
-
-		hr = instanceinternal->sourceVoice->SubmitSourceBuffer(&instanceinternal->buffer);
-		if (FAILED(hr))
-		{
-			assert(0);
-			return false;
-		}
-
-		return true;
-	}
-	void Play(SoundInstance* instance)
-	{
-		if (instance != nullptr && instance->IsValid())
-		{
-			auto instanceinternal = to_internal(instance);
-			HRESULT hr = instanceinternal->sourceVoice->Start();
-			assert(SUCCEEDED(hr));
-		}
-	}
-	void Pause(SoundInstance* instance)
-	{
-		if (instance != nullptr && instance->IsValid())
-		{
-			auto instanceinternal = to_internal(instance);
-			HRESULT hr = instanceinternal->sourceVoice->Stop(); // preserves cursor position
-			assert(SUCCEEDED(hr));
-		}
-	}
-	void Stop(SoundInstance* instance)
-	{
-		if (instance != nullptr && instance->IsValid())
-		{
-			auto instanceinternal = to_internal(instance);
-			HRESULT hr = instanceinternal->sourceVoice->Stop(); // preserves cursor position
-			assert(SUCCEEDED(hr));
-			hr = instanceinternal->sourceVoice->FlushSourceBuffers(); // reset submitted audio buffer
-			assert(SUCCEEDED(hr));
-			hr = instanceinternal->sourceVoice->SubmitSourceBuffer(&instanceinternal->buffer); // resubmit
-			assert(SUCCEEDED(hr));
-		}
-	}
-	void SetVolume(float volume, SoundInstance* instance)
-	{
-		if (instance == nullptr || !instance->IsValid())
-		{
-			HRESULT hr = audio->masteringVoice->SetVolume(volume);
-			assert(SUCCEEDED(hr));
-		}
-		else
-		{
-			auto instanceinternal = to_internal(instance);
-			HRESULT hr = instanceinternal->sourceVoice->SetVolume(volume);
-			assert(SUCCEEDED(hr));
-		}
-	}
-	float GetVolume(const SoundInstance* instance)
-	{
-		float volume = 0;
-		if (instance == nullptr || !instance->IsValid())
-		{
-			audio->masteringVoice->GetVolume(&volume);
-		}
-		else
-		{
-			auto instanceinternal = to_internal(instance);
-			instanceinternal->sourceVoice->GetVolume(&volume);
-		}
-		return volume;
-	}
-	void ExitLoop(SoundInstance* instance)
-	{
-		if (instance != nullptr && instance->IsValid())
-		{
-			auto instanceinternal = to_internal(instance);
-			HRESULT hr = instanceinternal->sourceVoice->ExitLoop();
-			assert(SUCCEEDED(hr));
-		}
-	}
-
-	void SetSubmixVolume(SUBMIX_TYPE type, float volume)
-	{
-		HRESULT hr = audio->submixVoices[type]->SetVolume(volume);
-		assert(SUCCEEDED(hr));
-	}
-	float GetSubmixVolume(SUBMIX_TYPE type)
-	{
-		float volume;
-		audio->submixVoices[type]->GetVolume(&volume);
-		return volume;
-	}
-
-	void Update3D(SoundInstance* instance, const SoundInstance3D& instance3D)
-	{
-		if (instance != nullptr && instance->IsValid())
-		{
-			auto instanceinternal = to_internal(instance);
-
-			X3DAUDIO_LISTENER listener = {};
-			listener.Position = instance3D.listenerPos;
-			listener.OrientFront = instance3D.listenerFront;
-			listener.OrientTop = instance3D.listenerUp;
-			listener.Velocity = instance3D.listenerVelocity;
-
-			X3DAUDIO_EMITTER emitter = {};
-			emitter.Position = instance3D.emitterPos;
-			emitter.OrientFront = instance3D.emitterFront;
-			emitter.OrientTop = instance3D.emitterUp;
-			emitter.Velocity = instance3D.emitterVelocity;
-			emitter.InnerRadius = instance3D.emitterRadius;
-			emitter.InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
-			emitter.ChannelCount = instanceinternal->voiceDetails.InputChannels;
-			emitter.pChannelAzimuths = instanceinternal->channelAzimuths.data();
-			emitter.ChannelRadius = 0.1f;
-			emitter.CurveDistanceScaler = 1;
-			emitter.DopplerScaler = 1;
-
-			UINT32 flags = 0;
-			flags |= X3DAUDIO_CALCULATE_MATRIX;
-			flags |= X3DAUDIO_CALCULATE_LPF_DIRECT;
-			flags |= X3DAUDIO_CALCULATE_REVERB;
-			flags |= X3DAUDIO_CALCULATE_LPF_REVERB;
-			flags |= X3DAUDIO_CALCULATE_DOPPLER;
-			//flags |= X3DAUDIO_CALCULATE_DELAY;
-			//flags |= X3DAUDIO_CALCULATE_EMITTER_ANGLE;
-			//flags |= X3DAUDIO_CALCULATE_ZEROCENTER;
-			//flags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
-
-			X3DAUDIO_DSP_SETTINGS settings = {};
-			settings.SrcChannelCount = instanceinternal->voiceDetails.InputChannels;
-			settings.DstChannelCount = audio->masteringVoiceDetails.InputChannels;
-			settings.pMatrixCoefficients = instanceinternal->outputMatrix.data();
-
-			X3DAudioCalculate(audio->audio3D, &listener, &emitter, flags, &settings);
-
-			HRESULT hr;
-
-			hr = instanceinternal->sourceVoice->SetFrequencyRatio(settings.DopplerFactor);
-			assert(SUCCEEDED(hr));
-
-			hr = instanceinternal->sourceVoice->SetOutputMatrix(
-				audio->submixVoices[instance->type],
-				settings.SrcChannelCount,
-				settings.DstChannelCount,
-				settings.pMatrixCoefficients
-			);
-			assert(SUCCEEDED(hr));
-
-			XAUDIO2_FILTER_PARAMETERS FilterParametersDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * settings.LPFDirectCoefficient), 1.0f };
-			hr = instanceinternal->sourceVoice->SetOutputFilterParameters(audio->submixVoices[instance->type], &FilterParametersDirect);
-			assert(SUCCEEDED(hr));
-
-			if (instance->IsEnableReverb())
-			{
-				hr = instanceinternal->sourceVoice->SetOutputMatrix(audio->reverbSubmix, settings.SrcChannelCount, 1, &settings.ReverbLevel);
-				assert(SUCCEEDED(hr));
-				XAUDIO2_FILTER_PARAMETERS FilterParametersReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * settings.LPFReverbCoefficient), 1.0f };
-				hr = instanceinternal->sourceVoice->SetOutputFilterParameters(audio->reverbSubmix, &FilterParametersReverb);
-				assert(SUCCEEDED(hr));
-			}
-		}
-	}
-
-	void SetReverb(REVERB_PRESET preset)
-	{
-		XAUDIO2FX_REVERB_PARAMETERS native;
-		ReverbConvertI3DL2ToNative(&reverbPresets[preset], &native);
-		HRESULT hr = audio->reverbSubmix->SetEffectParameters(0, &native, sizeof(native));
-		assert(SUCCEEDED(hr));
+		++iter;
 	}
 }
 
-#else
-
-namespace wiAudio
+//-----------------------------------------------------------------------------
+// 再生
+//-----------------------------------------------------------------------------
+bool AudioManager::Play(const std::string& filepath, bool loop)
 {
-	void Initialize() {}
+	if (m_audioEngine == nullptr)
+		return false;
 
-	bool CreateSound(const std::string& filename, Sound* sound) { return false; }
-	bool CreateSound(const std::vector<uint8_t>& data, Sound* sound) { return false; }
-	bool CreateSound(const uint8_t* data, size_t size, Sound* sound) { return false; }
-	bool CreateSoundInstance(const Sound* sound, SoundInstance* instance) { return false; }
+	// initialize sound effect
+	auto soundData = std::make_shared<SoundEffect>();
+	if (!soundData->Load(filepath))
+		return false;
 
-	void Play(SoundInstance* instance) {}
-	void Pause(SoundInstance* instance) {}
-	void Stop(SoundInstance* instance) {}
-	void SetVolume(float volume, SoundInstance* instance) {}
-	float GetVolume(const SoundInstance* instance) { return 0; }
-	void ExitLoop(SoundInstance* instance) {}
+	// initialize sound instance
+	std::shared_ptr<SoundInstance> instance = std::make_shared<SoundInstance>();
+	if (instance == nullptr)
+		return false;
 
-	void SetSubmixVolume(SUBMIX_TYPE type, float volume) {}
-	float GetSubmixVolume(SUBMIX_TYPE type) { return 0; }
+	// done
+	instance->Initialize(soundData);
+	instance->Play(loop);
 
-	void Update3D(SoundInstance* instance, const SoundInstance3D& instance3D) {}
-
-	void SetReverb(REVERB_PRESET preset) {}
+	return true;
 }
 
-#endif // _WIN32
+//-----------------------------------------------------------------------------
+// 3D再生
+//-----------------------------------------------------------------------------
+bool AudioManager::Play3D(const std::string& filepath, const float3& position, bool loop)
+{
+	if (m_audioEngine == nullptr)
+		return false;
+
+	// initialize sound effect
+	auto soundData = std::make_shared<SoundEffect>();
+	if (!soundData->Load(filepath))
+		return false;
+
+	// initialize sound instance
+	std::shared_ptr<SoundInstance3D> instance = std::make_shared<SoundInstance3D>();
+	if (instance == nullptr)
+		return false;
+
+	// done
+	instance->Initialize(soundData);
+	instance->Play(loop);
+	instance->SetPos(position);
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// 再生リスト停止
+//-----------------------------------------------------------------------------
+void AudioManager::StopAllSound()
+{
+	if (m_audioEngine == nullptr)
+		return;
+
+	for (auto& sound : m_playList)
+		sound.second->Stop();
+}

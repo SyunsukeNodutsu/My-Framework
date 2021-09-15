@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------------
 void Tank::Awake()
 {
+	m_name = "T43";
+
 	LoadModel("Resource/Model/T43/T43_Full.gltf");
 	m_transform.SetPosition(float3(8, 0, 0));
 

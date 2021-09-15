@@ -38,11 +38,12 @@ private:
 private:
 
 	// @brief 移動更新
+	// @param deltaTime デルタタイム
 	void UpdateMove(float deltaTime);
 
-	// @brief 体の回転更新
-	// @param moveVec カメラを加味した移動ベクトル
-	void RotateBody(const float3& moveVec);
+	// @brief 回転更新
+	// @param deltaTime デルタタイム
+	void UpdateRotate(float deltaTime);
 
 	class StateBase {
 	public:

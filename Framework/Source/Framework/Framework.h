@@ -49,6 +49,7 @@
 #include "Model/Animation.h"
 #include "Input/RawInput.h"
 #include "Scripting/Lua.h"
+#include "Audio/Audio.h"
 
 //--------------------------------------------------
 // Shader

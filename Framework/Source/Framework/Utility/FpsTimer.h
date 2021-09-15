@@ -43,6 +43,10 @@ public:
 	// @return FPS値
 	std::uint32_t GetFPS() const { return m_fps; }
 
+	// @brief ゲーム内時間のスケーリング値を返す
+	// @return スケーリング値
+	float GetTimeScale() const { return m_scaling; }
+
 	//--------------------------------------------------
 	// 設定
 	//--------------------------------------------------

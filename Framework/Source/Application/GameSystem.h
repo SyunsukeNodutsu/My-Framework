@@ -45,6 +45,12 @@ public:
 	// @param camera 設定するカメラ
 	void SetCamera(std::shared_ptr<Camera> camera) { m_spCamera = camera; }
 
+	// @brief シーンのActorリストを返す
+	// @return Actorリスト
+	const std::list<std::shared_ptr<GameObject>>& GetActorList() const {
+		return m_spObjectList;
+	}
+
 public:
 
 	FpsTimer				g_fpsTimer;	// FPS管理

@@ -15,6 +15,8 @@ Human::Human()
 //-----------------------------------------------------------------------------
 void Human::Initialize()
 {
+	m_name = "Human";
+
 	LoadModel("Resource/Model/Robot/Robot.gltf");
 
 	m_spCamera = std::make_shared<TPSCamera>();
@@ -96,37 +98,43 @@ void Human::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateMove(float deltaTime)
 {
+	float speed = 10.0f;
+
+	// ダッシュ or スニーク？
 	float moveSpd = 10;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Shift))
-		moveSpd *= 2;
+		speed *= 2;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::Control))
-		moveSpd *= 0.4f;
+		speed *= 0.4f;
 
+	auto axisZ = m_transform.GetWorldMatrix().Backward();
+	axisZ.Normalize();
+	axisZ *= speed * deltaTime;
+
+	// 座標の更新 TransformのZ軸に前進
+	auto pos = m_transform.GetPosition() + axisZ;
+	m_transform.SetPosition(pos);
+}
+
+//-----------------------------------------------------------------------------
+// 体の回転更新
+//-----------------------------------------------------------------------------
+void Human::UpdateRotate(float deltaTime)
+{
+	// 入力ベクトル取得
 	float3 moveVec;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::W)) moveVec.z += 1.0f;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
 	if (RAW_INPUT.GetKeyboard()->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
-	moveVec *= moveSpd;
 
-	moveVec *= deltaTime;
-
+	// カメラを加味
 	if (m_spCamera)
 		moveVec = moveVec.TransformNormal(moveVec, m_spCamera->GetRotationYMatrix());
 
-	// 座標の更新
-	auto pos = m_transform.GetPosition() + moveVec;
-	m_transform.SetPosition(pos);
+	//--------------------------------------------------
 
-	RotateBody(moveVec);
-}
-
-//-----------------------------------------------------------------------------
-// 体の回転更新
-//-----------------------------------------------------------------------------
-void Human::RotateBody(const float3& moveVec)
-{
 	if (moveVec.LengthSquared() == 0.0f)
 		return;
 
@@ -144,10 +152,11 @@ void Human::RotateBody(const float3& moveVec)
 		rotateRadian += 2 * float(PI);
 
 	// 回転制限
-	constexpr float rotPow = 30.0f;
-	rotateRadian = std::clamp(rotateRadian, -rotPow * ToRadians, rotPow * ToRadians);
+	constexpr float rotlimit = 30.0f;
+	//rotateRadian = std::clamp(rotateRadian, -rotlimit * ToRadians, rotlimit * ToRadians);
 
-	m_rotation.y += rotateRadian;
+	constexpr float rotPow = 400.0f;
+	m_rotation.y += rotateRadian * rotPow * deltaTime;
 	m_transform.SetAngle(m_rotation);
 }
 
@@ -173,6 +182,7 @@ void Human::StateWait::Update(float deltaTime, Human& owner)
 void Human::StateMove::Update(float deltaTime, Human& owner)
 {
 	owner.UpdateMove(deltaTime);
+	owner.UpdateRotate(deltaTime);
 
 	// TODO: fix
 	float3 moveVec = float3::Zero;

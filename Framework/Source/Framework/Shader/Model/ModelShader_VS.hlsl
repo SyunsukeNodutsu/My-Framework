@@ -26,11 +26,12 @@ VertexOutput main(
 	
     ret.uv = uv;
     
-    // –@ü
+    // object‚Ì‰ñ“]‚ğ‰Á–¡
+    // float3 ... 41 42 43 ‚ÌÀ•W‚ğ–³‹
     ret.wNormal = normalize(mul(normal, (float3x3) g_world_matrix));
-    // Úü
+    
     ret.wTangent = normalize(mul(tangent, (float3x3) g_world_matrix));
-    // ]Úü
+    
     float3 binormal = cross(normal, tangent);
     ret.wBinormal = normalize(mul(binormal, (float3x3) g_world_matrix));
     

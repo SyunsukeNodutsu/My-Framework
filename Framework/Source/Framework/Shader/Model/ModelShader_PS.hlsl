@@ -118,7 +118,8 @@ float4 main( VertexOutput In ) : SV_TARGET
     normal = normalize(mul(normal, mTBN));
     normal = normalize(normal);
     
-    //return float4(normal, 1);
+    if (g_show_normal)
+        return float4(normal, 1);
     
     //------------------------------------------
     // 材質色
@@ -126,11 +127,16 @@ float4 main( VertexOutput In ) : SV_TARGET
     
     // 材質色
     float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
+    if (g_show_base_color)
+        return float4(baseColor.rgb, 1);
     
     // メタリック/ラフネス テクスチャ
     float4 mrColor = g_mrTexture.Sample(g_samplerState, In.uv);
     float metallic   = mrColor.b * g_material.m_metallic;   // 金属性
     float roughuness = mrColor.g * g_material.m_roughness;  // 粗さ
+    
+    if (g_show_metallic_rough)
+        return float4(mrColor.rgb, 1);
     
     // アルファテスト
     if (baseColor.a <= 0.0f)

@@ -14,6 +14,8 @@ public:
 	// @brief 生成直後
 	void Awake() override
 	{
+		m_name = "Skt";
+
 		LoadModel("Resource/Model/Sky/Sky.gltf");
 		m_transform.SetScale(float3(1000.0f));
 	}

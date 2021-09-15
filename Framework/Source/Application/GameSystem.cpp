@@ -42,7 +42,8 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// 音
-	//AUDIO.Play("Resource/Audio/さよならの支度.wav", true);
+	AUDIO.SetUserSettingVolume(0.3f);
+	AUDIO.Play("Resource/Audio/さよならの支度.wav", true);
 }
 
 //-----------------------------------------------------------------------------
@@ -134,8 +135,9 @@ void GameSystem::Draw2D()
 void GameSystem::AddGameObject(const std::string& name)
 {
 	auto object = GenerateGameObject(name);
-	if (object == nullptr)
-		return;
+
+	// TODO: NullActor
+	if (object == nullptr) return;
 
 	m_spObjectList.push_back(object);
 }

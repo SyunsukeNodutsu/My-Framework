@@ -9,6 +9,8 @@ public:
 	//
 	void Awake() override
 	{
+		m_name = "StageMap";
+
 		LoadModel("Resource/Model/StageMap/StageMap.gltf");
 		m_transform.SetScale(float3(6));
 	}

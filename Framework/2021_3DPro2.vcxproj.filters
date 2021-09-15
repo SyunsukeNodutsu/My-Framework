@@ -67,6 +67,12 @@
     <Filter Include="Library\imGui">
       <UniqueIdentifier>{2f7c5625-1415-444e-8aca-3d6b599d9f2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Shader\Wave">
+      <UniqueIdentifier>{7abb708b-5855-45cd-9dbd-212e8ca124c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Shader\Grass">
+      <UniqueIdentifier>{ccb884da-9711-484a-a1a0-b15d3b9d6eb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">

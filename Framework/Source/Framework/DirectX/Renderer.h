@@ -136,6 +136,14 @@ public:
 		return cam.Translation();
 	}
 
+	void SetFlags(bool showB, bool showN, bool showE, bool showM) {
+		m_cd14ShaderDebug.Work().g_show_base_color = showB;
+		m_cd14ShaderDebug.Work().g_show_normal = showN;
+		m_cd14ShaderDebug.Work().g_show_emissive = showE;
+		m_cd14ShaderDebug.Work().g_show_metallic_rough= showM;
+		m_cd14ShaderDebug.Write();
+	}
+
 	//--------------------------------------------------
 	// static
 	//--------------------------------------------------
@@ -152,6 +160,8 @@ public:
 	static const int use_slot_time				= 12;
 	// 大気が使用するバッファのスロット番号
 	static const int use_slot_atmosphere		= 13;
+	// Shaderデバッグが使用するバッファのスロット番号
+	static const int use_slot_shader_debug		= 14;
 
 private:
 
@@ -210,10 +220,13 @@ private:
 	};
 
 	// シェーダーデバッグ
-	struct cdShaderDebug
+	struct cbShaderDebug
 	{
-		float showNormal;
-		float tmp[3];
+		float g_show_base_color;    // PSの出力をそのままの色に(ライト無効)
+		float g_show_normal;        // PSの出力を法線に
+		float g_show_emissive;      // PSの出力を自己発行に
+		float g_show_metallic_rough;// PSの出力を金属/粗さに
+		//float tmp[3];
 	};
 
 	// ステート記憶/復元用
@@ -239,6 +252,7 @@ private:
 	// 11はマテリアル
 	ConstantBuffer<cdTime>							m_cd12Time;				// ゲーム内 時間関連
 	ConstantBuffer<cdAtmosphere>					m_cd13Atmosphere;		// 大気
+	ConstantBuffer<cbShaderDebug>					m_cd14ShaderDebug;		// Shaderデバッグ
 	std::shared_ptr<Texture>						m_spWhiteTexture;		// 1x1のデフォルト設定用テクスチャ
 	SaveState										m_saveState;			// ステート 保存/復元用
 
@@ -275,6 +289,7 @@ public:
 	const ConstantBuffer<cdLight>& Getcd10()const { return m_cd10Light; }
 	const ConstantBuffer<cdTime>& Getcd12() const { return m_cd12Time; }
 	const ConstantBuffer<cdAtmosphere>& Getcd13() const { return m_cd13Atmosphere; }
+	const ConstantBuffer<cbShaderDebug>& Getcd14() const { return m_cd14ShaderDebug; }
 };
 
 #pragma region enums
