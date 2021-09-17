@@ -218,12 +218,11 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume");
 	ImGui::PopStyleColor();
 
-	static float volume = 0;// AUDIO.GetUserSettingVolume();
+	static float volume = APP.g_audioDevice.GetMasterVolume();
 	if (ImGui::SliderFloat("Main", &volume, 0, 5, "%.2f"))
-	{
-	}//AUDIO.SetUserSettingVolume(volume);
+		APP.g_audioDevice.SetMasterVolume(volume);
 
-	//ImGui::Text(std::string("PlayList: " + std::to_string(AUDIO.GetPlayListSize())).c_str());
+	ImGui::Text(std::string("PlayList: " + std::to_string(0/*AUDIO.GetPlayListSize()*/)).c_str());
 
 	ImGui::Separator();
 
@@ -232,9 +231,11 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	auto& cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
-	
-	//ImGui::DragFloat3("listener pos", &AUDIO.GetListener().Position.x);
-	//ImGui::DragFloat3("listener dir", &AUDIO.GetListener().OrientFront.x);
+	float3 pos = cameraMatrix.Translation();
+	float3 dir = cameraMatrix.Backward();
+
+	ImGui::DragFloat3("listener pos", &pos.x);
+	ImGui::DragFloat3("listener dir", &dir.x);
 
 	ImGui::Separator();
 
@@ -242,10 +243,10 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume Meter");
 	ImGui::PopStyleColor();
 
-	//PlotLinesEx("PeakLevels R", AUDIO.g_peakLevels[0]);
-	//PlotLinesEx("PeakLevels L", AUDIO.g_peakLevels[1]);
-	//PlotLinesEx("RMSLevels R", AUDIO.g_RMSLevels[0]);
-	//PlotLinesEx("RMSLevels L", AUDIO.g_RMSLevels[1]);
+	PlotLinesEx("PeakLevels R", APP.g_audioDevice.g_peakLevels[0]);
+	PlotLinesEx("PeakLevels L", APP.g_audioDevice.g_peakLevels[1]);
+	PlotLinesEx("RMSLevels R", APP.g_audioDevice.g_RMSLevels[0]);
+	PlotLinesEx("RMSLevels L", APP.g_audioDevice.g_RMSLevels[1]);
 
 	ImGui::End();
 }

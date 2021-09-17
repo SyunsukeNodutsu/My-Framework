@@ -35,9 +35,13 @@ public:
 	// ウィンドウ
 	Window g_window;
 
+	// オーディオデバイス
+	AudioDevice g_audioDevice;
+
 private:
 
 	bool m_endFlag = false; // ゲーム終了フラグ
+	std::shared_ptr<Music> m_spMusic;
 
 private:
 

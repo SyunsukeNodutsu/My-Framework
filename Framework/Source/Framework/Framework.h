@@ -50,10 +50,10 @@
 #include "Input/RawInput.h"
 #include "Scripting/Lua.h"
 
-//#include "Audio/AudioDevice.h"
-//#include "Audio/AudioDeviceChild.h"
-//#include "Audio/Music.h"
-//#include "Audio/Sound.h"
+#include "Audio/AudioDevice.h"
+#include "Audio/AudioDeviceChild.h"
+#include "Audio/Music.h"
+#include "Audio/Sound.h"
 
 //--------------------------------------------------
 // Shader

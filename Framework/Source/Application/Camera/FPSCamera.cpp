@@ -34,7 +34,7 @@ void FPSCamera::Update()
 	{
 		float2 nowPos = RAW_INPUT.GetMouse()->GetMousePos();
 
-		POINT mouseMove;
+		float2 mouseMove;
 
 		mouseMove.x = nowPos.x - s_fixMousePos.x;
 		mouseMove.y = nowPos.y - s_fixMousePos.y;

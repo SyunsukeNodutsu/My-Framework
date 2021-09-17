@@ -213,6 +213,18 @@
     <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp">
       <Filter>Source\Framework\Audio\Vender</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Music.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Sound.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -382,6 +394,18 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h">
       <Filter>Source\Framework\Audio\Vender</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDevice.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Music.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Sound.h">
+      <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
