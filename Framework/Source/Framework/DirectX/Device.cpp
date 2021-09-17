@@ -1,4 +1,5 @@
 ﻿#include "Device.h"
+#include "../../Application/ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -223,6 +224,8 @@ bool Device::Create( const HWND& hWnd, bool isUseHDR, int width, int height, boo
 		m_texNormal = std::make_shared<Texture>();
 		m_texNormal->Create("Resource/Texture/Blue1x1.bmp");
 	}
+
+	IMGUISYSTEM.AddLog("INFO: Direct3D initialized.");
 
 	return true;
 }

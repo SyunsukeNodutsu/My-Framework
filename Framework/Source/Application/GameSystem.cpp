@@ -1,7 +1,5 @@
 ﻿#include "GameSystem.h"
-
 #include "GameObjects/GameObject.h"
-#include "../Framework/Audio/AudioDeviceChild.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -35,15 +33,15 @@ void GameSystem::Initialize()
 		AddGameObject("Human");
 		AddGameObject("Sky");
 		AddGameObject("StageMap");
-		AddGameObject("Tank");
+		//AddGameObject("Tank");
 	}
 
 	for (auto& object : m_spObjectList)
 		object->Initialize();
 
-	// 音
-	AUDIO.SetUserSettingVolume(0.3f);
-	AUDIO.Play("Resource/Audio/さよならの支度.wav", true);
+	//// 音
+	//AUDIO.SetUserSettingVolume(0.3f);
+	//AUDIO.Play("", true);
 }
 
 //-----------------------------------------------------------------------------

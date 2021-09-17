@@ -1,4 +1,5 @@
 ﻿#include "ShaderManager.h"
+#include "../../Application/ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -23,4 +24,6 @@ void ShaderManager::Initialize()
 	// SpriteShader
 	m_spSpriteShader = std::make_shared<SpriteShader>();
 	m_spSpriteShader->Initialize();
+
+	IMGUISYSTEM.AddLog("INFO: ShaderManager initialized.");
 }

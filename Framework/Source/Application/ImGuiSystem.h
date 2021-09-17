@@ -55,6 +55,7 @@ private:
 	bool m_addLog;
 	bool m_enable;
 	bool m_createInifile;
+	CpuUseRate m_cpuUseRate;
 
 private:
 
@@ -71,6 +72,8 @@ private:
 	// プロファイラー分析
 	void ProfilerMonitor(ImGuiWindowFlags wflags);
 
+	//
+	void PlotLinesEx(std::string string, float val);
 };
 
 //--------------------------------------------------

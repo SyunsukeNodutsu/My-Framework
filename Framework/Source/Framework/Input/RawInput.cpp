@@ -1,5 +1,6 @@
 ﻿#include "RawInput.h"
 #include "../../Application/main.h"
+#include "../../Application/ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -20,6 +21,8 @@ void RawInput::Initialize()
 
     m_spMouse = std::make_shared<Mouse>();
     m_spMouse->Initialize(APP.g_window.GetWndHandle());
+
+    IMGUISYSTEM.AddLog("INFO: RawInputDevice initialized.");
 }
 
 //-----------------------------------------------------------------------------

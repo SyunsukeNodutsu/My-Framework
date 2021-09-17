@@ -37,11 +37,8 @@
     <ClCompile Include="Source\Application\ImGuiSystem.cpp" />
     <ClCompile Include="Source\Application\main.cpp" />
     <ClCompile Include="Source\Framework\AI\WayPoint.cpp" />
-    <ClCompile Include="Source\Framework\Audio\Audio.cpp" />
-    <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp" />
-    <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp" />
-    <ClCompile Include="Source\Framework\Audio\Music.cpp" />
-    <ClCompile Include="Source\Framework\Audio\Sound.cpp" />
+    <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp" />
+    <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp" />
     <ClCompile Include="Source\Framework\DirectX\Buffer.cpp" />
     <ClCompile Include="Source\Framework\DirectX\Camera.cpp" />
     <ClCompile Include="Source\Framework\DirectX\CubeMapGenerator.cpp" />
@@ -62,6 +59,7 @@
     <ClCompile Include="Source\Framework\Shader\ShaderBase.cpp" />
     <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp" />
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp" />
+    <ClCompile Include="Source\Framework\Utility\CpuUseRate.cpp" />
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
     <ClCompile Include="Source\Framework\Window\Window.cpp" />
@@ -94,11 +92,8 @@
     <ClInclude Include="Source\Application\main.h" />
     <ClInclude Include="Source\Framework\AI\WayPoint.h" />
     <ClInclude Include="Source\Framework\AI\WayPointNavigator.h" />
-    <ClInclude Include="Source\Framework\Audio\Audio.h" />
-    <ClInclude Include="Source\Framework\Audio\AudioDevice.h" />
-    <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h" />
-    <ClInclude Include="Source\Framework\Audio\Music.h" />
-    <ClInclude Include="Source\Framework\Audio\Sound.h" />
+    <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h" />
+    <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h" />
     <ClInclude Include="Source\Framework\DirectX\Buffer.h" />
     <ClInclude Include="Source\Framework\DirectX\Camera.h" />
     <ClInclude Include="Source\Framework\DirectX\CubeMapGenerator.h" />
@@ -122,6 +117,7 @@
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h" />
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h" />
     <ClInclude Include="Source\Framework\Utility\Cpuid.h" />
+    <ClInclude Include="Source\Framework\Utility\CpuUseRate.h" />
     <ClInclude Include="Source\Framework\Utility\Easing.h" />
     <ClInclude Include="Source\Framework\Utility\EasingType.h" />
     <ClInclude Include="Source\Framework\Utility\Enums.h" />

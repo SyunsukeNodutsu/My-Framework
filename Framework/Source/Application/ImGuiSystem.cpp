@@ -44,9 +44,10 @@ void ImGuiSystem::Initialize()
 	style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
 
-	AddLog("INFO: Initialize Dear imGui.");
+	AddLog("INFO: Dear imGui Initialized.");
 
 	Cpuid::Research();
+	AddLog("INFO: CPUID Researched.");
 }
 
 //-----------------------------------------------------------------------------
@@ -149,12 +150,13 @@ void ImGuiSystem::ShaderDebugMonitor(ImGuiWindowFlags wflags)
 
 	if (ImGui::BeginTable("split", 2))
 	{
-		static bool darty = false;
-		ImGui::TableNextColumn(); ImGui::Checkbox("Base Color", &show_base_color);
-		ImGui::TableNextColumn(); ImGui::Checkbox("Normal", &show_normal);
-		ImGui::TableNextColumn(); ImGui::Checkbox("Emissive", &show_emissive);
-		ImGui::TableNextColumn(); ImGui::Checkbox("MetalicRough", &show_metallic_rough);
-		D3D.GetRenderer().SetFlags(show_base_color, show_normal, show_emissive, show_metallic_rough);
+		bool darty = false;
+		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Base Color", &show_base_color);
+		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Normal", &show_normal);
+		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Emissive", &show_emissive);
+		ImGui::TableNextColumn(); darty = ImGui::Checkbox("MetalicRough", &show_metallic_rough);
+		if (!darty)
+			D3D.GetRenderer().SetFlags(show_base_color, show_normal, show_emissive, show_metallic_rough);
 		ImGui::EndTable();
 	}
 
@@ -216,10 +218,12 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume");
 	ImGui::PopStyleColor();
 
-	ImGui::Text(std::string("Main: " + std::to_string(0/*AUDIO.GetUserSettingVolume()*/)).c_str());
-	ImGui::Text(std::string("BGM: " + std::to_string(0/*AUDIO.GetUserSettingVolume()*/)).c_str());
-	ImGui::Text(std::string("SE: " + std::to_string(0/*AUDIO.GetUserSettingVolume()*/)).c_str());
-	ImGui::Text(std::string("PlayList: " + std::to_string(0/*AUDIO.GetPlayListSize()*/)).c_str());
+	static float volume = 0;// AUDIO.GetUserSettingVolume();
+	if (ImGui::SliderFloat("Main", &volume, 0, 5, "%.2f"))
+	{
+	}//AUDIO.SetUserSettingVolume(volume);
+
+	//ImGui::Text(std::string("PlayList: " + std::to_string(AUDIO.GetPlayListSize())).c_str());
 
 	ImGui::Separator();
 
@@ -227,10 +231,10 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Listener");
 	ImGui::PopStyleColor();
 
-	float3 cameraPos = D3D.GetRenderer().GetCameraPos();
-	float3 cameraDir = float3::Zero;
-	ImGui::DragFloat3("listener pos", &cameraPos.x);
-	ImGui::DragFloat3("listener dir(bug)", &cameraDir.x);
+	auto& cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
+	
+	//ImGui::DragFloat3("listener pos", &AUDIO.GetListener().Position.x);
+	//ImGui::DragFloat3("listener dir", &AUDIO.GetListener().OrientFront.x);
 
 	ImGui::Separator();
 
@@ -238,9 +242,10 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume Meter");
 	ImGui::PopStyleColor();
 
-	static float arr[] = { 0.0f, 0.0f };
-	ImGui::PlotLines("Peak meter", arr, IM_ARRAYSIZE(arr));
-	ImGui::PlotLines("RMS meter", arr, IM_ARRAYSIZE(arr));
+	//PlotLinesEx("PeakLevels R", AUDIO.g_peakLevels[0]);
+	//PlotLinesEx("PeakLevels L", AUDIO.g_peakLevels[1]);
+	//PlotLinesEx("RMSLevels R", AUDIO.g_RMSLevels[0]);
+	//PlotLinesEx("RMSLevels L", AUDIO.g_RMSLevels[1]);
 
 	ImGui::End();
 }
@@ -276,29 +281,37 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::Separator();
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Sliders");
+	ImGui::Text("Sliders Edit");
 	ImGui::PopStyleColor();
 
 	static float timeScale = fpsTimer.GetTimeScale();
-	if (ImGui::SliderFloat("TimeScale", &timeScale, 0, 10))
+	if (ImGui::SliderFloat("TimeScale", &timeScale, 0, 5, "%.2f"))
 		fpsTimer.SetTimeScale(timeScale);
 
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Actor List");
+	ImGui::PopStyleColor();
+
 	// SceneのActor一覧
-	ImGui::SetNextItemOpen(true);
-	if (ImGui::TreeNode("Actor List"))
+	for (auto&& actor : GAMESYSTEM.GetActorList())
 	{
-		for (auto&& actor : GAMESYSTEM.GetActorList())
-		{
-			ImGui::PushID(actor.get());
-
-			ImGui::Text(actor->GetName().c_str());
-
-			ImGui::PopID();
-		}
-
-		ImGui::TreePop();
+		ImGui::PushID(actor.get());
+		ImGui::Text(actor->GetName().c_str());
+		ImGui::PopID();
 	}
 
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Widgets Demo");
+	ImGui::PopStyleColor();
+
+
+	ImGui::Text(std::string("CpuUseRate: " + std::to_string(m_cpuUseRate.GetCpuUseRate())).c_str());
+
+	// 気分
 	ImGui::SetNextItemOpen(false);
 	if (ImGui::TreeNode("Plots Widgets"))
 	{
@@ -381,4 +394,38 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	}
 
 	ImGui::End();
+}
+
+//-----------------------------------------------------------------------------
+// imGuiのPlotLinesのラップ関数
+//-----------------------------------------------------------------------------
+void ImGuiSystem::PlotLinesEx(std::string string, float val)
+{
+	static float	values[90] = {};
+	static int		values_offset = 0;
+	static double	refresh_time = 0.0;
+	if (refresh_time == 0.0)
+		refresh_time = ImGui::GetTime();
+
+	// Create data at fixed 60 Hz rate for the demo
+	while (refresh_time < ImGui::GetTime())
+	{
+		static float phase = 0.0f;
+		values[values_offset] = val;
+		values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+		phase += 0.10f * values_offset;
+		refresh_time += 1.0f / 60.0f;
+	}
+
+	// Plots can display overlay texts
+	// (in this example, we will display an average value)
+	{
+		float average = 0.0f;
+		for (int n = 0; n < IM_ARRAYSIZE(values); n++)
+			average += values[n];
+		average /= (float)IM_ARRAYSIZE(values);
+		char overlay[32];
+		sprintf_s(overlay, "avg %f", average);
+		ImGui::PlotLines(string.c_str(), values, IM_ARRAYSIZE(values), values_offset, overlay, 0.0f, 1.0f, ImVec2(0, 40.0f));
+	}
 }

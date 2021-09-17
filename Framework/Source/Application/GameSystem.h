@@ -51,6 +51,10 @@ public:
 		return m_spObjectList;
 	}
 
+	// @brief 使用カメラを返す
+	// @return 使用カメラ
+	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }
+
 public:
 
 	FpsTimer				g_fpsTimer;	// FPS管理

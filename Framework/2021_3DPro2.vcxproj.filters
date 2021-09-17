@@ -73,6 +73,9 @@
     <Filter Include="Source\Framework\Shader\Grass">
       <UniqueIdentifier>{ccb884da-9711-484a-a1a0-b15d3b9d6eb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Audio\Vender">
+      <UniqueIdentifier>{f60a730b-01b4-499e-b350-7557d55f30cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -144,9 +147,6 @@
     <ClCompile Include="Source\Framework\Utility\Easing.cpp">
       <Filter>Source\Framework\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\DirectX\GraphicsDeviceChild.cpp">
       <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
@@ -198,23 +198,20 @@
     <ClCompile Include="Source\Framework\Shader\ShaderBase.cpp">
       <Filter>Source\Framework\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Sound.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Music.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Audio.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application\GameObjects\Tank.cpp">
       <Filter>Source\Application\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\ImGuiSystem.cpp">
       <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\CpuUseRate.cpp">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp">
+      <Filter>Source\Framework\Audio\Vender</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp">
+      <Filter>Source\Framework\Audio\Vender</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,9 +311,6 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\DirectX\GraphicsDeviceChild.h">
       <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
@@ -377,20 +371,17 @@
     <ClInclude Include="Source\Framework\Shader\ShaderBase.h">
       <Filter>Source\Framework\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\AudioDevice.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Sound.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Music.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Audio.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Application\ImGuiSystem.h">
       <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\CpuUseRate.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h">
+      <Filter>Source\Framework\Audio\Vender</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h">
+      <Filter>Source\Framework\Audio\Vender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

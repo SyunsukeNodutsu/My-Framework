@@ -20,7 +20,6 @@
 #include "DDSTextureLoader.h" // DDS形式(圧縮状態で扱い可能)
 #include "WICTextureLoader.h" // BMP PNG とか
 #include <SimpleMath.h>
-#include <Audio.h>
 
 // Effekseer
 #pragma comment(lib, "Effekseer.lib")
@@ -35,6 +34,7 @@
 // エイリアスが含まれているので最優先
 #include "Utility/Types.h"
 #include "Utility/Utility.h"
+#include "Utility/CpuUseRate.h"
 
 #include "Utility/FpsTimer.h"
 #include "Window/Window.h"
@@ -49,7 +49,11 @@
 #include "Model/Animation.h"
 #include "Input/RawInput.h"
 #include "Scripting/Lua.h"
-#include "Audio/Audio.h"
+
+//#include "Audio/AudioDevice.h"
+//#include "Audio/AudioDeviceChild.h"
+//#include "Audio/Music.h"
+//#include "Audio/Sound.h"
 
 //--------------------------------------------------
 // Shader
