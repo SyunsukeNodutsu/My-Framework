@@ -41,7 +41,8 @@ public:
 private:
 
 	bool m_endFlag = false; // ゲーム終了フラグ
-	std::shared_ptr<Music> m_spMusic;
+
+	std::shared_ptr<SoundWork> m_spSoundWork;
 
 private:
 

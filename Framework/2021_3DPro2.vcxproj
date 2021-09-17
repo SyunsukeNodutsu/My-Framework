@@ -39,6 +39,7 @@
     <ClCompile Include="Source\Framework\AI\WayPoint.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Audio\AudioDirector.cpp" />
     <ClCompile Include="Source\Framework\Audio\Music.cpp" />
     <ClCompile Include="Source\Framework\Audio\Sound.cpp" />
     <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="Source\Framework\AI\WayPointNavigator.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDevice.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Audio\AudioDirector.h" />
     <ClInclude Include="Source\Framework\Audio\Music.h" />
     <ClInclude Include="Source\Framework\Audio\Sound.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h" />

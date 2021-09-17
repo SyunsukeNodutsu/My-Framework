@@ -6,10 +6,16 @@
 
 HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename);
 
+//=============================================================================
+//
+// SoundData
+//
+//=============================================================================
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
-Sound::Sound()
+SoundData::SoundData()
     : m_pSourceVoice(nullptr)
     , m_buffer()
     , m_waveFile()
@@ -18,33 +24,10 @@ Sound::Sound()
 }
 
 //-----------------------------------------------------------------------------
-// 解放
-//-----------------------------------------------------------------------------
-void Sound::Release()
-{
-    if (m_pSourceVoice) {
-        m_pSourceVoice->DestroyVoice();
-        m_pSourceVoice = nullptr;
-    }
-}
-
-//-----------------------------------------------------------------------------
-// 再生
-//-----------------------------------------------------------------------------
-void Sound::Play()
-{
-    if (m_pSourceVoice) m_pSourceVoice->Start(0);
-}
-
-//-----------------------------------------------------------------------------
 // 読み込み
 //-----------------------------------------------------------------------------
-HRESULT Sound::Load(const std::string& filepath)
+bool SoundData::Load(const std::string& filepath, bool loop)
 {
-    //--------------------------------------------------
-    // 読み込み
-    //--------------------------------------------------
-
     std::wstring wfilepath = sjis_to_wide(filepath);
 
     // 波形ファイルを探す
@@ -53,24 +36,39 @@ HRESULT Sound::Load(const std::string& filepath)
     HRESULT hr = FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
     if (FAILED(hr)) {
         IMGUISYSTEM.AddLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
-        return hr;
+        return false;
     }
 
     // 波形ファイルの読み込み
     // Microsoftのサンプル"LoadWAVAudioFromFileEx"を使用
     if (FAILED(hr = DirectX::LoadWAVAudioFromFileEx(strFilePath, m_waveFile, m_waveData))) {
         IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
-        return hr;
+        return false;
     }
 
-    //--------------------------------------------------
-    // 作成
-    //--------------------------------------------------
+    return Create(loop);
+}
 
+//-----------------------------------------------------------------------------
+// 解放
+//-----------------------------------------------------------------------------
+void SoundData::Release()
+{
+    if (m_pSourceVoice) {
+        m_pSourceVoice->DestroyVoice();
+        m_pSourceVoice = nullptr;
+    }
+}
+
+//-----------------------------------------------------------------------------
+// 作成
+//-----------------------------------------------------------------------------
+bool SoundData::Create(bool loop)
+{
     // IXAudio2SourceVoiceの作成
-    if (FAILED(hr = g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_waveData.wfx))) {
+    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_waveData.wfx))) {
         IMGUISYSTEM.AddLog("ERROR: Failed to create source voice.");
-        return hr;
+        return false;
     }
 
     // XAUDIO2_BUFFER構造体を使用し 波形のサンプルデータを送信
@@ -83,29 +81,141 @@ HRESULT Sound::Load(const std::string& filepath)
     {
         m_buffer.LoopBegin  = m_waveData.loopStart;
         m_buffer.LoopLength = m_waveData.loopLength;
-        m_buffer.LoopCount  = 1;
+        m_buffer.LoopCount  = loop ? XAUDIO2_LOOP_INFINITE : 0;
     }
 
-    // WAVEに対応
+    // とりあえず対応は.wavのみ
     if (m_waveData.seek) {
         IMGUISYSTEM.AddLog("ERROR: This platform does not support xWMA or XMA2.");
         Release();
-        return hr;
+        return false;
     }
 
     // 音声キューに新しいオーディオバッファを追加
-    if (FAILED(hr = m_pSourceVoice->SubmitSourceBuffer(&m_buffer))) {
+    if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&m_buffer))) {
         IMGUISYSTEM.AddLog("ERROR: Failed to add audio buffer.");
         Release();
-        return hr;
+        return false;
     }
 
-    return hr;
+    return true;
 }
 
-//--------------------------------------------------------------------------------------
+
+
+//=============================================================================
+//
+// SoundWork
+//
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// コンストラクタ
+//-----------------------------------------------------------------------------
+SoundWork::SoundWork()
+    : m_pSourceVoice(nullptr)
+    , m_soundData()
+    , m_filepath("")
+{
+}
+
+//-----------------------------------------------------------------------------
+// 読み込み 作成
+//-----------------------------------------------------------------------------
+bool SoundWork::Load(const std::string& filepath, bool loop)
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return false;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return false;
+
+    m_filepath = filepath;
+
+    if (!m_soundData.Load(filepath, loop)) {
+        IMGUISYSTEM.AddLog("ERROR: Failed to load voice.");
+        return false;
+    }
+
+    // ボイスコピー
+    m_pSourceVoice = m_soundData.GetRawVoice();
+
+    IMGUISYSTEM.AddLog(std::string("INFO: Load voice done: " + filepath).c_str());
+
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+// 解放
+//-----------------------------------------------------------------------------
+void SoundWork::Release()
+{
+    // ソース元の解放
+    m_soundData.Release();
+}
+
+//-----------------------------------------------------------------------------
+// 再生
+//-----------------------------------------------------------------------------
+void SoundWork::Play(DWORD delay)
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+
+    if (m_pSourceVoice) m_pSourceVoice->Start(0);
+}
+
+//-----------------------------------------------------------------------------
+// 停止
+//-----------------------------------------------------------------------------
+void SoundWork::Stop()
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+
+    if (m_pSourceVoice) m_pSourceVoice->Stop();
+}
+
+//-----------------------------------------------------------------------------
+// 音量設定
+//-----------------------------------------------------------------------------
+void SoundWork::SetVolume(float val)
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+
+    if (m_pSourceVoice) m_pSourceVoice->SetVolume(val);
+}
+
+//-----------------------------------------------------------------------------
+// 音量を返す
+//-----------------------------------------------------------------------------
+float SoundWork::GetVolume()
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return FLT_MAX;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return FLT_MAX;
+
+    float val;
+    if (m_pSourceVoice) m_pSourceVoice->GetVolume(&val);
+    else return 0;
+    return val;
+}
+
+//-----------------------------------------------------------------------------
+// 再生中かどうかを返す
+//-----------------------------------------------------------------------------
+bool SoundWork::IsPlaying()
+{
+    if (AudioDeviceChild::g_audioDevice == nullptr) return false;
+    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return false;
+    if (!m_pSourceVoice) return false;
+
+    XAUDIO2_VOICE_STATE pState;
+    m_pSourceVoice->GetState(&pState);
+
+    return (pState.BuffersQueued > 0);
+}
+
+//-----------------------------------------------------------------------------
 // メディアファイルの位置を確認するためのヘルパー関数
-//--------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename)
 {
     bool bFound = false;

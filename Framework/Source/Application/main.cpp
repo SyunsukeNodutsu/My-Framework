@@ -115,8 +115,9 @@ bool Application::Initialize(int width, int height)
 	g_audioDevice.SetMasterVolume(0.4f);
 	AudioDeviceChild::SetAudioDevice(&g_audioDevice);
 
-	m_spMusic = std::make_shared<Music>("Resource/Audio/さよならの支度.wav");
-	m_spMusic->Play();
+	m_spSoundWork = std::make_shared<SoundWork>();
+	m_spSoundWork->Load("Resource/Audio/さよならの支度.wav", true);
+	m_spSoundWork->Play();
 	
 	// シェーダー
 	SHADER.Initialize();
@@ -135,7 +136,7 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	m_spMusic->Release();
+	m_spSoundWork->Release();
 	g_audioDevice.Finalize();
 
 	IMGUISYSTEM.Finalize();

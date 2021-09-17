@@ -225,6 +225,9 @@
     <ClCompile Include="Source\Framework\Audio\Sound.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\AudioDirector.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -405,6 +408,9 @@
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Sound.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDirector.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
   </ItemGroup>

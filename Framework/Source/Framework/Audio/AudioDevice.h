@@ -15,6 +15,9 @@ class AudioDevice
 {
 public:
 
+    // @brief コンストラクタ
+    AudioDevice();
+
     // @brief 初期化
     // @return 成功...true
     bool Initialize(XAUDIO2_PROCESSOR processor = XAUDIO2_DEFAULT_PROCESSOR);
@@ -31,20 +34,20 @@ public:
 
     // @brief マスター音量を設定
     void SetMasterVolume(float value) {
-        g_masteringVoice->SetVolume(value);
+        g_pMasteringVoice->SetVolume(value);
     }
 
     // @brief マスター音量を返す
     // @return マスター音量
     float GetMasterVolume() const {
-        float ret = 0.f; g_masteringVoice->GetVolume(&ret); return ret;
+        float ret = 0; g_pMasteringVoice->GetVolume(&ret); return ret;
     }
 
 public:
 
     // デバイス マスターボイス
-    IXAudio2* g_xAudio2 = 0;
-    IXAudio2MasteringVoice* g_masteringVoice = 0;
+    IXAudio2* g_xAudio2 = nullptr;
+    IXAudio2MasteringVoice* g_pMasteringVoice = nullptr;
 
     // ボリュームメータ
     float g_peakLevels[2];	// ピークメータ ※瞬間最大値
@@ -58,7 +61,8 @@ private:
 private:
 
     // @brief ボリュームメータ(APO)の作成
-    void InitializeVolumeMeterAPO();
+    // @return 成功...true
+    bool InitializeVolumeMeterAPO();
 
     // @brief ボリュームメータ更新
     void UpdateVolumeMeter();

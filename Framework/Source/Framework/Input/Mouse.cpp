@@ -79,7 +79,7 @@ void Mouse::SetAt(float2 position, HWND hwnd, bool abs)
     if (GetFocus() != hwnd)
         return;
 
-    POINT pt = { position.x, position.y };
+    POINT pt = { static_cast<LONG>(position.x), static_cast<LONG>(position.y) };
 
     if (!abs) {
         m_mousePos.x = position.x;

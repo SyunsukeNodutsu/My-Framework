@@ -1,17 +1,20 @@
 ﻿//-----------------------------------------------------------------------------
-// File: Human.h
-//
+// File: AudioDirector.h
 // 
+// 管理大本
 //-----------------------------------------------------------------------------
 #pragma once
-#include "AudioDeviceChild.h"
-#include "Sound.h"
 
-class Music : public SoundWork
+// ゲームオーディオ管理クラス
+class AudioDirector
 {
 public:
 
-    Music() {}
-    Music(const std::string& filepath);
+	// @brief コンストラクタ
+	AudioDirector();
+
+private:
+
+
 
 };
