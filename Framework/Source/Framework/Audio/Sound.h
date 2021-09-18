@@ -26,7 +26,7 @@ public:
     void Release();
 
     // @brief ソースボイスを返す ※TODO: 関数名変かも
-    // @return ソースボイス
+    // @return 無加工のソースボイス
     IXAudio2SourceVoice* GetRawVoice() const { return m_pSourceVoice; }
 
 private:
@@ -61,6 +61,7 @@ public:
     void Release();
 
     // @brief 再生
+    // @param delay 再生までの待ち時間(ミリ秒)
     void Play(DWORD delay = 0);
 
     // @brief 停止

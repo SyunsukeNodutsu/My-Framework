@@ -117,7 +117,7 @@ bool Application::Initialize(int width, int height)
 
 	m_spSoundWork = std::make_shared<SoundWork>();
 	m_spSoundWork->Load("Resource/Audio/さよならの支度.wav", true);
-	m_spSoundWork->Play();
+	m_spSoundWork->Play(1000);
 	
 	// シェーダー
 	SHADER.Initialize();

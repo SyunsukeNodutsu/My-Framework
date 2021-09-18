@@ -4,7 +4,7 @@
 
 #include "../../Application/ImGuiSystem.h"
 
-HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename);
+HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
 
 //=============================================================================
 //
@@ -40,7 +40,7 @@ bool SoundData::Load(const std::string& filepath, bool loop)
     }
 
     // 波形ファイルの読み込み
-    // Microsoftのサンプル"LoadWAVAudioFromFileEx"を使用
+    // Microsoftのヘルパー関数"LoadWAVAudioFromFileEx"を使用
     if (FAILED(hr = DirectX::LoadWAVAudioFromFileEx(strFilePath, m_waveFile, m_waveData))) {
         IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
         return false;
@@ -65,6 +65,9 @@ void SoundData::Release()
 //-----------------------------------------------------------------------------
 bool SoundData::Create(bool loop)
 {
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
+
     // IXAudio2SourceVoiceの作成
     if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_waveData.wfx))) {
         IMGUISYSTEM.AddLog("ERROR: Failed to create source voice.");
@@ -73,16 +76,17 @@ bool SoundData::Create(bool loop)
 
     // XAUDIO2_BUFFER構造体を使用し 波形のサンプルデータを送信
 
-    m_buffer.pAudioData = m_waveData.startAudio;
     m_buffer.Flags      = XAUDIO2_END_OF_STREAM;// データは単発
     m_buffer.AudioBytes = m_waveData.audioBytes;
+    m_buffer.pAudioData = m_waveData.startAudio;
 
+    // 音源ファイルにループ情報あり
     if (m_waveData.loopLength > 0)
     {
-        m_buffer.LoopBegin  = m_waveData.loopStart;
+        m_buffer.LoopBegin = m_waveData.loopStart;
         m_buffer.LoopLength = m_waveData.loopLength;
-        m_buffer.LoopCount  = loop ? XAUDIO2_LOOP_INFINITE : 0;
     }
+    m_buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
     // とりあえず対応は.wavのみ
     if (m_waveData.seek) {
@@ -124,8 +128,8 @@ SoundWork::SoundWork()
 //-----------------------------------------------------------------------------
 bool SoundWork::Load(const std::string& filepath, bool loop)
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return false;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return false;
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
 
     m_filepath = filepath;
 
@@ -156,10 +160,19 @@ void SoundWork::Release()
 //-----------------------------------------------------------------------------
 void SoundWork::Play(DWORD delay)
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!m_pSourceVoice) return;
 
-    if (m_pSourceVoice) m_pSourceVoice->Start(0);
+    if (delay > 0)
+    {
+        std::thread([=]
+            { Sleep(delay); m_pSourceVoice->Start(0); }
+        ).detach();
+        return;
+    }
+
+    m_pSourceVoice->Start(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -167,10 +180,11 @@ void SoundWork::Play(DWORD delay)
 //-----------------------------------------------------------------------------
 void SoundWork::Stop()
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!m_pSourceVoice) return;
 
-    if (m_pSourceVoice) m_pSourceVoice->Stop();
+    m_pSourceVoice->Stop();
 }
 
 //-----------------------------------------------------------------------------
@@ -178,10 +192,11 @@ void SoundWork::Stop()
 //-----------------------------------------------------------------------------
 void SoundWork::SetVolume(float val)
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return;
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!m_pSourceVoice) return;
 
-    if (m_pSourceVoice) m_pSourceVoice->SetVolume(val);
+    m_pSourceVoice->SetVolume(val);
 }
 
 //-----------------------------------------------------------------------------
@@ -189,13 +204,12 @@ void SoundWork::SetVolume(float val)
 //-----------------------------------------------------------------------------
 float SoundWork::GetVolume()
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return FLT_MAX;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return FLT_MAX;
+    if (!AudioDeviceChild::g_audioDevice) return FLT_MAX;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return FLT_MAX;
+    if (!m_pSourceVoice) return false;
 
-    float val;
-    if (m_pSourceVoice) m_pSourceVoice->GetVolume(&val);
-    else return 0;
-    return val;
+    float ret; m_pSourceVoice->GetVolume(&ret);
+    return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -203,8 +217,8 @@ float SoundWork::GetVolume()
 //-----------------------------------------------------------------------------
 bool SoundWork::IsPlaying()
 {
-    if (AudioDeviceChild::g_audioDevice == nullptr) return false;
-    if (AudioDeviceChild::g_audioDevice->g_xAudio2 == nullptr) return false;
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
     if (!m_pSourceVoice) return false;
 
     XAUDIO2_VOICE_STATE pState;
@@ -216,6 +230,7 @@ bool SoundWork::IsPlaying()
 //-----------------------------------------------------------------------------
 // メディアファイルの位置を確認するためのヘルパー関数
 //-----------------------------------------------------------------------------
+_Use_decl_annotations_
 HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename)
 {
     bool bFound = false;
