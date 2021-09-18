@@ -419,6 +419,9 @@
     <ClInclude Include="Source\Framework\Audio\Sound3D.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\AudioDefines.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">

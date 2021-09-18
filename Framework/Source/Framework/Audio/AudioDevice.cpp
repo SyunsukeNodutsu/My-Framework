@@ -3,19 +3,6 @@
 
 using namespace DirectX;
 
-// サウンドコーン
-static const X3DAUDIO_CONE Listener_DirectionalCone = { X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 1.0f, 0.75f, 0.0f, 0.25f, 0.708f, 1.0f };
-
-// LFEレベルの距離曲線
-static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_LFE_CurvePoints[3] = { 0.0f, 1.0f, 0.25f, 0.0f, 1.0f, 0.0f };
-static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_LFE_CurvePoints[0], 3 };
-
-// リバーブセンドレベルの距離曲線
-static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_Reverb_CurvePoints[3] = { 0.0f, 0.5f, 0.75f, 1.0f, 1.0f, 0.0f };
-static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_Reverb_CurvePoints[0], 3 };
-
-
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -54,11 +41,108 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
         return false;
     }
 
+    // デバイスの詳細を確認し
+    // サンプルでサポートされているパラメータの範囲内であることを確認
+    DWORD dwChannelMask;
+    UINT32 nSampleRate;
+
+    XAUDIO2_VOICE_DETAILS details;
+    g_pMasteringVoice->GetVoiceDetails(&details);
+
+    if (details.InputChannels > OUTPUTCHANNELS) {
+        return false;
+    }
+
+    if (FAILED(hr = g_pMasteringVoice->GetChannelMask(&dwChannelMask))) {
+        return false;
+    }
+
+    nSampleRate     = details.InputSampleRate;
+    g_channels      = details.InputChannels;
+    dwChannelMask   = dwChannelMask;
+
+    // リバーブエフェクトの作成
+    UINT32 rflags = 0;
+    if (FAILED(XAudio2CreateReverb(&g_pReverbEffect, rflags))) {
+        return false;
+    }
+
+    // サブミックスボイスの作成
+
+    // パフォーマンスのヒント：グローバルFXを最終ミックスと同じサンプル数のチャンネルで実行する必要はありません。
+    // のチャンネル数でグローバルFXを実行する必要はありません。 例えば、このサンプルでは
+    // 例えば、このサンプルではリバーブをモノラルモードで動作させ、CPUのオーバーヘッドを減らしています。
+    XAUDIO2_EFFECT_DESCRIPTOR effects[] = { { g_pReverbEffect, TRUE, 1 } };
+    XAUDIO2_EFFECT_CHAIN effectChain = { 1, effects };
+
+    if (FAILED(hr = g_xAudio2->CreateSubmixVoice(&g_pSubmixVoice,
+        1, nSampleRate, 0, 0, nullptr, &effectChain))) {
+        return false;
+    }
+
+    // デフォルトのFXパラメター設定
+    XAUDIO2FX_REVERB_PARAMETERS native;
+    //ReverbConvertI3DL2ToNative(&g_PRESET_PARAMS[0], &native);
+    //g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native));
+
+    // ボリュームメータAPO作成
     InitializeVolumeMeterAPO();
 
     IMGUISYSTEM.AddLog("INFO: AudioDevice Initialized.");
 
     return done = true;
+}
+
+//-----------------------------------------------------------------------------
+// 3DAudio初期化
+//-----------------------------------------------------------------------------
+bool AudioDevice::Initialize3D()
+{
+    //
+    // X3DAudioの初期化 X3DAudio の初期化
+    // 最終ミックスでのスピーカーのジオメトリ設定。WAVEFORMATEXTENSIBLE.dwChannelMaskで定義された、
+    // スピーカーの位置へのチャンネルの割り当てを指定します。
+    //
+    // SpeedOfSound - ユーザー定義のワールドユニット/秒での音速，ドップラー計算にのみ使用されます．
+    // ドップラー計算にのみ使用され、 >= FLT_MIN でなければなりません。
+    //
+
+    DWORD dwChannelMask;
+    g_pMasteringVoice->GetChannelMask(&dwChannelMask);
+
+    constexpr float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
+    X3DAudioInitialize(dwChannelMask, SPEEDOFSOUND, g_x3DAudioInstance);
+
+    //--------------------------------------------------
+    // リスナー初期化
+    //--------------------------------------------------
+    
+    m_listener.Position.x     = 
+    m_listener.Position.y     = 
+    m_listener.Position.z     = 0.f;
+
+    m_listener.OrientFront.x  = 
+    m_listener.OrientFront.y  = 
+    m_listener.OrientTop.x    = 
+    m_listener.OrientTop.z    = 0.f;
+
+    m_listener.OrientFront.z  = 
+    m_listener.OrientTop.y    = 1.0f;
+
+    m_listener.pCone = (X3DAUDIO_CONE*)&Listener_DirectionalCone;
+    m_listener.pCone->InnerAngle = 
+    m_listener.pCone->OuterAngle = 0.0f;
+
+    m_listener.pCone->InnerVolume = 0.0f;
+    m_listener.pCone->OuterVolume = 1.0f;
+
+    m_listener.pCone->InnerLPF = 0.0f;
+    m_listener.pCone->OuterLPF = 1.0f;
+
+    m_listener.pCone->InnerReverb = 0.0f;
+    m_listener.pCone->OuterReverb = 1.0f;
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -88,6 +172,31 @@ void AudioDevice::Update( float fElapsedTime )
 
 
     UpdateVolumeMeter();
+}
+
+//-----------------------------------------------------------------------------
+// リスナー更新
+//-----------------------------------------------------------------------------
+void AudioDevice::UpdateListener(const mfloat4x4& matrix)
+{
+    // 座標
+    float3 pos = matrix.Translation();
+    m_listener.Position.x = pos.x;
+    m_listener.Position.y = pos.y;
+    m_listener.Position.z = pos.z;
+
+    // 方向
+    float3 front = matrix.Backward();
+    m_listener.OrientFront.x = front.x;
+    m_listener.OrientFront.y = front.y;
+
+    float3 top = matrix.Up();
+    m_listener.OrientTop.x = top.x;
+    m_listener.OrientTop.z = top.z;
+
+    // 奥行 傾き
+    m_listener.OrientFront.z = front.z;
+    //m_listener.OrientTop.y = top.z;
 }
 
 //-----------------------------------------------------------------------------

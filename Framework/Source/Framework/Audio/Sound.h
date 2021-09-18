@@ -55,29 +55,29 @@ public:
     // @param filepath 音源のファイルパス
     // @param loop ループ再生？
     // @return 成功...true
-    bool Load(const std::string& filepath, bool loop = false);
+    virtual bool Load(const std::string& filepath, bool loop = false);
 
     // @brief 解放
-    void Release();
+    virtual void Release();
 
     // @brief 再生
     // @param delay 再生までの待ち時間(ミリ秒)
-    void Play(DWORD delay = 0);
+    virtual void Play(DWORD delay = 0);
 
     // @brief 停止
-    void Stop();
+    virtual void Stop();
 
     // @brief 音量を設定する
     // @param val 設定音量
-    void SetVolume(float val);
+    virtual void SetVolume(float val);
 
     // @brief 音量を返す
     // @return 音量
-    float GetVolume();
+    virtual float GetVolume();
 
     // @brief 再生中かを返す
     // @return 再生中...true
-    bool IsPlaying();
+    virtual bool IsPlaying();
 
 protected:
 

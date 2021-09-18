@@ -103,6 +103,7 @@
     <ClInclude Include="Source\Application\main.h" />
     <ClInclude Include="Source\Framework\AI\WayPoint.h" />
     <ClInclude Include="Source\Framework\AI\WayPointNavigator.h" />
+    <ClInclude Include="Source\Framework\Audio\AudioDefines.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDevice.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDirector.h" />
