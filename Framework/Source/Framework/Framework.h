@@ -22,10 +22,6 @@
 #include <SimpleMath.h>
 
 // Effekseer
-#pragma comment(lib, "Effekseer.lib")
-#pragma comment(lib, "EffekseerRendererDX11.lib")
-#include <Effekseer.h>
-#include <EffekseerRendererDX11.h>
 
 //--------------------------------------------------
 // 自作Framework
@@ -38,12 +34,12 @@
 
 #include "Utility/FpsTimer.h"
 #include "Window/Window.h"
-#include "DirectX/Device.h"
-#include "DirectX/Texture.h"
-#include "DirectX/Buffer.h"
-#include "DirectX/Renderer.h"
-#include "DirectX/Camera.h"
-#include "DirectX/CubeMapGenerator.h"
+#include "Graphics/Device.h"
+#include "Graphics/Texture.h"
+#include "Graphics/Buffer.h"
+#include "Graphics/Renderer.h"
+#include "Graphics/Camera.h"
+#include "Graphics/CubeMapGenerator.h"
 #include "Model/Mesh.h"
 #include "Model/Model.h"
 #include "Model/Animation.h"
@@ -52,7 +48,6 @@
 
 #include "Audio/AudioDevice.h"
 #include "Audio/AudioDeviceChild.h"
-#include "Audio/Music.h"
 #include "Audio/Sound.h"
 
 //--------------------------------------------------

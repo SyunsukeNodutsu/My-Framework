@@ -114,10 +114,6 @@ bool Application::Initialize(int width, int height)
 	g_audioDevice.Initialize();
 	g_audioDevice.SetMasterVolume(0.4f);
 	AudioDeviceChild::SetAudioDevice(&g_audioDevice);
-
-	m_spSoundWork = std::make_shared<SoundWork>();
-	m_spSoundWork->Load("Resource/Audio/さよならの支度.wav", true);
-	m_spSoundWork->Play(1000);
 	
 	// シェーダー
 	SHADER.Initialize();
@@ -136,13 +132,12 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	m_spSoundWork->Release();
-	g_audioDevice.Finalize();
-
 	IMGUISYSTEM.Finalize();
 	GAMESYSTEM.Finalize();
-	D3D.Release();
+
+	g_audioDevice.Finalize();
 	RAW_INPUT.Finalize();
+	D3D.Release();
 
 	g_window.Release();
 }
@@ -162,7 +157,7 @@ void Application::Execute()
 	// 
 	//==================================================
 
-	while (1)
+	while (4545)
 	{
 		if (m_endFlag)
 			break;
@@ -185,7 +180,7 @@ void Application::Execute()
 		// カメラ行列の取得
 		auto cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
 
-		g_audioDevice.Update();
+		g_audioDevice.Update(0);
 		//AUDIO.Update(cameraMatrix.Translation(), cameraMatrix.Backward());
 
 		//----------------------------------------

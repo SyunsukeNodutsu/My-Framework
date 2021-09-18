@@ -219,7 +219,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	static float volume = APP.g_audioDevice.GetMasterVolume();
-	if (ImGui::SliderFloat("Main", &volume, 0, 5, "%.2f"))
+	if (ImGui::SliderFloat("Main", &volume, 0.0f, 2.0f, "%.2f"))
 		APP.g_audioDevice.SetMasterVolume(volume);
 
 	ImGui::Text(std::string("PlayList: " + std::to_string(0/*AUDIO.GetPlayListSize()*/)).c_str());

@@ -61,9 +61,6 @@
     <Filter Include="Source\Framework\Shader\Effect">
       <UniqueIdentifier>{827afbf7-612d-4155-af7c-19670b547315}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Direct3D">
-      <UniqueIdentifier>{1f2c0d59-ae90-458c-8eda-1c4b28d56cbc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Library\imGui">
       <UniqueIdentifier>{2f7c5625-1415-444e-8aca-3d6b599d9f2d}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,9 @@
     </Filter>
     <Filter Include="Source\Framework\Audio\Vender">
       <UniqueIdentifier>{f60a730b-01b4-499e-b350-7557d55f30cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Graphics">
+      <UniqueIdentifier>{29f0368e-b8dc-4a24-9ce3-dd95075beed7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,18 +93,6 @@
     <ClCompile Include="Source\Framework\Scripting\Lua.cpp">
       <Filter>Source\Framework\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\Device.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\Renderer.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\Texture.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\Buffer.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp">
       <Filter>Source\Framework\Shader\Sprite</Filter>
     </ClCompile>
@@ -119,9 +107,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Model\Model.cpp">
       <Filter>Source\Framework\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\CubeMapGenerator.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp">
       <Filter>Source\Framework\Shader</Filter>
@@ -147,17 +132,11 @@
     <ClCompile Include="Source\Framework\Utility\Easing.cpp">
       <Filter>Source\Framework\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\GraphicsDeviceChild.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Input\Mouse.cpp">
       <Filter>Source\Framework\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp">
       <Filter>Source\Framework\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\DirectX\Camera.cpp">
-      <Filter>Source\Framework\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
       <Filter>Source\Application\Camera</Filter>
@@ -219,13 +198,37 @@
     <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Music.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Audio\Sound.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Audio\AudioDirector.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Audio_before.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Buffer.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Camera.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Device.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Renderer.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Texture.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\Sound3D.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
   </ItemGroup>
@@ -254,18 +257,6 @@
     <ClInclude Include="Source\Framework\Utility\Timer.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\Device.h">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\Renderer.h">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\Texture.h">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\Buffer.h">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h">
       <Filter>Source\Framework\Shader\Sprite</Filter>
     </ClInclude>
@@ -283,9 +274,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Model\Model.h">
       <Filter>Source\Framework\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\CubeMapGenerator.h">
-      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h">
       <Filter>Source\Framework\Shader</Filter>
@@ -326,17 +314,11 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\GraphicsDeviceChild.h">
-      <Filter>Source\Framework\Direct3D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Input\Mouse.h">
       <Filter>Source\Framework\Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Input\Keyboard.h">
       <Filter>Source\Framework\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\DirectX\Camera.h">
-      <Filter>Source\Framework\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\FPSCamera.h">
       <Filter>Source\Application\Camera</Filter>
@@ -404,13 +386,37 @@
     <ClInclude Include="Source\Framework\Audio\AudioDevice.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Music.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Sound.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Audio\AudioDirector.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Audio_before.h">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Buffer.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Camera.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Device.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Renderer.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Texture.h">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Audio\Sound3D.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
   </ItemGroup>

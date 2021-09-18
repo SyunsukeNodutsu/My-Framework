@@ -40,9 +40,8 @@ public:
 
 private:
 
-	bool m_endFlag = false; // ゲーム終了フラグ
-
-	std::shared_ptr<SoundWork> m_spSoundWork;
+	// ゲーム終了フラグ
+	bool m_endFlag = false;
 
 private:
 

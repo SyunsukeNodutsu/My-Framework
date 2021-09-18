@@ -67,6 +67,7 @@ private:
 	std::list<std::shared_ptr<GameObject>>	m_spObjectList;
 
 	std::shared_ptr<Texture> spTexture;
+	std::shared_ptr<SoundWork> m_spSoundWork;
 
 private:
 

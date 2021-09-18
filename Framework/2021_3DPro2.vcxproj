@@ -40,17 +40,23 @@
     <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDirector.cpp" />
-    <ClCompile Include="Source\Framework\Audio\Music.cpp" />
+    <ClCompile Include="Source\Framework\Audio\Audio_before.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Framework\Audio\Sound.cpp" />
+    <ClCompile Include="Source\Framework\Audio\Sound3D.cpp" />
     <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp" />
     <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\Buffer.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\Camera.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\CubeMapGenerator.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\Device.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\GraphicsDeviceChild.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\Renderer.cpp" />
-    <ClCompile Include="Source\Framework\DirectX\Texture.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Buffer.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Camera.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Device.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Framework\Input\Mouse.cpp" />
     <ClCompile Include="Source\Framework\Input\RawInput.cpp" />
@@ -100,17 +106,23 @@
     <ClInclude Include="Source\Framework\Audio\AudioDevice.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDirector.h" />
-    <ClInclude Include="Source\Framework\Audio\Music.h" />
+    <ClInclude Include="Source\Framework\Audio\Audio_before.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Sound.h" />
+    <ClInclude Include="Source\Framework\Audio\Sound3D.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h" />
-    <ClInclude Include="Source\Framework\DirectX\Buffer.h" />
-    <ClInclude Include="Source\Framework\DirectX\Camera.h" />
-    <ClInclude Include="Source\Framework\DirectX\CubeMapGenerator.h" />
-    <ClInclude Include="Source\Framework\DirectX\Device.h" />
-    <ClInclude Include="Source\Framework\DirectX\GraphicsDeviceChild.h" />
-    <ClInclude Include="Source\Framework\DirectX\Renderer.h" />
-    <ClInclude Include="Source\Framework\DirectX\Texture.h" />
+    <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
+    <ClInclude Include="Source\Framework\Graphics\Camera.h" />
+    <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h" />
+    <ClInclude Include="Source\Framework\Graphics\Device.h" />
+    <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
+    <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />
     <ClInclude Include="Source\Framework\Input\KeyCode.h" />
     <ClInclude Include="Source\Framework\Input\Mouse.h" />

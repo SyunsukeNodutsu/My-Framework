@@ -39,9 +39,10 @@ void GameSystem::Initialize()
 	for (auto& object : m_spObjectList)
 		object->Initialize();
 
-	//// 音
-	//AUDIO.SetUserSettingVolume(0.3f);
-	//AUDIO.Play("", true);
+	// BGM再生
+	m_spSoundWork = std::make_shared<SoundWork>();
+	m_spSoundWork->Load("Resource/Audio/New Happy Day by fennec beats.wav", true);
+	m_spSoundWork->Play(1000);
 }
 
 //-----------------------------------------------------------------------------
@@ -49,6 +50,8 @@ void GameSystem::Initialize()
 //-----------------------------------------------------------------------------
 void GameSystem::Finalize()
 {
+	m_spSoundWork->Release();
+
 	for (auto& object : m_spObjectList)
 		object->Finalize();
 }
@@ -117,10 +120,6 @@ void GameSystem::Draw()
 void GameSystem::Draw2D()
 {
 	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
-
-	//--------------------------------------------------
-	// 2D画像描画
-	//--------------------------------------------------
 
 	SHADER.GetSpriteShader().Begin(true, true);
 

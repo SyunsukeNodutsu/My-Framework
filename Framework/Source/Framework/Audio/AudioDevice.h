@@ -10,6 +10,11 @@
 #include <x3daudio.h>
 #pragma comment(lib,"xaudio2.lib")
 
+#define INPUTCHANNELS 1 // ソースチャンネルの数
+#define OUTPUTCHANNELS 8 // このサンプルでサポートされるデスティネーションチャネルの最大数
+
+enum REVERB_PRESET {};
+
 // XAudio2のエンジン部分管理
 class AudioDevice
 {
@@ -20,20 +25,20 @@ public:
 
     // @brief 初期化
     // @return 成功...true
-    bool Initialize(XAUDIO2_PROCESSOR processor = XAUDIO2_DEFAULT_PROCESSOR);
+    bool Initialize( XAUDIO2_PROCESSOR processor = XAUDIO2_DEFAULT_PROCESSOR );
 
     // @brief 終了
     void Finalize();
 
     // @brief 更新 TODO: 3Dサウンド処理実装予定
-    void Update();
+    void Update( float fElapsedTime );
 
     //--------------------------------------------------
     // 取得・設定
     //--------------------------------------------------
 
     // @brief マスター音量を設定
-    void SetMasterVolume(float value) {
+    void SetMasterVolume( float value ) {
         g_pMasteringVoice->SetVolume(value);
     }
 
@@ -45,9 +50,32 @@ public:
 
 public:
 
-    // デバイス マスターボイス
-    IXAudio2* g_xAudio2 = nullptr;
-    IXAudio2MasteringVoice* g_pMasteringVoice = nullptr;
+    IXAudio2*               g_xAudio2;
+    IXAudio2MasteringVoice* g_pMasteringVoice;
+    IXAudio2SubmixVoice*    g_pSubmixVoice;
+    X3DAUDIO_HANDLE         g_x3DAudioInstance;
+    IUnknown*               g_pReverbEffect;
+
+    int nFrameToApply3DAudio;
+
+    DWORD dwChannelMask;
+    UINT32 nChannels;
+
+    X3DAUDIO_DSP_SETTINGS dspSettings;
+    X3DAUDIO_LISTENER listener;
+
+    float3 vListenerPos;
+    float fListenerAngle;
+    bool  fUseListenerCone;
+    bool  fUseInnerRadius;
+    bool  fUseRedirectToLFE;
+
+    X3DAUDIO_EMITTER emitter;
+    float3 vEmitterPos;
+    X3DAUDIO_CONE emitterCone;
+
+    FLOAT32 emitterAzimuths[INPUTCHANNELS];
+    FLOAT32 matrixCoefficients[INPUTCHANNELS * OUTPUTCHANNELS];
 
     // ボリュームメータ
     float g_peakLevels[2];	// ピークメータ ※瞬間最大値

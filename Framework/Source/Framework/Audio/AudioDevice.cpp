@@ -1,12 +1,30 @@
 ﻿#include "AudioDevice.h"
 #include "../../Application/ImGuiSystem.h"
 
+using namespace DirectX;
+
+// サウンドコーン
+static const X3DAUDIO_CONE Listener_DirectionalCone = { X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 1.0f, 0.75f, 0.0f, 0.25f, 0.708f, 1.0f };
+
+// LFEレベルの距離曲線
+static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_LFE_CurvePoints[3] = { 0.0f, 1.0f, 0.25f, 0.0f, 1.0f, 0.0f };
+static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_LFE_CurvePoints[0], 3 };
+
+// リバーブセンドレベルの距離曲線
+static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_Reverb_CurvePoints[3] = { 0.0f, 0.5f, 0.75f, 1.0f, 1.0f, 0.0f };
+static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_Reverb_CurvePoints[0], 3 };
+
+
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
 AudioDevice::AudioDevice()
     : g_xAudio2(nullptr)
     , g_pMasteringVoice(nullptr)
+    , g_pSubmixVoice(nullptr)
+    , g_x3DAudioInstance()
+    , g_pReverbEffect(nullptr)
     , g_peakLevels()
     , g_RMSLevels()
     , done(false)
@@ -21,19 +39,13 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
     if (done) return false;
 
     // IXAudio2作成
+    // DebugConfigurationは設定なし
     UINT32 flags = 0;
     HRESULT hr = XAudio2Create(&g_xAudio2, flags);
     if (!g_xAudio2) {
         IMGUISYSTEM.AddLog("ERROR: Failed to inialize audio device.");
         return false;
     }
-
-#if _DEBUG
-    XAUDIO2_DEBUG_CONFIGURATION debug = { 0 };
-    debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
-    debug.BreakMask = XAUDIO2_LOG_ERRORS;
-    g_xAudio2->SetDebugConfiguration(&debug, 0);
-#endif // _DEBUG
 
     // IXAudio2MasteringVoice作成
     hr = g_xAudio2->CreateMasteringVoice(&g_pMasteringVoice);
@@ -59,6 +71,7 @@ void AudioDevice::Finalize()
         g_pMasteringVoice = nullptr;
     }
     if (g_xAudio2) {
+        g_xAudio2->StopEngine();
         g_xAudio2->Release();
         g_xAudio2 = nullptr;
     }
@@ -67,9 +80,12 @@ void AudioDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
-void AudioDevice::Update()
+void AudioDevice::Update( float fElapsedTime )
 {
-    // TODO: ADD 3D Audio
+    if (!done) return;
+    if (!g_xAudio2) return;
+    if (!g_pMasteringVoice) return;
+
 
     UpdateVolumeMeter();
 }
