@@ -34,6 +34,10 @@ void GameSystem::Initialize()
 		AddGameObject("Sky");
 		AddGameObject("StageMap");
 		//AddGameObject("Tank");
+
+		auto object = std::make_shared<GameObject>();
+		object->LoadModel("Resource/Model/DebugSphere.gltf");
+		m_spObjectList.push_back(object);
 	}
 
 	for (auto& object : m_spObjectList)
@@ -41,13 +45,15 @@ void GameSystem::Initialize()
 
 	// BGM再生
 	m_spSoundWork = std::make_shared<SoundWork>();
-	m_spSoundWork->Load("Resource/Audio/New Happy Day by fennec beats.wav", true);
+	m_spSoundWork->Load("Resource/Audio/MusicMono.wav", false);
 	m_spSoundWork->Play(1000);
+	m_spSoundWork->SetPan(-1);
 
 	m_spSoundWork3D = std::make_shared<SoundWork3D>();
-	m_spSoundWork3D->Load("Resource/Audio/heli.wav");
+	m_spSoundWork3D->Load("Resource/Audio/heli.wav", true);
 	float3 pos = float3(0, 0, 0);
-	//m_spSoundWork3D->Play3D(pos);
+	m_spSoundWork3D->Play3D(pos);
+	m_spSoundWork3D->SetVolume(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -91,7 +97,7 @@ void GameSystem::Update()
 			++itr;
 	}
 
-	//m_spSoundWork3D->Update();
+	m_spSoundWork3D->Update();
 }
 
 //-----------------------------------------------------------------------------

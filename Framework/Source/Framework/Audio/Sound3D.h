@@ -8,7 +8,6 @@
 #include "Sound.h"
 
 // 3Dサウンド操作クラス
-// TODO: Sound継承する
 class SoundWork3D : public SoundWork
 {
 public:
@@ -25,9 +24,6 @@ public:
 	void Update();
 
 private:
-
-	IXAudio2SourceVoice*		m_pSourceVoice;
-	std::unique_ptr<uint8_t[]>	m_waveData;
 
 	X3DAUDIO_EMITTER		m_emitter;
 	X3DAUDIO_CONE			m_emitterCone;

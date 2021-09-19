@@ -71,12 +71,18 @@ public:
     // @param val 設定音量
     virtual void SetVolume(float val);
 
+    // @brief 音をパンする
+    // @note 3Dサウンドでパンすると3D計算が無効になってしまう
+    // @param pan -1(左)～1(右)の間
+    virtual void SetPan(float pan);
+
     // @brief 音量を返す
     // @return 音量
     virtual float GetVolume();
 
     // @brief 再生中かを返す
-    // @return 再生中...true
+    // @note ループの場合は
+    // @return 再生中...true 最後まで再生された...false
     virtual bool IsPlaying();
 
 protected:

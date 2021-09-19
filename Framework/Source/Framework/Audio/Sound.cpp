@@ -157,10 +157,10 @@ void SoundWork::Play(DWORD delay)
 
     if (delay > 0)
     {
-        std::thread([=]
-            { Sleep(delay); m_pSourceVoice->Start(0); }
-        ).detach();
-        return;
+        std::thread([=] {
+            Sleep(delay);
+            m_pSourceVoice->Start(0);
+        }).detach();
     }
 
     m_pSourceVoice->Start(0);
@@ -188,6 +188,68 @@ void SoundWork::SetVolume(float val)
     if (!m_pSourceVoice) return;
 
     m_pSourceVoice->SetVolume(val);
+}
+
+//-----------------------------------------------------------------------------
+// 音をパンする
+//-----------------------------------------------------------------------------
+void SoundWork::SetPan(float pan)
+{
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!m_pSourceVoice) return;
+
+    // スピーカー構成を取得
+    DWORD dwChannelMask;
+    g_audioDevice->g_pMasteringVoice->GetChannelMask(&dwChannelMask);
+
+    float outputMatrix[8];
+    for (int i = 0; i < 8; i++)
+        outputMatrix[i] = 0;
+
+    float left  = 0.5f - pan / 2;
+    float right = 0.5f + pan / 2;
+
+    // スピーカー構成に応じてパンの値を設定
+    switch (dwChannelMask)
+    {
+    case SPEAKER_MONO:
+        outputMatrix[0] = 1.0;
+        break;
+    case SPEAKER_STEREO:
+    case SPEAKER_2POINT1:
+    case SPEAKER_SURROUND:
+        outputMatrix[0] = left;
+        outputMatrix[1] = right;
+        break;
+    case SPEAKER_QUAD:
+        outputMatrix[0] = outputMatrix[2] = left;
+        outputMatrix[1] = outputMatrix[3] = right;
+        break;
+    case SPEAKER_4POINT1:
+        outputMatrix[0] = outputMatrix[3] = left;
+        outputMatrix[1] = outputMatrix[4] = right;
+        break;
+    case SPEAKER_5POINT1:
+    case SPEAKER_7POINT1:
+    case SPEAKER_5POINT1_SURROUND:
+        outputMatrix[0] = outputMatrix[4] = left;
+        outputMatrix[1] = outputMatrix[5] = right;
+        break;
+    case SPEAKER_7POINT1_SURROUND:
+        outputMatrix[0] = outputMatrix[4] = outputMatrix[6] = left;
+        outputMatrix[1] = outputMatrix[5] = outputMatrix[7] = right;
+        break;
+    }
+
+    // 出力マトリックスを発信元の音声に適用
+    
+    // 本フレームワークは単一のターゲットボイスではないので
+    // 宛先(第一引数)はNULLではなくMasteringVoiceを指定
+    if (FAILED(m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice,
+        INPUTCHANNELS, g_audioDevice->g_channels, outputMatrix))) {
+        DebugLog("ERROR: Failed to pan voice.");
+    }
 }
 
 //-----------------------------------------------------------------------------

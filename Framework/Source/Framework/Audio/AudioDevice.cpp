@@ -79,11 +79,7 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
         return false;
     }
 
-    // デバイスの詳細を確認し
-    // サンプルでサポートされているパラメータの範囲内であることを確認
-    DWORD dwChannelMask;
-    UINT32 nSampleRate;
-
+    // デバイスの詳細を確認
     XAUDIO2_VOICE_DETAILS details;
     g_pMasteringVoice->GetVoiceDetails(&details);
 
@@ -91,13 +87,8 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
         return false;
     }
 
-    if (FAILED(hr = g_pMasteringVoice->GetChannelMask(&dwChannelMask))) {
-        return false;
-    }
-
-    nSampleRate     = details.InputSampleRate;
-    g_channels      = details.InputChannels;
-    dwChannelMask   = dwChannelMask;
+    UINT32 nSampleRate = details.InputSampleRate;
+    g_channels = details.InputChannels;
 
     // ReverbEffectの作成
     UINT32 rflags = 0;
@@ -118,9 +109,10 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
         return false;
     }
 
-    // デフォルトのFXパラメター設定
+    // デフォルトのFXパラメータ設定
     XAUDIO2FX_REVERB_PARAMETERS native;
-    ReverbConvertI3DL2ToNative(&g_PRESET_PARAMS[0], &native);
+    XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_FOREST;
+    ReverbConvertI3DL2ToNative(&param, &native);
     g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native));
 
     Initialize3D();
@@ -358,11 +350,10 @@ void AudioDevice::UpdateVolumeMeter()
         return;
 
     // 受信用構造体 設定
-    constexpr int channels = 2;// 左右
     XAUDIO2FX_VOLUMEMETER_LEVELS Levels = {};
     Levels.pPeakLevels  = g_peakLevels;
     Levels.pRMSLevels   = g_RMSLevels;
-    Levels.ChannelCount = channels;
+    Levels.ChannelCount = g_channels;
 
     // パラメータ受信
     if (FAILED(g_pMasteringVoice->GetEffectParameters(0, &Levels, sizeof(Levels)))) {

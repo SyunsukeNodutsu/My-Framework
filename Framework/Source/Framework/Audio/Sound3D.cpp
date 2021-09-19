@@ -15,6 +15,9 @@ static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve = { (X3DAUDIO_DI
 // コンストラクタ
 //-----------------------------------------------------------------------------
 SoundWork3D::SoundWork3D()
+    : m_emitter()
+    , m_emitterCone()
+    , m_dspSettings()
 {
 }
 
@@ -29,7 +32,7 @@ void SoundWork3D::Play3D(const float3& pos, DWORD delay)
 
     SetEmitter(pos);
 
-    m_pSourceVoice->Start(0);
+    SoundWork::Play(delay);
 }
 
 //-----------------------------------------------------------------------------
@@ -75,8 +78,8 @@ void SoundWork3D::SetEmitter(const float3& pos)
     // 内側のコーンの設定のみを使用して、点のように動作します。
     m_emitter.pCone->OuterAngle = 0.0f;
     // 外側の円錐の角度をゼロにすると
-    // m_emitter は、外円錐の設定のみを使用したポイント m_emitter のように動作します。
-    // 外側の円錐の設定のみを使用して、点状のm_emitterのように動作します。
+    // Emitter は、外円錐の設定のみを使用したポイント Emitter のように動作します。
+    // 外側の円錐の設定のみを使用して、点状のEmitterのように動作します。
     m_emitter.pCone->InnerVolume = 0.0f;
     m_emitter.pCone->OuterVolume = 1.0f;
     m_emitter.pCone->InnerLPF = 0.0f;
