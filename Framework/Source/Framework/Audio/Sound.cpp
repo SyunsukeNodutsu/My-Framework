@@ -16,8 +16,6 @@
 SoundData::SoundData()
     : m_pSourceVoice(nullptr)
     , m_buffer()
-    , m_waveFile()
-    , m_waveData()
 {
 }
 
@@ -28,7 +26,7 @@ bool SoundData::Load(const std::string& filepath, bool loop)
 {
     std::wstring wfilepath = sjis_to_wide(filepath);
 
-    // 波形ファイルを探す
+    // 波形ファイルをディレクトリから探す
     // TODO: WinAPIに似たような機能があるらしい
     WCHAR strFilePath[MAX_PATH];
     HRESULT hr = g_audioDevice->FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
@@ -38,11 +36,19 @@ bool SoundData::Load(const std::string& filepath, bool loop)
     }
 
     // 波形ファイルの読み込み
-    // Microsoftのヘルパー関数"LoadWAVAudioFromFileEx"を使用
-    if (FAILED(hr = DirectX::LoadWAVAudioFromFileEx(strFilePath, m_waveFile, m_waveData))) {
+    // TODO: .wavにシーク設定やループ設定があると下記の方法だと対応できない
+    const uint8_t* sampleData;
+    uint32_t waveSize;
+    if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, m_pWaveData, &m_pWaveFormat, &sampleData, &waveSize))) {
         IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
         return false;
     }
+
+    // XAUDIO2_BUFFER構造体の設定
+    m_buffer.pAudioData = sampleData;
+    m_buffer.Flags      = XAUDIO2_END_OF_STREAM;
+    m_buffer.AudioBytes = waveSize;
+    m_buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
     return Create(loop);
 }
@@ -56,6 +62,7 @@ void SoundData::Release()
         m_pSourceVoice->DestroyVoice();
         m_pSourceVoice = nullptr;
     }
+    m_pWaveData.reset();
 }
 
 //-----------------------------------------------------------------------------
@@ -66,37 +73,23 @@ bool SoundData::Create(bool loop)
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
 
-    // IXAudio2SourceVoiceの作成
-    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_waveData.wfx))) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to create source voice.");
-        return false;
-    }
+    // 送信先になるの宛先ボイスを定義
+    // 今回はサブミックスとマスタリングボイス
+    XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
+    sendDescriptors[0].Flags        = XAUDIO2_SEND_USEFILTER; // LPFダイレクトパス
+    sendDescriptors[0].pOutputVoice = g_audioDevice->g_pMasteringVoice;
+    sendDescriptors[1].Flags        = XAUDIO2_SEND_USEFILTER; // LPFリバーブパス -- 省略するとパフォーマンスが向上しますが、オクルージョンがリアルでなくなります。
+    sendDescriptors[1].pOutputVoice = g_audioDevice->g_pSubmixVoice;
 
-    // XAUDIO2_BUFFER構造体を使用し 波形のサンプルデータを送信
+    const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
 
-    m_buffer.Flags      = XAUDIO2_END_OF_STREAM;// データは単発
-    m_buffer.AudioBytes = m_waveData.audioBytes;
-    m_buffer.pAudioData = m_waveData.startAudio;
-
-    // 音源ファイルにループ情報あり
-    if (m_waveData.loopLength > 0)
-    {
-        m_buffer.LoopBegin = m_waveData.loopStart;
-        m_buffer.LoopLength = m_waveData.loopLength;
-    }
-    m_buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
-
-    // とりあえず対応は.wavのみ
-    if (m_waveData.seek) {
-        IMGUISYSTEM.AddLog("ERROR: This platform does not support xWMA or XMA2.");
-        Release();
+    // ソースボイスの作成
+    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat, 0, 2.0f, nullptr, &sendList))) {
         return false;
     }
 
     // 音声キューに新しいオーディオバッファを追加
     if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&m_buffer))) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to add audio buffer.");
-        Release();
         return false;
     }
 

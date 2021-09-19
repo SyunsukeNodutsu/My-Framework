@@ -99,13 +99,13 @@ bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
     g_channels      = details.InputChannels;
     dwChannelMask   = dwChannelMask;
 
-    // リバーブエフェクトの作成
+    // ReverbEffectの作成
     UINT32 rflags = 0;
     if (FAILED(XAudio2CreateReverb(&g_pReverbEffect, rflags))) {
         return false;
     }
 
-    // サブミックスボイスの作成
+    // SubmixVoiceの作成
 
     // パフォーマンスのヒント：グローバルFXを最終ミックスと同じサンプル数のチャンネルで実行する必要はありません。
     // のチャンネル数でグローバルFXを実行する必要はありません。 例えば、このサンプルでは

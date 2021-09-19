@@ -1,5 +1,4 @@
 ﻿#include "Sound3D.h"
-#include "Vender/WaveBankReader.h"
 #include "Vender/WAVFileReader.h"
 
 #include "../../Application/ImGuiSystem.h"
@@ -17,73 +16,6 @@ static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve = { (X3DAUDIO_DI
 //-----------------------------------------------------------------------------
 SoundWork3D::SoundWork3D()
 {
-}
-
-//-----------------------------------------------------------------------------
-// 読み込み
-//-----------------------------------------------------------------------------
-bool SoundWork3D::Load(const std::string& filepath, bool loop)
-{
-    std::wstring wfilepath = sjis_to_wide(filepath);
-
-    // 波形ファイルを探す
-    // TODO: WinAPIに似たような機能があるらしい
-    WCHAR strFilePath[MAX_PATH];
-    HRESULT hr = g_audioDevice->FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
-    if (FAILED(hr)) {
-        IMGUISYSTEM.AddLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
-        return false;
-    }
-
-    // 波形ファイルの読み込み
-
-    const WAVEFORMATEX* pwfx;
-    const uint8_t* sampleData;
-    uint32_t waveSize;
-
-    if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, waveData, &pwfx, &sampleData, &waveSize))) {
-        IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
-        return false;
-    }
-
-    //
-    // Play the wave using a source voice that sends to both the submix and mastering voices
-    //
-    XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
-    sendDescriptors[0].Flags = XAUDIO2_SEND_USEFILTER; // LPF direct-path
-    sendDescriptors[0].pOutputVoice = g_audioDevice->g_pMasteringVoice;
-    sendDescriptors[1].Flags = XAUDIO2_SEND_USEFILTER; // LPF reverb-path -- omit for better performance at the cost of less realistic occlusion
-    sendDescriptors[1].pOutputVoice = g_audioDevice->g_pSubmixVoice;
-    const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
-
-    // create the source voice
-    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, pwfx, 0, 2.0f, nullptr, &sendList))) {
-        return false;
-    }
-
-    // Submit the wave sample data using an XAUDIO2_BUFFER structure
-    XAUDIO2_BUFFER buffer = { 0 };
-    buffer.pAudioData = sampleData;
-    buffer.Flags = XAUDIO2_END_OF_STREAM;
-    buffer.AudioBytes = waveSize;
-    buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
-
-    if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&buffer))) {
-        return false;
-    }
-
-    return  true;
-}
-
-//-----------------------------------------------------------------------------
-// 解放
-//-----------------------------------------------------------------------------
-void SoundWork3D::Release()
-{
-    if (m_pSourceVoice) {
-        m_pSourceVoice->DestroyVoice();
-        m_pSourceVoice = nullptr;
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -113,31 +45,21 @@ void SoundWork3D::Update()
     X3DAudioCalculate(g_audioDevice->g_x3DAudioInstance, &g_audioDevice->m_listener,
         &m_emitter, dwCalcFlags, &m_dspSettings);
 
-    IXAudio2SourceVoice* voice = m_pSourceVoice;
-    if (voice)
+    if (m_pSourceVoice)
     {
         // X3DAudioが生成したDSP設定をXAudio2に適用する
         // MasteringVoice SubmixVoice にそれぞれ送信
-        voice->SetFrequencyRatio(m_dspSettings.DopplerFactor);
-        voice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice, INPUTCHANNELS, g_audioDevice->g_channels, g_audioDevice->g_matrixCoefficients);
-        voice->SetOutputMatrix(g_audioDevice->g_pSubmixVoice, 1, 1, &m_dspSettings.ReverbLevel);
+        m_pSourceVoice->SetFrequencyRatio(m_dspSettings.DopplerFactor);
+        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice, INPUTCHANNELS, g_audioDevice->g_channels, g_audioDevice->g_matrixCoefficients);
+        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pSubmixVoice, 1, 1, &m_dspSettings.ReverbLevel);
 
         // この式の詳細については、XAudio2.h の XAudio2CutoffFrequencyToRadians() を参照してください。
         XAUDIO2_FILTER_PARAMETERS FilterParametersDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * m_dspSettings.LPFDirectCoefficient), 1.0f };
-        voice->SetOutputFilterParameters(g_audioDevice->g_pMasteringVoice, &FilterParametersDirect);
+        m_pSourceVoice->SetOutputFilterParameters(g_audioDevice->g_pMasteringVoice, &FilterParametersDirect);
 
         XAUDIO2_FILTER_PARAMETERS FilterParametersReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * m_dspSettings.LPFReverbCoefficient), 1.0f };
-        voice->SetOutputFilterParameters(g_audioDevice->g_pSubmixVoice, &FilterParametersReverb);
+        m_pSourceVoice->SetOutputFilterParameters(g_audioDevice->g_pSubmixVoice, &FilterParametersReverb);
     }
-}
-
-//-----------------------------------------------------------------------------
-// 作成
-//-----------------------------------------------------------------------------
-bool SoundWork3D::Create(bool loop)
-{
-
-    return true;
 }
 
 //-----------------------------------------------------------------------------

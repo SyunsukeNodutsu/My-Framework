@@ -30,7 +30,8 @@ public:
     // @return 成功...true
     bool Initialize( XAUDIO2_PROCESSOR processor = XAUDIO2_DEFAULT_PROCESSOR );
 
-    //
+    // @brief x3DAudio初期化
+    // @return 成功...true
     bool Initialize3D();
 
     // @brief 終了
@@ -40,7 +41,7 @@ public:
     void Update( float fElapsedTime );
 
     // @brief リスナー更新
-    // @param pos 座標
+    // @param matrix リスナーのワールド行列
     void UpdateListener(const mfloat4x4& matrix);
 
     //--------------------------------------------------

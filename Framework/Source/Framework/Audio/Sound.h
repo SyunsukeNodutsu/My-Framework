@@ -33,8 +33,8 @@ private:
 
     IXAudio2SourceVoice*        m_pSourceVoice;
     XAUDIO2_BUFFER              m_buffer;
-    std::unique_ptr<uint8_t[]>  m_waveFile;     // WAV データの格納場所
-    DirectX::WAVData            m_waveData;     // WAV 構造の格納場所
+    const WAVEFORMATEX*         m_pWaveFormat;  // WAVデータのフォーマット
+    std::unique_ptr<uint8_t[]>  m_pWaveData;    // WAVデータの格納場所
 
     // @brief ボイス作成
     // @param loop ループ再生？
