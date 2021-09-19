@@ -49,6 +49,7 @@
 #include "Audio/AudioDevice.h"
 #include "Audio/AudioDeviceChild.h"
 #include "Audio/Sound.h"
+#include "Audio/Sound3D.h"
 
 //--------------------------------------------------
 // Shader

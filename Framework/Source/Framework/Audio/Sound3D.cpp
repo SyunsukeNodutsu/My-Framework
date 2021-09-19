@@ -1,4 +1,16 @@
 ﻿#include "Sound3D.h"
+#include "Vender/WaveBankReader.h"
+#include "Vender/WAVFileReader.h"
+
+#include "../../Application/ImGuiSystem.h"
+
+// LFEレベルの距離曲線
+static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_LFE_CurvePoints[3] = { 0.0f, 1.0f, 0.25f, 0.0f, 1.0f, 0.0f };
+static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_LFE_CurvePoints[0], 3 };
+
+// リバーブセンドレベルの距離曲線
+static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_Reverb_CurvePoints[3] = { 0.0f, 0.5f, 0.75f, 1.0f, 1.0f, 0.0f };
+static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_Reverb_CurvePoints[0], 3 };
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -8,16 +20,84 @@ SoundWork3D::SoundWork3D()
 }
 
 //-----------------------------------------------------------------------------
+// 読み込み
+//-----------------------------------------------------------------------------
+bool SoundWork3D::Load(const std::string& filepath, bool loop)
+{
+    std::wstring wfilepath = sjis_to_wide(filepath);
+
+    // 波形ファイルを探す
+    // TODO: WinAPIに似たような機能があるらしい
+    WCHAR strFilePath[MAX_PATH];
+    HRESULT hr = g_audioDevice->FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
+    if (FAILED(hr)) {
+        IMGUISYSTEM.AddLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
+        return false;
+    }
+
+    // 波形ファイルの読み込み
+
+    const WAVEFORMATEX* pwfx;
+    const uint8_t* sampleData;
+    uint32_t waveSize;
+
+    if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, waveData, &pwfx, &sampleData, &waveSize))) {
+        IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
+        return false;
+    }
+
+    //
+    // Play the wave using a source voice that sends to both the submix and mastering voices
+    //
+    XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
+    sendDescriptors[0].Flags = XAUDIO2_SEND_USEFILTER; // LPF direct-path
+    sendDescriptors[0].pOutputVoice = g_audioDevice->g_pMasteringVoice;
+    sendDescriptors[1].Flags = XAUDIO2_SEND_USEFILTER; // LPF reverb-path -- omit for better performance at the cost of less realistic occlusion
+    sendDescriptors[1].pOutputVoice = g_audioDevice->g_pSubmixVoice;
+    const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
+
+    // create the source voice
+    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, pwfx, 0, 2.0f, nullptr, &sendList))) {
+        return false;
+    }
+
+    // Submit the wave sample data using an XAUDIO2_BUFFER structure
+    XAUDIO2_BUFFER buffer = { 0 };
+    buffer.pAudioData = sampleData;
+    buffer.Flags = XAUDIO2_END_OF_STREAM;
+    buffer.AudioBytes = waveSize;
+    buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+
+    if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&buffer))) {
+        return false;
+    }
+
+    return  true;
+}
+
+//-----------------------------------------------------------------------------
+// 解放
+//-----------------------------------------------------------------------------
+void SoundWork3D::Release()
+{
+    if (m_pSourceVoice) {
+        m_pSourceVoice->DestroyVoice();
+        m_pSourceVoice = nullptr;
+    }
+}
+
+//-----------------------------------------------------------------------------
 // 再生
 //-----------------------------------------------------------------------------
 void SoundWork3D::Play3D(const float3& pos, DWORD delay)
 {
     if (!AudioDeviceChild::g_audioDevice) return;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!m_pSourceVoice) return;
 
     SetEmitter(pos);
 
-    SoundWork::Play(delay);
+    m_pSourceVoice->Start(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -25,6 +105,14 @@ void SoundWork3D::Play3D(const float3& pos, DWORD delay)
 //-----------------------------------------------------------------------------
 void SoundWork3D::Update()
 {
+    // 計算フラグ設定 ※TODO: 要調査
+    DWORD dwCalcFlags = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT |
+        X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;
+
+    // DSP設定の計算
+    X3DAudioCalculate(g_audioDevice->g_x3DAudioInstance, &g_audioDevice->m_listener,
+        &m_emitter, dwCalcFlags, &m_dspSettings);
+
     IXAudio2SourceVoice* voice = m_pSourceVoice;
     if (voice)
     {
@@ -41,6 +129,15 @@ void SoundWork3D::Update()
         XAUDIO2_FILTER_PARAMETERS FilterParametersReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * m_dspSettings.LPFReverbCoefficient), 1.0f };
         voice->SetOutputFilterParameters(g_audioDevice->g_pSubmixVoice, &FilterParametersReverb);
     }
+}
+
+//-----------------------------------------------------------------------------
+// 作成
+//-----------------------------------------------------------------------------
+bool SoundWork3D::Create(bool loop)
+{
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -92,7 +189,7 @@ void SoundWork3D::SetEmitter(const float3& pos)
     m_emitter.pLPFDirectCurve   = nullptr; // use default curve
     m_emitter.pLPFReverbCurve   = nullptr; // use default curve
     m_emitter.pReverbCurve      = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_Reverb_Curve;
-    m_emitter.CurveDistanceScaler = 14.0f;
+    m_emitter.CurveDistanceScaler = 100.0f;// 曲線距離スケーラー 世界の大きさに合わせる必要あり
     m_emitter.DopplerScaler     = 1.0f;
 
     m_dspSettings.SrcChannelCount = INPUTCHANNELS;

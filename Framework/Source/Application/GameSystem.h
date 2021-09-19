@@ -68,6 +68,7 @@ private:
 
 	std::shared_ptr<Texture> spTexture;
 	std::shared_ptr<SoundWork> m_spSoundWork;
+	std::shared_ptr<SoundWork3D> m_spSoundWork3D;
 
 private:
 

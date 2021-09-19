@@ -41,8 +41,13 @@ void GameSystem::Initialize()
 
 	// BGM再生
 	m_spSoundWork = std::make_shared<SoundWork>();
-	m_spSoundWork->Load("Resource/Audio/New Happy Day by fennec beats.wav", true);
-	m_spSoundWork->Play(1000);
+	//m_spSoundWork->Load("Resource/Audio/New Happy Day by fennec beats.wav", true);
+	//m_spSoundWork->Play(1000);
+
+	m_spSoundWork3D = std::make_shared<SoundWork3D>();
+	m_spSoundWork3D->Load("Resource/Audio/heli.wav");
+	float3 pos = float3(0, 0, 0);
+	m_spSoundWork3D->Play3D(pos);
 }
 
 //-----------------------------------------------------------------------------
@@ -51,6 +56,7 @@ void GameSystem::Initialize()
 void GameSystem::Finalize()
 {
 	m_spSoundWork->Release();
+	m_spSoundWork3D->Release();
 
 	for (auto& object : m_spObjectList)
 		object->Finalize();
@@ -84,6 +90,8 @@ void GameSystem::Update()
 		else
 			++itr;
 	}
+
+	m_spSoundWork3D->Update();
 }
 
 //-----------------------------------------------------------------------------

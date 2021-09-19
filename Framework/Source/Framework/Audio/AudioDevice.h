@@ -5,7 +5,18 @@
 // TODO: APOを別クラスに移動したほうがいいかも
 //-----------------------------------------------------------------------------
 #pragma once
-#include "AudioDefines.h"
+
+// X2Audio X3DAudio
+#include <xaudio2.h>
+#include <xaudio2fx.h>
+#include <x3daudio.h>
+
+// link
+#pragma comment(lib,"xaudio2.lib")
+
+#define INPUTCHANNELS  1 // ソースチャンネルの数
+#define OUTPUTCHANNELS 8 // このサンプルでサポートされるデスティネーションチャネルの最大数
+#define NUM_PRESETS   30 // PRESETの数
 
 // XAudio2のエンジン部分管理
 class AudioDevice
@@ -46,6 +57,9 @@ public:
     float GetMasterVolume() const {
         float ret = 0; g_pMasteringVoice->GetVolume(&ret); return ret;
     }
+
+    //
+    HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
 
 public:
 

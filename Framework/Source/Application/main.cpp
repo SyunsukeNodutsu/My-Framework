@@ -181,6 +181,7 @@ void Application::Execute()
 		auto cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
 
 		g_audioDevice.Update(0);
+		g_audioDevice.UpdateListener(cameraMatrix);
 		//AUDIO.Update(cameraMatrix.Translation(), cameraMatrix.Backward());
 
 		//----------------------------------------
