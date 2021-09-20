@@ -2,15 +2,13 @@
 // File: Device.h
 //
 // DirectX関連の管理
-// TODO: Shaderは移動すべき
-// TODO: MSAA設定可能に
 //-----------------------------------------------------------------------------
 #pragma once
 
 class Renderer;
 class Texture;
 
-// DirectX11の操作 管理
+// Direct3Dの操作 管理
 class Device
 {
 public:

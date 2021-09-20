@@ -25,12 +25,18 @@ public:
 	void AllStop();
 
 	// @brief ゲームサウンドの作成
+	// @param filepath ファイルのパス
+	// @param loop ループ再生？
+	// @param useFilter フィルター機能使用？
 	// @return ゲームサウンド
-	std::shared_ptr<SoundWork> CreateSoundWork(const std::string& filepath, bool loop);
+	std::shared_ptr<SoundWork> CreateSoundWork(const std::string& filepath, bool loop = false, bool useFilter = false);
 
 	// @brief 3Dゲームサウンドの作成
+	// @param filepath ファイルのパス
+	// @param loop ループ再生？
+	// @param useFilter フィルター機能使用？
 	// @return 3Dゲームサウンド
-	std::shared_ptr<SoundWork3D> CreateSoundWork3D(const std::string& filepath, bool loop);
+	std::shared_ptr<SoundWork3D> CreateSoundWork3D(const std::string& filepath, bool loop = false, bool useFilter = false);
 
 	//--------------------------------------------------
 	// 取得・設定
@@ -55,6 +61,7 @@ public:
 	}
 
 	// @brief 再生リストに登録
+	// @param sound 追加するサウンド
 	void AddSoundList(std::shared_ptr<SoundWork> sound);
 
 private:

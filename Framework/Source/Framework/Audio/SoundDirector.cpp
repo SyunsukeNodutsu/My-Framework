@@ -58,12 +58,12 @@ void SoundDirector::AllStop()
 //-----------------------------------------------------------------------------
 // ゲームサウンドの作成
 //-----------------------------------------------------------------------------
-std::shared_ptr<SoundWork> SoundDirector::CreateSoundWork(const std::string& filepath, bool loop)
+std::shared_ptr<SoundWork> SoundDirector::CreateSoundWork(const std::string& filepath, bool loop, bool useFilter)
 {
     auto ret = std::make_shared<SoundWork>();
     if (!ret) return nullptr;
     
-    if (ret->Load(filepath, loop) == false)
+    if (ret->Load(filepath, loop, useFilter) == false)
     {
         DebugLog("読み込み失敗.\n");
         return nullptr;
@@ -76,12 +76,12 @@ std::shared_ptr<SoundWork> SoundDirector::CreateSoundWork(const std::string& fil
 //-----------------------------------------------------------------------------
 // 3Dゲームサウンドの作成
 //-----------------------------------------------------------------------------
-std::shared_ptr<SoundWork3D> SoundDirector::CreateSoundWork3D(const std::string& filepath, bool loop)
+std::shared_ptr<SoundWork3D> SoundDirector::CreateSoundWork3D(const std::string& filepath, bool loop, bool useFilter)
 {
     auto ret = std::make_shared<SoundWork3D>();
     if (!ret) return nullptr;
 
-    if (ret->Load(filepath, loop) == false)
+    if (ret->Load(filepath, loop, useFilter) == false)
     {
         DebugLog("読み込み失敗.\n");
         return nullptr;

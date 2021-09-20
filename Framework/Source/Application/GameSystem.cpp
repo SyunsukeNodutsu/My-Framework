@@ -47,10 +47,11 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/The Chainsmokers_Push My Luck.wav", true);
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/The Chainsmokers_Push My Luck.wav", true, true);
 	if (sound)
 	{
-		sound->SetVolume(0.2f);
+		//sound->SetVolume(0.2f);
+		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play();
 	}
 
@@ -58,7 +59,7 @@ void GameSystem::Initialize()
 	if (sound3d)
 	{
 		float3 pos = float3(0, 0, 0);
-		sound3d->Play3D(pos);
+		//sound3d->Play3D(pos);
 	}
 }
 

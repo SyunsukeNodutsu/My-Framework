@@ -47,6 +47,8 @@ void ImGuiSystem::Initialize()
 	style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
 
+	style.ScrollbarSize = 10;
+
 	AddLog("INFO: Dear imGui Initialized.");
 
 	Cpuid::Research();
@@ -159,6 +161,14 @@ void ImGuiSystem::LayersMonitor(ImGuiWindowFlags wflags)
 	ImGui::ColorEdit4("MenuBarBg", (float*)&style.Colors[ImGuiCol_MenuBarBg], cflags);
 	ImGui::ColorEdit4("ScrollbarBg", (float*)&style.Colors[ImGuiCol_ScrollbarBg], cflags);
 
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Sizes");
+	ImGui::PopStyleColor();
+
+	ImGui::SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
+
 	ImGui::End();
 }
 
@@ -260,21 +270,45 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 
 	ImGui::Text(std::string("List Size: " + std::to_string(SOUND_DIRECTOR.GetSoundListSize())).c_str());
 
-	std::weak_ptr<SoundWork> wpSound;
+	ImGui::BeginChild("##wav list", ImVec2(0, 60), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
+	
+	static std::weak_ptr<SoundWork> wpSound;
 	for (auto&& sound : SOUND_DIRECTOR.GetSoundList())
 	{
 		ImGui::PushID(sound.get());
 
 		// 選択したObject
 		bool selected = (sound == wpSound.lock());
-		if (ImGui::Selectable(sound->GetName().c_str(), selected)) {
+		if (ImGui::Selectable(sound->GetName().c_str(), selected))
 			wpSound = sound;
-		}
 
 		ImGui::PopID();
 	}
+	ImGui::EndChild();
 
-	// ここにゲームサウンド一覧を表示
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Detailed data");
+	ImGui::PopStyleColor();
+
+	if (wpSound.lock())
+	{
+		ImGui::Text(std::string("Select: " + wpSound.lock()->GetName()).c_str());
+		if(wpSound.lock()->Is3D()) ImGui::Text("Is3D？: TRUE");
+		else ImGui::Text("Is3D?: FALSE");
+
+		auto val = wpSound.lock()->GetVolume();
+		if (ImGui::SliderFloat("Volume", &val, 0.0f, 2.0f, "%.2f")) {
+			wpSound.lock()->SetVolume(val);
+		}
+
+		auto pan = wpSound.lock()->GetPan();
+		if (ImGui::SliderFloat("Pan", &pan, -1.0f, 1.0f, "%.2f")) {
+			wpSound.lock()->SetPan(pan);
+		}
+	}
+	else ImGui::Text("Select: none");
 
 	ImGui::Separator();
 

@@ -5,12 +5,20 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-// DirectX11 Library
+// DirectX11
+#include <dxgi.h>
+#include <d3d11.h>
+
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
-#include <dxgi.h>
-#include <d3d11.h>
+
+// X2Audio X3DAudio
+#include <xaudio2.h>
+#include <xaudio2fx.h>
+#include <x3daudio.h>
+
+#pragma comment(lib,"xaudio2.lib")
 
 // 算術
 #include <DirectXMath.h>

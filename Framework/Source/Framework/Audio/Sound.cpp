@@ -22,7 +22,7 @@ SoundData::SoundData()
 //-----------------------------------------------------------------------------
 // 読み込み
 //-----------------------------------------------------------------------------
-bool SoundData::Load(const std::string& filepath, bool loop)
+bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
 {
     std::wstring wfilepath = sjis_to_wide(filepath);
 
@@ -50,7 +50,7 @@ bool SoundData::Load(const std::string& filepath, bool loop)
     m_buffer.AudioBytes = waveSize;
     m_buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
-    return Create(loop);
+    return Create(loop, useFilter);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,6 +58,9 @@ bool SoundData::Load(const std::string& filepath, bool loop)
 //-----------------------------------------------------------------------------
 void SoundData::Release()
 {
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+
     if (m_pSourceVoice) {
         m_pSourceVoice->DestroyVoice();
         m_pSourceVoice = nullptr;
@@ -68,7 +71,7 @@ void SoundData::Release()
 //-----------------------------------------------------------------------------
 // 作成
 //-----------------------------------------------------------------------------
-bool SoundData::Create(bool loop)
+bool SoundData::Create(bool loop, bool useFilter)
 {
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
@@ -84,18 +87,9 @@ bool SoundData::Create(bool loop)
     const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
 
     // ソースボイスの作成
-    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat, XAUDIO2_VOICE_USEFILTER, 2.0f, nullptr, &sendList))) {
+    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat,
+        useFilter ? XAUDIO2_VOICE_USEFILTER : 0, 2.0f, nullptr, &sendList))) {
         return false;
-    }
-
-    // フィルタ テスト
-    if (false)
-    {
-        XAUDIO2_FILTER_PARAMETERS FilterParams;
-        FilterParams.Type = XAUDIO2_FILTER_TYPE::LowPassFilter;
-        FilterParams.Frequency = 0.08f;// 0.0f(未満)～1.0f(XAUDIO2_MAX_FILTER_FREQUENCY)
-        FilterParams.OneOverQ = 1.0f;// 0.0f(以下)～1.5f(XAUDIO2_MAX_FILTER_ONEOVERQ)
-        m_pSourceVoice->SetFilterParameters(&FilterParams);
     }
 
     // 音声キューに新しいオーディオバッファを追加
@@ -121,6 +115,7 @@ SoundWork::SoundWork()
     : m_pSourceVoice(nullptr)
     , m_soundData()
     , m_filepath("")
+    , m_pan(0.0f)
     , m_is3D(false)
 {
 }
@@ -128,7 +123,7 @@ SoundWork::SoundWork()
 //-----------------------------------------------------------------------------
 // 読み込み 作成
 //-----------------------------------------------------------------------------
-bool SoundWork::Load(const std::string& filepath, bool loop)
+bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
 {
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
@@ -136,7 +131,7 @@ bool SoundWork::Load(const std::string& filepath, bool loop)
     // "Resource/Audio/"(15文字) 以降のみ
     m_filepath = filepath.substr(15);
 
-    if (!m_soundData.Load(filepath, loop)) {
+    if (!m_soundData.Load(filepath, loop, useFilter)) {
         IMGUISYSTEM.AddLog("ERROR: Failed to load voice.");
         return false;
     }
@@ -212,6 +207,8 @@ bool SoundWork::SetPan(float pan)
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
     if (!m_pSourceVoice) return false;
+
+    m_pan = pan;
 
     // スピーカー構成を取得
     // TODO: デバイス初期化時(それとデバイス変更時)に構成を保存しておくべき
@@ -290,6 +287,10 @@ float SoundWork::GetVolume()
 //-----------------------------------------------------------------------------
 bool SoundWork::SetFade(float targetVolume, float targetTime)
 {
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
+    if (!m_pSourceVoice) return false;
+
     // TODO: せっかくだからLuaで実装したい
 
     return true;
@@ -308,4 +309,27 @@ bool SoundWork::IsPlaying()
     m_pSourceVoice->GetState(&pState);
 
     return (pState.BuffersQueued > 0);
+}
+
+//-----------------------------------------------------------------------------
+// フィルターの設定
+//-----------------------------------------------------------------------------
+bool SoundWork::SetFilter(XAUDIO2_FILTER_TYPE type, float frequencym, float oneOverQ)
+{
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
+    if (!m_pSourceVoice) return false;
+
+    if (frequencym < 0 || frequencym > XAUDIO2_MAX_FILTER_FREQUENCY) return false;
+    if (oneOverQ <= 0 || oneOverQ > XAUDIO2_MAX_FILTER_ONEOVERQ) return false;
+
+    XAUDIO2_FILTER_PARAMETERS FilterParams;
+    FilterParams.Type       = type;
+    FilterParams.Frequency  = frequencym;   // 0.0f(未満はx)～1.0f(XAUDIO2_MAX_FILTER_FREQUENCY)
+    FilterParams.OneOverQ   = oneOverQ;     // 0.0f(以下はx)～1.5f(XAUDIO2_MAX_FILTER_ONEOVERQ)
+    if (FAILED(m_pSourceVoice->SetFilterParameters(&FilterParams))) {
+        DebugLog("フィルターの設定失敗.\n");
+        return false;
+    }
+    return true;
 }

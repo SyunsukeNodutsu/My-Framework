@@ -20,7 +20,7 @@ public:
     // @param filepath 音源のファイルパス
     // @param loop ループ再生？
     // @return 成功...true
-    bool Load(const std::string& filepath, bool loop = false);
+    bool Load(const std::string& filepath, bool loop, bool useFilter);
 
     // @brief 解放
     void Release();
@@ -39,7 +39,7 @@ private:
     // @brief ボイス作成
     // @param loop ループ再生？
     // @return 成功...true
-    bool Create(bool loop);
+    bool Create(bool loop, bool useFilter);
 
 };
 
@@ -54,8 +54,9 @@ public:
     // @brief 読み込み作成
     // @param filepath 音源のファイルパス
     // @param loop ループ再生？
+    // @param useFilter フィルター機能使用？
     // @return 成功...true
-    virtual bool Load(const std::string& filepath, bool loop = false);
+    virtual bool Load(const std::string& filepath, bool loop = false, bool useFilter = false);
 
     // @brief 解放
     virtual void Release();
@@ -104,18 +105,27 @@ public:
     // @return 3D...true
     bool Is3D() const { return m_is3D; }
 
+    // @brief imGuiで編集用にパンの値を返す
+    // @return パンの値
+    float GetPan() const { return m_pan; }
+
+    // @brief ソースボイスにフィルターを設定 ※注意.作成時にuseFilterフラグを立ててください
+    // (LowPassFilter, 1, 1)でフィルタをOFFにします
+    // @note frequencym...0.0～1.0, oneOverQ...0.0(以下はx)～1.5
+    // @param type フィルタタイプ
+    // @param frequencym カットオフ周波数 ※実際はラジアン周波数を入れる
+    // @param oneOverQ フィルタに使用するQ値の逆数 ※通常は1.0fか1.4142fを使用する
+    // @return 成功...true 失敗...false
+    bool SetFilter(XAUDIO2_FILTER_TYPE type, float frequencym, float oneOverQ = 1.0f);
+
 protected:
 
     // エフェクトがかかる可能性のある ボイスデータ
     IXAudio2SourceVoice* m_pSourceVoice;
 
-    // サウンドデータ
-    SoundData m_soundData;
-
-    // 音源のファイルパス
-    std::string m_filepath;
-
-    // 3Dサウンド？
-    bool m_is3D;
+    SoundData   m_soundData;// サウンドデータ
+    std::string m_filepath; // 音源のファイルパス
+    float       m_pan;      // imGuiで編集するように panの値を保存
+    bool        m_is3D;     // 3Dサウンド？
 
 };
