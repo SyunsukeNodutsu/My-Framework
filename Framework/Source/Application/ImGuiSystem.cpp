@@ -297,7 +297,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	if (wpSound.lock())
 	{
 		ImGui::Text(std::string("Select: " + wpSound.lock()->GetName()).c_str());
-		if(wpSound.lock()->Is3D()) ImGui::Text("Is3D？: TRUE");
+		if(wpSound.lock()->Is3D()) ImGui::Text("Is3D?: TRUE");
 		else ImGui::Text("Is3D?: FALSE");
 
 		auto val = wpSound.lock()->GetVolume();
@@ -328,7 +328,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Separator();
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Volume Meter");
+	ImGui::Text("Volume Meter (Bug)");
 	ImGui::PopStyleColor();
 
 	PlotLinesEx("PeakLevels R", APP.g_audioDevice.g_peakLevels[0]);

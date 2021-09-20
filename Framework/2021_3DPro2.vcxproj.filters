@@ -204,9 +204,6 @@
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Camera.cpp">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
@@ -224,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp">
+      <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -383,9 +383,6 @@
     <ClInclude Include="Source\Framework\Graphics\Buffer.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Camera.h">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
@@ -403,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h">
+      <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

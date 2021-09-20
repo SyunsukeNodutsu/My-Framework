@@ -50,7 +50,7 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Renderer.h"
-#include "Graphics/Camera.h"
+#include "Graphics/Camera/Camera.h"
 
 #include "Model/Mesh.h"
 #include "Model/Model.h"
@@ -60,12 +60,9 @@
 
 #include "Scripting/Lua.h"
 
+#include "Shader/ShaderManager.h"
+
 #include "Audio/AudioDevice.h"
 #include "Audio/AudioDeviceChild.h"
 #include "Audio/Sound.h"
 #include "Audio/Sound3D.h"
-
-//--------------------------------------------------
-// Shader
-//--------------------------------------------------
-#include "Shader/ShaderManager.h"

@@ -45,7 +45,7 @@
     <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp" />
     <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp" />
-    <ClCompile Include="Source\Framework\Graphics\Camera.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
@@ -103,7 +103,7 @@
     <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h" />
     <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
-    <ClInclude Include="Source\Framework\Graphics\Camera.h" />
+    <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
