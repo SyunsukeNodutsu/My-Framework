@@ -19,6 +19,7 @@ SoundWork3D::SoundWork3D()
     , m_emitterCone()
     , m_dspSettings()
 {
+    m_is3D = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -40,6 +41,10 @@ void SoundWork3D::Play3D(const float3& pos, DWORD delay)
 //-----------------------------------------------------------------------------
 void SoundWork3D::Update()
 {
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+    if (!AudioDeviceChild::g_audioDevice->g_x3DAudioInstance) return;
+
     // 計算フラグ設定 ※TODO: 要調査
     DWORD dwCalcFlags = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT |
         X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;

@@ -30,20 +30,23 @@
 // エイリアスが含まれているので最優先
 #include "Utility/Types.h"
 #include "Utility/Utility.h"
-#include "Utility/CpuUseRate.h"
 
 #include "Utility/FpsTimer.h"
+
 #include "Window/Window.h"
+
 #include "Graphics/Device.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Camera.h"
-#include "Graphics/CubeMapGenerator.h"
+
 #include "Model/Mesh.h"
 #include "Model/Model.h"
 #include "Model/Animation.h"
+
 #include "Input/RawInput.h"
+
 #include "Scripting/Lua.h"
 
 #include "Audio/AudioDevice.h"

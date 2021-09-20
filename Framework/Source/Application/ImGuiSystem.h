@@ -52,10 +52,11 @@ public:
 private:
 
 	ImGuiTextBuffer m_logBuffer;
-	bool m_addLog;
-	bool m_enable;
-	bool m_createInifile;
-	CpuUseRate m_cpuUseRate;
+	bool m_enable;			// 有効？
+	bool m_addLog;			// ログを追加
+	bool m_createInifile;	// 終了時に.iniファイルを吐き出す
+	bool m_showEachMonitor;	// 詳細なモニターを表示
+	bool m_showDemoMonitor;	// DemoWindowを表示
 
 private:
 

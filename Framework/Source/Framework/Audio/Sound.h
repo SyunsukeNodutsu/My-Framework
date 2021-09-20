@@ -60,6 +60,9 @@ public:
     // @brief 解放
     virtual void Release();
 
+    // @brief 更新
+    virtual void Update() {}
+
     // @brief 再生
     // @param delay 再生までの待ち時間(ミリ秒)
     virtual void Play(DWORD delay = 0);
@@ -73,17 +76,33 @@ public:
 
     // @brief 音をパンする
     // @note 3Dサウンドでパンすると3D計算が無効になってしまう
+    // @note おそらくモノラル音源じゃないとパンできない
     // @param pan -1(左)～1(右)の間
-    virtual void SetPan(float pan);
+    // @return 成功...true
+    virtual bool SetPan(float pan);
 
     // @brief 音量を返す
     // @return 音量
     virtual float GetVolume();
 
+    // @brief 音量を返す
+    // @param targetVolume 到達目標ボリューム
+    // @param targetTime フェード時間(秒)
+    // @return フェード完了...true
+    virtual bool SetFade(float targetVolume, float targetTime);
+
     // @brief 再生中かを返す
     // @note ループの場合は
     // @return 再生中...true 最後まで再生された...false
     virtual bool IsPlaying();
+
+    // @brief 音源の名前を返す ※TODO: フルパスいらない
+    // @return 音源の名前
+    const std::string& GetName() const { return m_filepath; }
+
+    // @brief 3Dサウンドかを返す
+    // @return 3D...true
+    bool Is3D() const { return m_is3D; }
 
 protected:
 
@@ -95,5 +114,8 @@ protected:
 
     // 音源のファイルパス
     std::string m_filepath;
+
+    // 3Dサウンド？
+    bool m_is3D;
 
 };

@@ -183,9 +183,6 @@
     <ClCompile Include="Source\Application\ImGuiSystem.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Utility\CpuUseRate.cpp">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp">
       <Filter>Source\Framework\Audio\Vender</Filter>
     </ClCompile>
@@ -201,19 +198,10 @@
     <ClCompile Include="Source\Framework\Audio\Sound.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\AudioDirector.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Audio\Audio_before.cpp">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\Camera.cpp">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\Device.cpp">
@@ -229,6 +217,9 @@
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Audio\Sound3D.cpp">
+      <Filter>Source\Framework\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Audio\SoundDirector.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
   </ItemGroup>
@@ -371,9 +362,6 @@
     <ClInclude Include="Source\Application\ImGuiSystem.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\CpuUseRate.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h">
       <Filter>Source\Framework\Audio\Vender</Filter>
     </ClInclude>
@@ -389,19 +377,10 @@
     <ClInclude Include="Source\Framework\Audio\Sound.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\AudioDirector.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\Audio_before.h">
-      <Filter>Source\Framework\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Buffer.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Camera.h">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Device.h">
@@ -419,7 +398,7 @@
     <ClInclude Include="Source\Framework\Audio\Sound3D.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Audio\AudioDefines.h">
+    <ClInclude Include="Source\Framework\Audio\SoundDirector.h">
       <Filter>Source\Framework\Audio</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,43 +1,9 @@
 ﻿#include "AudioDevice.h"
+#include "SoundDirector.h"
 #include "../../Application/ImGuiSystem.h"
 
 // サウンドコーン
 static const X3DAUDIO_CONE Listener_DirectionalCone = { X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 1.0f, 0.75f, 0.0f, 0.25f, 0.708f, 1.0f };
-
-// g_PRESET_NAMESの順序と一致する必要があります
-XAUDIO2FX_REVERB_I3DL2_PARAMETERS g_PRESET_PARAMS[NUM_PRESETS] =
-{
-    XAUDIO2FX_I3DL2_PRESET_FOREST,
-    XAUDIO2FX_I3DL2_PRESET_DEFAULT,
-    XAUDIO2FX_I3DL2_PRESET_GENERIC,
-    XAUDIO2FX_I3DL2_PRESET_PADDEDCELL,
-    XAUDIO2FX_I3DL2_PRESET_ROOM,
-    XAUDIO2FX_I3DL2_PRESET_BATHROOM,
-    XAUDIO2FX_I3DL2_PRESET_LIVINGROOM,
-    XAUDIO2FX_I3DL2_PRESET_STONEROOM,
-    XAUDIO2FX_I3DL2_PRESET_AUDITORIUM,
-    XAUDIO2FX_I3DL2_PRESET_CONCERTHALL,
-    XAUDIO2FX_I3DL2_PRESET_CAVE,
-    XAUDIO2FX_I3DL2_PRESET_ARENA,
-    XAUDIO2FX_I3DL2_PRESET_HANGAR,
-    XAUDIO2FX_I3DL2_PRESET_CARPETEDHALLWAY,
-    XAUDIO2FX_I3DL2_PRESET_HALLWAY,
-    XAUDIO2FX_I3DL2_PRESET_STONECORRIDOR,
-    XAUDIO2FX_I3DL2_PRESET_ALLEY,
-    XAUDIO2FX_I3DL2_PRESET_CITY,
-    XAUDIO2FX_I3DL2_PRESET_MOUNTAINS,
-    XAUDIO2FX_I3DL2_PRESET_QUARRY,
-    XAUDIO2FX_I3DL2_PRESET_PLAIN,
-    XAUDIO2FX_I3DL2_PRESET_PARKINGLOT,
-    XAUDIO2FX_I3DL2_PRESET_SEWERPIPE,
-    XAUDIO2FX_I3DL2_PRESET_UNDERWATER,
-    XAUDIO2FX_I3DL2_PRESET_SMALLROOM,
-    XAUDIO2FX_I3DL2_PRESET_MEDIUMROOM,
-    XAUDIO2FX_I3DL2_PRESET_LARGEROOM,
-    XAUDIO2FX_I3DL2_PRESET_MEDIUMHALL,
-    XAUDIO2FX_I3DL2_PRESET_LARGEHALL,
-    XAUDIO2FX_I3DL2_PRESET_PLATE,
-};
 
 using namespace DirectX;
 
@@ -59,7 +25,7 @@ AudioDevice::AudioDevice()
 //-----------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------
-bool AudioDevice::Initialize(XAUDIO2_PROCESSOR processor)
+bool AudioDevice::Initialize()
 {
     if (done) return false;
 
@@ -173,6 +139,8 @@ void AudioDevice::Finalize()
 {
     if (!done) return;
 
+    SOUND_DIRECTOR.Finalize();
+
     if (g_pSubmixVoice) {
         g_pSubmixVoice->DestroyVoice();
         g_pSubmixVoice = nullptr;
@@ -196,39 +164,41 @@ void AudioDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
-void AudioDevice::Update( float fElapsedTime )
+void AudioDevice::Update(const mfloat4x4& listener)
 {
     if (!done) return;
     if (!g_xAudio2) return;
     if (!g_pMasteringVoice) return;
 
+    //--------------------------------------------------
+    // 3D
+    //--------------------------------------------------
 
-    UpdateVolumeMeter();
-}
-
-//-----------------------------------------------------------------------------
-// リスナー更新
-//-----------------------------------------------------------------------------
-void AudioDevice::UpdateListener(const mfloat4x4& matrix)
-{
     // 座標
-    float3 pos = matrix.Translation();
+    float3 pos = listener.Translation();
     m_listener.Position.x = pos.x;
     m_listener.Position.y = pos.y;
     m_listener.Position.z = pos.z;
 
     // 方向
-    float3 front = matrix.Backward();
+    float3 front = listener.Backward();
     m_listener.OrientFront.x = front.x;
     m_listener.OrientFront.y = front.y;
 
-    float3 top = matrix.Up();
+    float3 top = listener.Up();
     m_listener.OrientTop.x = top.x;
     m_listener.OrientTop.z = top.z;
 
     // 奥行 傾き
     m_listener.OrientFront.z = front.z;
     //m_listener.OrientTop.y = top.z;
+
+    //--------------------------------------------------
+
+    // 3Dサウンドなどの更新
+    SOUND_DIRECTOR.Update();
+
+    UpdateVolumeMeter();
 }
 
 //-----------------------------------------------------------------------------
@@ -309,10 +279,39 @@ HRESULT AudioDevice::FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR s
 }
 
 //-----------------------------------------------------------------------------
+// マスター音量を設定
+//-----------------------------------------------------------------------------
+void AudioDevice::SetMasterVolume(float value)
+{
+    if (!done) return;
+    if (!g_xAudio2) return;
+    if (!g_pMasteringVoice) return;
+
+    g_pMasteringVoice->SetVolume(value);
+}
+
+//-----------------------------------------------------------------------------
+// マスター音量を返す
+//-----------------------------------------------------------------------------
+float AudioDevice::GetMasterVolume() const
+{
+    if (!done) return FLT_MAX;
+    if (!g_xAudio2) return FLT_MAX;
+    if (!g_pMasteringVoice) return FLT_MAX;
+
+    float ret = 0;
+    g_pMasteringVoice->GetVolume(&ret);
+    return ret;
+}
+
+//-----------------------------------------------------------------------------
 // ボリュームメータ(APO)の作成
 //-----------------------------------------------------------------------------
 bool AudioDevice::InitializeVolumeMeterAPO()
 {
+    if (g_xAudio2 == nullptr) return false;
+    if (g_pMasteringVoice == nullptr) return false;
+
     // VolumeMeter(APO)作成
     IUnknown* pVolumeMeterAPO = nullptr;
     if (FAILED(XAudio2CreateVolumeMeter(&pVolumeMeterAPO))) {
@@ -346,8 +345,8 @@ bool AudioDevice::InitializeVolumeMeterAPO()
 //-----------------------------------------------------------------------------
 void AudioDevice::UpdateVolumeMeter()
 {
-    if (g_pMasteringVoice == nullptr)
-        return;
+    if (g_xAudio2 == nullptr) return;
+    if (g_pMasteringVoice == nullptr) return;
 
     // 受信用構造体 設定
     XAUDIO2FX_VOLUMEMETER_LEVELS Levels = {};
@@ -357,6 +356,6 @@ void AudioDevice::UpdateVolumeMeter()
 
     // パラメータ受信
     if (FAILED(g_pMasteringVoice->GetEffectParameters(0, &Levels, sizeof(Levels)))) {
-        DebugLog("ERROR: EffectParameters失敗.");
+        DebugLog("ERROR: EffectParameters失敗.\n");
     }
 }

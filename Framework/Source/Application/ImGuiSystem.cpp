@@ -3,6 +3,7 @@
 #include "GameObjects/GameObject.h"
 #include "main.h"
 #include "../Framework/Utility/Cpuid.h"
+#include "../Framework/Audio/SoundDirector.h"
 
 // stlに頼らないimGuiさんまじカッケー
 #define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
@@ -12,9 +13,11 @@
 //-----------------------------------------------------------------------------
 ImGuiSystem::ImGuiSystem()
 	: m_logBuffer()
-	, m_addLog(false)
 	, m_enable(true)
+	, m_addLog(false)
 	, m_createInifile(true)
+	, m_showEachMonitor(true)
+	, m_showDemoMonitor(false)
 {
 }
 
@@ -83,18 +86,26 @@ void ImGuiSystem::DrawImGui()
 	if (!m_enable)
 		return;
 
-	//ImGui::ShowDemoWindow();
-
 	// 共通のWindowフラグ
 	ImGuiWindowFlags wflags = 0;
 	/*ImGuiWindowFlags wflags = ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 
+	// レイヤーモニターは必ず表示
 	LayersMonitor(wflags);
-	ShaderDebugMonitor(wflags);
-	LogMonitor(wflags);
-	AudioMonitor(wflags);
-	ProfilerMonitor(wflags);
+
+	// DemoWindow
+	if (m_showDemoMonitor)
+		ImGui::ShowDemoWindow();
+
+	// 詳細なモニターはフラグで表示のON/OFF切り替え
+	if (m_showEachMonitor)
+	{
+		ShaderDebugMonitor(wflags);
+		LogMonitor(wflags);
+		AudioMonitor(wflags);
+		ProfilerMonitor(wflags);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -119,16 +130,34 @@ void ImGuiSystem::LayersMonitor(ImGuiWindowFlags wflags)
 	}
 
 	ImGui::Text("Dear imGui version. (%s)", IMGUI_VERSION);
-	ImGui::Spacing();
 
-	if (ImGui::CollapsingHeader("Color", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGuiStyle& style = ImGui::GetStyle();
-		ImGuiColorEditFlags cflags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview;
+	ImGui::Separator();
 
-		ImGui::ColorEdit4("Text", (float*)&style.Colors[ImGuiCol_Text], cflags);
-		ImGui::ColorEdit4("WindowBg", (float*)&style.Colors[ImGuiCol_WindowBg], cflags);
-	}
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Flags");
+	ImGui::PopStyleColor();
+
+	ImGui::Checkbox("CreateInifile", &m_createInifile);
+	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
+	ImGui::Checkbox("ShowDemoMonitor", &m_showDemoMonitor);
+
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Colors");
+	ImGui::PopStyleColor();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImGuiColorEditFlags cflags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview;
+
+	ImGui::ColorEdit4("Text", (float*)&style.Colors[ImGuiCol_Text], cflags);
+	ImGui::ColorEdit4("WindowBg", (float*)&style.Colors[ImGuiCol_WindowBg], cflags);
+	ImGui::ColorEdit4("PopupBg", (float*)&style.Colors[ImGuiCol_PopupBg], cflags);
+	ImGui::ColorEdit4("Border", (float*)&style.Colors[ImGuiCol_Border], cflags);
+	ImGui::ColorEdit4("FrameBg", (float*)&style.Colors[ImGuiCol_FrameBg], cflags);
+	ImGui::ColorEdit4("TitleBg", (float*)&style.Colors[ImGuiCol_TitleBg], cflags);
+	ImGui::ColorEdit4("MenuBarBg", (float*)&style.Colors[ImGuiCol_MenuBarBg], cflags);
+	ImGui::ColorEdit4("ScrollbarBg", (float*)&style.Colors[ImGuiCol_ScrollbarBg], cflags);
 
 	ImGui::End();
 }
@@ -176,13 +205,14 @@ void ImGuiSystem::LogMonitor(ImGuiWindowFlags wflags)
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("Options")) {
+			ImGui::Text("todo: fix");
 			ImGui::EndMenu();
 		}
 		if (ImGui::Button("Clear")) {
 			m_logBuffer.clear();
 		}
 		if (ImGui::Button("Copy")) {
-			m_logBuffer.clear();
+			//m_logBuffer.clear();
 		}
 		ImGui::EndMenuBar();
 	}
@@ -222,7 +252,29 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	if (ImGui::SliderFloat("Main", &volume, 0.0f, 2.0f, "%.2f"))
 		APP.g_audioDevice.SetMasterVolume(volume);
 
-	ImGui::Text(std::string("PlayList: " + std::to_string(0/*AUDIO.GetPlayListSize()*/)).c_str());
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Sound List");
+	ImGui::PopStyleColor();
+
+	ImGui::Text(std::string("List Size: " + std::to_string(SOUND_DIRECTOR.GetSoundListSize())).c_str());
+
+	std::weak_ptr<SoundWork> wpSound;
+	for (auto&& sound : SOUND_DIRECTOR.GetSoundList())
+	{
+		ImGui::PushID(sound.get());
+
+		// 選択したObject
+		bool selected = (sound == wpSound.lock());
+		if (ImGui::Selectable(sound->GetName().c_str(), selected)) {
+			wpSound = sound;
+		}
+
+		ImGui::PopID();
+	}
+
+	// ここにゲームサウンド一覧を表示
 
 	ImGui::Separator();
 
@@ -308,9 +360,6 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
 	ImGui::Text("Widgets Demo");
 	ImGui::PopStyleColor();
-
-
-	ImGui::Text(std::string("CpuUseRate: " + std::to_string(m_cpuUseRate.GetCpuUseRate())).c_str());
 
 	// 気分
 	ImGui::SetNextItemOpen(false);

@@ -1,5 +1,8 @@
 ﻿#include "GameSystem.h"
 #include "GameObjects/GameObject.h"
+#include "main.h"
+
+#include "../Framework/Audio/SoundDirector.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -44,16 +47,19 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	m_spSoundWork = std::make_shared<SoundWork>();
-	m_spSoundWork->Load("Resource/Audio/MusicMono.wav", false);
-	m_spSoundWork->Play(1000);
-	m_spSoundWork->SetPan(-1);
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/The Chainsmokers_Push My Luck.wav", true);
+	if (sound)
+	{
+		sound->SetVolume(0.2f);
+		sound->Play();
+	}
 
-	m_spSoundWork3D = std::make_shared<SoundWork3D>();
-	m_spSoundWork3D->Load("Resource/Audio/heli.wav", true);
-	float3 pos = float3(0, 0, 0);
-	m_spSoundWork3D->Play3D(pos);
-	m_spSoundWork3D->SetVolume(0);
+	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/heli.wav", true);
+	if (sound3d)
+	{
+		float3 pos = float3(0, 0, 0);
+		sound3d->Play3D(pos);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -61,9 +67,6 @@ void GameSystem::Initialize()
 //-----------------------------------------------------------------------------
 void GameSystem::Finalize()
 {
-	m_spSoundWork->Release();
-	m_spSoundWork3D->Release();
-
 	for (auto& object : m_spObjectList)
 		object->Finalize();
 }
@@ -96,8 +99,6 @@ void GameSystem::Update()
 		else
 			++itr;
 	}
-
-	m_spSoundWork3D->Update();
 }
 
 //-----------------------------------------------------------------------------

@@ -84,8 +84,18 @@ bool SoundData::Create(bool loop)
     const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
 
     // ソースボイスの作成
-    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat, 0, 2.0f, nullptr, &sendList))) {
+    if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat, XAUDIO2_VOICE_USEFILTER, 2.0f, nullptr, &sendList))) {
         return false;
+    }
+
+    // フィルタ テスト
+    if (false)
+    {
+        XAUDIO2_FILTER_PARAMETERS FilterParams;
+        FilterParams.Type = XAUDIO2_FILTER_TYPE::LowPassFilter;
+        FilterParams.Frequency = 0.08f;// 0.0f(未満)～1.0f(XAUDIO2_MAX_FILTER_FREQUENCY)
+        FilterParams.OneOverQ = 1.0f;// 0.0f(以下)～1.5f(XAUDIO2_MAX_FILTER_ONEOVERQ)
+        m_pSourceVoice->SetFilterParameters(&FilterParams);
     }
 
     // 音声キューに新しいオーディオバッファを追加
@@ -111,6 +121,7 @@ SoundWork::SoundWork()
     : m_pSourceVoice(nullptr)
     , m_soundData()
     , m_filepath("")
+    , m_is3D(false)
 {
 }
 
@@ -122,7 +133,8 @@ bool SoundWork::Load(const std::string& filepath, bool loop)
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
 
-    m_filepath = filepath;
+    // "Resource/Audio/"(15文字) 以降のみ
+    m_filepath = filepath.substr(15);
 
     if (!m_soundData.Load(filepath, loop)) {
         IMGUISYSTEM.AddLog("ERROR: Failed to load voice.");
@@ -130,11 +142,12 @@ bool SoundWork::Load(const std::string& filepath, bool loop)
     }
 
     // ボイスコピー
+    // TODO: インターフェースのDeepCopy方法の調査 今のままだとShallowCopy
     m_pSourceVoice = m_soundData.GetRawVoice();
 
     IMGUISYSTEM.AddLog(std::string("INFO: Load voice done: " + filepath).c_str());
 
-    return false;
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -160,6 +173,7 @@ void SoundWork::Play(DWORD delay)
         std::thread([=] {
             Sleep(delay);
             m_pSourceVoice->Start(0);
+            return;
         }).detach();
     }
 
@@ -193,15 +207,18 @@ void SoundWork::SetVolume(float val)
 //-----------------------------------------------------------------------------
 // 音をパンする
 //-----------------------------------------------------------------------------
-void SoundWork::SetPan(float pan)
+bool SoundWork::SetPan(float pan)
 {
-    if (!AudioDeviceChild::g_audioDevice) return;
-    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
-    if (!m_pSourceVoice) return;
+    if (!AudioDeviceChild::g_audioDevice) return false;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
+    if (!m_pSourceVoice) return false;
 
     // スピーカー構成を取得
+    // TODO: デバイス初期化時(それとデバイス変更時)に構成を保存しておくべき
     DWORD dwChannelMask;
-    g_audioDevice->g_pMasteringVoice->GetChannelMask(&dwChannelMask);
+    if (FAILED(g_audioDevice->g_pMasteringVoice->GetChannelMask(&dwChannelMask))) {
+        return false;
+    }
 
     float outputMatrix[8];
     for (int i = 0; i < 8; i++)
@@ -248,8 +265,11 @@ void SoundWork::SetPan(float pan)
     // 宛先(第一引数)はNULLではなくMasteringVoiceを指定
     if (FAILED(m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice,
         INPUTCHANNELS, g_audioDevice->g_channels, outputMatrix))) {
-        DebugLog("ERROR: Failed to pan voice.");
+        DebugLog("ERROR: Failed to pan voice. 多くの場合、モノラル音源じゃないのが理由です.\n");
+        return false;
     }
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -263,6 +283,16 @@ float SoundWork::GetVolume()
 
     float ret; m_pSourceVoice->GetVolume(&ret);
     return ret;
+}
+
+//-----------------------------------------------------------------------------
+// フェード設定
+//-----------------------------------------------------------------------------
+bool SoundWork::SetFade(float targetVolume, float targetTime)
+{
+    // TODO: せっかくだからLuaで実装したい
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------

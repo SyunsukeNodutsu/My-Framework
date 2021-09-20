@@ -21,7 +21,7 @@ public:
 	void Play3D(const float3& pos, DWORD delay = 0);
 
 	// 更新
-	void Update();
+	virtual void Update() override;
 
 private:
 

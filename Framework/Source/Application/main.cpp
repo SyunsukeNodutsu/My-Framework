@@ -179,10 +179,8 @@ void Application::Execute()
 
 		// カメラ行列の取得
 		auto cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
-
-		g_audioDevice.Update(0);
-		g_audioDevice.UpdateListener(cameraMatrix);
-		//AUDIO.Update(cameraMatrix.Translation(), cameraMatrix.Backward());
+		// サウンド更新
+		g_audioDevice.Update(cameraMatrix);
 
 		//----------------------------------------
 		// ゲーム処理

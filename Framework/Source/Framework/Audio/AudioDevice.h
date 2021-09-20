@@ -18,6 +18,8 @@
 #define OUTPUTCHANNELS 8 // このサンプルでサポートされるデスティネーションチャネルの最大数
 #define NUM_PRESETS   30 // PRESETの数
 
+class SoundWork;
+
 // XAudio2のエンジン部分管理
 class AudioDevice
 {
@@ -28,39 +30,33 @@ public:
 
     // @brief 初期化
     // @return 成功...true
-    bool Initialize( XAUDIO2_PROCESSOR processor = XAUDIO2_DEFAULT_PROCESSOR );
-
-    // @brief x3DAudio初期化
-    // @return 成功...true
-    bool Initialize3D();
+    bool Initialize();
 
     // @brief 終了
     void Finalize();
 
-    // @brief 更新 TODO: 3Dサウンド処理実装予定
-    void Update( float fElapsedTime );
-
-    // @brief リスナー更新
+    // @brief サウンド更新
     // @param matrix リスナーのワールド行列
-    void UpdateListener(const mfloat4x4& matrix);
+    void Update(const mfloat4x4& listener);
+
+    // @brief メディアファイルの位置を確認するためのヘルパー関数
+    // @param strDestPath
+    // @param cchDest
+    // @param strFilename ファイルを確認するパス(位置)
+    // @return 成功...S_OK 失敗...エラーメッセージ
+    HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
 
     //--------------------------------------------------
     // 取得・設定
     //--------------------------------------------------
-
+    
     // @brief マスター音量を設定
-    void SetMasterVolume( float value ) {
-        g_pMasteringVoice->SetVolume(value);
-    }
+    // @param value 設定する値(波形の振幅なので0.5にしても半分ではない)
+    void SetMasterVolume(float value);
 
     // @brief マスター音量を返す
-    // @return マスター音量
-    float GetMasterVolume() const {
-        float ret = 0; g_pMasteringVoice->GetVolume(&ret); return ret;
-    }
-
-    //
-    HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
+    // @return 成功...マスター音量 失敗...FLT_MAX
+    float GetMasterVolume() const;
 
 public:
 
@@ -85,7 +81,14 @@ private:
     // 初期化完了？
     bool done = false;
 
+    // サウンド一覧(プレイリスト)
+    std::list<std::shared_ptr<SoundWork>> m_soundList;
+
 private:
+
+    // @brief x3DAudio初期化
+    // @return 成功...true
+    bool Initialize3D();
 
     // @brief ボリュームメータ(APO)の作成
     // @return 成功...true
