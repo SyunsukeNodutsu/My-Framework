@@ -5,9 +5,10 @@
 // DirectXTKを使用して読み込みを行っています
 //-----------------------------------------------------------------------------
 #pragma once
+#include "GraphicsDeviceChild.h"
 
 // テクスチャ管理
-class Texture
+class Texture : public GraphicsDeviceChild
 {
 public:
 

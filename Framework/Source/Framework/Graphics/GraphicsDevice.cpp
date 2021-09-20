@@ -6,17 +6,17 @@
 //-----------------------------------------------------------------------------
 GraphicsDevice::GraphicsDevice()
 	: g_cpDevice(nullptr)
-	, g_cpImmediateContext(nullptr)
+	, g_cpContext(nullptr)
 	, g_cpDeviceN(nullptr)
-	, g_cpImmediateContextM(nullptr)
-	, g_cpDeferredContext(nullptr)
+	, g_cpContextN(nullptr)
+	, g_cpContextDeferred(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 // デバイス作成
 //-----------------------------------------------------------------------------
-bool GraphicsDevice::Create(MY_DIRECT3D_DESC desc)
+bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 {
 	//--------------------------------------------------
 	// デバイス/デバイスコンテキスト作成
@@ -30,11 +30,11 @@ bool GraphicsDevice::Create(MY_DIRECT3D_DESC desc)
 		D3D_FEATURE_LEVEL_11_0,
 	};
 
-	UINT creationFlags = 0;
+	UINT flags = 0;
 
 #ifdef _DEBUG
 	// 詳細なデバッグ情報を取得する
-	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	// DXGIファクトリー作成
@@ -58,8 +58,8 @@ bool GraphicsDevice::Create(MY_DIRECT3D_DESC desc)
 	}
 
 	// デバイスとデバイスコンテキスト作成
-	if (FAILED(D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, creationFlags, featureLevels,
-		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &futureLevel, &g_cpImmediateContext))) {
+	if (FAILED(D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
+		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &futureLevel, &g_cpContext))) {
 		DebugLog("Direct3D11デバイス作成失敗.\n");
 		return false;
 	}
@@ -163,21 +163,21 @@ bool GraphicsDevice::Create(MY_DIRECT3D_DESC desc)
 	vp.Height	= static_cast<float>(desc.m_height);
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
-	g_cpImmediateContext->RSSetViewports(1, &vp);
+	g_cpContext->RSSetViewports(1, &vp);
 
 	// レンダーターゲット設定
-	g_cpImmediateContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
 	//--------------------------------------------------
 	// 遅延デバイスコンテキスト作成
 	//--------------------------------------------------
 
 	// 読み込み用遅延コンテキスト作成
-	g_cpDevice->CreateDeferredContext(0, &g_cpDeferredContext);
+	g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
 
 	// RT/VP設定
-	g_cpDeferredContext->RSSetViewports(1, &vp);
-	g_cpDeferredContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	g_cpContextDeferred->RSSetViewports(1, &vp);
+	g_cpContextDeferred->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成
@@ -214,7 +214,7 @@ bool GraphicsDevice::Create(MY_DIRECT3D_DESC desc)
 //-----------------------------------------------------------------------------
 // 解放
 //-----------------------------------------------------------------------------
-void GraphicsDevice::Release()
+void GraphicsDevice::Finalize()
 {
 	m_spBackbuffer = nullptr;
 	m_spDefaultZbuffer = nullptr;
@@ -225,11 +225,11 @@ void GraphicsDevice::Release()
 //-----------------------------------------------------------------------------
 void GraphicsDevice::Begin(const float* clearColor)
 {
-	g_cpImmediateContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	g_cpImmediateContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	g_cpImmediateContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	// ライト情報 更新
 	//m_spRenderer->LightCommit();

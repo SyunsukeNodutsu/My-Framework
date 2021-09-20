@@ -45,7 +45,7 @@ bool Buffer::Create(UINT bindFlags, UINT bufferSize, D3D11_USAGE bufferUsage, co
 	}
 
 	// 作成
-	if (FAILED(D3D.GetDevice()->CreateBuffer(&desc, initData, &m_cpBuffer))) {
+	if (FAILED(m_graphicsDevice->g_cpDevice.Get()->CreateBuffer(&desc, initData, &m_cpBuffer))) {
 		assert(0 && "エラー：バッファ作成失敗.");
 		return false;
 	}
@@ -65,25 +65,25 @@ void Buffer::WriteData(const void* srcData, UINT size)
 	if (m_usage == D3D11_USAGE_DYNAMIC)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(D3D.GetDeviceContext()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		if (SUCCEEDED(m_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			D3D.GetDeviceContext()->Unmap(m_cpBuffer.Get(), 0);
+			m_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 	// 静的バッファの場合
 	else if (m_usage == D3D11_USAGE_DEFAULT)
 	{
-		D3D.GetDeviceContext()->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
+		m_graphicsDevice->g_cpContext.Get()->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
 	}
 	// ステージングバッファの場合(読み書き両方)
 	else if (m_usage == D3D11_USAGE_STAGING)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(D3D.GetDeviceContext()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
+		if (SUCCEEDED(m_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			D3D.GetDeviceContext()->Unmap(m_cpBuffer.Get(), 0);
+			m_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 }
@@ -93,12 +93,10 @@ void Buffer::WriteData(const void* srcData, UINT size)
 //-----------------------------------------------------------------------------
 void Buffer::CopyFrom(const Buffer& srcBuffer)
 {
-	if (m_cpBuffer.Get() == nullptr)
-		return;
-	if (srcBuffer.Get() == nullptr)
-		return;
+	if (m_cpBuffer.Get() == nullptr) return;
+	if (srcBuffer.Get() == nullptr) return;
 
-	D3D.GetDeviceContext()->CopyResource(m_cpBuffer.Get(), srcBuffer.Get());
+	m_graphicsDevice->g_cpContext.Get()->CopyResource(m_cpBuffer.Get(), srcBuffer.Get());
 }
 
 /*

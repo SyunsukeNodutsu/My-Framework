@@ -5,8 +5,9 @@
 // 描画関数は Begin～End間で実行しないと描画しません
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Shader.h"
 
-class SpriteShader
+class SpriteShader : public Shader
 {
 public:
 
@@ -44,10 +45,6 @@ private:
 	};
 
 private:
-
-	ComPtr<ID3D11VertexShader>	m_cpVS;			// 頂点シェーダー
-	ComPtr<ID3D11InputLayout>	m_cpVLayout;	// 頂点レイアウト
-	ComPtr<ID3D11PixelShader>	m_cpPS;			// ピクセルシェーダー
 
 	mfloat4x4					m_prevProjMat;	// 保存用 射影行列
 	bool						m_isBegin;		// Flag

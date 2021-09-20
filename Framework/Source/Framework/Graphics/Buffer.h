@@ -5,9 +5,10 @@
 // バッファは基本的に一度作成したものを書き換えながら使いまわす
 //-----------------------------------------------------------------------------
 #pragma once
+#include "GraphicsDeviceChild.h"
 
 // バッファクラス
-class Buffer
+class Buffer : public GraphicsDeviceChild
 {
 public:
 
@@ -65,8 +66,9 @@ private:
 
 
 // 作業データ付き 定数バッファクラス
+// TODO: Buffer継承でいい
 template<class DataType>
-class ConstantBuffer
+class ConstantBuffer : public GraphicsDeviceChild
 {
 public:
 
@@ -96,8 +98,7 @@ public:
 	// @note m_isDirtyがtrueの時のみ、バッファに書き込まれる
 	void Write()
 	{
-		if (!m_isDirty)
-			return;
+		if (!m_isDirty) return;
 
 		m_buffer.WriteData(&m_work, m_buffer.GetSize());
 		m_isDirty = false;
@@ -126,20 +127,20 @@ public:
 	// @brief 頂点シェーダにセット
 	// @param slot スロット番号
 	inline void VSSetToDevice(int slot) const {
-		D3D.GetDeviceContext()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		m_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 	// @brief ピクセルシェーダにセット
 	// @param slot スロット番号
 	inline void PSSetToDevice(int slot) const {
-		D3D.GetDeviceContext()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		m_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 	// @brief 各シェーダにセット
 	// @param slot スロット番号
 	inline void SetToDevice(int slot) const {
-		D3D.GetDeviceContext()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
-		D3D.GetDeviceContext()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		m_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		m_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 private:
@@ -174,8 +175,7 @@ public:
 	~ThreadSafeRingBuffer()
 	{
 		auto size = sizeof(data);
-		std::string str = "リングバッファサイズ" + std::to_string(size) + "\n";
-		DebugLog(str.c_str());
+		DebugLog(std::string("リングバッファサイズ" + std::to_string(size) + "\n").c_str());
 	}
 
 	// @brief 空き容量があれば、アイテムを最後までプッシュする

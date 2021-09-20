@@ -76,6 +76,9 @@
     <Filter Include="Source\Framework\Graphics">
       <UniqueIdentifier>{29f0368e-b8dc-4a24-9ce3-dd95075beed7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Graphics\Camera">
+      <UniqueIdentifier>{ebeed093-4dc8-45c4-811f-0d92c625cb23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -174,7 +177,7 @@
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp">
       <Filter>Library\imGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Shader\ShaderBase.cpp">
+    <ClCompile Include="Source\Framework\Shader\Shader.cpp">
       <Filter>Source\Framework\Shader</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\GameObjects\Tank.cpp">
@@ -202,9 +205,6 @@
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\Camera.cpp">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Device.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp">
@@ -359,7 +359,7 @@
     <ClInclude Include="..\Library\imGui\imstb_textedit.h">
       <Filter>Library\imGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Shader\ShaderBase.h">
+    <ClInclude Include="Source\Framework\Shader\Shader.h">
       <Filter>Source\Framework\Shader</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\ImGuiSystem.h">
@@ -384,9 +384,6 @@
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Camera.h">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Device.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h">

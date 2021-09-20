@@ -35,13 +35,13 @@ public:
 	// @brief コンストラクタ
 	GraphicsDevice();
 
-	// @brief デバイス作成
+	// @brief 初期化
 	// @param desc 初期化データ
 	// @return 成功...true
-	bool Create(MY_DIRECT3D_DESC desc);
+	bool Initialize(MY_DIRECT3D_DESC desc);
 
-	// @brief 解放
-	void Release();
+	// @brief 終了
+	void Finalize();
 
 	// @brief 描画開始とバッファクリア
 	// @param clearColor クリア色(nullで白クリア)
@@ -50,18 +50,24 @@ public:
 	// @brief 描画終了と画面更新
 	void End(UINT syncInterval = 0, UINT flags = 0);
 
+	// @brief
+	std::shared_ptr<Texture> GetWhiteTex() { return m_texWhite; }
+
+	// @brief
+	std::shared_ptr<Texture> GetNormalTex() { return m_texNormal; }
+
 public:
 
 	// レンダリング インターフェース
 	ComPtr<ID3D11Device>			g_cpDevice;
-	ComPtr<ID3D11DeviceContext>		g_cpImmediateContext;
+	ComPtr<ID3D11DeviceContext>		g_cpContext; // 即時コンテキスト
 
 	// 11.1
 	ComPtr<ID3D11Device1>			g_cpDeviceN;
-	ComPtr<ID3D11DeviceContext1>	g_cpImmediateContextM;
+	ComPtr<ID3D11DeviceContext1>	g_cpContextN;
 
 	// 遅延コンテキスト
-	ComPtr<ID3D11DeviceContext>		g_cpDeferredContext;
+	ComPtr<ID3D11DeviceContext>		g_cpContextDeferred;
 
 private:
 

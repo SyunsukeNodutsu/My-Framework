@@ -4,6 +4,7 @@
 // メッシュ マテリアルデータなど
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Graphics/GraphicsDeviceChild.h"
 
 //==========================================================
 // メッシュ用 頂点情報
@@ -45,7 +46,7 @@ struct MeshSubset
 // メッシュクラス
 //
 //==========================================================
-class Mesh
+class Mesh : public GraphicsDeviceChild
 {
 public:
 
@@ -129,7 +130,7 @@ private:
 //==========================================================
 // マテリアル (glTFベースのPBRマテリアル
 //==========================================================
-struct Material
+struct Material : public GraphicsDeviceChild
 {
 	typedef std::shared_ptr<Texture> texture_sharedPtr;
 
@@ -159,10 +160,10 @@ struct Material
 	// @brief コンストラクタ
 	Material()
 	{
-		m_baseColorTexture			= D3D.GetWhiteTex();
-		m_metallicRoughnessTexture	= D3D.GetWhiteTex();
-		m_emissiveTexture			= D3D.GetWhiteTex();
-		m_normalTexture				= D3D.GetNormalTex();
+		m_baseColorTexture			= m_graphicsDevice->GetWhiteTex();
+		m_metallicRoughnessTexture	= m_graphicsDevice->GetWhiteTex();
+		m_emissiveTexture			= m_graphicsDevice->GetWhiteTex();
+		m_normalTexture				= m_graphicsDevice->GetNormalTex();
 	}
 
 };

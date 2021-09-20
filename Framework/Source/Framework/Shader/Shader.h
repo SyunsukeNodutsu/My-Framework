@@ -1,27 +1,20 @@
 ﻿//-----------------------------------------------------------------------------
-// File: ShaderBase.h
+// File: Shader.h
 //
 // シェーダー基底クラス
-// 共通に持つべき「VS layout PS」を所持
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Graphics/GraphicsDeviceChild.h"
 
 // シェーダ基底クラス
-class ShaderBase
+class Shader : public GraphicsDeviceChild
 {
 public:
 
 	// @brief コンストラクタ
-	ShaderBase();
+	Shader();
 
-	// 初期化タイミング
-	virtual void OnInitialize() {}
-	// 終了タイミング
-	virtual void OnFinalize() {}
-	// GPUに転送タイミング
-	virtual void OnSetToDevice() {}
-
-private:
+protected:
 
 	ComPtr<ID3D11VertexShader>	m_cpVS;
 	ComPtr<ID3D11PixelShader>	m_cpPS;

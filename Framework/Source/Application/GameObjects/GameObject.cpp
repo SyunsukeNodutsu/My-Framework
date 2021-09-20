@@ -108,10 +108,10 @@ void GameObject::Update(float deltaTime)
 void GameObject::Draw(float deltaTime)
 {
 	// カメラ座標
-	float3 cameraPos = D3D.GetRenderer().GetCameraPos();
+	float3 cameraPos = RENDERER.GetCameraPos();
 	// カメラとの距離
 	float dist = float3::Distance(cameraPos, m_transform.GetPosition());
-	D3D.GetRenderer().SetDistToEye(dist);
+	RENDERER.SetDistToEye(dist);
 
 	// TODO: Shader分け
 	SHADER.GetModelShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());

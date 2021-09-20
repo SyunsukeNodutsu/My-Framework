@@ -4,9 +4,10 @@
 // モデル描画用のShader
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Shader.h"
 
 // モデル描画用 PBR
-class ModelShader
+class ModelShader : public Shader
 {
 public:
 
@@ -34,10 +35,6 @@ public:
 	void DrawMesh(const Mesh* mesh, const std::vector<Material>& materials);
 
 private:
-
-	ComPtr<ID3D11VertexShader>	m_cpVS;			// 頂点シェーダ
-	ComPtr<ID3D11PixelShader>	m_cpPS;			// ピクセルシェーダ
-	ComPtr<ID3D11InputLayout>	m_cpInputLayout;// 頂点入力レイアウト
 
 	// マテリアル
 	struct cdMaterial

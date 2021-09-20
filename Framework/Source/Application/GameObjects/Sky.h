@@ -31,9 +31,9 @@ public:
 	// @brief 描画
 	void Draw(float deltaTime)
 	{
-		D3D.GetRenderer().SetLightEnable(false);
+		RENDERER.SetLightEnable(false);
 		GameObject::Draw(deltaTime);
-		D3D.GetRenderer().SetLightEnable(true);
+		RENDERER.SetLightEnable(true);
 	}
 
 private:

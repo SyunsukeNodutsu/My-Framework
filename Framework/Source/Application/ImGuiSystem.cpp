@@ -24,8 +24,10 @@ ImGuiSystem::ImGuiSystem()
 //-----------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------
-void ImGuiSystem::Initialize()
+void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 {
+	if (!device || !context) return;
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
@@ -33,7 +35,7 @@ void ImGuiSystem::Initialize()
 	ImGui::StyleColorsClassic();
 
 	ImGui_ImplWin32_Init(APP.g_window.GetWndHandle());
-	ImGui_ImplDX11_Init(D3D.GetDevice(), D3D.GetDeviceContext());
+	ImGui_ImplDX11_Init(device, context);
 
 	ImFontConfig config;
 	config.MergeMode = true;
@@ -195,7 +197,7 @@ void ImGuiSystem::ShaderDebugMonitor(ImGuiWindowFlags wflags)
 		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Emissive", &show_emissive);
 		ImGui::TableNextColumn(); darty = ImGui::Checkbox("MetalicRough", &show_metallic_rough);
 		if (!darty)
-			D3D.GetRenderer().SetFlags(show_base_color, show_normal, show_emissive, show_metallic_rough);
+			RENDERER.SetFlags(show_base_color, show_normal, show_emissive, show_metallic_rough);
 		ImGui::EndTable();
 	}
 
@@ -351,7 +353,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	ImGui::Text(Cpuid::m_brand.c_str());
-	ImGui::Text(wide_to_sjis(D3D.GetAdapterName()).c_str());
+	//ImGui::Text(wide_to_sjis(D3D.GetAdapterName()).c_str());
 
 	ImGui::Separator();
 

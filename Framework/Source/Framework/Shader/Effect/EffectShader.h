@@ -5,9 +5,10 @@
 // 光の計算を行いません
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../Shader.h"
 
 // エフェクト用シェーダ
-class EffectShader
+class EffectShader : public Shader
 {
 public:
 
@@ -40,9 +41,6 @@ public:
 
 private:
 
-	ComPtr<ID3D11VertexShader>	m_cpVS;					// 頂点シェーダ
-	ComPtr<ID3D11PixelShader>	m_cpPS;					// ピクセルシェーダ
-	ComPtr<ID3D11InputLayout>	m_cpInputLayout;		// 頂点入力レイアウト
 	ComPtr<ID3D11InputLayout>	m_cpInputLayout_model;	// モデル描画用 頂点入力レイアウト
 	std::vector<Buffer>			m_vertexBuffers;		// 頂点ごとのバッファ 3の倍数である程度確保
 

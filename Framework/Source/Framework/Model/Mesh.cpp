@@ -23,13 +23,13 @@ void Mesh::SetToDevice() const
 	// 頂点バッファセット
 	UINT stride = sizeof(MeshVertex);
 	UINT offset = 0;
-	D3D.GetDeviceContext()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddress(), &stride, &offset);
+	m_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddress(), &stride, &offset);
 
 	// インデックスバッファセット
-	D3D.GetDeviceContext()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	m_graphicsDevice->g_cpContext.Get()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	// プリミティブ・トポロジーをセット
-	D3D.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 //-----------------------------------------------------------------------------
@@ -105,16 +105,11 @@ bool Mesh::Create(const std::vector<MeshVertex>& vertices, const std::vector<Mes
 //-----------------------------------------------------------------------------
 void Mesh::DrawSubset(int subsetNo) const
 {
-	// 範囲外のサブセットはスキップ
-	if (subsetNo >= (int)m_subsets.size())
-		return;
-
-	// 面数が0なら描画スキップ
-	if (m_subsets[subsetNo].m_faceCount == 0)
-		return;
+	if (subsetNo >= (int)m_subsets.size()) return; // 範囲外のサブセット
+	if (m_subsets[subsetNo].m_faceCount == 0) return; // 面数が0
 
 	// 描画
-	D3D.GetDeviceContext()->DrawIndexed(
+	m_graphicsDevice->g_cpContext.Get()->DrawIndexed(
 		m_subsets[subsetNo].m_faceCount * 3,// 頂点数
 		m_subsets[subsetNo].m_faceStart * 3,// 頂点の開始位置
 		0

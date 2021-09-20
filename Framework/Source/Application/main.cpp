@@ -61,73 +61,48 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	// ウィンドウ作成
-	if (!g_window.Create(width, height, "Framework test.", "Window")) {
+	if (!g_window.Create(width, height, "高ぶってきたからTwitterで政治的ツイートするわ。", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
 	}
 
 	//--------------------------------------------------
 	// Direct3D初期化
-	// TODO: fix
 	//--------------------------------------------------
+	MY_DIRECT3D_DESC desc = {};
+	desc.m_bufferCount	= 2;
+	desc.m_width		= 1536;// 1280-1920-2560
+	desc.m_height		= 864; //  720-1080-1440
+	desc.m_refreshRate	= 0;
+	desc.m_windowed		= true;
+	desc.m_useHDR		= false;
+	desc.m_useMSAA		= true;
+	desc.m_deferredRendering = false;
+	desc.m_hwnd			= g_window.GetWndHandle();
 
-	// フルスクリーン確認
-	bool isFullScreen = false;
-	auto result = IDNO;// MessageBoxA(g_window.GetWndHandle(), "フルスクリーンにしますか？", "確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
-	if (result == IDYES)
-		isFullScreen = true;
-
-	// デバイスのデバッグモードを有効にする
-	bool deviceDebugMode = false;
-#ifdef _DEBUG
-	deviceDebugMode = true;
-#endif
-
-	// 解像度はさすがにフルHD以上
-	constexpr int resolution_width = 1536;	// 1280-1920-2560
-	constexpr int resolution_height = 864; //  720-1080-1440
-
-	// Direct3D初期化
-	std::string errorMessage = {};
-	bool done = D3D.Create(
-		g_window.GetWndHandle(), false, resolution_width, resolution_height,
-		false, deviceDebugMode, errorMessage
-	);
-	if (!done) {
-		MessageBoxA(g_window.GetWndHandle(), errorMessage.c_str(), "Failed", MB_OK | MB_ICONSTOP);
-		return false;
-	}
-
-	// フルスクリーン
-	if (isFullScreen)
-		D3D.GetSwapChain()->SetFullscreenState(TRUE, 0);
+	GraphicsDeviceChild::SetGraphicsDevice(&g_graphicsDevice);// テクスチャ作ってるから先に設定
+	g_graphicsDevice.Initialize(desc);
 
 	//--------------------------------------------------
-	// ImGui初期化
-	//--------------------------------------------------
-	IMGUISYSTEM.Initialize();
-
-	//--------------------------------------------------
-	// その他 初期化
-	//--------------------------------------------------
-
-	MY_DIRECT3D_DESC desc;
-	//g_graphicsDevice.Create(desc);
-	GraphicsDeviceChild::SetGraphicsDevice(&g_graphicsDevice);
-
 	// ゲームオーディオ
+	//--------------------------------------------------
 	g_audioDevice.Initialize();
 	g_audioDevice.SetMasterVolume(0.4f);
 	AudioDeviceChild::SetAudioDevice(&g_audioDevice);
 	
+	//--------------------------------------------------
+	// その他
+	//--------------------------------------------------
+
+	RENDERER.Initialize();
+
 	// シェーダー
 	SHADER.Initialize();
-
 	// 入力 RawInputAPI
 	RAW_INPUT.Initialize();
 
-	// GameSystem初期化
 	GAMESYSTEM.Initialize();
+	IMGUISYSTEM.Initialize(g_graphicsDevice.g_cpDevice.Get(), g_graphicsDevice.g_cpContext.Get());
 
 	return true;
 }
@@ -137,14 +112,17 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
+	// TODO: 終了の順番要調査 特にRAW INPUT
+
 	// アプリケーション
 	IMGUISYSTEM.Finalize();
 	GAMESYSTEM.Finalize();
 
 	// デバイス
 	g_audioDevice.Finalize();
+	g_graphicsDevice.Finalize();
+
 	RAW_INPUT.Finalize();
-	D3D.Release();
 
 	// ウィンドウ
 	g_window.Release();
@@ -198,7 +176,7 @@ void Application::Execute()
 		GAMESYSTEM.Update();
 
 		// 描画
-		D3D.Begin();
+		g_graphicsDevice.Begin();
 		{
 			// 3D想定
 			GAMESYSTEM.Draw();
@@ -211,7 +189,7 @@ void Application::Execute()
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
-		D3D.End();
+		g_graphicsDevice.End();
 
 		// 描画後更新
 		GAMESYSTEM.LateUpdate();

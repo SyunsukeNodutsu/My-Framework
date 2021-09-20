@@ -1,10 +1,5 @@
 ﻿#include "Texture.h"
 
-static bool CreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV);
-bool CreateRenderTargetViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11RenderTargetView** ppRTV);
-bool CreateShaderResourceViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11ShaderResourceView** ppSRV);
-bool CreateDepthStencilViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11DepthStencilView** ppDSV);
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -45,7 +40,7 @@ bool Texture::Create( const std::string& filepath )
 
 	// 読み込み ※MipMapを作成するにはContextが必要
 	HRESULT hr = DirectX::CreateWICTextureFromFile(
-		D3D.GetDevice(), D3D.GetDeviceContext(), wfilepath.c_str(),
+		m_graphicsDevice->g_cpDevice.Get(), m_graphicsDevice->g_cpContext.Get(), wfilepath.c_str(),
 		(ID3D11Resource**)m_cpBuffer.GetAddressOf(), m_cpSRV.GetAddressOf()
 	);
 
@@ -62,7 +57,7 @@ bool Texture::Create( const std::string& filepath )
 //-----------------------------------------------------------------------------
 bool Texture::Create(D3D11_TEXTURE2D_DESC& desc)
 {
-	HRESULT hr = D3D.GetDevice()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：テクスチャバッファ作成失敗.");
 		return false;
@@ -142,7 +137,7 @@ bool Texture::CreateRTV(bool useMSAA)
 	rtvDesc.ViewDimension	= useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	// RTV作成
-	HRESULT hr = D3D.GetDevice()->CreateRenderTargetView(m_cpBuffer.Get(), &rtvDesc, &m_cpRTV);
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateRenderTargetView(m_cpBuffer.Get(), &rtvDesc, &m_cpRTV);
 	if (FAILED(hr)) {
 		assert(0 && "エラー：RenderTargetView作成失敗.");
 		return false;
@@ -182,198 +177,11 @@ bool Texture::CreateDSV(bool useMSAA)
 	desc.Texture2D.MipSlice = 0;
 
 	// 作成
-	HRESULT hr = D3D.GetDevice()->CreateDepthStencilView(m_cpBuffer.Get(), &desc, m_cpDSV.GetAddressOf());
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(m_cpBuffer.Get(), &desc, m_cpDSV.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：DepthStencilView作成失敗.");
 		return false;
 	}
 
-	return true;
-}
-
-
-
-//-----------------------------------------------------------------------------
-// @brief 2D画像(resource)リソースから 最適なビューを作成する
-// @param resource 2D画像リソース
-// @param 作成されたShaderResourceViewを受け取るための変数のアドレス
-// @param 作成されたRenderTargetViewを受け取るための変数のアドレス
-// @param ppDSV 作成されたDepthStencilViewを受け取るための変数のアドレス
-//-----------------------------------------------------------------------------
-static bool CreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV)
-{
-	if (resource == nullptr)
-		return false;
-
-	// テクスチャ情報の取得
-	D3D11_TEXTURE2D_DESC desc = {};
-	resource->GetDesc(&desc);
-
-	// ShaderResourceViewを作成する
-	if (ppSRV && desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
-	{
-		if (CreateShaderResourceViewZ(resource, desc, ppSRV) == false)
-			return false;
-	}
-
-	// RenderTargetViewを作成する
-	if (ppRTV && desc.BindFlags & D3D11_BIND_RENDER_TARGET)
-	{
-		if (CreateRenderTargetViewZ(resource, desc, ppRTV) == false)
-			return false;
-	}
-
-	// DepthStencilViewを作成する
-	if (ppDSV && desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
-	{
-		if (CreateDepthStencilViewZ(resource, desc, ppDSV) == false)
-			return false;
-	}
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// @brief リソースから RenderTargetViewを作成する
-// @return 成功...true
-//-----------------------------------------------------------------------------
-bool CreateRenderTargetViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11RenderTargetView** ppRTV)
-{
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format = desc.Format;
-
-	// 単品のテクスチャ(通常テクスチャ)の場合
-	if (desc.ArraySize == 1)
-	{
-		// 単品テクスチャ
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	}
-	// テクスチャ配列の場合
-	else
-	{
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;	// テクスチャ配列
-		rtvDesc.Texture2DArray.ArraySize = desc.ArraySize;	// 要素数
-		rtvDesc.Texture2DArray.FirstArraySlice = 0;
-		rtvDesc.Texture2DArray.MipSlice = 0;
-	}
-
-	// レンダーターゲットビュー作成
-	HRESULT hr = D3D.GetDevice()->CreateRenderTargetView(resource, &rtvDesc, ppRTV);
-	if (FAILED(hr)) {
-		assert(0 && "エラー：RenderTargetViewの作成に失敗.");
-		return false;
-	}
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// @brief リソースから ShaderResourceViewを作成する
-// @return 成功...true
-//-----------------------------------------------------------------------------
-bool CreateShaderResourceViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11ShaderResourceView** ppSRV)
-{
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-
-	// テクスチャがZバッファの場合は、最適なフォーマットにする
-	if (desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
-	{
-		switch (desc.Format)
-		{
-			// 16ビット
-		case DXGI_FORMAT_R16_TYPELESS: srvDesc.Format = DXGI_FORMAT_R16_UNORM; break;
-			// 32ビット
-		case DXGI_FORMAT_R32_TYPELESS: srvDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
-			// 24ビット(Zバッファ) + 8ビット(ステンシルバッファ)
-		case DXGI_FORMAT_R24G8_TYPELESS: srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
-			// 非対応
-		default: assert(0 && "エラー：対応していないフォーマットです."); break;
-		}
-	}
-	// Zバッファでない場合は、そのまま同じフォーマットを使用
-	else
-	{
-		srvDesc.Format = desc.Format;
-	}
-
-	// 単品のテクスチャ(通常テクスチャ)の場合
-	if (desc.ArraySize == 1)
-	{
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.MipLevels = desc.MipLevels;
-		if (srvDesc.Texture2D.MipLevels <= 0)
-			srvDesc.Texture2D.MipLevels = -1;
-	}
-	// テクスチャ配列の場合
-	else
-	{
-		// さらにキューブマップの場合
-		if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
-		{
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-		}
-		// 通常テクスチャ配列
-		else
-		{
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-		}
-		srvDesc.Texture2DArray.MostDetailedMip = 0;
-		srvDesc.Texture2DArray.MipLevels = desc.MipLevels;
-		srvDesc.Texture2DArray.ArraySize = desc.ArraySize; // 要素数
-		srvDesc.Texture2DArray.FirstArraySlice = 0;
-	}
-
-	// 作成
-	HRESULT hr = D3D.GetDevice()->CreateShaderResourceView(resource, &srvDesc, ppSRV);
-	if (FAILED(hr)) {
-		assert(0 && "エラー：ShaderResourceViewの作成に失敗.");
-		return false;
-	}
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// @brief リソースから DepthStencilViewを作成する
-// @return 成功...true
-//-----------------------------------------------------------------------------
-bool CreateDepthStencilViewZ(ID3D11Texture2D* resource, D3D11_TEXTURE2D_DESC desc, ID3D11DepthStencilView** ppDSV)
-{
-	// 作成するビューの設定
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-
-	// テクスチャー作成時に指定したフォーマットと互換性があり、深度ステンシルビューとして指定できるフォーマットを指定する
-	switch (desc.Format)
-	{
-		// 16ビット
-	case DXGI_FORMAT_R16_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D16_UNORM; break;
-		// 32ビット
-	case DXGI_FORMAT_R32_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D32_FLOAT; break;
-		// 24ビット(Zバッファ) + 8ビット(ステンシルバッファ)
-	case DXGI_FORMAT_R24G8_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; break;
-		// 非対応
-	default: assert(0 && "エラー：対応していないフォーマットです."); break;
-	}
-
-	// 単品のテクスチャ(通常テクスチャ)の場合
-	if (desc.ArraySize == 1)
-	{
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		dsvDesc.Texture2D.MipSlice = 0;
-	}
-	// テクスチャ配列の場合
-	else
-	{
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-		dsvDesc.Texture2DArray.ArraySize = desc.ArraySize;
-		dsvDesc.Texture2DArray.MipSlice = 0;
-		dsvDesc.Texture2DArray.FirstArraySlice = 0;
-	}
-
-	// 作成
-	HRESULT hr = D3D.GetDevice()->CreateDepthStencilView(resource, &dsvDesc, ppDSV);
-	if (FAILED(hr)) {
-		assert(0 && "エラー：DepthStencilViewの作成に失敗.");
-		return false;
-	}
 	return true;
 }

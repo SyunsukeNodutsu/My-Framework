@@ -19,9 +19,9 @@ void Tank::Awake()
 //-----------------------------------------------------------------------------
 void Tank::Draw(float deltaTime)
 {
-	D3D.GetRenderer().SetDitherEnable(true);
+	RENDERER.SetDitherEnable(true);
 	GameObject::Draw(deltaTime);
-	D3D.GetRenderer().SetDitherEnable(false);
+	RENDERER.SetDitherEnable(false);
 
 	m_tire.Draw(deltaTime);
 }

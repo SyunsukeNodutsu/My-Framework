@@ -14,7 +14,7 @@ public:
 	ImGuiSystem();
 
 	// @brief 初期化
-	void Initialize();
+	void Initialize(ID3D11Device* device, ID3D11DeviceContext* context);
 
 	// @brief 終了
 	void Finalize();

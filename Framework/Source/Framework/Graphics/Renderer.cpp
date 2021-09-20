@@ -160,8 +160,8 @@ void Renderer::SetTexture(Texture* texture, int slot)
 	if (texture == nullptr)
 		return;
 
-	D3D.GetDeviceContext()->VSSetShaderResources(slot, 1, texture->SRVAddress());
-	D3D.GetDeviceContext()->PSSetShaderResources(slot, 1, texture->SRVAddress());
+	m_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
+	m_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
 }
 
 //-----------------------------------------------------------------------------
@@ -186,9 +186,9 @@ void Renderer::SetDepthStencil(bool zUse, bool zWrite)
 		return;
 
 	// 設定
-	D3D.GetDeviceContext()->OMSetDepthStencilState(m_depthStencilStates[useIdx].Get(), 0);
+	m_graphicsDevice->g_cpContext.Get()->OMSetDepthStencilState(m_depthStencilStates[useIdx].Get(), 0);
 	// 記憶/復元用に保存
-	D3D.GetDeviceContext()->OMGetDepthStencilState(&m_saveState.DS, &m_saveState.StencilRef);
+	m_graphicsDevice->g_cpContext.Get()->OMGetDepthStencilState(&m_saveState.DS, &m_saveState.StencilRef);
 }
 
 //-----------------------------------------------------------------------------
@@ -204,10 +204,10 @@ bool Renderer::SetSampler(SS_FilterMode filter, SS_AddressMode address)
 	}
 
 	// PSとVSにサンプラーステートを設定
-	D3D.GetDeviceContext()->VSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
-	D3D.GetDeviceContext()->PSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
+	m_graphicsDevice->g_cpContext.Get()->VSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
+	m_graphicsDevice->g_cpContext.Get()->PSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
 	// 記憶/復元用に保存
-	D3D.GetDeviceContext()->PSGetSamplers(0, 1, &m_saveState.SS);
+	m_graphicsDevice->g_cpContext.Get()->PSGetSamplers(0, 1, &m_saveState.SS);
 
 	return true;
 }
@@ -223,9 +223,9 @@ bool Renderer::SetBlend(BlendMode flag)
 	if (m_blendStates[flag] == nullptr)
 		return false;
 
-	D3D.GetDeviceContext()->OMSetBlendState(m_blendStates[flag].Get(), cfloat4x4::Clear, 0xFFFFFFFF);
+	m_graphicsDevice->g_cpContext.Get()->OMSetBlendState(m_blendStates[flag].Get(), cfloat4x4::Clear, 0xFFFFFFFF);
 	// 記憶/復元用に保存
-	D3D.GetDeviceContext()->OMGetBlendState(&m_saveState.BS, m_saveState.BlendFactor, &m_saveState.SampleMask);
+	m_graphicsDevice->g_cpContext.Get()->OMGetBlendState(&m_saveState.BS, m_saveState.BlendFactor, &m_saveState.SampleMask);
 
 	return true;
 }
@@ -241,9 +241,9 @@ bool Renderer::SetRasterize(RS_CullMode cull, RS_FillMode fill)
 			return false;
 	}
 
-	D3D.GetDeviceContext()->RSSetState(m_rasterizerState[(cull | fill)].Get());
+	m_graphicsDevice->g_cpContext.Get()->RSSetState(m_rasterizerState[(cull | fill)].Get());
 	// 記憶/復元用に保存
-	D3D.GetDeviceContext()->RSGetState(&m_saveState.RS);
+	m_graphicsDevice->g_cpContext.Get()->RSGetState(&m_saveState.RS);
 
 	return true;
 }
@@ -291,7 +291,7 @@ bool Renderer::CreateSampler(SS_FilterMode filter, SS_AddressMode address)
 
 	// 作成
 	ComPtr<ID3D11SamplerState> state = nullptr;
-	HRESULT hr = D3D.GetDevice()->CreateSamplerState(&desc, state.GetAddressOf());
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateSamplerState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：サンプラーステート作成失敗");
 		return false;
@@ -335,7 +335,7 @@ bool Renderer::CreateRasterrize(RS_CullMode cull, RS_FillMode fill)
 
 	// 作成
 	ComPtr<ID3D11RasterizerState> state = nullptr;
-	HRESULT hr = D3D.GetDevice()->CreateRasterizerState(&desc, state.GetAddressOf());
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateRasterizerState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：ラスタライザーステートの作成に失敗しました.");
 		return false;
@@ -367,7 +367,7 @@ ComPtr<ID3D11DepthStencilState> Renderer::CreateDepthStencil(bool zUse, bool zWr
 
 	// 作成
 	ComPtr<ID3D11DepthStencilState> state = nullptr;
-	HRESULT hr = D3D.GetDevice()->CreateDepthStencilState(&desc, &state);
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilState(&desc, &state);
 	if (FAILED(hr)) {
 		assert(0 && "エラー：デプスステンシルステート作成失敗.");
 		return nullptr;
@@ -422,7 +422,7 @@ ComPtr<ID3D11BlendState> Renderer::CreateBlend(BlendMode flag)
 
 	// 作成
 	ComPtr<ID3D11BlendState> state = nullptr;
-	HRESULT hr = D3D.GetDevice()->CreateBlendState(&desc, state.GetAddressOf());
+	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateBlendState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：ブレンドステート作成失敗.");
 		return nullptr;

@@ -21,12 +21,12 @@ void Camera::SetToShader()
 	if (m_dirtyCamera)
 	{
 		m_viewMatrix = m_cameraMatrix.Invert();
-		D3D.GetRenderer().SetViewMatrix(m_viewMatrix);
+		RENDERER.SetViewMatrix(m_viewMatrix);
 	}
 
 	// 射影行列が変更されていれば更新
 	if (m_dirtyProj)
-		D3D.GetRenderer().SetProjMatrix(m_projMatrix);
+		RENDERER.SetProjMatrix(m_projMatrix);
 }
 
 //-----------------------------------------------------------------------------

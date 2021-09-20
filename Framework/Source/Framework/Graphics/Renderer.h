@@ -17,12 +17,6 @@ class Renderer : public GraphicsDeviceChild
 	struct SaveState;
 public:
 
-	// @brief コンストラクタ
-	Renderer();
-
-	// @brief デストラクタ
-	~Renderer() = default;
-
 	// @brief 初期化
 	// @return　成功...終了 失敗...false
 	bool Initialize();
@@ -144,6 +138,10 @@ public:
 		m_cd14ShaderDebug.Write();
 	}
 
+	static Renderer& GetInstance() {
+		static Renderer instance; return instance;
+	}
+
 	//--------------------------------------------------
 	// static
 	//--------------------------------------------------
@@ -258,6 +256,9 @@ private:
 
 private:
 
+	// @brief コンストラクタ
+	Renderer();
+
 	// @brief サンプラーステート作成
 	// @param filter フィルタリング設定
 	// @param address アドレッシング設定
@@ -284,13 +285,15 @@ private:
 public:
 
 	// TODO: こっちのがええやろ
-	const ConstantBuffer<cdWorldMatrix>& Getcd8() const { return m_cd8WorldMatrix; }
-	const ConstantBuffer<cdViwProjMatrix>& Getcd9() const { return m_cd9ViewProjMatrix; }
-	const ConstantBuffer<cdLight>& Getcd10()const { return m_cd10Light; }
-	const ConstantBuffer<cdTime>& Getcd12() const { return m_cd12Time; }
-	const ConstantBuffer<cdAtmosphere>& Getcd13() const { return m_cd13Atmosphere; }
-	const ConstantBuffer<cbShaderDebug>& Getcd14() const { return m_cd14ShaderDebug; }
+	ConstantBuffer<cdWorldMatrix>& Getcd8() { return m_cd8WorldMatrix; }
+	ConstantBuffer<cdViwProjMatrix>& Getcd9(){ return m_cd9ViewProjMatrix; }
+	ConstantBuffer<cdLight>& Getcd10() { return m_cd10Light; }
+	ConstantBuffer<cdTime>& Getcd12() { return m_cd12Time; }
+	ConstantBuffer<cdAtmosphere>& Getcd13() { return m_cd13Atmosphere; }
+	ConstantBuffer<cbShaderDebug>& Getcd14() { return m_cd14ShaderDebug; }
 };
+
+#define RENDERER Renderer::GetInstance()
 
 #pragma region enums
 // サンプラーステート

@@ -20,9 +20,9 @@ GameSystem::GameSystem()
 void GameSystem::Initialize()
 {
 	// 大照明設定
-	D3D.GetRenderer().SetDirectionalLightDir(float3(1, -1, 0));
+	RENDERER.SetDirectionalLightDir(float3(1, -1, 0));
 	// ディザリング設定
-	D3D.GetRenderer().SetDitherEnable(false);
+	RENDERER.SetDitherEnable(false);
 
 	//--------------------------------------------------
 	// ActorList初期化
@@ -43,11 +43,11 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/The Chainsmokers_Push My Luck.wav", true, true);
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/New Happy Day by fennec beats.wav", true, false);
 	if (sound)
 	{
 		//sound->SetVolume(0.2f);
-		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play();
 	}
 
@@ -79,7 +79,7 @@ void GameSystem::Update()
 	const float totalTime = static_cast<float>(g_fpsTimer.GetTotalTime());
 
 	// 時間系を設定/送信
-	D3D.GetRenderer().SetTime(totalTime, deltaTime);
+	RENDERER.SetTime(totalTime, deltaTime);
 
 	// GameObjectリスト更新
 	for (auto itr = m_spActorList.begin(); itr != m_spActorList.end();)

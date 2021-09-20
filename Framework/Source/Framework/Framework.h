@@ -36,6 +36,7 @@
 //--------------------------------------------------
 
 // エイリアスが含まれているので最優先
+// TODO: Windo 各Deice はまとめた方がいいかも
 #include "Utility/Types.h"
 #include "Utility/Utility.h"
 
@@ -46,7 +47,6 @@
 #include "Graphics/GraphicsDevice.h"
 #include "Graphics/GraphicsDeviceChild.h"
 
-#include "Graphics/Device.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Renderer.h"

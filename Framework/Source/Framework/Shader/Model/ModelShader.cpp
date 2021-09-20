@@ -4,9 +4,6 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 ModelShader::ModelShader()
-	: m_cpVS(nullptr)
-	, m_cpPS(nullptr)
-	, m_cpInputLayout(nullptr)
 {
 }
 
@@ -23,7 +20,7 @@ bool ModelShader::Initialize()
 	{
 		#include "ModelShader_VS.shaderinc"
 
-		hr = D3D.GetDevice()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
+		hr = m_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：頂点シェーダ作成失敗.");
 			return false;
@@ -38,7 +35,7 @@ bool ModelShader::Initialize()
 			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
-		hr = D3D.GetDevice()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
+		hr = m_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：頂点入力レイアウト作成失敗.");
 			return false;
@@ -51,7 +48,7 @@ bool ModelShader::Initialize()
 	{
 		#include "ModelShader_PS.shaderinc"
 
-		hr = D3D.GetDevice()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
+		hr = m_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：ピクセルシェーダ作成失敗.");
 			return false;
@@ -75,11 +72,11 @@ void ModelShader::Begin()
 	}
 	else
 	{
-		D3D.GetDeviceContext()->VSSetShader(m_cpVS.Get(), 0, 0);
-		D3D.GetDeviceContext()->IASetInputLayout(m_cpInputLayout.Get());
+		m_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+		m_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 	}
 
-	D3D.GetDeviceContext()->PSSetShader(m_cpPS.Get(), 0, 0);
+	m_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -100,7 +97,7 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 		auto& mesh = model.GetMesh(nodeIdx);
 
 		// ワールド行列 設定
-		D3D.GetRenderer().SetWorldMatrix(rWorkNode.m_worldTransform * worldMatrix);
+		RENDERER.SetWorldMatrix(rWorkNode.m_worldTransform * worldMatrix);
 
 		// メッシュ描画
 		DrawMesh(mesh.get(), data->GetMaterials());
@@ -133,10 +130,10 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 		m_cd11Material.Write();
 
 		// テクスチャセット
-		D3D.GetRenderer().SetTexture(material.m_baseColorTexture.get(), 0);
-		D3D.GetRenderer().SetTexture(material.m_emissiveTexture.get(), 1);
-		D3D.GetRenderer().SetTexture(material.m_metallicRoughnessTexture.get(), 2);
-		D3D.GetRenderer().SetTexture(material.m_normalTexture.get(), 3);
+		RENDERER.SetTexture(material.m_baseColorTexture.get(), 0);
+		RENDERER.SetTexture(material.m_emissiveTexture.get(), 1);
+		RENDERER.SetTexture(material.m_metallicRoughnessTexture.get(), 2);
+		RENDERER.SetTexture(material.m_normalTexture.get(), 3);
 
 		// サブセット描画
 		mesh->DrawSubset(subi);
