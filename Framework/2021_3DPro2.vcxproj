@@ -47,6 +47,7 @@
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Device.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
     <ClInclude Include="Source\Framework\Graphics\Camera.h" />
     <ClInclude Include="Source\Framework\Graphics\Device.h" />
+    <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />

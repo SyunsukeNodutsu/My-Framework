@@ -43,6 +43,9 @@
 
 #include "Window/Window.h"
 
+#include "Graphics/GraphicsDevice.h"
+#include "Graphics/GraphicsDeviceChild.h"
+
 #include "Graphics/Device.h"
 #include "Graphics/Texture.h"
 #include "Graphics/Buffer.h"

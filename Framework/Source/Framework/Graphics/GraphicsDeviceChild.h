@@ -1,13 +1,10 @@
 ﻿//-----------------------------------------------------------------------------
-// File: GameSystem.h
+// File: GraphicsDeviceChild.h
 //
-// Device DeviceContext ...
-// 描画デバイスの処理を行うクラスに継承
+// 描画デバイスを参照する必要のあるクラスに継承
 //-----------------------------------------------------------------------------
 #pragma once
-
-// TODO:
-class GraphicsDevice{};
+#include "GraphicsDevice.h"
 
 // 描画デバイス管理の子クラス
 class GraphicsDeviceChild

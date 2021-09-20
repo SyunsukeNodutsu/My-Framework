@@ -10,7 +10,7 @@
 GameSystem::GameSystem()
 	: g_fpsTimer()
 	, m_spCamera(nullptr)
-	, m_spObjectList()
+	, m_spActorList()
 {
 }
 
@@ -19,31 +19,27 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
-	// テスト用テクスチャ
-	spTexture = std::make_shared<Texture>();
-	spTexture->Create("Resource/Texture/screen_toggle.png");
-
 	// 大照明設定
 	D3D.GetRenderer().SetDirectionalLightDir(float3(1, -1, 0));
 	// ディザリング設定
 	D3D.GetRenderer().SetDitherEnable(false);
 
 	//--------------------------------------------------
-	// GameObjectList初期化
+	// ActorList初期化
 	// TODO: 外部ファイルへ
 	//--------------------------------------------------
 	{
-		AddGameObject("Human");
-		AddGameObject("Sky");
-		AddGameObject("StageMap");
-		//AddGameObject("Tank");
+		AddActor("Human");
+		AddActor("Sky");
+		AddActor("StageMap");
+		//AddActor("Tank");
 
 		auto object = std::make_shared<GameObject>();
 		object->LoadModel("Resource/Model/DebugSphere.gltf");
-		m_spObjectList.push_back(object);
+		m_spActorList.push_back(object);
 	}
 
-	for (auto& object : m_spObjectList)
+	for (auto& object : m_spActorList)
 		object->Initialize();
 
 	// BGM再生
@@ -68,7 +64,7 @@ void GameSystem::Initialize()
 //-----------------------------------------------------------------------------
 void GameSystem::Finalize()
 {
-	for (auto& object : m_spObjectList)
+	for (auto& object : m_spActorList)
 		object->Finalize();
 }
 
@@ -86,7 +82,7 @@ void GameSystem::Update()
 	D3D.GetRenderer().SetTime(totalTime, deltaTime);
 
 	// GameObjectリスト更新
-	for (auto itr = m_spObjectList.begin(); itr != m_spObjectList.end();)
+	for (auto itr = m_spActorList.begin(); itr != m_spActorList.end();)
 	{
 		if ((*itr) == nullptr)
 			continue;
@@ -96,7 +92,7 @@ void GameSystem::Update()
 
 		// 除外？
 		if ((*itr)->IsEnable() == false)
-			itr = m_spObjectList.erase(itr);
+			itr = m_spActorList.erase(itr);
 		else
 			++itr;
 	}
@@ -109,7 +105,7 @@ void GameSystem::LateUpdate()
 {
 	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
 
-	for (auto& object : m_spObjectList)
+	for (auto& object : m_spActorList)
 		object->LateUpdate(deltaTime);
 }
 
@@ -126,7 +122,7 @@ void GameSystem::Draw()
 
 	SHADER.GetModelShader().Begin();
 
-	for (auto& object : m_spObjectList)
+	for (auto& object : m_spActorList)
 		object->Draw(deltaTime);
 }
 
@@ -145,12 +141,12 @@ void GameSystem::Draw2D()
 //-----------------------------------------------------------------------------
 // GameObjectをシーンに追加
 //-----------------------------------------------------------------------------
-void GameSystem::AddGameObject(const std::string& name)
+void GameSystem::AddActor(const std::string& name)
 {
 	auto object = GenerateGameObject(name);
 
 	// TODO: NullActor
 	if (object == nullptr) return;
 
-	m_spObjectList.push_back(object);
+	m_spActorList.push_back(object);
 }

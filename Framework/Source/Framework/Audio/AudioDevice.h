@@ -3,6 +3,7 @@
 //
 // XAudio2 MasteringVoice
 // TODO: APOを別クラスに移動したほうがいいかも
+// TODO: public変数の選定 必要じゃない変数(メータなど)をprivateに移動
 //-----------------------------------------------------------------------------
 #pragma once
 #define INPUTCHANNELS  1 // ソースチャンネルの数

@@ -35,8 +35,11 @@ public:
 	// ウィンドウ
 	Window g_window;
 
+	// 各デバイス
+	// 描画デバイス
+	GraphicsDevice g_graphicsDevice;
 	// オーディオデバイス
-	AudioDevice g_audioDevice;
+	AudioDevice	g_audioDevice;
 
 private:
 

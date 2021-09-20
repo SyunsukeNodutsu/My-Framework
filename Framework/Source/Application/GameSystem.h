@@ -48,7 +48,7 @@ public:
 	// @brief シーンのActorリストを返す
 	// @return Actorリスト
 	const std::list<std::shared_ptr<GameObject>>& GetActorList() const {
-		return m_spObjectList;
+		return m_spActorList;
 	}
 
 	// @brief 使用カメラを返す
@@ -57,25 +57,29 @@ public:
 
 public:
 
-	FpsTimer				g_fpsTimer;	// FPS管理
+	// TODO: 設計
+	// fps管理 audio nad graphics デバイスなどは
+	// main.cppで宣言した方が意味的にはあってる気が
+
+	// FPS管理
+	FpsTimer g_fpsTimer;
 
 private:
 
-	std::shared_ptr<Camera> m_spCamera;	// カメラ
+	// 使用カメラ
+	std::shared_ptr<Camera> m_spCamera;
 
-	// 登場GameObjectリスト
-	std::list<std::shared_ptr<GameObject>>	m_spObjectList;
-
-	std::shared_ptr<Texture> spTexture;
+	// 登場Actorリスト
+	std::list<std::shared_ptr<GameObject>>	m_spActorList;
 
 private:
 
 	// @brief コンストラクタ
 	GameSystem();
 
-	// @brief GameObjectをシーンに追加
-	// @param name 追加するGameObjectのクラス名
-	void AddGameObject(const std::string& name);
+	// @brief Actorをシーンに追加
+	// @param name 追加するActorのクラス名
+	void AddActor(const std::string& name);
 
 };
 

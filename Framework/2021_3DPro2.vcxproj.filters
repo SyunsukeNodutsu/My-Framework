@@ -222,6 +222,9 @@
     <ClCompile Include="Source\Framework\Audio\SoundDirector.cpp">
       <Filter>Source\Framework\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -400,6 +403,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Audio\SoundDirector.h">
       <Filter>Source\Framework\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

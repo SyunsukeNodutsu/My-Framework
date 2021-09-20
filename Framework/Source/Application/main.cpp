@@ -68,6 +68,7 @@ bool Application::Initialize(int width, int height)
 
 	//--------------------------------------------------
 	// Direct3D初期化
+	// TODO: fix
 	//--------------------------------------------------
 
 	// フルスクリーン確認
@@ -110,6 +111,10 @@ bool Application::Initialize(int width, int height)
 	// その他 初期化
 	//--------------------------------------------------
 
+	MY_DIRECT3D_DESC desc;
+	//g_graphicsDevice.Create(desc);
+	GraphicsDeviceChild::SetGraphicsDevice(&g_graphicsDevice);
+
 	// ゲームオーディオ
 	g_audioDevice.Initialize();
 	g_audioDevice.SetMasterVolume(0.4f);
@@ -132,13 +137,16 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
+	// アプリケーション
 	IMGUISYSTEM.Finalize();
 	GAMESYSTEM.Finalize();
 
+	// デバイス
 	g_audioDevice.Finalize();
 	RAW_INPUT.Finalize();
 	D3D.Release();
 
+	// ウィンドウ
 	g_window.Release();
 }
 
