@@ -25,5 +25,5 @@ void ShaderManager::Initialize()
 	m_spSpriteShader = std::make_shared<SpriteShader>();
 	m_spSpriteShader->Initialize();
 
-	IMGUISYSTEM.AddLog("INFO: ShaderManager initialized.");
+	DebugLog("INFO: ShaderManager initialized.");
 }

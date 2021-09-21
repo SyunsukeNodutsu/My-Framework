@@ -20,7 +20,7 @@ FPSCamera::FPSCamera()
 void FPSCamera::Initialize()
 {
 	// マウス表示OFF
-	RAW_INPUT.GetMouse()->SetCursorShow(false);
+	APP.g_rawInputDevice.g_spMouse->SetCursorShow(false);
 }
 
 //-----------------------------------------------------------------------------
@@ -32,14 +32,14 @@ void FPSCamera::Update()
 		return;
 
 	{
-		float2 nowPos = RAW_INPUT.GetMouse()->GetMousePos();
+		float2 nowPos = APP.g_rawInputDevice.g_spMouse->GetMousePos();
 
 		float2 mouseMove;
 
 		mouseMove.x = nowPos.x - s_fixMousePos.x;
 		mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-		RAW_INPUT.GetMouse()->SetAt(s_fixMousePos, APP.g_window.GetWndHandle());
+		APP.g_rawInputDevice.g_spMouse->SetAt(s_fixMousePos, APP.g_window.GetWndHandle());
 
 		// カメラを回転させる処理
 		m_degAngle.x += mouseMove.y * 0.1f;

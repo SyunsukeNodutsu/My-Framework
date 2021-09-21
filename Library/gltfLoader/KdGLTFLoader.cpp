@@ -535,7 +535,7 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				else
 				{
 					auto& nName = destNode->m_name;
-					IMGUISYSTEM.AddLog(std::string(
+					DebugLog(std::string(
 						"WARNING: Could not obtain tangent line. model path: "
 						+ path + " node name: " + nName).c_str()
 					);

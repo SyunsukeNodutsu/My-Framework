@@ -1,4 +1,5 @@
 ﻿#include "Window.h"
+#include "../../Application/main.h"
 
 // imGui
 LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
@@ -98,7 +99,7 @@ void Window::Release()
 bool Window::ProcessMessage()
 {
 	// 入力系 リフレッシュ
-	RAW_INPUT.Refresh();
+	APP.g_rawInputDevice.Refresh();
 
 	// メッセージ取得
 	MSG msg = {};
@@ -265,7 +266,18 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	case WM_INPUT:
 	{
 		if (m_windowInfo.dwWindowStatus == WS_ACTIVECAPTION)
-			RAW_INPUT.ParseMessage((void*)lparam);
+			APP.g_rawInputDevice.ParseMessage((void*)lparam);
+	}
+	break;
+
+	// In windowProc
+	case WM_SYSCOMMAND:
+	{
+		// ALT+いずれかのキーが押された時のビープ音を削除
+		if (wparam == SC_KEYMENU)
+			return 0;
+		else
+			return DefWindowProc(hwnd, message, wparam, lparam);
 	}
 	break;
 

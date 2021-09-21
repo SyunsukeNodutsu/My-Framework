@@ -20,7 +20,7 @@ void Mouse::Initialize(HWND hwnd)
     m_deviceMouse.hwndTarget    = hwnd;// nullptrでもいけるっぽい
 
     if (RegisterRawInputDevices(&m_deviceMouse, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        MessageBoxA(nullptr, "Register MouseDevices failed.", "Failed", MB_OK);
+        MessageBoxA(nullptr, "[WARNING]マウスデバイスの登録に失敗しました.", "Failed", MB_OK);
 }
 
 //-----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ void Mouse::Finalize(HWND hwnd)
     m_deviceMouse.hwndTarget    = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceMouse, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]Register MouseDevices failed.");
+        DebugLog("[WARNING]マウスデバイスの登録解除に失敗しました.");
 }
 
 //-----------------------------------------------------------------------------
@@ -127,22 +127,15 @@ bool Mouse::IsReleased(MouseButton mkey)
 //-----------------------------------------------------------------------------
 // 状態の設定 (save bit)
 //-----------------------------------------------------------------------------
-void Mouse::SetState(WPARAM w, bool down)
+void Mouse::SetState(WPARAM wparam, bool down)
 {
-    if (w < 0 || w > Count) return;
-    auto ptr = reinterpret_cast<bool*>(&m_state);
-    unsigned int bf = 1u << (w & 0x1f); // 1u << (w & 0x1f);
+    if (wparam < 0 || wparam > Count) return;
 
-    if (down)
-    {
-        //mState.val[w] |= bf;
-        m_state.val |= bf;
-    }
-    else
-    {
-        //mState.val[w] &= ~bf;
-        m_state.val &= ~bf;
-    }
+    auto ptr = reinterpret_cast<bool*>(&m_state);
+    unsigned int bf = 1u << (wparam & 0x1f); // 1u << (w & 0x1f);
+
+    if (down) m_state.val |= bf;
+    else m_state.val &= ~bf;
 }
 
 //-----------------------------------------------------------------------------

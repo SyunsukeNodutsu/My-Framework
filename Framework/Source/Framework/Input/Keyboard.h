@@ -48,7 +48,6 @@ public:
 private:
 
 	// キーボードデバイス
-	// TODO: メンバで持っておく意味ないかも
 	RAWINPUTDEVICE m_deviceKeyboard;
 
 	// 入力判定用 配列

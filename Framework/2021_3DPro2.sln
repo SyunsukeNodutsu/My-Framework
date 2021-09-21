@@ -11,6 +11,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK_Desktop_2019_Win10", "..\Library\DirectXTK\DirectXTK_Desktop_2019_Win10.vcxproj", "{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleGame", "..\SampleGame\SampleGame.vcxproj", "{0BDEB051-E9D0-4142-8ABC-B69ABDF8158F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{63B34F85-F570-45BE-9839-D30CA1ABBDD2} = {63B34F85-F570-45BE-9839-D30CA1ABBDD2}
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E} = {E0B52AE7-E160-4D32-BF3F-910B785E5A8E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

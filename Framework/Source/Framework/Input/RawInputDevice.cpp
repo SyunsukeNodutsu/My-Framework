@@ -1,52 +1,52 @@
-﻿#include "RawInput.h"
+﻿#include "RawInputDevice.h"
 #include "../../Application/main.h"
 #include "../../Application/ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
-RawInput::RawInput()
-    : m_spKeyboard(nullptr)
-    , m_spMouse(nullptr)
+RawInputDevice::RawInputDevice()
+    : g_spKeyboard(nullptr)
+    , g_spMouse(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------
-void RawInput::Initialize()
+void RawInputDevice::Initialize()
 {
-    m_spKeyboard = std::make_shared<Keyboard>();
-    m_spKeyboard->Initialize(APP.g_window.GetWndHandle());
+    g_spKeyboard = std::make_shared<Keyboard>();
+    g_spKeyboard->Initialize(APP.g_window.GetWndHandle());
 
-    m_spMouse = std::make_shared<Mouse>();
-    m_spMouse->Initialize(APP.g_window.GetWndHandle());
+    g_spMouse = std::make_shared<Mouse>();
+    g_spMouse->Initialize(APP.g_window.GetWndHandle());
 
-    IMGUISYSTEM.AddLog("INFO: RawInputDevice initialized.");
+    DebugLog("INFO: RawInputDevice initialized.");
 }
 
 //-----------------------------------------------------------------------------
 // 終了
 //-----------------------------------------------------------------------------
-void RawInput::Finalize()
+void RawInputDevice::Finalize()
 {
-    m_spKeyboard->Finalize(APP.g_window.GetWndHandle());
-    m_spMouse->Finalize(APP.g_window.GetWndHandle());
+    g_spKeyboard->Finalize(APP.g_window.GetWndHandle());
+    g_spMouse->Finalize(APP.g_window.GetWndHandle());
 }
 
 //-----------------------------------------------------------------------------
 // 次回の入力判定の準備
 //-----------------------------------------------------------------------------
-void RawInput::Refresh()
+void RawInputDevice::Refresh()
 {
-    m_spKeyboard->Refresh();
-    m_spMouse->Refresh();
+    g_spKeyboard->Refresh();
+    g_spMouse->Refresh();
 }
 
 //-----------------------------------------------------------------------------
 // メッセージ解析
 //-----------------------------------------------------------------------------
-void RawInput::ParseMessage(void* lparam)
+void RawInputDevice::ParseMessage(void* lparam)
 {
     if (lparam == nullptr)
         return;
@@ -79,11 +79,11 @@ void RawInput::ParseMessage(void* lparam)
 
     // キーボードの場合
     if (lprawinput->header.dwType == RIM_TYPEKEYBOARD)
-        m_spKeyboard->ParseKeyboardData(lprawinput->data.keyboard);
+        g_spKeyboard->ParseKeyboardData(lprawinput->data.keyboard);
 
     // マウスの場合
     else if (lprawinput->header.dwType == RIM_TYPEMOUSE)
-        m_spMouse->ParseMouseData(lprawinput->data.mouse, APP.g_window.GetWndHandle());
+        g_spMouse->ParseMouseData(lprawinput->data.mouse, APP.g_window.GetWndHandle());
 
     // 入力データ解放
     delete[] lpbyData;

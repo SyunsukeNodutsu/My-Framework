@@ -32,14 +32,14 @@ bool AudioDevice::Initialize()
     UINT32 flags = 0;
     HRESULT hr = XAudio2Create(&g_xAudio2, flags);
     if (!g_xAudio2) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to inialize audio device.");
+        DebugLog("ERROR: Failed to inialize audio device.");
         return false;
     }
 
     // IXAudio2MasteringVoice作成
     hr = g_xAudio2->CreateMasteringVoice(&g_pMasteringVoice);
     if (!g_pMasteringVoice) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to create mastering voice.");
+        DebugLog("ERROR: Failed to create mastering voice.");
         return false;
     }
 
@@ -84,7 +84,7 @@ bool AudioDevice::Initialize()
     // ボリュームメータAPO作成
     InitializeVolumeMeterAPO();
 
-    IMGUISYSTEM.AddLog("INFO: AudioDevice Initialized.");
+    DebugLog("INFO: AudioDevice Initialized.");
 
     return done = true;
 }
@@ -313,7 +313,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     // VolumeMeter(APO)作成
     IUnknown* pVolumeMeterAPO = nullptr;
     if (FAILED(XAudio2CreateVolumeMeter(&pVolumeMeterAPO))) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to create VolumeMeter(APO).");
+        DebugLog("ERROR: Failed to create VolumeMeter(APO).");
         return false;
     }
 
@@ -328,12 +328,12 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     chain.EffectCount           = 1;
     chain.pEffectDescriptors    = &descriptor;
     if (FAILED(g_pMasteringVoice->SetEffectChain(&chain))) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to create EFFECT_CHAIN.");
+        DebugLog("ERROR: Failed to create EFFECT_CHAIN.");
         return false;
     }
 
     pVolumeMeterAPO->Release();
-    IMGUISYSTEM.AddLog("INFO: Initialized VolumeMeterAPO.");
+    DebugLog("INFO: Initialized VolumeMeterAPO.");
 
     return true;
 }

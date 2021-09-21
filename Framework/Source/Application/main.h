@@ -1,9 +1,12 @@
 ﻿//-----------------------------------------------------------------------------
 // File: main.h
 //
-// エントリポイント メインループ
+// アプリケーション
+// TODO: visual stdio側 でプロジェクトを分けたい
 //-----------------------------------------------------------------------------
 #pragma once
+#include "GameSystem.h"
+#include "ImGuiSystem.h"
 
 // アプリケーションクラス
 class Application
@@ -18,11 +21,9 @@ public:
 	//--------------------------------------------------
 
 	// @brief インスタンスを返す
-	// @return シングルトン インスタンス
-	static Application& GetInstance()
-	{
-		static Application instance;
-		return instance;
+	// @return 単一シングルトン・インスタンス
+	static Application& GetInstance() {
+		static Application instance; return instance;
 	}
 
 	// @brief アプリケーションを終了させる
@@ -35,11 +36,24 @@ public:
 	// ウィンドウ
 	Window g_window;
 
-	// 各デバイス
+	// 各種デバイス
+	
 	// 描画デバイス
 	GraphicsDevice g_graphicsDevice;
 	// オーディオデバイス
 	AudioDevice	g_audioDevice;
+	// 入力デバイス
+	RawInputDevice g_rawInputDevice;
+
+	// fps計測
+	FpsTimer g_fpsTimer;
+
+	// ゲーム
+
+	// ゲーム管理
+	GameSystem g_gameSystem;
+	// プロファイラ デバッグ
+	ImGuiSystem g_imGuiSystem;
 
 private:
 
@@ -49,8 +63,9 @@ private:
 private:
 
 	// @brief アプリケーション初期化
-	// @param width
-	// @param height
+	// @param width ウィンドウ ビューポート幅
+	// @param height ウィンドウ ビューポート高さ
+	// @return 成功...true 失敗...false
 	bool Initialize(int width, int height);
 
 	// @brief アプリケーション解放

@@ -14,7 +14,7 @@ void Keyboard::Initialize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]キーボードデバイスの登録解除に失敗しました.\n");
+        DebugLog("[WARNING]キーボードデバイスの登録に失敗しました.\n");
 
     m_isDown.fill(false);
     m_isPressed.fill(false);
@@ -36,7 +36,7 @@ void Keyboard::Finalize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]マウスデバイスの登録解除に失敗しました.\n");
+        DebugLog("[WARNING]キーボードデバイスの登録解除に失敗しました.\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -53,15 +53,18 @@ void Keyboard::Refresh()
 //-----------------------------------------------------------------------------
 void Keyboard::ParseKeyboardData(RAWKEYBOARD keyboard)
 {
-    // 押されている
+    // 押されている間
     m_isDown[keyboard.VKey] = (keyboard.Flags & RI_KEY_BREAK) == 0;
 
+    // 離された瞬間
+    m_isReleased[keyboard.VKey] = keyboard.Flags & RI_KEY_BREAK;
+
+    // 押した瞬間
     switch (keyboard.Message)
     {
         // キーを離した
     case WM_KEYUP:
     {
-        m_isReleased[keyboard.VKey] = true;
         m_isPressed[keyboard.VKey] = false;
         m_isPush[keyboard.VKey] = false;
     }

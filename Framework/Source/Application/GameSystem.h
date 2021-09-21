@@ -13,6 +13,9 @@ class GameSystem
 {
 public:
 
+	// @brief コンストラクタ
+	GameSystem();
+
 	// @brief 初期化
 	void Initialize();
 
@@ -34,13 +37,7 @@ public:
 	//--------------------------------------------------
 	// 取得・設定
 	//--------------------------------------------------
-
-	// @brief 単一のインスタンスを返す
-	// @return シングルトン・インスタンス
-	static GameSystem& GetInstance() {
-		static GameSystem instance; return instance;
-	}
-
+	
 	// @brief 使用カメラの設定
 	// @param camera 設定するカメラ
 	void SetCamera(std::shared_ptr<Camera> camera) { m_spCamera = camera; }
@@ -55,15 +52,6 @@ public:
 	// @return 使用カメラ
 	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }
 
-public:
-
-	// TODO: 設計
-	// fps管理 audio nad graphics デバイスなどは
-	// main.cppで宣言した方が意味的にはあってる気が
-
-	// FPS管理
-	FpsTimer g_fpsTimer;
-
 private:
 
 	// 使用カメラ
@@ -74,16 +62,8 @@ private:
 
 private:
 
-	// @brief コンストラクタ
-	GameSystem();
-
 	// @brief Actorをシーンに追加
 	// @param name 追加するActorのクラス名
 	void AddActor(const std::string& name);
 
 };
-
-//--------------------------------------------------
-// #defines: インスタンスの取得
-//--------------------------------------------------
-#define GAMESYSTEM GameSystem::GetInstance()

@@ -31,7 +31,7 @@ bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
     WCHAR strFilePath[MAX_PATH];
     HRESULT hr = g_audioDevice->FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
     if (FAILED(hr)) {
-        IMGUISYSTEM.AddLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
+        DebugLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
         return false;
     }
 
@@ -40,7 +40,7 @@ bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
     const uint8_t* sampleData;
     uint32_t waveSize;
     if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, m_pWaveData, &m_pWaveFormat, &sampleData, &waveSize))) {
-        IMGUISYSTEM.AddLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
+        DebugLog(std::string("ERROR: Failed reading WAV file: " + filepath).c_str());
         return false;
     }
 
@@ -132,7 +132,7 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
     m_filepath = filepath.substr(15);
 
     if (!m_soundData.Load(filepath, loop, useFilter)) {
-        IMGUISYSTEM.AddLog("ERROR: Failed to load voice.");
+        DebugLog("ERROR: Failed to load voice.");
         return false;
     }
 
@@ -140,7 +140,7 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
     // TODO: インターフェースのDeepCopy方法の調査 今のままだとShallowCopy
     m_pSourceVoice = m_soundData.GetRawVoice();
 
-    IMGUISYSTEM.AddLog(std::string("INFO: Load voice done: " + filepath).c_str());
+    DebugLog(std::string("INFO: Load voice done: " + filepath).c_str());
 
     return true;
 }
@@ -196,6 +196,9 @@ void SoundWork::SetVolume(float val)
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
     if (!m_pSourceVoice) return;
 
+    constexpr float MY_MAX_VOLUME_LEVEL = 5.0f;
+    val = std::clamp(val, -MY_MAX_VOLUME_LEVEL, MY_MAX_VOLUME_LEVEL);
+
     m_pSourceVoice->SetVolume(val);
 }
 
@@ -208,6 +211,7 @@ bool SoundWork::SetPan(float pan)
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
     if (!m_pSourceVoice) return false;
 
+    pan = std::clamp(pan, -1.0f, 1.0f);
     m_pan = pan;
 
     // スピーカー構成を取得
@@ -291,6 +295,12 @@ bool SoundWork::SetFade(float targetVolume, float targetTime)
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
     if (!m_pSourceVoice) return false;
 
+    constexpr float MY_MAX_VOLUME_LEVEL = 5.0f;
+    targetVolume = std::clamp(targetVolume, -MY_MAX_VOLUME_LEVEL, MY_MAX_VOLUME_LEVEL);
+
+    constexpr float MAX_TARGET_TIME = 8.0f;// あまりに遅いと違和感が出る
+    targetTime = std::clamp(targetTime, -MAX_TARGET_TIME, MAX_TARGET_TIME);
+
     // TODO: せっかくだからLuaで実装したい
 
     return true;
@@ -319,7 +329,7 @@ bool SoundWork::SetFilter(XAUDIO2_FILTER_TYPE type, float frequencym, float oneO
     if (!AudioDeviceChild::g_audioDevice) return false;
     if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return false;
     if (!m_pSourceVoice) return false;
-
+    // clampでもいいかも
     if (frequencym < 0 || frequencym > XAUDIO2_MAX_FILTER_FREQUENCY) return false;
     if (oneOverQ <= 0 || oneOverQ > XAUDIO2_MAX_FILTER_ONEOVERQ) return false;
 

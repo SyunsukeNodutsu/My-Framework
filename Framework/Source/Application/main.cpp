@@ -1,6 +1,4 @@
 ﻿#include "main.h"
-#include "GameSystem.h"
-#include "ImGuiSystem.h"
 
 //-----------------------------------------------------------------------------
 // メインエントリ
@@ -61,18 +59,20 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	// ウィンドウ作成
-	if (!g_window.Create(width, height, "高ぶってきたからTwitterで政治的ツイートするわ。", "Window")) {
+	if (!g_window.Create(width, height, "高ぶってきたからTwitterで政治的ツイートするわ KD垢で^^", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
 	}
 
 	//--------------------------------------------------
-	// Direct3D初期化
+	// 各種デバイス
 	//--------------------------------------------------
+
+	// 描画デバイス Direct3D
 	MY_DIRECT3D_DESC desc = {};
 	desc.m_bufferCount	= 2;
-	desc.m_width		= 1536;// 1280-1920-2560
-	desc.m_height		= 864; //  720-1080-1440
+	desc.m_width		= width;// 1280-1920-2560
+	desc.m_height		= height; //  720-1080-1440
 	desc.m_refreshRate	= 0;
 	desc.m_windowed		= true;
 	desc.m_useHDR		= false;
@@ -83,26 +83,32 @@ bool Application::Initialize(int width, int height)
 	GraphicsDeviceChild::SetGraphicsDevice(&g_graphicsDevice);// テクスチャ作ってるから先に設定
 	g_graphicsDevice.Initialize(desc);
 
-	//--------------------------------------------------
-	// ゲームオーディオ
-	//--------------------------------------------------
+	// オーディオデバイス
 	g_audioDevice.Initialize();
 	g_audioDevice.SetMasterVolume(0.4f);
 	AudioDeviceChild::SetAudioDevice(&g_audioDevice);
 	
+	// 入力デバイス
+	g_rawInputDevice.Initialize();
+
 	//--------------------------------------------------
 	// その他
 	//--------------------------------------------------
 
+	// レンダラー(定数バッファとか)
 	RENDERER.Initialize();
 
 	// シェーダー
 	SHADER.Initialize();
-	// 入力 RawInputAPI
-	RAW_INPUT.Initialize();
+	
+	//--------------------------------------------------
+	// アプリケーション
+	//--------------------------------------------------
 
-	GAMESYSTEM.Initialize();
-	IMGUISYSTEM.Initialize(g_graphicsDevice.g_cpDevice.Get(), g_graphicsDevice.g_cpContext.Get());
+	// ゲーム
+	g_gameSystem.Initialize();
+	// imGui(プロファイル)
+	g_imGuiSystem.Initialize(g_graphicsDevice.g_cpDevice.Get(), g_graphicsDevice.g_cpContext.Get());
 
 	return true;
 }
@@ -115,17 +121,16 @@ void Application::Release()
 	// TODO: 終了の順番要調査 特にRAW INPUT
 
 	// アプリケーション
-	IMGUISYSTEM.Finalize();
-	GAMESYSTEM.Finalize();
+	g_gameSystem.Finalize();
+	g_imGuiSystem.Finalize();
+
+	// ウィンドウ
+	g_window.Release();
 
 	// デバイス
 	g_audioDevice.Finalize();
 	g_graphicsDevice.Finalize();
-
-	RAW_INPUT.Finalize();
-
-	// ウィンドウ
-	g_window.Release();
+	g_rawInputDevice.Finalize();
 }
 
 //-----------------------------------------------------------------------------
@@ -134,7 +139,7 @@ void Application::Release()
 void Application::Execute()
 {
 	// 初期設定(ウィンドウ作成、Direct3D初期化など)
-	if (Initialize(1536, 864) == false)
+	if (Initialize(1600, 900) == false)
 		return;
 
 	//==================================================
@@ -148,12 +153,15 @@ void Application::Execute()
 		if (m_endFlag)
 			break;
 
+		g_fpsTimer.Tick();
+
 		//----------------------------------------
 		// ウィンドウ関係の処理
 		//----------------------------------------
 
 		// ウィンドウのメッセージを処理する
-		g_window.ProcessMessage();
+		if (g_window.ProcessMessage() == false)
+			break;
 
 		// ウィンドウが破棄されてるならループ終了
 		if (!g_window.IsCreated())
@@ -164,7 +172,7 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ行列の取得
-		auto cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
+		auto cameraMatrix = g_gameSystem.GetCamera()->GetCameraMatrix();
 		// サウンド更新
 		g_audioDevice.Update(cameraMatrix);
 
@@ -173,26 +181,26 @@ void Application::Execute()
 		//----------------------------------------
 		
 		// 更新
-		GAMESYSTEM.Update();
+		g_gameSystem.Update();
 
 		// 描画
 		g_graphicsDevice.Begin();
 		{
 			// 3D想定
-			GAMESYSTEM.Draw();
+			g_gameSystem.Draw();
 			// 2D想定
-			GAMESYSTEM.Draw2D();
+			g_gameSystem.Draw2D();
 
 			// ImGui 描画
-			IMGUISYSTEM.Begin();
-			IMGUISYSTEM.DrawImGui();
+			g_imGuiSystem.Begin();
+			g_imGuiSystem.DrawImGui();
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
 		g_graphicsDevice.End();
 
 		// 描画後更新
-		GAMESYSTEM.LateUpdate();
+		g_gameSystem.LateUpdate();
 	}
 
 	//==================================================

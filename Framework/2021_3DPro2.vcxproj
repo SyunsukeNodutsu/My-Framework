@@ -36,7 +36,6 @@
     <ClCompile Include="Source\Application\GameSystem.cpp" />
     <ClCompile Include="Source\Application\ImGuiSystem.cpp" />
     <ClCompile Include="Source\Application\main.cpp" />
-    <ClCompile Include="Source\Framework\AI\WayPoint.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDevice.cpp" />
     <ClCompile Include="Source\Framework\Audio\AudioDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Audio\Sound.cpp" />
@@ -52,7 +51,7 @@
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Framework\Input\Mouse.cpp" />
-    <ClCompile Include="Source\Framework\Input\RawInput.cpp" />
+    <ClCompile Include="Source\Framework\Input\RawInputDevice.cpp" />
     <ClCompile Include="Source\Framework\Input\XInput.cpp" />
     <ClCompile Include="Source\Framework\Model\Animation.cpp" />
     <ClCompile Include="Source\Framework\Model\Mesh.cpp" />
@@ -65,6 +64,12 @@
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp" />
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
+    <ClCompile Include="Source\Framework\Utility\JobSystem.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Framework\Window\Window.cpp" />
     <ClCompile Include="Source\Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -93,8 +98,6 @@
     <ClInclude Include="Source\Application\GameSystem.h" />
     <ClInclude Include="Source\Application\ImGuiSystem.h" />
     <ClInclude Include="Source\Application\main.h" />
-    <ClInclude Include="Source\Framework\AI\WayPoint.h" />
-    <ClInclude Include="Source\Framework\AI\WayPointNavigator.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDevice.h" />
     <ClInclude Include="Source\Framework\Audio\AudioDeviceChild.h" />
     <ClInclude Include="Source\Framework\Audio\Sound.h" />
@@ -111,7 +114,7 @@
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />
     <ClInclude Include="Source\Framework\Input\KeyCode.h" />
     <ClInclude Include="Source\Framework\Input\Mouse.h" />
-    <ClInclude Include="Source\Framework\Input\RawInput.h" />
+    <ClInclude Include="Source\Framework\Input\RawInputDevice.h" />
     <ClInclude Include="Source\Framework\Framework.h" />
     <ClInclude Include="Source\Framework\Input\XInput.h" />
     <ClInclude Include="Source\Framework\Model\Animation.h" />
@@ -128,6 +131,12 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h" />
     <ClInclude Include="Source\Framework\Utility\Enums.h" />
     <ClInclude Include="Source\Framework\Utility\FpsTimer.h" />
+    <ClInclude Include="Source\Framework\Utility\JobSystem.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Timer.h" />
     <ClInclude Include="Source\Framework\Utility\Types.h" />
     <ClInclude Include="Source\Framework\Utility\Utility.h" />

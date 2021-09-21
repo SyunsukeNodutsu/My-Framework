@@ -29,12 +29,6 @@ public:
 	// 取得・設定
 	//--------------------------------------------------
 
-	// @brief 単一のインスタンスを返す
-	// @return シングルトン・インスタンス
-	static ImGuiSystem& GetInstance() {
-		static ImGuiSystem instance; return instance;
-	}
-
 	// @brief 有効化を設定
 	// @param onoff 設定する値
 	void SetEnable(bool onoff) { m_enable = onoff; }
@@ -73,11 +67,8 @@ private:
 	// プロファイラー分析
 	void ProfilerMonitor(ImGuiWindowFlags wflags);
 
-	//
-	void PlotLinesEx(std::string string, float val);
+	// @brief imGuiのPlotLinesをラップ ※TODO: なんかFPSめっちゃ下がる
+	// @param string プロットのラベル名
+	// @param val ラインに表示する値
+	void PlotLinesEx(const std::string& string, float val);
 };
-
-//--------------------------------------------------
-// #defines: インスタンスの取得
-//--------------------------------------------------
-#define IMGUISYSTEM ImGuiSystem::GetInstance()

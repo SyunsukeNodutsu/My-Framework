@@ -22,9 +22,9 @@ std::shared_ptr<GameObject> GenerateGameObject(const std::string& name)
 	if (result)
 		result->Awake();
 
-	IMGUISYSTEM.AddLog(std::string("INFO: Generate actor. name: " + name).c_str());
+	DebugLog(std::string("INFO: Generate actor. name: " + name).c_str());
 	if (result == nullptr)
-		IMGUISYSTEM.AddLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
+		DebugLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
 
 	return result;
 }

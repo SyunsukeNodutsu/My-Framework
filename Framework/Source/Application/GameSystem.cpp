@@ -8,8 +8,7 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 GameSystem::GameSystem()
-	: g_fpsTimer()
-	, m_spCamera(nullptr)
+	: m_spCamera(nullptr)
 	, m_spActorList()
 {
 }
@@ -43,11 +42,11 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/New Happy Day by fennec beats.wav", true, false);
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/New Happy Day by fennec beats.wav", true, true);
 	if (sound)
 	{
-		//sound->SetVolume(0.2f);
-		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		sound->SetVolume(0.2f);
+		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play();
 	}
 
@@ -74,9 +73,8 @@ void GameSystem::Finalize()
 void GameSystem::Update()
 {
 	// 前フレームからの経過時間を計算/取得
-	g_fpsTimer.Tick();
-	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
-	const float totalTime = static_cast<float>(g_fpsTimer.GetTotalTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
+	const float totalTime = static_cast<float>(APP.g_fpsTimer.GetTotalTime());
 
 	// 時間系を設定/送信
 	RENDERER.SetTime(totalTime, deltaTime);
@@ -103,7 +101,7 @@ void GameSystem::Update()
 //-----------------------------------------------------------------------------
 void GameSystem::LateUpdate()
 {
-	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
 
 	for (auto& object : m_spActorList)
 		object->LateUpdate(deltaTime);
@@ -114,7 +112,7 @@ void GameSystem::LateUpdate()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw()
 {
-	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
 
 	// カメラ情報をGPUに転送
 	if (m_spCamera)
@@ -131,7 +129,7 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	const float deltaTime = static_cast<float>(g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
 
 	SHADER.GetSpriteShader().Begin(true, true);
 

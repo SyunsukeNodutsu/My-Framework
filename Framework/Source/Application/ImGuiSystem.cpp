@@ -8,6 +8,8 @@
 // stlに頼らないimGuiさんまじカッケー
 #define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
 
+static void HelpMarker(const char* desc);
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -318,7 +320,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Listener");
 	ImGui::PopStyleColor();
 
-	auto& cameraMatrix = GAMESYSTEM.GetCamera()->GetCameraMatrix();
+	auto& cameraMatrix = APP.g_gameSystem.GetCamera()->GetCameraMatrix();
 	float3 pos = cameraMatrix.Translation();
 	float3 dir = cameraMatrix.Backward();
 
@@ -331,10 +333,17 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume Meter (Bug)");
 	ImGui::PopStyleColor();
 
-	PlotLinesEx("PeakLevels R", APP.g_audioDevice.g_peakLevels[0]);
-	PlotLinesEx("PeakLevels L", APP.g_audioDevice.g_peakLevels[1]);
-	PlotLinesEx("RMSLevels R", APP.g_audioDevice.g_RMSLevels[0]);
-	PlotLinesEx("RMSLevels L", APP.g_audioDevice.g_RMSLevels[1]);
+	// PlotLinesはFPSの低下につながる
+	static bool showMeter = false;
+	HelpMarker("PlotLines will result in a decrease in FPS.\nIt is recommended to turn it on only when you want more details.");
+	ImGui::Checkbox("Show Meter", &showMeter);
+	if (showMeter)
+	{
+		PlotLinesEx("PeakLevels R", APP.g_audioDevice.g_peakLevels[0]);
+		PlotLinesEx("PeakLevels L", APP.g_audioDevice.g_peakLevels[1]);
+		PlotLinesEx("RMSLevels R", APP.g_audioDevice.g_RMSLevels[0]);
+		PlotLinesEx("RMSLevels L", APP.g_audioDevice.g_RMSLevels[1]);
+	}
 
 	ImGui::End();
 }
@@ -361,7 +370,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Time");
 	ImGui::PopStyleColor();
 
-	auto& fpsTimer = GAMESYSTEM.g_fpsTimer;
+	auto& fpsTimer = APP.g_fpsTimer;
 	ImGui::Text(std::string("Fps: " + std::to_string(fpsTimer.GetFPS())).c_str());
 	ImGui::Text(std::string("DeltaTime: " + std::to_string(fpsTimer.GetDeltaTime())).c_str());
 	ImGui::Text(std::string("TotalTime: " + std::to_string(fpsTimer.GetTotalTime())).c_str());
@@ -384,99 +393,11 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	// SceneのActor一覧
-	for (auto&& actor : GAMESYSTEM.GetActorList())
+	for (auto&& actor : APP.g_gameSystem.GetActorList())
 	{
 		ImGui::PushID(actor.get());
 		ImGui::Text(actor->GetName().c_str());
 		ImGui::PopID();
-	}
-
-	ImGui::Separator();
-
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Widgets Demo");
-	ImGui::PopStyleColor();
-
-	// 気分
-	ImGui::SetNextItemOpen(false);
-	if (ImGui::TreeNode("Plots Widgets"))
-	{
-		static bool animate = true;
-		ImGui::Checkbox("Animate", &animate);
-
-		// Plot as lines and plot as histogram
-		static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
-		ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr));
-		ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
-
-		// Fill an array of contiguous float values to plot
-		// Tip: If your float aren't contiguous but part of a structure, you can pass a pointer to your first float
-		// and the sizeof() of your structure in the "stride" parameter.
-		static float values[90] = {};
-		static int values_offset = 0;
-		static double refresh_time = 2.0;
-		if (!animate || refresh_time == 0.0)
-			refresh_time = ImGui::GetTime();
-		while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
-		{
-			static float phase = 0.0f;
-			values[values_offset] = cosf(phase);
-			values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
-			phase += 0.10f * values_offset;
-			refresh_time += 1.0f / 60.0f;
-		}
-
-		// Plots can display overlay texts
-		// (in this example, we will display an average value)
-		{
-			float average = 0.0f;
-			for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-				average += values[n];
-			average /= (float)IM_ARRAYSIZE(values);
-			char overlay[32];
-			sprintf_s(overlay, "avg %f", average);
-			ImGui::PlotLines("Lines", values, IM_ARRAYSIZE(values), values_offset, overlay, -1.0f, 1.0f, ImVec2(0, 80.0f));
-		}
-
-		// Use functions to generate output
-		// FIXME: This is rather awkward because current plot API only pass in indices.
-		// We probably want an API passing floats and user provide sample rate/count.
-		struct Funcs
-		{
-			static float Sin(void*, int i) { return sinf(i * 0.1f); }
-			static float Saw(void*, int i) { return (i & 1) ? 1.0f : -1.0f; }
-		};
-		static int func_type = 0, display_count = 70;
-		ImGui::Separator();
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
-		ImGui::Combo("func", &func_type, "Sin\0Saw\0");
-		ImGui::SameLine();
-		ImGui::SliderInt("Sample count", &display_count, 1, 400);
-		float (*func)(void*, int) = (func_type == 0) ? Funcs::Sin : Funcs::Saw;
-		ImGui::PlotLines("Lines", func, NULL, display_count, 0, NULL, -1.0f, 1.0f, ImVec2(0, 80));
-		ImGui::PlotHistogram("Histogram", func, NULL, display_count, 0, NULL, -1.0f, 1.0f, ImVec2(0, 80));
-		ImGui::Separator();
-
-		// Animate a simple progress bar
-		static float progress = 0.0f, progress_dir = 1.0f;
-		if (animate)
-		{
-			progress += progress_dir * 0.4f * ImGui::GetIO().DeltaTime;
-			if (progress >= +1.1f) { progress = +1.1f; progress_dir *= -1.0f; }
-			if (progress <= -0.1f) { progress = -0.1f; progress_dir *= -1.0f; }
-		}
-
-		// Typically we would use ImVec2(-1.0f,0.0f) or ImVec2(-FLT_MIN,0.0f) to use all available width,
-		// or ImVec2(width,0.0f) for a specified width. ImVec2(0.0f,0.0f) uses ItemWidth.
-		ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
-		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::Text("Progress Bar");
-
-		float progress_saturated = IM_CLAMP(progress, 0.0f, 1.0f);
-		char buf[32];
-		sprintf_s(buf, "%d/%d", (int)(progress_saturated * 1753), 1753);
-		ImGui::ProgressBar(progress, ImVec2(0.f, 0.f), buf);
-		ImGui::TreePop();
 	}
 
 	ImGui::End();
@@ -485,7 +406,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 //-----------------------------------------------------------------------------
 // imGuiのPlotLinesのラップ関数
 //-----------------------------------------------------------------------------
-void ImGuiSystem::PlotLinesEx(std::string string, float val)
+void ImGuiSystem::PlotLinesEx(const std::string& string, float val)
 {
 	static float	values[90] = {};
 	static int		values_offset = 0;
@@ -513,5 +434,18 @@ void ImGuiSystem::PlotLinesEx(std::string string, float val)
 		char overlay[32];
 		sprintf_s(overlay, "avg %f", average);
 		ImGui::PlotLines(string.c_str(), values, IM_ARRAYSIZE(values), values_offset, overlay, 0.0f, 1.0f, ImVec2(0, 40.0f));
+	}
+}
+
+static void HelpMarker(const char* desc)
+{
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
 	}
 }

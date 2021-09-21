@@ -56,7 +56,7 @@
 #include "Model/Model.h"
 #include "Model/Animation.h"
 
-#include "Input/RawInput.h"
+#include "Input/RawInputDevice.h"
 
 #include "Scripting/Lua.h"
 
