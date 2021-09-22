@@ -3,21 +3,17 @@
 //
 // プリコンパイル済みヘッダー
 // コンパイルに関してはVisualStdioで設定
-//
-// EditHistory:
-//  2021/04/29 初回作成
-//  2021/05/26 Windows Runtime Library追加
 //-----------------------------------------------------------------------------
 #pragma once
-
-// Min Maxマクロの無効化：勝手にwindowsのMin Maxに置換されるのを防止
-#define NOMINMAX
 
 //--------------------------------------------------
 //
 // Windows
 //
 //--------------------------------------------------
+
+// Min Maxマクロの無効化：勝手にwindowsのMin Maxに置換されるのを防止
+#define NOMINMAX
 
 #include <SDKDDKVer.h> // 最新のSDKを自動的に定義する
 #include <windows.h>

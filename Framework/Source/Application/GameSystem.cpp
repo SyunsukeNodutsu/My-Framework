@@ -1,5 +1,5 @@
 ﻿#include "GameSystem.h"
-#include "GameObjects/GameObject.h"
+#include "Actors/Actor.h"
 #include "main.h"
 
 #include "../Framework/Audio/SoundDirector.h"
@@ -33,7 +33,7 @@ void GameSystem::Initialize()
 		AddActor("StageMap");
 		//AddActor("Tank");
 
-		auto object = std::make_shared<GameObject>();
+		auto object = std::make_shared<Actor>();
 		object->LoadModel("Resource/Model/DebugSphere.gltf");
 		m_spActorList.push_back(object);
 	}
@@ -45,8 +45,7 @@ void GameSystem::Initialize()
 	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/New Happy Day by fennec beats.wav", true, true);
 	if (sound)
 	{
-		sound->SetVolume(0.2f);
-		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play();
 	}
 
@@ -79,7 +78,7 @@ void GameSystem::Update()
 	// 時間系を設定/送信
 	RENDERER.SetTime(totalTime, deltaTime);
 
-	// GameObjectリスト更新
+	// Actorリスト更新
 	for (auto itr = m_spActorList.begin(); itr != m_spActorList.end();)
 	{
 		if ((*itr) == nullptr)
@@ -137,11 +136,11 @@ void GameSystem::Draw2D()
 }
 
 //-----------------------------------------------------------------------------
-// GameObjectをシーンに追加
+// Actorをシーンに追加
 //-----------------------------------------------------------------------------
 void GameSystem::AddActor(const std::string& name)
 {
-	auto object = GenerateGameObject(name);
+	auto object = GenerateActor(name);
 
 	// TODO: NullActor
 	if (object == nullptr) return;

@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-class GameObject;
+class Actor;
 
 // ゲームの実行管理クラス
 class GameSystem
@@ -44,7 +44,7 @@ public:
 
 	// @brief シーンのActorリストを返す
 	// @return Actorリスト
-	const std::list<std::shared_ptr<GameObject>>& GetActorList() const {
+	const std::list<std::shared_ptr<Actor>>& GetActorList() const {
 		return m_spActorList;
 	}
 
@@ -58,7 +58,7 @@ private:
 	std::shared_ptr<Camera> m_spCamera;
 
 	// 登場Actorリスト
-	std::list<std::shared_ptr<GameObject>>	m_spActorList;
+	std::list<std::shared_ptr<Actor>> m_spActorList;
 
 private:
 

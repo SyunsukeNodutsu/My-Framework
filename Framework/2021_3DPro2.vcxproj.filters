@@ -43,9 +43,6 @@
     <Filter Include="Library\Effekseer">
       <UniqueIdentifier>{427798cb-9087-4a09-9914-f9bad410fa26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Application\GameObjects">
-      <UniqueIdentifier>{7233e325-f80c-4cf0-8668-ea0dd621370e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\Audio">
       <UniqueIdentifier>{b880aba7-4fbc-47fd-8800-d9b6d48ea948}</UniqueIdentifier>
     </Filter>
@@ -72,6 +69,9 @@
     </Filter>
     <Filter Include="Source\Framework\Graphics\Camera">
       <UniqueIdentifier>{ebeed093-4dc8-45c4-811f-0d92c625cb23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application\Actors">
+      <UniqueIdentifier>{ac513adc-a8e3-4897-8407-420f75fc3ab2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,14 +114,8 @@
     <ClCompile Include="Source\Application\GameSystem.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Application\GameObjects\GameObject.cpp">
-      <Filter>Source\Application\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Input\XInput.cpp">
       <Filter>Source\Framework\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\GameObjects\GenerateGameObject.cpp">
-      <Filter>Source\Application\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Utility\Easing.cpp">
       <Filter>Source\Framework\Utility</Filter>
@@ -140,9 +134,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Model\Mesh.cpp">
       <Filter>Source\Framework\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\GameObjects\Human.cpp">
-      <Filter>Source\Application\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Effect\EffectShader.cpp">
       <Filter>Source\Framework\Shader\Effect</Filter>
@@ -170,9 +161,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Shader.cpp">
       <Filter>Source\Framework\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\GameObjects\Tank.cpp">
-      <Filter>Source\Application\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\ImGuiSystem.cpp">
       <Filter>Source\Application</Filter>
@@ -218,6 +206,18 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Utility\JobSystem.cpp">
       <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Actor.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\GenerateActor.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Human.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Tank.cpp">
+      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,9 +272,6 @@
     <ClInclude Include="Source\Application\GameSystem.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\GameObjects\GameObject.h">
-      <Filter>Source\Application\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Input\RawInputDevice.h">
       <Filter>Source\Framework\Input</Filter>
     </ClInclude>
@@ -286,9 +283,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Types.h">
       <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\GameObjects\StageMap.h">
-      <Filter>Source\Application\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Easing.h">
       <Filter>Source\Framework\Utility</Filter>
@@ -310,15 +304,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Model\Mesh.h">
       <Filter>Source\Framework\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\GameObjects\Human.h">
-      <Filter>Source\Application\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\GameObjects\Tank.h">
-      <Filter>Source\Application\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\GameObjects\Sky.h">
-      <Filter>Source\Application\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Effect\EffectShader.h">
       <Filter>Source\Framework\Shader\Effect</Filter>
@@ -394,6 +379,21 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Utility\JobSystem.h">
       <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Actor.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Human.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Sky.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\StageMap.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Tank.h">
+      <Filter>Source\Application\Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
