@@ -1,5 +1,5 @@
 ﻿#include "ShaderManager.h"
-#include "../../Application/ImGuiSystem.h"
+#include "../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -25,5 +25,5 @@ void ShaderManager::Initialize()
 	m_spSpriteShader = std::make_shared<SpriteShader>();
 	m_spSpriteShader->Initialize();
 
-	DebugLog("INFO: ShaderManager initialized.");
+	APP.g_imGuiSystem->AddLog("INFO: ShaderManager initialized.");
 }

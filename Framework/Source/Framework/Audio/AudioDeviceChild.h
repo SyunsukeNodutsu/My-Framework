@@ -1,8 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 // File: AudioDeviceChild.h
 //
-// いい加減シングルトンはやばいので
-// オーディオ処理を行うクラスに継承
+// 継承先に単一のAudioDeviceへの参照を許可します
 //-----------------------------------------------------------------------------
 #pragma once
 #include "AudioDevice.h"
@@ -22,10 +21,3 @@ protected:
     static AudioDevice* g_audioDevice;
 
 };
-
-/*
-* AudioDevice
-* - AudioDeviceChild
-*   - SoundInstance
-*   - SoundInstance3D
-*/

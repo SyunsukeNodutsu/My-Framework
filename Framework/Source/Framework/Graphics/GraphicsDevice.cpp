@@ -1,5 +1,6 @@
 ﻿#include "Pch.h"
 #include "GraphicsDevice.h"
+#include "../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -22,7 +23,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	// デバイス/デバイスコンテキスト作成
 	//--------------------------------------------------
 
-	D3D_FEATURE_LEVEL futureLevel;
+	D3D_FEATURE_LEVEL featureLevel;
 	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
@@ -59,7 +60,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	// デバイスとデバイスコンテキスト作成
 	if (FAILED(D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
-		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &futureLevel, &g_cpContext))) {
+		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &featureLevel, &g_cpContext))) {
 		DebugLog("Direct3D11デバイス作成失敗.\n");
 		return false;
 	}
@@ -83,6 +84,14 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	sampleDesc.Count = desc.m_useMSAA ? sampleDesc.Count : 1;
+
+	// MSAA非対応の場合
+	if (sampleDesc.Count == 1) {
+		// MSAAをOFFにします
+		sampleDesc.Quality = 0;
+		desc.m_useMSAA = false;
+		APP.g_imGuiSystem->AddLog("MSAA is not supported.");
+	}
 
 	//--------------------------------------------------
 	// スワップチェイン作成
@@ -186,8 +195,8 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		// 0xAABBGGRR
 		auto col = cfloat4x4(1, 1, 1, 1).RGBA();
 		D3D11_SUBRESOURCE_DATA srdata;
-		srdata.pSysMem = &col;
-		srdata.SysMemPitch = 4;
+		srdata.pSysMem			= &col;
+		srdata.SysMemPitch		= 4;
 		srdata.SysMemSlicePitch = 0;
 
 		m_texWhite = std::make_shared<Texture>();
@@ -200,13 +209,15 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	{
 		auto col = cfloat4x4(0.5f, 0.5f, 1.0f, 1).RGBA();
 		D3D11_SUBRESOURCE_DATA srdata;
-		srdata.pSysMem = &col;
-		srdata.SysMemPitch = 4;
+		srdata.pSysMem			= &col;
+		srdata.SysMemPitch		= 4;
 		srdata.SysMemSlicePitch = 0;
 
 		m_texNormal = std::make_shared<Texture>();
 		m_texNormal->Create("Resource/Texture/Blue1x1.bmp");// todo: fix
 	}
+
+	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	return true;
 }
@@ -230,9 +241,6 @@ void GraphicsDevice::Begin(const float* clearColor)
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
 	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-
-	// ライト情報 更新
-	//m_spRenderer->LightCommit();
 }
 
 //-----------------------------------------------------------------------------

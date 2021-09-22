@@ -26,16 +26,16 @@ public:
 	// @return 終了メッセージが来た...false
 	bool ProcessMessage();
 
-	// ファイルを開くダイアログボックスを表示
-	// ・filepath		… 選択されたファイルパスが入る
-	// ・title			… ウィンドウのタイトル文字
-	// ・filters		… 指定された拡張子のみ表示されるようになる
+	// @brief ファイルを開くダイアログボックスを表示
+	// @param filepath 選択されたファイルパスが入る
+	// @param title ウィンドウのタイトル文字
+	// @param filters 指定された拡張子のみ表示されるようになる
 	static bool OpenFileDialog(std::string& filepath, const std::string& title = "ファイルを開く", const char* filters = "全てのファイル\0*.*\0");
-	// ファイル名をつけて保存ダイアログボックスを表示
-	// ・filepath		… 選択されたファイルパスが入る
-	// ・title			… ウィンドウのタイトル文字
-	// ・filters		… 指定された拡張子のみ表示されるようになる
-	// ・defExt			… ユーザーが拡張子を入力しなかった場合、これが自動的に付く
+	// @brief ファイル名をつけて保存ダイアログボックスを表示
+	// @param filepath 選択されたファイルパスが入る
+	// @param title ウィンドウのタイトル文字
+	// @param filters 指定された拡張子のみ表示されるようになる
+	// @param defExt ユーザーが拡張子を入力しなかった場合、これが自動的に付く
 	static bool SaveFileDialog(std::string& filepath, const std::string& title = "ファイルを保存", const char* filters = "全てのファイル\0*.*\0", const std::string& defExt = "");
 
 	//--------------------------------------------------

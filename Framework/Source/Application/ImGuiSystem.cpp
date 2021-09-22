@@ -36,7 +36,7 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	// ImGuiの外観設定
 	ImGui::StyleColorsClassic();
 
-	ImGui_ImplWin32_Init(APP.g_window.GetWndHandle());
+	ImGui_ImplWin32_Init(APP.g_window->GetWndHandle());
 	ImGui_ImplDX11_Init(device, context);
 
 	ImFontConfig config;
@@ -262,9 +262,9 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume");
 	ImGui::PopStyleColor();
 
-	static float volume = APP.g_audioDevice.GetMasterVolume();
+	static float volume = APP.g_audioDevice->GetMasterVolume();
 	if (ImGui::SliderFloat("Main", &volume, 0.0f, 2.0f, "%.2f"))
-		APP.g_audioDevice.SetMasterVolume(volume);
+		APP.g_audioDevice->SetMasterVolume(volume);
 
 	ImGui::Separator();
 
@@ -320,7 +320,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Listener");
 	ImGui::PopStyleColor();
 
-	auto& cameraMatrix = APP.g_gameSystem.GetCamera()->GetCameraMatrix();
+	auto& cameraMatrix = APP.g_gameSystem->GetCamera()->GetCameraMatrix();
 	float3 pos = cameraMatrix.Translation();
 	float3 dir = cameraMatrix.Backward();
 
@@ -339,10 +339,10 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Checkbox("Show Meter", &showMeter);
 	if (showMeter)
 	{
-		PlotLinesEx("PeakLevels R", APP.g_audioDevice.g_peakLevels[0]);
-		PlotLinesEx("PeakLevels L", APP.g_audioDevice.g_peakLevels[1]);
-		PlotLinesEx("RMSLevels R", APP.g_audioDevice.g_RMSLevels[0]);
-		PlotLinesEx("RMSLevels L", APP.g_audioDevice.g_RMSLevels[1]);
+		PlotLinesEx("PeakLevels R", APP.g_audioDevice->g_peakLevels[0]);
+		PlotLinesEx("PeakLevels L", APP.g_audioDevice->g_peakLevels[1]);
+		PlotLinesEx("RMSLevels R", APP.g_audioDevice->g_RMSLevels[0]);
+		PlotLinesEx("RMSLevels L", APP.g_audioDevice->g_RMSLevels[1]);
 	}
 
 	ImGui::End();
@@ -371,10 +371,10 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	auto& fpsTimer = APP.g_fpsTimer;
-	ImGui::Text(std::string("Fps: " + std::to_string(fpsTimer.GetFPS())).c_str());
-	ImGui::Text(std::string("DeltaTime: " + std::to_string(fpsTimer.GetDeltaTime())).c_str());
-	ImGui::Text(std::string("TotalTime: " + std::to_string(fpsTimer.GetTotalTime())).c_str());
-	ImGui::Text(std::string("TimeScale: " + std::to_string(fpsTimer.GetTimeScale())).c_str());
+	ImGui::Text(std::string("Fps: " + std::to_string(fpsTimer->GetFPS())).c_str());
+	ImGui::Text(std::string("DeltaTime: " + std::to_string(fpsTimer->GetDeltaTime())).c_str());
+	ImGui::Text(std::string("TotalTime: " + std::to_string(fpsTimer->GetTotalTime())).c_str());
+	ImGui::Text(std::string("TimeScale: " + std::to_string(fpsTimer->GetTimeScale())).c_str());
 
 	ImGui::Separator();
 
@@ -382,9 +382,9 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Sliders Edit");
 	ImGui::PopStyleColor();
 
-	static float timeScale = fpsTimer.GetTimeScale();
+	static float timeScale = fpsTimer->GetTimeScale();
 	if (ImGui::SliderFloat("TimeScale", &timeScale, 0, 5, "%.2f"))
-		fpsTimer.SetTimeScale(timeScale);
+		fpsTimer->SetTimeScale(timeScale);
 
 	ImGui::Separator();
 
@@ -393,7 +393,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	// SceneのActor一覧
-	for (auto&& actor : APP.g_gameSystem.GetActorList())
+	for (auto&& actor : APP.g_gameSystem->GetActorList())
 	{
 		ImGui::PushID(actor.get());
 		ImGui::Text(actor->GetName().c_str());

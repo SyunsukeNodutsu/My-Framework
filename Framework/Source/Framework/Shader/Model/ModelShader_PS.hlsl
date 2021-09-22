@@ -16,11 +16,12 @@ Texture2D g_normalTexture       : register(t3); // 法線マップ(テクスチャ)
 SamplerState g_samplerState : register(s0);
 
 // ディザパターン(Bayer Matrix)
+// https://en.wikipedia.org/wiki/Ordered_dithering
 static const int g_ditherPattern[4][4] = {
-    {  0, 32,  8, 40 },
-    { 48, 16, 56, 21 },
-    { 12, 44,  4, 36 },
-    { 60, 28, 52, 20 },
+    {  0,  8,  2, 10 },
+    { 12,  4, 14,  6 },
+    {  3, 11,  1,  9 },
+    { 15,  7, 13,  5 },
 };
 
 // @brief BlinnPhong NDF
@@ -87,7 +88,7 @@ float4 main( VertexOutput In ) : SV_TARGET
         float clipRate = 1.0f - min(1.0f, eyeToClipRange / ditherRange);
 
         // ピクセルキル
-        clip(dither - 64 * clipRate);
+        clip(dither - 15 * clipRate);
     }
     
     //------------------------------------------

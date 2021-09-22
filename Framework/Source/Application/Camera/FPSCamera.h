@@ -24,7 +24,7 @@ public:
 	// @brief 有効かどうかを設定
 	void SetEnable(bool enable) {
 		m_enable = enable;
-		APP.g_rawInputDevice.g_spMouse->SetCursorShow(!enable);
+		APP.g_rawInputDevice->g_spMouse->SetCursorShow(!enable);
 	}
 
 	// @brief FPSカメラのカメラ行列を設定(override)

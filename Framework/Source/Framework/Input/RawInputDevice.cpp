@@ -17,12 +17,12 @@ RawInputDevice::RawInputDevice()
 void RawInputDevice::Initialize()
 {
     g_spKeyboard = std::make_shared<Keyboard>();
-    g_spKeyboard->Initialize(APP.g_window.GetWndHandle());
+    g_spKeyboard->Initialize(APP.g_window->GetWndHandle());
 
     g_spMouse = std::make_shared<Mouse>();
-    g_spMouse->Initialize(APP.g_window.GetWndHandle());
+    g_spMouse->Initialize(APP.g_window->GetWndHandle());
 
-    DebugLog("INFO: RawInputDevice initialized.");
+    APP.g_imGuiSystem->AddLog("INFO: RawInputDevice initialized.");
 }
 
 //-----------------------------------------------------------------------------
@@ -30,8 +30,8 @@ void RawInputDevice::Initialize()
 //-----------------------------------------------------------------------------
 void RawInputDevice::Finalize()
 {
-    g_spKeyboard->Finalize(APP.g_window.GetWndHandle());
-    g_spMouse->Finalize(APP.g_window.GetWndHandle());
+    g_spKeyboard->Finalize(APP.g_window->GetWndHandle());
+    g_spMouse->Finalize(APP.g_window->GetWndHandle());
 }
 
 //-----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ void RawInputDevice::ParseMessage(void* lparam)
 
     // マウスの場合
     else if (lprawinput->header.dwType == RIM_TYPEMOUSE)
-        g_spMouse->ParseMouseData(lprawinput->data.mouse, APP.g_window.GetWndHandle());
+        g_spMouse->ParseMouseData(lprawinput->data.mouse, APP.g_window->GetWndHandle());
 
     // 入力データ解放
     delete[] lpbyData;

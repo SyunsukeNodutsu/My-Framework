@@ -1,5 +1,14 @@
 ﻿#include "main.h"
 
+std::shared_ptr<Window> Application::g_window = 0;
+std::shared_ptr<GraphicsDevice> Application::g_graphicsDevice = 0;
+std::shared_ptr<AudioDevice> Application::g_audioDevice = 0;
+std::shared_ptr<RawInputDevice> Application::g_rawInputDevice = 0;
+std::shared_ptr<FpsTimer> Application::g_fpsTimer = 0;
+
+std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
+std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
+
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
@@ -59,7 +68,8 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	// ウィンドウ作成
-	if (!g_window.Create(width, height, "高ぶってきたからTwitterで政治的ツイートするわ KD垢で^^", "Window")) {
+	g_window = std::make_shared<Window>();
+	if (!g_window->Create(width, height, "Project のづお", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
 	}
@@ -67,6 +77,15 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 	// 各種デバイス
 	//--------------------------------------------------
+
+	g_graphicsDevice	= std::make_shared<GraphicsDevice>();
+	g_audioDevice		= std::make_shared<AudioDevice>();
+	g_rawInputDevice	= std::make_shared<RawInputDevice>();
+	g_fpsTimer			= std::make_shared<FpsTimer>();
+	g_gameSystem		= std::make_shared<GameSystem>();
+	g_imGuiSystem		= std::make_shared<ImGuiSystem>();
+	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice.get());
+	AudioDeviceChild::SetAudioDevice(g_audioDevice.get());
 
 	// 描画デバイス Direct3D
 	MY_DIRECT3D_DESC desc = {};
@@ -78,18 +97,16 @@ bool Application::Initialize(int width, int height)
 	desc.m_useHDR		= false;
 	desc.m_useMSAA		= true;
 	desc.m_deferredRendering = false;
-	desc.m_hwnd			= g_window.GetWndHandle();
+	desc.m_hwnd			= g_window->GetWndHandle();
 
-	GraphicsDeviceChild::SetGraphicsDevice(&g_graphicsDevice);// テクスチャ作ってるから先に設定
-	g_graphicsDevice.Initialize(desc);
+	g_graphicsDevice->Initialize(desc);
 
 	// オーディオデバイス
-	g_audioDevice.Initialize();
-	g_audioDevice.SetMasterVolume(0.4f);
-	AudioDeviceChild::SetAudioDevice(&g_audioDevice);
+	g_audioDevice->Initialize();
+	g_audioDevice->SetMasterVolume(0.4f);
 	
 	// 入力デバイス
-	g_rawInputDevice.Initialize();
+	g_rawInputDevice->Initialize();
 
 	//--------------------------------------------------
 	// その他
@@ -106,9 +123,10 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	// ゲーム
-	g_gameSystem.Initialize();
+	g_gameSystem->Initialize();
+
 	// imGui(プロファイル)
-	g_imGuiSystem.Initialize(g_graphicsDevice.g_cpDevice.Get(), g_graphicsDevice.g_cpContext.Get());
+	g_imGuiSystem->Initialize(g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get());
 
 	return true;
 }
@@ -121,16 +139,16 @@ void Application::Release()
 	// TODO: 終了の順番要調査 特にRAW INPUT
 
 	// アプリケーション
-	g_gameSystem.Finalize();
-	g_imGuiSystem.Finalize();
-
-	// ウィンドウ
-	g_window.Release();
+	g_imGuiSystem->Finalize();
+	g_gameSystem->Finalize();
 
 	// デバイス
-	g_audioDevice.Finalize();
-	g_graphicsDevice.Finalize();
-	g_rawInputDevice.Finalize();
+	g_rawInputDevice->Finalize();
+	g_audioDevice->Finalize();
+	g_graphicsDevice->Finalize();
+
+	// ウィンドウ
+	g_window->Release();
 }
 
 //-----------------------------------------------------------------------------
@@ -148,23 +166,23 @@ void Application::Execute()
 	// 
 	//==================================================
 
-	while (4545)
+	while (1)
 	{
 		if (m_endFlag)
 			break;
 
-		g_fpsTimer.Tick();
+		g_fpsTimer->Tick();
 
 		//----------------------------------------
 		// ウィンドウ関係の処理
 		//----------------------------------------
 
 		// ウィンドウのメッセージを処理する
-		if (g_window.ProcessMessage() == false)
+		if (g_window->ProcessMessage() == false)
 			break;
 
 		// ウィンドウが破棄されてるならループ終了
-		if (!g_window.IsCreated())
+		if (!g_window->IsCreated())
 			break;
 
 		//----------------------------------------
@@ -172,35 +190,35 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ行列の取得
-		auto cameraMatrix = g_gameSystem.GetCamera()->GetCameraMatrix();
+		auto cameraMatrix = g_gameSystem->GetCamera()->GetCameraMatrix();
 		// サウンド更新
-		g_audioDevice.Update(cameraMatrix);
+		g_audioDevice->Update(cameraMatrix);
 
 		//----------------------------------------
 		// ゲーム処理
 		//----------------------------------------
 		
 		// 更新
-		g_gameSystem.Update();
+		g_gameSystem->Update();
 
 		// 描画
-		g_graphicsDevice.Begin();
+		g_graphicsDevice->Begin();
 		{
 			// 3D想定
-			g_gameSystem.Draw();
+			g_gameSystem->Draw();
 			// 2D想定
-			g_gameSystem.Draw2D();
+			g_gameSystem->Draw2D();
 
 			// ImGui 描画
-			g_imGuiSystem.Begin();
-			g_imGuiSystem.DrawImGui();
+			g_imGuiSystem->Begin();
+			g_imGuiSystem->DrawImGui();
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
-		g_graphicsDevice.End();
+		g_graphicsDevice->End();
 
 		// 描画後更新
-		g_gameSystem.LateUpdate();
+		g_gameSystem->LateUpdate();
 	}
 
 	//==================================================

@@ -4,7 +4,7 @@
 #include "StageMap.h"
 #include "Tank.h"
 
-#include "../ImGuiSystem.h"
+#include "../main.h"
 
 //-----------------------------------------------------------------------------
 // Actor生成
@@ -22,9 +22,9 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (result)
 		result->Awake();
 
-	DebugLog(std::string("INFO: Generate actor. name: " + name).c_str());
+	APP.g_imGuiSystem->AddLog(std::string("INFO: Generate actor. name: " + name).c_str());
 	if (result == nullptr)
-		DebugLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
+		APP.g_imGuiSystem->AddLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
 
 	return result;
 }

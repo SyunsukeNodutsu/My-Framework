@@ -1,11 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 // File: Device.h
 //
-// Direct3D関連の管理
-// GraphicsDevice
-// -GraphicsDeviceChild
-//  -Texture, Shader, RenderTarget など
-// 
+// Direct3D管理
 // TODO: クエリ関連の取得
 //-----------------------------------------------------------------------------
 #pragma once

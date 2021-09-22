@@ -99,7 +99,7 @@ void Window::Release()
 bool Window::ProcessMessage()
 {
 	// 入力系 リフレッシュ
-	APP.g_rawInputDevice.Refresh();
+	APP.g_rawInputDevice->Refresh();
 
 	// メッセージ取得
 	MSG msg = {};
@@ -117,7 +117,7 @@ bool Window::ProcessMessage()
 }
 
 //-----------------------------------------------------------------------------
-// 
+// ファイルを開くダイアログボックスを表示
 //-----------------------------------------------------------------------------
 bool Window::OpenFileDialog(std::string& filepath, const std::string& title, const char* filters)
 {
@@ -144,15 +144,15 @@ bool Window::OpenFileDialog(std::string& filepath, const std::string& title, con
 	OPENFILENAMEA o;
 	ZeroMemory(&o, sizeof(o));
 
-	o.lStructSize = sizeof(o);									// 構造体サイズ
-	o.hwndOwner = nullptr;										// 親ウィンドウのハンドル
-	o.lpstrInitialDir = dir.c_str();							// 初期フォルダー
-	o.lpstrFile = fname;										// 取得したファイル名を保存するバッファ
-	o.nMaxFile = sizeof(fname);									// 取得したファイル名を保存するバッファサイズ
-	o.lpstrFilter = filters;									// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
-	o.lpstrDefExt = "";
-	o.lpstrTitle = title.c_str();
-	o.nFilterIndex = 1;
+	o.lStructSize		= sizeof(o);		// 構造体サイズ
+	o.hwndOwner			= nullptr;			// 親ウィンドウのハンドル
+	o.lpstrInitialDir	= dir.c_str();		// 初期フォルダー
+	o.lpstrFile			= fname;			// 取得したファイル名を保存するバッファ
+	o.nMaxFile			= sizeof(fname);	// 取得したファイル名を保存するバッファサイズ
+	o.lpstrFilter		= filters;			// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
+	o.lpstrDefExt		= "";
+	o.lpstrTitle		= title.c_str();
+	o.nFilterIndex		= 1;
 	if (GetOpenFileNameA(&o))
 	{
 		// カレントディレクトリを元に戻す
@@ -161,12 +161,12 @@ bool Window::OpenFileDialog(std::string& filepath, const std::string& title, con
 		filepath = std::filesystem::relative(fname).string();
 		return true;
 	}
-	std::filesystem::current_path(current);	// カレントディレクトリを元に戻す
+	std::filesystem::current_path(current);
 	return false;
 }
 
 //-----------------------------------------------------------------------------
-// 
+// ファイル名をつけて保存ダイアログボックスを表示
 //-----------------------------------------------------------------------------
 bool Window::SaveFileDialog(std::string& filepath, const std::string& title, const char* filters, const std::string& defExt)
 {
@@ -181,8 +181,7 @@ bool Window::SaveFileDialog(std::string& filepath, const std::string& title, con
 
 	// デフォルトフォルダ
 	std::string dir;
-	if (filepath.size() == 0)
-	{
+	if (filepath.size() == 0) {
 		dir = current.string() + "\\";
 	}
 	else {
@@ -193,15 +192,15 @@ bool Window::SaveFileDialog(std::string& filepath, const std::string& title, con
 	OPENFILENAMEA o;
 	ZeroMemory(&o, sizeof(o));
 
-	o.lStructSize = sizeof(o);									// 構造体サイズ
-	o.hwndOwner = nullptr;										// 親ウィンドウのハンドル
-	o.lpstrInitialDir = dir.c_str();						// 初期フォルダー
-	o.lpstrFile = fname;										// 取得したファイル名を保存するバッファ
-	o.nMaxFile = sizeof(fname);									// 取得したファイル名を保存するバッファサイズ
-	o.lpstrFilter = filters;									// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
-	o.lpstrDefExt = defExt.c_str();
-	o.lpstrTitle = title.c_str();
-	o.nFilterIndex = 1;
+	o.lStructSize		= sizeof(o);		// 構造体サイズ
+	o.hwndOwner			= nullptr;			// 親ウィンドウのハンドル
+	o.lpstrInitialDir	= dir.c_str();		// 初期フォルダー
+	o.lpstrFile			= fname;			// 取得したファイル名を保存するバッファ
+	o.nMaxFile			= sizeof(fname);	// 取得したファイル名を保存するバッファサイズ
+	o.lpstrFilter		= filters;			// (例) "TXTファイル(*.TXT)\0*.TXT\0全てのファイル(*.*)\0*.*\0";
+	o.lpstrDefExt		= defExt.c_str();
+	o.lpstrTitle		= title.c_str();
+	o.nFilterIndex		= 1;
 	o.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 	if (GetSaveFileNameA(&o))
 	{
@@ -211,8 +210,50 @@ bool Window::SaveFileDialog(std::string& filepath, const std::string& title, con
 		filepath = std::filesystem::relative(fname).string();
 		return true;
 	}
-	std::filesystem::current_path(current);	// カレントディレクトリを元に戻す
+	std::filesystem::current_path(current);
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+// ウィンドウのクライアントのサイズを指定サイズに設定
+//-----------------------------------------------------------------------------
+void Window::SetClientSize(int width, int height)
+{
+	RECT rcWindow, rcClient;
+
+	// ウィンドウのRECT取得
+	GetWindowRect(m_hWnd, &rcWindow);
+	// クライアント領域のRECT取得
+	GetClientRect(m_hWnd, &rcClient);
+
+	int nWidth = width + (rcWindow.right - rcWindow.left) - (rcClient.right - rcClient.left);
+	int nHeight = height + (rcWindow.bottom - rcWindow.top) - (rcClient.bottom - rcClient.top);
+
+	// ウィンドウの余白を考えて、クライアントのサイズを指定サイズにする
+	MoveWindow(m_hWnd, rcWindow.left, rcWindow.top, nWidth, nHeight, TRUE);
+}
+
+//-----------------------------------------------------------------------------
+// ウィンドウをデスクトップの中心に移動
+//-----------------------------------------------------------------------------
+bool Window::SetDesktopCenterWindow(HWND hWnd) const
+{
+	if (hWnd == nullptr)
+		return false;
+
+	// デスクトップ サイズ取得
+	RECT desktopRect = {};
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &desktopRect, 0);
+
+	// 矩形取得
+	RECT windowRect = m_windowInfo.rcWindow;
+	auto width = windowRect.right - windowRect.left;
+	auto height = windowRect.bottom - windowRect.top;
+	// 座標確定
+	INT posX = (((desktopRect.right - desktopRect.left) - width) / 2 + desktopRect.left);
+	INT posY = (((desktopRect.bottom - desktopRect.top) - height) / 2 + desktopRect.top);
+
+	return SetWindowPos(hWnd, NULL, posX, posY, 0, 0, (SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER));
 }
 
 //-----------------------------------------------------------------------------
@@ -259,14 +300,14 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 		return true;
 
 	GetWindowInfo(m_hWnd, &m_windowInfo);
-	
+
 	switch (message)
 	{
-	// 生入力情報取得
+		// 生入力情報取得
 	case WM_INPUT:
 	{
 		if (m_windowInfo.dwWindowStatus == WS_ACTIVECAPTION)
-			APP.g_rawInputDevice.ParseMessage((void*)lparam);
+			APP.g_rawInputDevice->ParseMessage((void*)lparam);
 	}
 	break;
 
@@ -310,46 +351,4 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 		return DefWindowProc(hwnd, message, wparam, lparam);
 	}
 	return 0;
-}
-
-//-----------------------------------------------------------------------------
-// ウィンドウのクライアントのサイズを指定サイズに設定
-//-----------------------------------------------------------------------------
-void Window::SetClientSize(int width, int height)
-{
-	RECT rcWindow, rcClient;
-
-	// ウィンドウのRECT取得
-	GetWindowRect(m_hWnd, &rcWindow);
-	// クライアント領域のRECT取得
-	GetClientRect(m_hWnd, &rcClient);
-
-	int nWidth = width + (rcWindow.right - rcWindow.left) - (rcClient.right - rcClient.left);
-	int nHeight = height + (rcWindow.bottom - rcWindow.top) - (rcClient.bottom - rcClient.top);
-
-	// ウィンドウの余白を考えて、クライアントのサイズを指定サイズにする
-	MoveWindow(m_hWnd, rcWindow.left, rcWindow.top, nWidth, nHeight, TRUE);
-}
-
-//-----------------------------------------------------------------------------
-// ウィンドウをデスクトップの中心に移動
-//-----------------------------------------------------------------------------
-bool Window::SetDesktopCenterWindow(HWND hWnd) const
-{
-	if (hWnd == nullptr)
-		return false;
-
-	// デスクトップ サイズ取得
-	RECT desktopRect = {};
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &desktopRect, 0);
-
-	// 矩形取得
-	RECT windowRect = m_windowInfo.rcWindow;
-	auto width = windowRect.right - windowRect.left;
-	auto height = windowRect.bottom - windowRect.top;
-	// 座標確定
-	INT posX = (((desktopRect.right - desktopRect.left) - width) / 2 + desktopRect.left);
-	INT posY = (((desktopRect.bottom - desktopRect.top) - height) / 2 + desktopRect.top);
-
-	return SetWindowPos(hWnd, NULL, posX, posY, 0, 0, (SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER));
 }

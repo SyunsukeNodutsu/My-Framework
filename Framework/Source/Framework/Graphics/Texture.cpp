@@ -45,7 +45,7 @@ bool Texture::Create( const std::string& filepath )
 	);
 
 	if (FAILED(hr)) {
-		DebugLog("[WARNING]テクスチャ読み込み失敗.\n");
+		DebugLog("WARNING: テクスチャ読み込み失敗.\n");
 		return false;
 	}
 

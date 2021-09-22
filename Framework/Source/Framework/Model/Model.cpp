@@ -1,4 +1,5 @@
 ﻿#include "Model.h"
+#include "../../Application/main.h"
 #include "../../../../Library/gltfLoader/KdGLTFLoader.h"
 
 //=============================================================================
@@ -278,7 +279,7 @@ void ModelWork::SetModel(const std::shared_ptr<ModelData>& rModel)
 void ModelWork::CalcNodeMatrices()
 {
 	if (m_spModel == nullptr) {
-		DebugLog("モデルのない行列計算.\n");
+		APP.g_imGuiSystem->AddLog("WORNING: Matrix computation without a model.");
 		return;
 	}
 
@@ -287,7 +288,10 @@ void ModelWork::CalcNodeMatrices()
 
 	for (auto&& nodeIdx : m_spModel->GetBoneNodeIndices())
 	{
-		if (nodeIdx >= /*StandardShader::maxBoneBufferSize*/200) { assert(0 && "転送できるボーンの上限数を超えました"); return; }
+		if (nodeIdx >= /*StandardShader::maxBoneBufferSize*/200) {
+			assert(0 && "転送できるボーンの上限数を超えました");
+			return;
+		}
 
 		// ノード内からボーン情報を取得
 		auto& data = m_spModel->GetOriginalNodes()[nodeIdx];

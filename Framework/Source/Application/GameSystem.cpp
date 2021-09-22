@@ -31,7 +31,7 @@ void GameSystem::Initialize()
 		AddActor("Human");
 		AddActor("Sky");
 		AddActor("StageMap");
-		//AddActor("Tank");
+		AddActor("Tank");
 
 		auto object = std::make_shared<Actor>();
 		object->LoadModel("Resource/Model/DebugSphere.gltf");
@@ -53,7 +53,8 @@ void GameSystem::Initialize()
 	if (sound3d)
 	{
 		float3 pos = float3(0, 0, 0);
-		//sound3d->Play3D(pos);
+		sound3d->Play3D(pos);
+		sound3d->SetVolume(0.0f);
 	}
 }
 
@@ -72,8 +73,8 @@ void GameSystem::Finalize()
 void GameSystem::Update()
 {
 	// 前フレームからの経過時間を計算/取得
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
-	const float totalTime = static_cast<float>(APP.g_fpsTimer.GetTotalTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	// 時間系を設定/送信
 	RENDERER.SetTime(totalTime, deltaTime);
@@ -100,7 +101,7 @@ void GameSystem::Update()
 //-----------------------------------------------------------------------------
 void GameSystem::LateUpdate()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	for (auto& object : m_spActorList)
 		object->LateUpdate(deltaTime);
@@ -111,7 +112,7 @@ void GameSystem::LateUpdate()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	// カメラ情報をGPUに転送
 	if (m_spCamera)
@@ -128,7 +129,7 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer.GetDeltaTime());
+	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	SHADER.GetSpriteShader().Begin(true, true);
 

@@ -1,6 +1,6 @@
 ﻿#include "AudioDevice.h"
 #include "SoundDirector.h"
-#include "../../Application/ImGuiSystem.h"
+#include "../../Application/main.h"
 
 // サウンドコーン
 static const X3DAUDIO_CONE Listener_DirectionalCone = { X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 1.0f, 0.75f, 0.0f, 0.25f, 0.708f, 1.0f };
@@ -32,14 +32,14 @@ bool AudioDevice::Initialize()
     UINT32 flags = 0;
     HRESULT hr = XAudio2Create(&g_xAudio2, flags);
     if (!g_xAudio2) {
-        DebugLog("ERROR: Failed to inialize audio device.");
+        //APP.g_imGuiSystem->AddLog("ERROR: Failed to inialize audio device.");
         return false;
     }
 
     // IXAudio2MasteringVoice作成
     hr = g_xAudio2->CreateMasteringVoice(&g_pMasteringVoice);
     if (!g_pMasteringVoice) {
-        DebugLog("ERROR: Failed to create mastering voice.");
+        //APP.g_imGuiSystem->AddLog("ERROR: Failed to create mastering voice.");
         return false;
     }
 
@@ -77,14 +77,17 @@ bool AudioDevice::Initialize()
     XAUDIO2FX_REVERB_PARAMETERS native;
     XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_FOREST;
     ReverbConvertI3DL2ToNative(&param, &native);
-    g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native));
+    if (FAILED(g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native)))) {
+        //APP.g_imGuiSystem->AddLog("WORNING: Failed to set EffectParameters.");
+        return false;
+    }
 
     Initialize3D();
 
     // ボリュームメータAPO作成
     InitializeVolumeMeterAPO();
 
-    DebugLog("INFO: AudioDevice Initialized.");
+    APP.g_imGuiSystem->AddLog("INFO: AudioDevice Initialized.");
 
     return done = true;
 }
@@ -313,7 +316,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     // VolumeMeter(APO)作成
     IUnknown* pVolumeMeterAPO = nullptr;
     if (FAILED(XAudio2CreateVolumeMeter(&pVolumeMeterAPO))) {
-        DebugLog("ERROR: Failed to create VolumeMeter(APO).");
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create VolumeMeter(APO).");
         return false;
     }
 
@@ -328,12 +331,11 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     chain.EffectCount           = 1;
     chain.pEffectDescriptors    = &descriptor;
     if (FAILED(g_pMasteringVoice->SetEffectChain(&chain))) {
-        DebugLog("ERROR: Failed to create EFFECT_CHAIN.");
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create EFFECT_CHAIN.");
         return false;
     }
 
     pVolumeMeterAPO->Release();
-    DebugLog("INFO: Initialized VolumeMeterAPO.");
 
     return true;
 }
@@ -354,6 +356,6 @@ void AudioDevice::UpdateVolumeMeter()
 
     // パラメータ受信
     if (FAILED(g_pMasteringVoice->GetEffectParameters(0, &Levels, sizeof(Levels)))) {
-        DebugLog("ERROR: EffectParameters失敗.\n");
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to set EffectParameters.");
     }
 }

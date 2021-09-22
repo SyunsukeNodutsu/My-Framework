@@ -33,7 +33,7 @@ void Human::Initialize()
 		m_spCamera->SetEnable(false);
 
 		// GameSystemにもカメラをシェアさせる
-		APP.g_gameSystem.SetCamera(m_spCamera);
+		APP.g_gameSystem->SetCamera(m_spCamera);
 	}
 
 	m_spState = std::make_shared<StateWait>();
@@ -57,7 +57,7 @@ void Human::Update(float deltaTime)
 {
 	// Escでカメラ操作切り替え
 	static bool enable = false;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsPressed(KeyCode::Escape))
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape))
 	{
 		enable = !enable;
 		m_spCamera->SetEnable(enable);
@@ -67,8 +67,8 @@ void Human::Update(float deltaTime)
 
 	// アニメーション
 	float animationSpeed = 60.0f;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::Shift)) animationSpeed *= 1.6f;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::Alt)) animationSpeed *= 0.6f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Shift)) animationSpeed *= 1.6f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Alt)) animationSpeed *= 0.6f;
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 
@@ -102,9 +102,9 @@ void Human::UpdateMove(float deltaTime)
 
 	// ダッシュ or スニーク？
 	float moveSpd = 10;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::Shift))
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Shift))
 		speed *= 2;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::Alt))
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Alt))
 		speed *= 0.4f;
 
 	auto axisZ = m_transform.GetWorldMatrix().Backward();
@@ -123,10 +123,10 @@ void Human::UpdateRotate(float deltaTime)
 {
 	// 入力ベクトル取得
 	float3 moveVec;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	// カメラを加味
@@ -163,10 +163,10 @@ void Human::UpdateRotate(float deltaTime)
 void Human::StateWait::Update(float deltaTime, Human& owner)
 {
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
 	moveVec.Normalize();
 
 	if (moveVec.LengthSquared() >= 0.01f)
@@ -186,10 +186,10 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 
 	// TODO: fix
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice.g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
 	moveVec.Normalize();
 
 	if (moveVec.LengthSquared() == 0)
