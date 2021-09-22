@@ -88,7 +88,7 @@ bool SoundData::Create(bool loop, bool useFilter)
 
     // ソースボイスの作成
     if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat,
-        useFilter ? XAUDIO2_VOICE_USEFILTER : 0, 2.0f, nullptr, &sendList))) {
+        0, 2.0f, nullptr, &sendList))) {
         return false;
     }
 

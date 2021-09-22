@@ -41,7 +41,7 @@ public:
 	// 描画デバイス
 	static std::shared_ptr<GraphicsDevice> g_graphicsDevice;
 	// オーディオデバイス
-	static std::shared_ptr<AudioDevice>	g_audioDevice;
+	static AudioDevice* g_audioDevice;
 	// 入力デバイス
 	static std::shared_ptr<RawInputDevice> g_rawInputDevice;
 
