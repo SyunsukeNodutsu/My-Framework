@@ -38,8 +38,7 @@ public:
 
 	// @brief 角度の設定
 	void SetAngle(float angX, float angY) {
-		m_degAngle.x = angX;
-		m_degAngle.y = angY;
+		m_degAngle.x = angX; m_degAngle.y = angY;
 	}
 
 	// @brief 回転行列を返す

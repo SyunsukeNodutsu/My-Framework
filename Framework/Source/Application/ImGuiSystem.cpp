@@ -226,7 +226,8 @@ void ImGuiSystem::LogMonitor(ImGuiWindowFlags wflags)
 			m_logBuffer.clear();
 		}
 		if (ImGui::Button("Copy")) {
-			//m_logBuffer.clear();
+			ImGui::SetClipboardText(m_logBuffer.c_str());
+			AddLog("INFO: Log copy done.");
 		}
 		ImGui::EndMenuBar();
 	}

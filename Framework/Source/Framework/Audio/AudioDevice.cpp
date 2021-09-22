@@ -32,14 +32,14 @@ bool AudioDevice::Initialize()
     UINT32 flags = 0;
     HRESULT hr = XAudio2Create(&g_xAudio2, flags);
     if (!g_xAudio2) {
-        //APP.g_imGuiSystem->AddLog("ERROR: Failed to inialize audio device.");
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to inialize audio device.");
         return false;
     }
 
     // IXAudio2MasteringVoice作成
     hr = g_xAudio2->CreateMasteringVoice(&g_pMasteringVoice);
     if (!g_pMasteringVoice) {
-        //APP.g_imGuiSystem->AddLog("ERROR: Failed to create mastering voice.");
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create mastering voice.");
         return false;
     }
 
@@ -75,10 +75,10 @@ bool AudioDevice::Initialize()
 
     // デフォルトのFXパラメータ設定
     XAUDIO2FX_REVERB_PARAMETERS native;
-    XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_FOREST;
+    XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_DEFAULT;
     ReverbConvertI3DL2ToNative(&param, &native);
     if (FAILED(g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native)))) {
-        //APP.g_imGuiSystem->AddLog("WORNING: Failed to set EffectParameters.");
+        APP.g_imGuiSystem->AddLog("WORNING: Failed to set EffectParameters.");
         return false;
     }
 

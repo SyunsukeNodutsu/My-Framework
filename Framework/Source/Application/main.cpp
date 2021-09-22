@@ -69,7 +69,7 @@ bool Application::Initialize(int width, int height)
 
 	// ウィンドウ作成
 	g_window = std::make_shared<Window>();
-	if (!g_window->Create(width, height, "Project のづお", "Window")) {
+	if (!g_window->Create(width, height, "xxx Game", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
 	}
