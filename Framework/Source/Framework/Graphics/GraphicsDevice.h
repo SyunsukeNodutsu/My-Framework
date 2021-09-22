@@ -52,6 +52,8 @@ public:
 	// @brief
 	std::shared_ptr<Texture> GetNormalTex() { return m_texNormal; }
 
+	const std::string GetAdapterName() const { return m_adapterName; }
+
 public:
 
 	// レンダリング インターフェース
@@ -78,7 +80,7 @@ private:
 	std::shared_ptr<Texture>		m_spDefaultZbuffer;
 
 	// アダプタ名
-	std::wstring					m_adapterName;
+	std::string						m_adapterName;
 
 	//------------------------
 	// 便利テクスチャ

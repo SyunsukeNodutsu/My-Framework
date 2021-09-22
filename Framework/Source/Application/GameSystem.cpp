@@ -46,7 +46,8 @@ void GameSystem::Initialize()
 	if (sound)
 	{
 		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
-		//sound->Play();
+		sound->Play();
+		sound->SetVolume(0.0f);
 	}
 
 	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/heli.wav", true);

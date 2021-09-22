@@ -1,10 +1,10 @@
 ﻿#include "main.h"
 
-std::shared_ptr<Window> Application::g_window = 0;
-std::shared_ptr<GraphicsDevice> Application::g_graphicsDevice = 0;
-AudioDevice* Application::g_audioDevice = 0;
-std::shared_ptr<RawInputDevice> Application::g_rawInputDevice = 0;
-std::shared_ptr<FpsTimer> Application::g_fpsTimer = 0;
+Window*			Application::g_window = 0;
+GraphicsDevice* Application::g_graphicsDevice = 0;
+AudioDevice*	Application::g_audioDevice = 0;
+RawInputDevice* Application::g_rawInputDevice = 0;
+FpsTimer*		Application::g_fpsTimer = 0;
 
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
 std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
@@ -68,7 +68,7 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	// ウィンドウ作成
-	g_window = std::make_shared<Window>();
+	g_window = new Window();
 	if (!g_window->Create(width, height, "xxx Game", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
@@ -78,12 +78,16 @@ bool Application::Initialize(int width, int height)
 	// 各種デバイス
 	//--------------------------------------------------
 
-	g_graphicsDevice	= std::make_shared<GraphicsDevice>();
-	g_rawInputDevice	= std::make_shared<RawInputDevice>();
-	g_fpsTimer			= std::make_shared<FpsTimer>();
-	g_gameSystem		= std::make_shared<GameSystem>();
-	g_imGuiSystem		= std::make_shared<ImGuiSystem>();
-	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice.get());
+	g_graphicsDevice = new GraphicsDevice();
+	g_audioDevice = new AudioDevice();
+	g_rawInputDevice = new RawInputDevice();
+	g_fpsTimer = new FpsTimer();
+
+	g_gameSystem = std::make_shared<GameSystem>();
+	g_imGuiSystem = std::make_shared<ImGuiSystem>();
+
+	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice);
+	AudioDeviceChild::SetAudioDevice(g_audioDevice);
 
 	// 描画デバイス Direct3D
 	MY_DIRECT3D_DESC desc = {};
@@ -100,10 +104,8 @@ bool Application::Initialize(int width, int height)
 	g_graphicsDevice->Initialize(desc);
 
 	// オーディオデバイス
-	g_audioDevice = new AudioDevice();
 	g_audioDevice->Initialize();
 	g_audioDevice->SetMasterVolume(0.4f);
-	AudioDeviceChild::SetAudioDevice(g_audioDevice);
 	
 	// 入力デバイス
 	g_rawInputDevice->Initialize();

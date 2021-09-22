@@ -53,7 +53,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		adapter->GetDesc1(&desc);
 		// GPUアダプタ？
 		if (desc.Flags ^= DXGI_ADAPTER_FLAG_SOFTWARE) {
-			m_adapterName = desc.Description;
+			m_adapterName = wide_to_sjis(desc.Description);
 			break;
 		}
 	}

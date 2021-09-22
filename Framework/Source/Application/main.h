@@ -34,19 +34,19 @@ public:
 	//--------------------------------------------------
 
 	// ウィンドウ
-	static std::shared_ptr<Window> g_window;
+	static Window* g_window;
 
 	// 各種デバイス
 	
 	// 描画デバイス
-	static std::shared_ptr<GraphicsDevice> g_graphicsDevice;
+	static GraphicsDevice* g_graphicsDevice;
 	// オーディオデバイス
 	static AudioDevice* g_audioDevice;
 	// 入力デバイス
-	static std::shared_ptr<RawInputDevice> g_rawInputDevice;
+	static RawInputDevice* g_rawInputDevice;
 
 	// fps計測
-	static std::shared_ptr<FpsTimer> g_fpsTimer;
+	static FpsTimer* g_fpsTimer;
 
 	// ゲーム
 

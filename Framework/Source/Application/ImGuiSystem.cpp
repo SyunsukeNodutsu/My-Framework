@@ -363,7 +363,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	ImGui::Text(Cpuid::m_brand.c_str());
-	//ImGui::Text(wide_to_sjis(D3D.GetAdapterName()).c_str());
+	ImGui::Text(APP.g_graphicsDevice->GetAdapterName().c_str());
 
 	ImGui::Separator();
 
