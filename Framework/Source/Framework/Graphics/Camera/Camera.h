@@ -18,6 +18,9 @@ public:
 	void SetToShader();
 
 	// @brief ワールド座標をスクリーン座標に変換
+	// @param pos 変換したい座標
+	// @param matri 座標変換行列
+	// @param result 結果格納用
 	void ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, float2& result);
 
 	//--------------------------------------------------

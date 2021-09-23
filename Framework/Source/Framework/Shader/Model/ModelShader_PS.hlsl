@@ -69,25 +69,22 @@ float4 main( VertexOutput In ) : SV_TARGET
     //------------------------------------------
     if (g_dither_enable)
     {
-        // このピクセルのスクリーン座標でのX座標 Y座標を4で割った余りを算出
         int dx = (int) fmod(In.position.x, 4.0f);
         int dy = (int) fmod(In.position.y, 4.0f);
-        // 上記を踏まえ閾値を取得
+        // 閾値を取得
         int dither = g_ditherPattern[dy][dx];
         
         // 完全にクリップされる範囲
         float clipRange = 1.2f;
         // ディザリングを始める範囲
         float ditherRange = 4.0f;
-
-        // 視点とクリップ範囲までの距離を算出
+        
         float eyeToClipRange = max(0.0f, g_dist_to_eye - clipRange);
         
         // クリップ率を算出
         // todo: 線形じゃない方がいいかも
         float clipRate = 1.0f - min(1.0f, eyeToClipRange / ditherRange);
-
-        // ピクセルキル
+        
         clip(dither - 15 * clipRate);
     }
     

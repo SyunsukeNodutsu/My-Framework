@@ -69,7 +69,7 @@ bool Application::Initialize(int width, int height)
 
 	// ウィンドウ作成
 	g_window = new Window();
-	if (!g_window->Create(width, height, "xxx Game", "Window")) {
+	if (!g_window->Create(width, height, "Framework sample game", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
 		return false;
 	}
