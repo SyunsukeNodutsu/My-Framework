@@ -23,13 +23,13 @@ void Mesh::SetToDevice() const
 	// 頂点バッファセット
 	UINT stride = sizeof(MeshVertex);
 	UINT offset = 0;
-	m_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddress(), &stride, &offset);
+	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddress(), &stride, &offset);
 
 	// インデックスバッファセット
-	m_graphicsDevice->g_cpContext.Get()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	g_graphicsDevice->g_cpContext.Get()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	// プリミティブ・トポロジーをセット
-	m_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ void Mesh::DrawSubset(int subsetNo) const
 	if (m_subsets[subsetNo].m_faceCount == 0) return; // 面数が0
 
 	// 描画
-	m_graphicsDevice->g_cpContext.Get()->DrawIndexed(
+	g_graphicsDevice->g_cpContext.Get()->DrawIndexed(
 		m_subsets[subsetNo].m_faceCount * 3,// 頂点数
 		m_subsets[subsetNo].m_faceStart * 3,// 頂点の開始位置
 		0

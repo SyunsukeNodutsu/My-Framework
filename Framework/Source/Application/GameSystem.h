@@ -60,6 +60,10 @@ private:
 	// 登場Actorリスト
 	std::list<std::shared_ptr<Actor>> m_spActorList;
 
+	//
+	std::shared_ptr<Texture> m_spTexture;
+	std::shared_ptr<Texture> m_spTexture2;
+
 private:
 
 	// @brief Actorをシーンに追加

@@ -127,20 +127,20 @@ public:
 	// @brief 頂点シェーダにセット
 	// @param slot スロット番号
 	inline void VSSetToDevice(int slot) const {
-		m_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		g_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 	// @brief ピクセルシェーダにセット
 	// @param slot スロット番号
 	inline void PSSetToDevice(int slot) const {
-		m_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		g_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 	// @brief 各シェーダにセット
 	// @param slot スロット番号
 	inline void SetToDevice(int slot) const {
-		m_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
-		m_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		g_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		g_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 private:

@@ -93,6 +93,7 @@
     <ClInclude Include="Source\Application\Actors\Sky.h" />
     <ClInclude Include="Source\Application\Actors\StageMap.h" />
     <ClInclude Include="Source\Application\Actors\Tank.h" />
+    <ClInclude Include="Source\Application\ApplicationInterface.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
     <ClInclude Include="Source\Application\Camera\TPSCamera.h" />
     <ClInclude Include="Source\Application\GameSystem.h" />

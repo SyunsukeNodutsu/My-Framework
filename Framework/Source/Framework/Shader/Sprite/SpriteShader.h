@@ -29,14 +29,14 @@ public:
 	// @param texture テクスチャソース
 	// @param position 2D座標
 	// @param color 色
-	void DrawTexture(const Texture* texture, float2 position, const cfloat4x4* color = &cfloat4x4::White);
+	void DrawTexture(const Texture* texture, float2 position, const cfloat4x4 color = cfloat4x4::White);
 
 private:
 
 	// 1頂点
 	struct Vertex {
-		float3 Pos;
-		float2 UV;
+		float3 m_pos;
+		float2 m_uv;
 	};
 
 	// 定数バッファ
@@ -46,10 +46,9 @@ private:
 
 private:
 
+	ConstantBuffer<cbSprite>	m_cb4Sprite;	// 画像描画用 定数バッファ
 	mfloat4x4					m_prevProjMat;	// 保存用 射影行列
 	bool						m_isBegin;		// Flag
-
-	ConstantBuffer<cbSprite>	m_cb0;
 
 	Buffer m_tempFixedVertexBuffer[10];			// 固定長 頂点バッファ
 	Buffer m_tempVertexBuffer;					// 可変長 頂点バッファ

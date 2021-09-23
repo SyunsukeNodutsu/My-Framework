@@ -17,11 +17,11 @@ public:
 
     // @brief グラフィックスデバイスを返す
     // @return グラフィックスデバイス
-    static GraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
+    static GraphicsDevice* GetGraphicsDevice() { return g_graphicsDevice; }
 
 protected:
 
     // 単一のデバイスを参照
-    static GraphicsDevice* m_graphicsDevice;
+    static GraphicsDevice* g_graphicsDevice;
 
 };

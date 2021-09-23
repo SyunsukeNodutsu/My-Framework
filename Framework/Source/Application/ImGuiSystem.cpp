@@ -421,25 +421,19 @@ void ImGuiSystem::PlotLinesEx(const std::string& string, float val)
 	if (refresh_time == 0.0)
 		refresh_time = ImGui::GetTime();
 
-	// Create data at fixed 60 Hz rate for the demo
+	// 60Hzの固定レートでデモ用データを作成
 	while (refresh_time < ImGui::GetTime())
 	{
-		static float phase = 0.0f;
 		values[values_offset] = val;
 		values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
-		phase += 0.10f * values_offset;
 		refresh_time += 1.0f / 60.0f;
 	}
 
-	// Plots can display overlay texts
-	// (in this example, we will display an average value)
+	// プロットはオーバーレイテキストを表示できる
+	// (この例では平均値を表示します)
 	{
-		float average = 0.0f;
-		for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-			average += values[n];
-		average /= (float)IM_ARRAYSIZE(values);
 		char overlay[32];
-		sprintf_s(overlay, "avg %f", average);
+		sprintf_s(overlay, "avg %f", val);
 		ImGui::PlotLines(string.c_str(), values, IM_ARRAYSIZE(values), values_offset, overlay, 0.0f, 1.0f, ImVec2(0, 40.0f));
 	}
 }

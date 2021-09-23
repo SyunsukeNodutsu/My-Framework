@@ -392,6 +392,9 @@
     <ClInclude Include="Source\Application\Actors\Tank.h">
       <Filter>Source\Application\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application\ApplicationInterface.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">

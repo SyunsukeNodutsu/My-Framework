@@ -177,8 +177,10 @@ void AudioDevice::Update(const mfloat4x4& listener)
     if (!g_xAudio2) return;
     if (!g_pMasteringVoice) return;
 
+    UpdateVolumeMeter();
+
     //--------------------------------------------------
-    // 3D
+    // リスナー
     //--------------------------------------------------
 
     // 座標
@@ -191,21 +193,17 @@ void AudioDevice::Update(const mfloat4x4& listener)
     float3 front = listener.Backward();
     m_listener.OrientFront.x = front.x;
     m_listener.OrientFront.y = front.y;
+    m_listener.OrientFront.z = front.z;
 
     float3 top = listener.Up();
     m_listener.OrientTop.x = top.x;
+    m_listener.OrientTop.y = top.y;
     m_listener.OrientTop.z = top.z;
-
-    // 奥行 傾き
-    m_listener.OrientFront.z = front.z;
-    //m_listener.OrientTop.y = top.z;
 
     //--------------------------------------------------
 
     // 3Dサウンドなどの更新
     SOUND_DIRECTOR.Update();
-
-    UpdateVolumeMeter();
 }
 
 //-----------------------------------------------------------------------------
@@ -329,7 +327,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     // EFFECT_DESCRIPTOR の作成
     XAUDIO2_EFFECT_DESCRIPTOR descriptor = {};
     descriptor.InitialState     = true;
-    descriptor.OutputChannels   = 2;
+    descriptor.OutputChannels   = g_channels;
     descriptor.pEffect          = pVolumeMeterAPO;
 
     // EFFECT_CHAIN の作成
@@ -354,10 +352,13 @@ void AudioDevice::UpdateVolumeMeter()
     if (g_xAudio2 == nullptr) return;
     if (g_pMasteringVoice == nullptr) return;
 
+    g_peakLevels.fill(0);
+    g_RMSLevels.fill(0);
+
     // 受信用構造体 設定
     XAUDIO2FX_VOLUMEMETER_LEVELS Levels = {};
-    Levels.pPeakLevels  = g_peakLevels;
-    Levels.pRMSLevels   = g_RMSLevels;
+    Levels.pPeakLevels  = &g_peakLevels[0];
+    Levels.pRMSLevels   = &g_RMSLevels[0];
     Levels.ChannelCount = g_channels;
 
     // パラメータ受信

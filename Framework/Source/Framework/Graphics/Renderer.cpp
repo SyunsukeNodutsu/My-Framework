@@ -8,7 +8,6 @@ Renderer::Renderer()
 	, m_rasterizerState()
 	, m_depthStencilStates()
 	, m_blendStates()
-	, m_spWhiteTexture(nullptr)
 	, m_saveState()
 {
 }
@@ -63,14 +62,6 @@ bool Renderer::Initialize()
 	// 初期設定
 	SetDefaultState();
 
-	// デフォルト設定用テクスチャ作成
-	m_spWhiteTexture = std::make_shared<Texture>();
-	m_spWhiteTexture->Create("Resource/Texture/White1x1.bmp");
-	if (m_spWhiteTexture == nullptr) {
-		assert(0 && "エラー：デフォルト設定用テクスチャ作成失敗.");
-		return false;
-	}
-
 	m_cb8WorldMatrix.Work().m_world_matrix = mfloat4x4::Identity;
 	m_cb8WorldMatrix.Work().m_dither_enable = false;
 	m_cb8WorldMatrix.Write();
@@ -102,11 +93,12 @@ void Renderer::SetDefaultState()
 //-----------------------------------------------------------------------------
 void Renderer::SetTexture(Texture* texture, int slot)
 {
-	if (texture == nullptr)
-		return;
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
+	if (!texture) return;
 
-	m_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
-	m_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
 }
 
 //-----------------------------------------------------------------------------
@@ -114,6 +106,9 @@ void Renderer::SetTexture(Texture* texture, int slot)
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthStencil(bool zUse, bool zWrite)
 {
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
+
 	int useIdx = -1;
 	if ( zUse &&  zWrite) useIdx = 0;// Zバッファ使用   深度書き込みON
 	if ( zUse && !zWrite) useIdx = 1;// Zバッファ使用   深度書き込みOFF
@@ -131,9 +126,9 @@ void Renderer::SetDepthStencil(bool zUse, bool zWrite)
 		return;
 
 	// 設定
-	m_graphicsDevice->g_cpContext.Get()->OMSetDepthStencilState(m_depthStencilStates[useIdx].Get(), 0);
+	g_graphicsDevice->g_cpContext.Get()->OMSetDepthStencilState(m_depthStencilStates[useIdx].Get(), 0);
 	// 記憶/復元用に保存
-	m_graphicsDevice->g_cpContext.Get()->OMGetDepthStencilState(&m_saveState.DS, &m_saveState.StencilRef);
+	g_graphicsDevice->g_cpContext.Get()->OMGetDepthStencilState(&m_saveState.DS, &m_saveState.StencilRef);
 }
 
 //-----------------------------------------------------------------------------
@@ -141,6 +136,9 @@ void Renderer::SetDepthStencil(bool zUse, bool zWrite)
 //-----------------------------------------------------------------------------
 bool Renderer::SetSampler(SS_FilterMode filter, SS_AddressMode address)
 {
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
 	// MAP確認 新規作成
 	if (m_samplerStates.find(filter | address) == m_samplerStates.end())
 	{
@@ -149,10 +147,10 @@ bool Renderer::SetSampler(SS_FilterMode filter, SS_AddressMode address)
 	}
 
 	// PSとVSにサンプラーステートを設定
-	m_graphicsDevice->g_cpContext.Get()->VSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
-	m_graphicsDevice->g_cpContext.Get()->PSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
+	g_graphicsDevice->g_cpContext.Get()->VSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
+	g_graphicsDevice->g_cpContext.Get()->PSSetSamplers(0, 1, m_samplerStates[filter | address].GetAddressOf());
 	// 記憶/復元用に保存
-	m_graphicsDevice->g_cpContext.Get()->PSGetSamplers(0, 1, &m_saveState.SS);
+	g_graphicsDevice->g_cpContext.Get()->PSGetSamplers(0, 1, &m_saveState.SS);
 
 	return true;
 }
@@ -162,15 +160,18 @@ bool Renderer::SetSampler(SS_FilterMode filter, SS_AddressMode address)
 //-----------------------------------------------------------------------------
 bool Renderer::SetBlend(BlendMode flag)
 {
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
 	if (m_blendStates[flag] == nullptr)
 		m_blendStates[flag] = CreateBlend(flag);
 
 	if (m_blendStates[flag] == nullptr)
 		return false;
 
-	m_graphicsDevice->g_cpContext.Get()->OMSetBlendState(m_blendStates[flag].Get(), cfloat4x4::Clear, 0xFFFFFFFF);
+	g_graphicsDevice->g_cpContext.Get()->OMSetBlendState(m_blendStates[flag].Get(), cfloat4x4::Clear, 0xFFFFFFFF);
 	// 記憶/復元用に保存
-	m_graphicsDevice->g_cpContext.Get()->OMGetBlendState(&m_saveState.BS, m_saveState.BlendFactor, &m_saveState.SampleMask);
+	g_graphicsDevice->g_cpContext.Get()->OMGetBlendState(&m_saveState.BS, m_saveState.BlendFactor, &m_saveState.SampleMask);
 
 	return true;
 }
@@ -180,15 +181,18 @@ bool Renderer::SetBlend(BlendMode flag)
 //-----------------------------------------------------------------------------
 bool Renderer::SetRasterize(RS_CullMode cull, RS_FillMode fill)
 {
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
 	if (m_rasterizerState.find(cull| fill) == m_rasterizerState.end())
 	{
 		if (!CreateRasterrize(cull, fill))
 			return false;
 	}
 
-	m_graphicsDevice->g_cpContext.Get()->RSSetState(m_rasterizerState[(cull | fill)].Get());
+	g_graphicsDevice->g_cpContext.Get()->RSSetState(m_rasterizerState[(cull | fill)].Get());
 	// 記憶/復元用に保存
-	m_graphicsDevice->g_cpContext.Get()->RSGetState(&m_saveState.RS);
+	g_graphicsDevice->g_cpContext.Get()->RSGetState(&m_saveState.RS);
 
 	return true;
 }
@@ -198,6 +202,9 @@ bool Renderer::SetRasterize(RS_CullMode cull, RS_FillMode fill)
 //-----------------------------------------------------------------------------
 bool Renderer::CreateSampler(SS_FilterMode filter, SS_AddressMode address)
 {
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
 	D3D11_SAMPLER_DESC desc = {};
 	desc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -236,7 +243,7 @@ bool Renderer::CreateSampler(SS_FilterMode filter, SS_AddressMode address)
 
 	// 作成
 	ComPtr<ID3D11SamplerState> state = nullptr;
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateSamplerState(&desc, state.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateSamplerState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：サンプラーステート作成失敗");
 		return false;
@@ -253,6 +260,9 @@ bool Renderer::CreateSampler(SS_FilterMode filter, SS_AddressMode address)
 //-----------------------------------------------------------------------------
 bool Renderer::CreateRasterrize(RS_CullMode cull, RS_FillMode fill)
 {
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
 	D3D11_RASTERIZER_DESC desc = {};
 
 	// カリングモード
@@ -280,7 +290,7 @@ bool Renderer::CreateRasterrize(RS_CullMode cull, RS_FillMode fill)
 
 	// 作成
 	ComPtr<ID3D11RasterizerState> state = nullptr;
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateRasterizerState(&desc, state.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateRasterizerState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：ラスタライザーステートの作成に失敗しました.");
 		return false;
@@ -296,6 +306,9 @@ bool Renderer::CreateRasterrize(RS_CullMode cull, RS_FillMode fill)
 //-----------------------------------------------------------------------------
 ComPtr<ID3D11DepthStencilState> Renderer::CreateDepthStencil(bool zUse, bool zWrite)
 {
+	if (!g_graphicsDevice) return nullptr;
+	if (!g_graphicsDevice->g_cpContext) return nullptr;
+
 	D3D11_DEPTH_STENCIL_DESC desc = {};
 
 	// 深度テスト
@@ -312,7 +325,7 @@ ComPtr<ID3D11DepthStencilState> Renderer::CreateDepthStencil(bool zUse, bool zWr
 
 	// 作成
 	ComPtr<ID3D11DepthStencilState> state = nullptr;
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilState(&desc, &state);
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilState(&desc, &state);
 	if (FAILED(hr)) {
 		assert(0 && "エラー：デプスステンシルステート作成失敗.");
 		return nullptr;
@@ -326,6 +339,9 @@ ComPtr<ID3D11DepthStencilState> Renderer::CreateDepthStencil(bool zUse, bool zWr
 //-----------------------------------------------------------------------------
 ComPtr<ID3D11BlendState> Renderer::CreateBlend(BlendMode flag)
 {
+	if (!g_graphicsDevice) return nullptr;
+	if (!g_graphicsDevice->g_cpContext) return nullptr;
+
 	D3D11_BLEND_DESC desc = {};
 	desc.RenderTarget[0].BlendEnable			= TRUE;
 	// 書き込みマスク ALL...RGBA全て出力
@@ -367,7 +383,7 @@ ComPtr<ID3D11BlendState> Renderer::CreateBlend(BlendMode flag)
 
 	// 作成
 	ComPtr<ID3D11BlendState> state = nullptr;
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateBlendState(&desc, state.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateBlendState(&desc, state.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：ブレンドステート作成失敗.");
 		return nullptr;

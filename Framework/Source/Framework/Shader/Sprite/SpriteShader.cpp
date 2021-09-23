@@ -4,9 +4,9 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 SpriteShader::SpriteShader()
-	: m_prevProjMat(mfloat4x4::Identity)
+	: m_cb4Sprite()
+	, m_prevProjMat(mfloat4x4::Identity)
 	, m_isBegin(false)
-	, m_cb0()
 	, m_tempFixedVertexBuffer()
 	, m_tempVertexBuffer()
 {
@@ -27,7 +27,7 @@ bool SpriteShader::Initialize()
 		#include "SpriteShader_VS.shaderinc"
 
 		// 頂点シェーダー作成
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "頂点シェーダー作成失敗");
 			return false;
@@ -40,7 +40,7 @@ bool SpriteShader::Initialize()
 		};
 
 		// 頂点インプットレイアウト作成
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "CreateInputLayout失敗");
 			return false;
@@ -54,7 +54,7 @@ bool SpriteShader::Initialize()
 		// コンパイル済みのシェーダーヘッダーファイルをインクルード
 		#include "SpriteShader_PS.shaderinc"
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "ピクセルシェーダー作成失敗");
 			return false;
@@ -65,12 +65,12 @@ bool SpriteShader::Initialize()
 	// 定数バッファ作成
 	//-------------------------------------
 
-	if (!m_cb0.Create()) {
+	if (!m_cb4Sprite.Create()) {
 		assert(0 && "エラー：コンスタントバッファ作成失敗.");
 		return false;
 	}
 
-	m_cb0.SetToDevice(4);
+	m_cb4Sprite.SetToDevice(4);
 
 	//-------------------------------------
 	// DrawVertices用頂点バッファを作成
@@ -90,19 +90,24 @@ bool SpriteShader::Initialize()
 //-----------------------------------------------------------------------------
 void SpriteShader::Begin(bool linear, bool disableZBuffer)
 {
-	// 既にBeginしている
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
+
 	if (m_isBegin) return;
 	m_isBegin = true;
 
 	//---------------------------------------
 	// 2D用正射影行列作成
 	//---------------------------------------
-	UINT pNumVierports = 1;
-	D3D11_VIEWPORT vp;
-	m_graphicsDevice->g_cpContext.Get()->RSGetViewports(&pNumVierports, &vp);
 
 	// 射影行列を保存しておく
 	m_prevProjMat = RENDERER.Getcb9().Get().m_proj_matrix;
+
+	// 正射影行列を設定
+	UINT pNumVierports = 1;
+	D3D11_VIEWPORT vp;
+	g_graphicsDevice->g_cpContext.Get()->RSGetViewports(&pNumVierports, &vp);
+
 	RENDERER.Getcb9().Work().m_proj_matrix = DirectX::XMMatrixOrthographicLH(vp.Width, vp.Height, 0, 1);
 	RENDERER.Getcb9().Write();
 
@@ -126,10 +131,10 @@ void SpriteShader::Begin(bool linear, bool disableZBuffer)
 	// シェーダ
 	//---------------------------------------
 
-	m_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-	m_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
+	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 
-	m_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -140,13 +145,9 @@ void SpriteShader::End()
 	if (!m_isBegin) return;
 	m_isBegin = false;
 
-	//
 	RENDERER.Getcb9().Work().m_proj_matrix = m_prevProjMat;
 	RENDERER.Getcb9().Write();
 
-	//---------------------------------------
-	// 記憶してたステートに戻す
-	//---------------------------------------
 	RENDERER.SetDepthStencil(true, true);
 	RENDERER.SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
 	RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
@@ -155,25 +156,23 @@ void SpriteShader::End()
 //-----------------------------------------------------------------------------
 // 2D画像描画
 //-----------------------------------------------------------------------------
-void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cfloat4x4* color)
+void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cfloat4x4 color)
 {
-	if (!m_isBegin)
-		return;
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
 
-	if (texture == nullptr)
-		return;
+	if (!m_isBegin) return;
+	if (texture == nullptr) return;
 
-	//
 	RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 	RENDERER.Getcb8().Write();
 
-	// テクスチャ(ShaderResourceView)セット
-	m_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, texture->SRVAddress());
+	// テクスチャセット
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, texture->SRVAddress());
 
 	// 色
-	if (color)
-		m_cb0.Work().m_color = *color;
-	m_cb0.Write();
+	if (color) m_cb4Sprite.Work().m_color = color;
+	m_cb4Sprite.Write();
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	texture->GetResource()->GetDesc(&desc);
@@ -206,7 +205,7 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 
 	// セットしたテクスチャを解除しておく
 	ID3D11ShaderResourceView* null_srv = nullptr;
-	m_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, &null_srv);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, &null_srv);
 }
 
 //-----------------------------------------------------------------------------
@@ -214,38 +213,38 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 //-----------------------------------------------------------------------------
 void SpriteShader::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
 {
-	m_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
 
+	//--------------------------------------------------
+	// バッファ設定
+	//--------------------------------------------------
 	UINT size = vertexCount * stride;
 
-	// 最適な固定長バッファを検索
+	// 最適な固定長Buffer検索
 	Buffer* buffer = nullptr;
 	for (auto&& n : m_tempFixedVertexBuffer)
-	{
-		if (size < n.GetSize())
-		{
-			buffer = &n;
-			break;
-		}
-	}
-	// 可変長のバッファを使用
+		if (size < n.GetSize()) { buffer = &n; break; }
+
+	// なければ作成
 	if (buffer == nullptr)
 	{
 		buffer = &m_tempVertexBuffer;
 
-		// 頂点バッファのサイズが小さいときは、リサイズのため再作成する
+		// しょうがなく再作成
 		if (m_tempVertexBuffer.GetSize() < size)
 			m_tempVertexBuffer.Create(D3D11_BIND_VERTEX_BUFFER, size, D3D11_USAGE_DYNAMIC, nullptr);
 	}
 
-	// 全頂点をバッファに書き込み(DISCARD指定)
+	// バッファに書き込み ※DISCARD指定
 	buffer->WriteData(pVertexStream, size);
 
-	// 頂点バッファーをデバイスへセット
-	{
-		UINT offset = 0;
-		m_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
-	}
+	//--------------------------------------------------
+	// 描画
+	//--------------------------------------------------
+	UINT offset = 0;
+	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
 
-	m_graphicsDevice->g_cpContext.Get()->Draw(vertexCount, 0);
+	g_graphicsDevice->g_cpContext.Get()->Draw(vertexCount, 0);
 }

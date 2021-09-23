@@ -160,10 +160,10 @@ struct Material : public GraphicsDeviceChild
 	// @brief コンストラクタ
 	Material()
 	{
-		m_baseColorTexture			= m_graphicsDevice->GetWhiteTex();
-		m_metallicRoughnessTexture	= m_graphicsDevice->GetWhiteTex();
-		m_emissiveTexture			= m_graphicsDevice->GetWhiteTex();
-		m_normalTexture				= m_graphicsDevice->GetNormalTex();
+		m_baseColorTexture			= g_graphicsDevice->GetWhiteTex();
+		m_metallicRoughnessTexture	= g_graphicsDevice->GetWhiteTex();
+		m_emissiveTexture			= g_graphicsDevice->GetWhiteTex();
+		m_normalTexture				= g_graphicsDevice->GetNormalTex();
 	}
 
 };

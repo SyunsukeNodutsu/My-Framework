@@ -20,13 +20,12 @@ bool ModelShader::Initialize()
 	{
 		#include "ModelShader_VS.shaderinc"
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：頂点シェーダ作成失敗.");
 			return false;
 		}
 
-		// 1頂点の詳細な情報
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -35,7 +34,7 @@ bool ModelShader::Initialize()
 			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：頂点入力レイアウト作成失敗.");
 			return false;
@@ -48,7 +47,7 @@ bool ModelShader::Initialize()
 	{
 		#include "ModelShader_PS.shaderinc"
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：ピクセルシェーダ作成失敗.");
 			return false;
@@ -72,11 +71,11 @@ void ModelShader::Begin()
 	}
 	else
 	{
-		m_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-		m_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
+		g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+		g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 	}
 
-	m_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -84,17 +83,16 @@ void ModelShader::Begin()
 //-----------------------------------------------------------------------------
 void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix)
 {
-	//if (!model.IsEnable()) return;
+	if (!model.IsEnable()) return;
 
 	auto& data = model.GetData();
-	if (data == nullptr)
-		return;
+	if (data == nullptr) return;
 
 	// 全メッシュノードを描画
-	for (auto& nodeIdx : data->GetMeshNodeIndices())
+	for (auto& index : data->GetMeshNodeIndices())
 	{
-		auto& rWorkNode = model.GetNodes()[nodeIdx];
-		auto& mesh = model.GetMesh(nodeIdx);
+		auto& rWorkNode = model.GetNodes()[index];
+		auto& mesh = model.GetMesh(index);
 
 		// ワールド行列 設定
 		RENDERER.Getcb8().Work().m_world_matrix = rWorkNode.m_worldTransform * worldMatrix;
@@ -110,18 +108,16 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 //-----------------------------------------------------------------------------
 void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materials)
 {
-	if (mesh == nullptr)
-		return;
+	if (mesh == nullptr) return;
 
 	// メッシュ情報を転送
 	mesh->SetToDevice();
 
-	for (UINT subi = 0; subi < mesh->GetSubsets().size(); subi++)
+	for (UINT i = 0; i < mesh->GetSubsets().size(); i++)
 	{
-		if (mesh->GetSubsets()[subi].m_faceCount == 0)
-			continue;
+		if (mesh->GetSubsets()[i].m_faceCount == 0) continue;
 
-		const Material& material = materials[mesh->GetSubsets()[subi].m_materialNo];
+		const Material& material = materials[mesh->GetSubsets()[i].m_materialNo];
 
 		// マテリアル情報を転送
 		m_cd11Material.Work().m_baseColor = material.m_baseColor;
@@ -137,6 +133,6 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 		RENDERER.SetTexture(material.m_normalTexture.get(), 3);
 
 		// サブセット描画
-		mesh->DrawSubset(subi);
+		mesh->DrawSubset(i);
 	}
 }

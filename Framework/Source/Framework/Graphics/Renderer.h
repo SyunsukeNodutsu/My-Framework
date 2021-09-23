@@ -166,7 +166,6 @@ private:
 	std::map<int, ComPtr<ID3D11RasterizerState>>	m_rasterizerState;		// ラスタライザーステートMap
 	ComPtr<ID3D11DepthStencilState>					m_depthStencilStates[4];// デプスステンシルステート
 	ComPtr<ID3D11BlendState>						m_blendStates[3];		// ブレンドステート
-	std::shared_ptr<Texture>						m_spWhiteTexture;		// 1x1のデフォルト設定用テクスチャ
 	SaveState										m_saveState;			// ステート 保存/復元用
 
 	ConstantBuffer<cbShaderDebug>					m_cb7ShaderDebug;		// Shaderデバッグ

@@ -213,7 +213,7 @@ void ModelData::CreateAnimations(std::shared_ptr<KdGLTFModel>& modeldata)
 ModelWork::ModelWork()
 	: m_spModel(nullptr)
 	, m_coppiedNodes()
-	, m_enable(false)
+	, m_enable(true)
 {
 }
 

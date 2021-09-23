@@ -65,8 +65,8 @@ public:
     FLOAT32 g_matrixCoefficients[INPUTCHANNELS * OUTPUTCHANNELS];
 
     // ボリュームメータ
-    float g_peakLevels[2];	// ピークメータ ※瞬間最大値
-    float g_RMSLevels[2];	// RMSメータ ※平均値
+    std::array<float, 8> g_peakLevels;  // ピークメータ ※瞬間最大値
+    std::array<float, 8> g_RMSLevels;   // RMSメータ ※平均値
 
 private:
 

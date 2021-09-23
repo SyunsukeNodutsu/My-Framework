@@ -46,13 +46,13 @@ void Camera::SetToShader()
 //-----------------------------------------------------------------------------
 void Camera::ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, float2& result)
 {
-	if (!m_graphicsDevice) return;
-	if (!m_graphicsDevice->g_cpContext) return;
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
 
 	// ビューポートを取得する
 	UINT numV = 1;
 	D3D11_VIEWPORT vp;
-	m_graphicsDevice->g_cpContext->RSGetViewports(&numV, &vp);
+	g_graphicsDevice->g_cpContext->RSGetViewports(&numV, &vp);
 
 	const float HalfViewportWidth = vp.Width * 0.5f;
 	const float HalfViewportHeight = vp.Height * 0.5f;

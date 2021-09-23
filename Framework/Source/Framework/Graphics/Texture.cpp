@@ -40,7 +40,7 @@ bool Texture::Create( const std::string& filepath )
 
 	// 読み込み ※MipMapを作成するにはContextが必要
 	HRESULT hr = DirectX::CreateWICTextureFromFile(
-		m_graphicsDevice->g_cpDevice.Get(), m_graphicsDevice->g_cpContext.Get(), wfilepath.c_str(),
+		g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get(), wfilepath.c_str(),
 		(ID3D11Resource**)m_cpBuffer.GetAddressOf(), m_cpSRV.GetAddressOf()
 	);
 
@@ -57,7 +57,7 @@ bool Texture::Create( const std::string& filepath )
 //-----------------------------------------------------------------------------
 bool Texture::Create(D3D11_TEXTURE2D_DESC& desc)
 {
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：テクスチャバッファ作成失敗.");
 		return false;
@@ -137,7 +137,7 @@ bool Texture::CreateRTV(bool useMSAA)
 	rtvDesc.ViewDimension	= useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	// RTV作成
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateRenderTargetView(m_cpBuffer.Get(), &rtvDesc, &m_cpRTV);
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateRenderTargetView(m_cpBuffer.Get(), &rtvDesc, &m_cpRTV);
 	if (FAILED(hr)) {
 		assert(0 && "エラー：RenderTargetView作成失敗.");
 		return false;
@@ -177,7 +177,7 @@ bool Texture::CreateDSV(bool useMSAA)
 	desc.Texture2D.MipSlice = 0;
 
 	// 作成
-	HRESULT hr = m_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(m_cpBuffer.Get(), &desc, m_cpDSV.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(m_cpBuffer.Get(), &desc, m_cpDSV.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：DepthStencilView作成失敗.");
 		return false;

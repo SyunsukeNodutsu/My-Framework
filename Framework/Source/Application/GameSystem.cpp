@@ -42,7 +42,7 @@ void GameSystem::Initialize()
 	if (sound)
 	{
 		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
-		sound->Play(1000);
+		//sound->Play(1000);
 		sound->SetVolume(1.0f);
 	}
 
@@ -51,18 +51,23 @@ void GameSystem::Initialize()
 	{
 		float3 pos = float3(0, 0, 0);
 		sound3d->Play3D(pos);
-		sound3d->SetVolume(0.0f);
+		sound3d->SetVolume(1.0f);
 	}
 
-	using json = nlohmann::json;
+	m_spTexture = std::make_shared<Texture>();
+	m_spTexture2 = std::make_shared<Texture>();
+
+	m_spTexture->Create("Resource/Texture/01.jpg");
+	m_spTexture2->Create("Resource/Texture/02.jpg");
 
 	// デシリアライズ
 	std::ifstream ifs("Resource/test.json");
 	if (!ifs.fail()) {
 		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-		auto jobj = json::parse(strJson);
-		auto pi = jobj["pi"].dump();
-		DebugLog("done.");
+		json jobj = json::parse(strJson);
+		//auto pi = jobj["pi"].dump();// 文字列で取得？
+		auto pi = jobj["pi"].get<float>();// floatで取得
+		DebugLog(std::string("pi: " + std::to_string(pi) + "\n").c_str());
 	}
 
 	// シリアライズ
@@ -156,8 +161,12 @@ void GameSystem::Draw()
 void GameSystem::Draw2D()
 {
 	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	SHADER.GetSpriteShader().Begin(true, true);
+
+	SHADER.GetSpriteShader().DrawTexture(m_spTexture.get(), float2(-680, 300), cfloat4x4(1, 1, 1, std::abs(sinf(totalTime))));
+	SHADER.GetSpriteShader().DrawTexture(m_spTexture2.get(), float2(-450, 300), cfloat4x4(1, 1, 1, std::abs(cosf(totalTime))));
 
 	SHADER.GetSpriteShader().End();
 }

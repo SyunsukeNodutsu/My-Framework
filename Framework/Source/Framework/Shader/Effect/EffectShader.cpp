@@ -20,7 +20,7 @@ bool EffectShader::Initialize()
 	{
 		#include "EffectShader_VS.shaderinc"
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：頂点シェーダ作成失敗.");
 			return false;
@@ -36,7 +36,7 @@ bool EffectShader::Initialize()
 				{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			};
 
-			hr = m_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
+			hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
 			if (FAILED(hr)) {
 				assert(0 && "エラー：頂点入力レイアウト作成失敗.");
 				return false;
@@ -54,7 +54,7 @@ bool EffectShader::Initialize()
 			};
 
 			// 頂点入力レイアウト作成
-			hr = m_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout_model.GetAddressOf());
+			hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout_model.GetAddressOf());
 			if (FAILED(hr)) {
 				assert(0 && "エラー：頂点入力レイアウト作成失敗.");
 				return false;
@@ -68,7 +68,7 @@ bool EffectShader::Initialize()
 	{
 		#include "EffectShader_PS.shaderinc"
 
-		hr = m_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
 		if (FAILED(hr)) {
 			assert(0 && "エラー：ピクセルシェーダ作成失敗.");
 			return false;
@@ -96,10 +96,10 @@ bool EffectShader::Initialize()
 //-----------------------------------------------------------------------------
 void EffectShader::Begin()
 {
-	m_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-	m_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
+	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 
-	m_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -139,13 +139,13 @@ void EffectShader::DrawVertices(const std::vector<Vertex>& vertices, D3D_PRIMITI
 
 	// デバイスに頂点情報設定
 	UINT offset = 0;
-	m_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &oneSize, &offset);
+	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &oneSize, &offset);
 
 	// プリミティブトポロジー(ポリゴンの描画方法)の設定
-	m_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
+	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
 
 	// 描画
-	m_graphicsDevice->g_cpContext.Get()->Draw(static_cast<UINT>(vertices.size()), 0);
+	g_graphicsDevice->g_cpContext.Get()->Draw(static_cast<UINT>(vertices.size()), 0);
 }
 
 //-----------------------------------------------------------------------------

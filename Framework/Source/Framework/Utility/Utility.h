@@ -13,6 +13,9 @@
 // COM短縮
 using Microsoft::WRL::ComPtr;
 
+// nlohmann Json
+using json = nlohmann::json;
+
 // OutputDebugStringA()の名前が長いので短縮
 #define DebugLog( str ) OutputDebugStringA( str )
 
