@@ -214,14 +214,6 @@ bool SoundWork::SetPan(float pan)
     pan = std::clamp(pan, -1.0f, 1.0f);
     m_pan = pan;
 
-    // スピーカー構成を取得
-    // TODO: デバイス初期化時(それとデバイス変更時)に構成を保存しておくべき
-    DWORD dwChannelMask;
-    if (FAILED(g_audioDevice->g_pMasteringVoice->GetChannelMask(&dwChannelMask))) {
-        APP.g_imGuiSystem->AddLog("Failed to get speaker configuration.");
-        return false;
-    }
-
     float outputMatrix[8];
     for (int i = 0; i < 8; i++)
         outputMatrix[i] = 0;
@@ -230,7 +222,7 @@ bool SoundWork::SetPan(float pan)
     float right = 0.5f + pan / 2;
 
     // スピーカー構成に応じてパンの値を設定
-    switch (dwChannelMask)
+    switch (g_audioDevice->g_channelMask)
     {
     case SPEAKER_MONO:
         outputMatrix[0] = 1.0;

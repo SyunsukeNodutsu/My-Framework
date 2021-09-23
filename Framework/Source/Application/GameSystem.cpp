@@ -1,8 +1,9 @@
 ﻿#include "GameSystem.h"
 #include "Actors/Actor.h"
 #include "main.h"
-
 #include "../Framework/Audio/SoundDirector.h"
+
+#include <fstream>
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -41,8 +42,8 @@ void GameSystem::Initialize()
 	if (sound)
 	{
 		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
-		sound->Play();
-		sound->SetVolume(0.0f);
+		sound->Play(1000);
+		sound->SetVolume(1.0f);
 	}
 
 	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/heli.wav", true);
@@ -50,7 +51,34 @@ void GameSystem::Initialize()
 	{
 		float3 pos = float3(0, 0, 0);
 		sound3d->Play3D(pos);
-		sound3d->SetVolume(1.0f);
+		sound3d->SetVolume(0.0f);
+	}
+
+	using json = nlohmann::json;
+
+	// デシリアライズ
+	std::ifstream ifs("Resource/test.json");
+	if (!ifs.fail()) {
+		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+		auto jobj = json::parse(strJson);
+		auto pi = jobj["pi"].dump();
+		DebugLog("done.");
+	}
+
+	// シリアライズ
+	json j;
+	j["pi"] = 3.141;
+	j["happy"] = true;
+	j["name"] = "Niels";
+	j["nothing"] = nullptr;
+	j["answer"]["everything"] = 42;  // 存在しないキーを指定するとobjectが構築される
+	j["list"] = { 1, 0, 2 };         // [1,0,2]
+	j["object"] = { {"currency", "USD"}, {"value", 42.99} };  // {"currentcy": "USD", "value": 42.99}
+
+	std::string s = j.dump(1);// 引数1...インデント
+	std::ofstream ofs("Resource/test2.json");
+	if (ofs) {
+		ofs.write(s.c_str(), s.size());
 	}
 }
 

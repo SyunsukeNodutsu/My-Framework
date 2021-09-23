@@ -40,9 +40,6 @@
     <Filter Include="Source\Framework\Model">
       <UniqueIdentifier>{a3473c29-e625-4bfc-8133-962ed4f324c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Library\Effekseer">
-      <UniqueIdentifier>{427798cb-9087-4a09-9914-f9bad410fa26}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\Audio">
       <UniqueIdentifier>{b880aba7-4fbc-47fd-8800-d9b6d48ea948}</UniqueIdentifier>
     </Filter>

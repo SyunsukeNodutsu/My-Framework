@@ -43,6 +43,12 @@ bool AudioDevice::Initialize()
         return false;
     }
 
+    // スピーカー構成の確認
+    if (FAILED(g_pMasteringVoice->GetChannelMask(&g_channelMask))) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to get speaker configuration.");
+        return false;
+    }
+
     // デバイスの詳細を確認
     XAUDIO2_VOICE_DETAILS details;
     g_pMasteringVoice->GetVoiceDetails(&details);

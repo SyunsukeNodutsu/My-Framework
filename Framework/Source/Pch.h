@@ -83,6 +83,9 @@
 #include "../../Library/imGui/imgui_impl_win32.h"
 #include "../../Library/imGui/imgui_impl_dx11.h"
 
+// json
+#include "../../Library/json/json.hpp"
+
 //--------------------------------------------------
 //
 // My Framework

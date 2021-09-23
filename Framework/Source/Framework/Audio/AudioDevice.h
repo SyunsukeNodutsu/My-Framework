@@ -59,6 +59,7 @@ public:
 
     X3DAUDIO_LISTENER       m_listener;
     UINT32                  g_channels;
+    DWORD                   g_channelMask;
 
     FLOAT32 g_emitterAzimuths[INPUTCHANNELS];
     FLOAT32 g_matrixCoefficients[INPUTCHANNELS * OUTPUTCHANNELS];
