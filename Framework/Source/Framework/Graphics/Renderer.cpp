@@ -43,6 +43,7 @@ bool Renderer::Initialize()
 
 	m_cb10Light.Work().m_ambient_power = 0.6f;
 	m_cb10Light.Work().m_directional_light_dir = float3(1, -1, 0);
+	m_cb10Light.Work().m_directional_light_dir.Normalize();
 	m_cb10Light.Work().m_enable = true;
 	m_cb10Light.Write();
 
