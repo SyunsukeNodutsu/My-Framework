@@ -97,7 +97,8 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 		auto& mesh = model.GetMesh(nodeIdx);
 
 		// ワールド行列 設定
-		RENDERER.SetWorldMatrix(rWorkNode.m_worldTransform * worldMatrix);
+		RENDERER.Getcb8().Work().m_world_matrix = rWorkNode.m_worldTransform * worldMatrix;
+		RENDERER.Getcb8().Write();
 
 		// メッシュ描画
 		DrawMesh(mesh.get(), data->GetMaterials());

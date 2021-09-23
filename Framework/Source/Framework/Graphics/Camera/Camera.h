@@ -1,13 +1,13 @@
 ﻿//-----------------------------------------------------------------------------
 // File: Camera.h
 //
-// カメラ管理 定数バッファへのセットなどを行う
-// TODO: 試錐台の所持
+// カメラ
 //-----------------------------------------------------------------------------
 #pragma once
+#include "../GraphicsDeviceChild.h"
 
 // カメラクラス
-class Camera
+class Camera : private GraphicsDeviceChild
 {
 public:
 
@@ -18,7 +18,7 @@ public:
 	void SetToShader();
 
 	// @brief ワールド座標をスクリーン座標に変換
-	void ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, float& resultX, float& resultY);
+	void ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, float2& result);
 
 	//--------------------------------------------------
 	// 設定.取得
@@ -49,6 +49,8 @@ protected:
 	mfloat4x4	m_cameraMatrix;	// カメラ行列
 	mfloat4x4	m_viewMatrix;	// ビュー行列
 	mfloat4x4	m_projMatrix;	// 射影行列
+
+	DirectX::BoundingFrustum m_frustum;
 
 private:
 

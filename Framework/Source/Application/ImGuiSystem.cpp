@@ -194,12 +194,18 @@ void ImGuiSystem::ShaderDebugMonitor(ImGuiWindowFlags wflags)
 	if (ImGui::BeginTable("split", 2))
 	{
 		bool darty = false;
-		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Base Color", &show_base_color);
-		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Normal", &show_normal);
-		ImGui::TableNextColumn(); darty = ImGui::Checkbox("Emissive", &show_emissive);
-		ImGui::TableNextColumn(); darty = ImGui::Checkbox("MetalicRough", &show_metallic_rough);
-		if (!darty)
-			RENDERER.SetFlags(show_base_color, show_normal, show_emissive, show_metallic_rough);
+		ImGui::TableNextColumn();
+		if (ImGui::Checkbox("Base Color", &show_base_color)) {
+			RENDERER.Getcb7().Work().g_show_base_color = show_base_color;
+			RENDERER.Getcb7().Work().g_show_normal = show_normal;
+			RENDERER.Getcb7().Write();
+		}// TODO: fix
+		ImGui::TableNextColumn();
+		if (ImGui::Checkbox("Normal", &show_normal)) {
+			RENDERER.Getcb7().Work().g_show_base_color = show_base_color;
+			RENDERER.Getcb7().Work().g_show_normal = show_normal;
+			RENDERER.Getcb7().Write();
+		}
 		ImGui::EndTable();
 	}
 
@@ -321,7 +327,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Listener");
 	ImGui::PopStyleColor();
 
-	auto& cameraMatrix = APP.g_gameSystem->GetCamera()->GetCameraMatrix();
+	auto& cameraMatrix = RENDERER.Getcb9().Get().m_camera_matrix;// APP.g_gameSystem->GetCamera()->GetCameraMatrix();
 	float3 pos = cameraMatrix.Translation();
 	float3 dir = cameraMatrix.Backward();
 

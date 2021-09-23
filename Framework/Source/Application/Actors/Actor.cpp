@@ -108,10 +108,11 @@ void Actor::Update(float deltaTime)
 void Actor::Draw(float deltaTime)
 {
 	// カメラ座標
-	float3 cameraPos = RENDERER.GetCameraPos();
+	float3 cameraPos = RENDERER.Getcb9().Get().m_camera_matrix.Translation();
 	// カメラとの距離
 	float dist = float3::Distance(cameraPos, m_transform.GetPosition());
-	RENDERER.SetDistToEye(dist);
+	RENDERER.Getcb8().Work().m_dist_to_eye = dist;
+	RENDERER.Getcb8().Write();
 
 	// TODO: Shader分け
 	SHADER.GetModelShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());

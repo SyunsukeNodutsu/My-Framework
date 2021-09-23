@@ -147,11 +147,17 @@ void Application::Release()
 	// デバイス
 	g_rawInputDevice->Finalize();
 	g_audioDevice->Finalize();
-	delete g_audioDevice;
 	g_graphicsDevice->Finalize();
 
 	// ウィンドウ
 	g_window->Release();
+
+	delete g_graphicsDevice;
+	delete g_audioDevice;
+	delete g_rawInputDevice;
+	delete g_fpsTimer;
+
+	delete g_window;
 }
 
 //-----------------------------------------------------------------------------

@@ -22,32 +22,22 @@ public:
 	bool Initialize();
 
 	//--------------------------------------------------
-	// 設定
+	// 設定・取得
 	//--------------------------------------------------
+
+	// @brief 単一のインスタンスを返す
+	// @return シングルトン・インスタンス
+	static Renderer& GetInstance() {
+		static Renderer instance; return instance;
+	}
 
 	// @brief デフォルト設定
 	void SetDefaultState();
-
-	// @brief ワールド変換行列の設定 定数バッファにセット
-	// @param matrix 設定する行列
-	void SetWorldMatrix(const mfloat4x4& matrix);
-
-	// @brief ビュー変換行列の設定 定数バッファにセット
-	// @param matrix 設定する行列
-	void SetViewMatrix(const mfloat4x4& matrix);
-
-	// @brief 射影変換行列の設定 定数バッファにセット
-	// @param matrix 設定する行列
-	void SetProjMatrix(const mfloat4x4& matrix);
 
 	// @brief テクスチャ設定
 	// @param texture テクスチャ
 	// @param slot 使用スロット
 	void SetTexture(Texture* texture, int slot = 0);
-
-	// @brief デフォルトテクスチャ設定
-	// ※テクスチャが設定されていなかった際などに使用
-	void SetDefaultTexture() { SetTexture(m_spWhiteTexture.get(), 0); }
 
 	// @brief Zバッファ使用設定
 	// @param zUse
@@ -71,81 +61,12 @@ public:
 	// @return 成功...true 失敗...false
 	bool SetRasterize(RS_CullMode cull, RS_FillMode fill);
 
-	// @brief ライトのON.OFFを設定
-	// @param onoff ONかOFF
-	inline void SetLightEnable(bool onoff) {
-		m_cd10Light.Work().m_enable = onoff;
-		m_cd10Light.Write();
-	}
-
-	// @brief ライトの方向を設定
-	// @param v 方向 関数内で正規化します
-	inline void SetDirectionalLightDir(const float3& v)
-	{
-		m_cd10Light.Work().m_directional_light_dir = v;
-		m_cd10Light.Work().m_directional_light_dir.Normalize();
-	}
-
-	// @brief ライトの色を設定
-	// @param color 色
-	inline void SetDirectionalLightColor(const float3& color) {
-		m_cd10Light.Work().m_directional_light_color = color;
-	}
-
-	// @brief ライトの強さを設定
-	// @param pow ライトの強さ
-	inline void SetAmbientPower(const float& pow) { m_cd10Light.Work().m_ambient_power = pow; }
-
-	// @brief ライトの設定を書き込み
-	inline void LightCommit() { m_cd10Light.Write(); }
-
-	// @brief 記憶/復元用のステートを返す
-	// @return 記憶/復元用のステート構造体
-	const SaveState& GetSaveState() const { return m_saveState; }
-
-	// @brief 時間系を設定 TODO: FpsTimerを使用するのでprivateで書いた方がいい
-	// @param totalTime 経過時間
-	// @param deltaTime デルタティック
-	void SetTime(const float& totalTime, const float& deltaTime)
-	{
-		m_cd12Time.Work().m_totalTime = totalTime;
-		m_cd12Time.Work().m_deltaTime = deltaTime;
-		m_cd12Time.Write();
-	}
-
-	//
-	void SetDitherEnable(bool onoff) {
-		m_cd8WorldMatrix.Work().m_dither_enable = onoff;
-		m_cd8WorldMatrix.Write();
-	}
-	//
-	void SetDistToEye(float dist) {
-		m_cd8WorldMatrix.Work().m_dist_to_eye = dist;
-		m_cd8WorldMatrix.Write();
-	}
-
-	// カメラ座標を返す
-	float3 GetCameraPos() const {
-		mfloat4x4 cam = m_cd9ViewProjMatrix.Get().m_camera_matrix;
-		return cam.Translation();
-	}
-
-	void SetFlags(bool showB, bool showN, bool showE, bool showM) {
-		m_cd14ShaderDebug.Work().g_show_base_color = showB;
-		m_cd14ShaderDebug.Work().g_show_normal = showN;
-		m_cd14ShaderDebug.Work().g_show_emissive = showE;
-		m_cd14ShaderDebug.Work().g_show_metallic_rough= showM;
-		m_cd14ShaderDebug.Write();
-	}
-
-	static Renderer& GetInstance() {
-		static Renderer instance; return instance;
-	}
-
 	//--------------------------------------------------
 	// static
 	//--------------------------------------------------
 
+	// Shaderデバッグが使用するバッファのスロット番号
+	static const int use_slot_shader_debug		=  7;
 	// ワールド変換行列が使用するバッファのスロット番号
 	static const int use_slot_world_matrix		=  8;
 	// ビュー 射影 変換行列が使用するバッファのスロット番号
@@ -158,11 +79,10 @@ public:
 	static const int use_slot_time				= 12;
 	// 大気が使用するバッファのスロット番号
 	static const int use_slot_atmosphere		= 13;
-	// Shaderデバッグが使用するバッファのスロット番号
-	static const int use_slot_shader_debug		= 14;
 
 private:
 
+#pragma region constant
 	// ワールド変換行列
 	struct cdWorldMatrix
 	{
@@ -226,6 +146,7 @@ private:
 		float g_show_metallic_rough;// PSの出力を金属/粗さに
 		//float tmp[3];
 	};
+#pragma endregion
 
 	// ステート記憶/復元用
 	struct SaveState
@@ -244,15 +165,24 @@ private:
 	std::map<int, ComPtr<ID3D11RasterizerState>>	m_rasterizerState;		// ラスタライザーステートMap
 	ComPtr<ID3D11DepthStencilState>					m_depthStencilStates[4];// デプスステンシルステート
 	ComPtr<ID3D11BlendState>						m_blendStates[3];		// ブレンドステート
-	ConstantBuffer<cdWorldMatrix>					m_cd8WorldMatrix;		// ワールド変換行列
-	ConstantBuffer<cdViwProjMatrix>					m_cd9ViewProjMatrix;	// ビュー 射影 変換行列
-	ConstantBuffer<cdLight>							m_cd10Light;			// ライト
-	// 11はマテリアル
-	ConstantBuffer<cdTime>							m_cd12Time;				// ゲーム内 時間関連
-	ConstantBuffer<cdAtmosphere>					m_cd13Atmosphere;		// 大気
-	ConstantBuffer<cbShaderDebug>					m_cd14ShaderDebug;		// Shaderデバッグ
 	std::shared_ptr<Texture>						m_spWhiteTexture;		// 1x1のデフォルト設定用テクスチャ
 	SaveState										m_saveState;			// ステート 保存/復元用
+
+	ConstantBuffer<cbShaderDebug>					m_cb7ShaderDebug;		// Shaderデバッグ
+	ConstantBuffer<cdWorldMatrix>					m_cb8WorldMatrix;		// ワールド変換行列
+	ConstantBuffer<cdViwProjMatrix>					m_cb9ViewProjMatrix;	// ビュー 射影 変換行列
+	ConstantBuffer<cdLight>							m_cb10Light;			// ライト
+	ConstantBuffer<cdTime>							m_cb12Time;				// ゲーム内 時間関連
+	ConstantBuffer<cdAtmosphere>					m_cb13Atmosphere;		// 大気
+
+public:
+
+	ConstantBuffer<cbShaderDebug>& Getcb7() { return m_cb7ShaderDebug; }
+	ConstantBuffer<cdWorldMatrix>& Getcb8() { return m_cb8WorldMatrix; }
+	ConstantBuffer<cdViwProjMatrix>& Getcb9() { return m_cb9ViewProjMatrix; }
+	ConstantBuffer<cdLight>& Getcb10() { return m_cb10Light; }
+	ConstantBuffer<cdTime>& Getcb12() { return m_cb12Time; }
+	ConstantBuffer<cdAtmosphere>& Getcb13() { return m_cb13Atmosphere; }
 
 private:
 
@@ -282,15 +212,6 @@ private:
 	// @return 作成されたブレンドステート
 	ComPtr<ID3D11BlendState> CreateBlend(BlendMode flag);
 
-public:
-
-	// TODO: こっちのがええやろ
-	ConstantBuffer<cdWorldMatrix>& Getcd8() { return m_cd8WorldMatrix; }
-	ConstantBuffer<cdViwProjMatrix>& Getcd9(){ return m_cd9ViewProjMatrix; }
-	ConstantBuffer<cdLight>& Getcd10() { return m_cd10Light; }
-	ConstantBuffer<cdTime>& Getcd12() { return m_cd12Time; }
-	ConstantBuffer<cdAtmosphere>& Getcd13() { return m_cd13Atmosphere; }
-	ConstantBuffer<cbShaderDebug>& Getcd14() { return m_cd14ShaderDebug; }
 };
 
 #define RENDERER Renderer::GetInstance()

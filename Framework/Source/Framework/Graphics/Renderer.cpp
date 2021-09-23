@@ -8,11 +8,6 @@ Renderer::Renderer()
 	, m_rasterizerState()
 	, m_depthStencilStates()
 	, m_blendStates()
-	, m_cd8WorldMatrix()
-	, m_cd9ViewProjMatrix()
-	, m_cd10Light()
-	, m_cd12Time()
-	, m_cd13Atmosphere()
 	, m_spWhiteTexture(nullptr)
 	, m_saveState()
 {
@@ -24,59 +19,45 @@ Renderer::Renderer()
 bool Renderer::Initialize()
 {
 	// コンスタントバッファを作成
-	if (!m_cd8WorldMatrix.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
-	if (!m_cd9ViewProjMatrix.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
-	if (!m_cd10Light.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
-	if (!m_cd12Time.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
-	if (!m_cd13Atmosphere.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
-	if (!m_cd14ShaderDebug.Create()) {
-		assert(0 && "エラー：コンスタントバッファ作成失敗.");
-		return false;
-	}
+	bool result = false;
+	result = m_cb7ShaderDebug.Create();
+	result = m_cb8WorldMatrix.Create();
+	result = m_cb9ViewProjMatrix.Create();
+	result = m_cb10Light.Create();
+	result = m_cb12Time.Create();
+	result = m_cb13Atmosphere.Create();
 
 	// 指定スロットにバッファを設定
-	m_cd8WorldMatrix.SetToDevice(use_slot_world_matrix);
-	m_cd9ViewProjMatrix.SetToDevice(use_slot_view_proj_matrix);
-	m_cd10Light.SetToDevice(use_slot_light);
-	m_cd12Time.SetToDevice(use_slot_time);
-	m_cd13Atmosphere.SetToDevice(use_slot_atmosphere);
-	m_cd14ShaderDebug.SetToDevice(7);
+	m_cb7ShaderDebug.SetToDevice(use_slot_shader_debug);
+	m_cb8WorldMatrix.SetToDevice(use_slot_world_matrix);
+	m_cb9ViewProjMatrix.SetToDevice(use_slot_view_proj_matrix);
+	m_cb10Light.SetToDevice(use_slot_light);
+	m_cb12Time.SetToDevice(use_slot_time);
+	m_cb13Atmosphere.SetToDevice(use_slot_atmosphere);
 
-	m_cd14ShaderDebug.Work().g_show_base_color = 0;
-	m_cd14ShaderDebug.Work().g_show_normal = 0;
-	m_cd14ShaderDebug.Work().g_show_emissive = 0;
-	m_cd14ShaderDebug.Work().g_show_metallic_rough = 0;
-	m_cd14ShaderDebug.Write();
+	m_cb7ShaderDebug.Work().g_show_base_color = 0;
+	m_cb7ShaderDebug.Work().g_show_normal = 0;
+	m_cb7ShaderDebug.Work().g_show_emissive = 0;
+	m_cb7ShaderDebug.Work().g_show_metallic_rough = 0;
+	m_cb7ShaderDebug.Write();
 
-	m_cd10Light.Work().m_ambient_power = 0.6f;
+	m_cb10Light.Work().m_ambient_power = 0.6f;
+	m_cb10Light.Work().m_directional_light_dir = float3(1, -1, 0);
+	m_cb10Light.Work().m_enable = true;
+	m_cb10Light.Write();
 
 	// 大気のパラメータを設定
-	m_cd13Atmosphere.Work().m_distance_fog_enable = 1;
-	m_cd13Atmosphere.Work().m_distance_fog_color = float3(0.5f, 0.6f, 0.7f);
-	m_cd13Atmosphere.Work().m_distance_fog_rate = 0.004f;
+	m_cb13Atmosphere.Work().m_distance_fog_enable = 1;
+	m_cb13Atmosphere.Work().m_distance_fog_color = float3(0.5f, 0.6f, 0.7f);
+	m_cb13Atmosphere.Work().m_distance_fog_rate = 0.004f;
 
-	m_cd13Atmosphere.Work().m_height_fog_enable = 0;
-	m_cd13Atmosphere.Work().m_height_fog_color = float3(0.5f, 0.6f, 0.7f);
+	m_cb13Atmosphere.Work().m_height_fog_enable = 0;
+	m_cb13Atmosphere.Work().m_height_fog_color = float3(0.5f, 0.6f, 0.7f);
 
-	m_cd13Atmosphere.Work().m_mie_streuung_enable= 0;
-	m_cd13Atmosphere.Work().m_mie_streuung_factor_coefficient = -0.999f;
+	m_cb13Atmosphere.Work().m_mie_streuung_enable= 0;
+	m_cb13Atmosphere.Work().m_mie_streuung_factor_coefficient = -0.999f;
 
-	m_cd13Atmosphere.Write();
+	m_cb13Atmosphere.Write();
 
 	// 初期設定
 	SetDefaultState();
@@ -89,25 +70,17 @@ bool Renderer::Initialize()
 		return false;
 	}
 
-	SetWorldMatrix(mfloat4x4::Identity);
+	m_cb8WorldMatrix.Work().m_world_matrix = mfloat4x4::Identity;
+	m_cb8WorldMatrix.Work().m_dither_enable = false;
+	m_cb8WorldMatrix.Write();
 
 	// カメラ
 	mfloat4x4 viewMatrix, projMatrix;
 	viewMatrix = mfloat4x4::CreateTranslation(0.0f, 0.0f, 0.0f);
 	projMatrix = DirectX::XMMatrixPerspectiveFovLH(60.0f * ToRadians, 16.0f / 9.0f, 0.01f, 2000.0f);
-	SetViewMatrix(viewMatrix);
-	SetProjMatrix(projMatrix);
-
-	// 視推台作成
-	DirectX::BoundingFrustum frustum = {};
-
-	mfloat4x4 cameraMatrix = viewMatrix;
-	cameraMatrix.Invert();
-
-	qfloat4x4 quaternion = DirectX::XMQuaternionRotationMatrix(cameraMatrix);
-	DirectX::BoundingFrustum::CreateFromMatrix(frustum, projMatrix);
-	frustum.Origin = cameraMatrix.Translation();
-	frustum.Orientation = quaternion;
+	m_cb9ViewProjMatrix.Work().m_view_matrix = viewMatrix;
+	m_cb9ViewProjMatrix.Work().m_proj_matrix = projMatrix;
+	m_cb9ViewProjMatrix.Write();
 
 	return true;
 }
@@ -121,35 +94,6 @@ void Renderer::SetDefaultState()
 	SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
 	SetBlend(BlendMode::eAlpha);
 	SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
-}
-
-//-----------------------------------------------------------------------------
-// ワールド変換行列の設定
-//-----------------------------------------------------------------------------
-void Renderer::SetWorldMatrix(const mfloat4x4& matrix)
-{
-	m_cd8WorldMatrix.Work().m_world_matrix = matrix;
-	m_cd8WorldMatrix.Write();
-}
-
-//-----------------------------------------------------------------------------
-// ビュー変換行列の設定
-//-----------------------------------------------------------------------------
-void Renderer::SetViewMatrix(const mfloat4x4& matrix)
-{
-	m_cd9ViewProjMatrix.Work().m_view_matrix = matrix;
-	m_cd9ViewProjMatrix.Work().m_camera_matrix = matrix.Invert();
-	m_cd9ViewProjMatrix.Write();
-}
-
-//-----------------------------------------------------------------------------
-// 射影変換行列の設定
-//-----------------------------------------------------------------------------
-void Renderer::SetProjMatrix(const mfloat4x4& matrix)
-{
-	m_saveState.mProj = matrix;
-	m_cd9ViewProjMatrix.Work().m_proj_matrix = matrix;
-	m_cd9ViewProjMatrix.Write();
 }
 
 //-----------------------------------------------------------------------------

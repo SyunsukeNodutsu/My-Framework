@@ -102,8 +102,9 @@ void SpriteShader::Begin(bool linear, bool disableZBuffer)
 	m_graphicsDevice->g_cpContext.Get()->RSGetViewports(&pNumVierports, &vp);
 
 	// 射影行列を保存しておく
-	m_prevProjMat = RENDERER.GetSaveState().mProj;
-	RENDERER.SetProjMatrix(DirectX::XMMatrixOrthographicLH(vp.Width, vp.Height, 0, 1));
+	m_prevProjMat = RENDERER.Getcb9().Get().m_proj_matrix;
+	RENDERER.Getcb9().Work().m_proj_matrix = DirectX::XMMatrixOrthographicLH(vp.Width, vp.Height, 0, 1);
+	RENDERER.Getcb9().Write();
 
 	//---------------------------------------
 	// 使用するステートをセット
@@ -140,7 +141,8 @@ void SpriteShader::End()
 	m_isBegin = false;
 
 	//
-	RENDERER.SetProjMatrix(m_prevProjMat);
+	RENDERER.Getcb9().Work().m_proj_matrix = m_prevProjMat;
+	RENDERER.Getcb9().Write();
 
 	//---------------------------------------
 	// 記憶してたステートに戻す
@@ -162,7 +164,8 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 		return;
 
 	//
-	RENDERER.SetWorldMatrix(mfloat4x4::Identity);
+	RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
+	RENDERER.Getcb8().Write();
 
 	// テクスチャ(ShaderResourceView)セット
 	m_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, texture->SRVAddress());

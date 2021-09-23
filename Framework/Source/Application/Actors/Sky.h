@@ -31,9 +31,11 @@ public:
 	// @brief 描画
 	void Draw(float deltaTime)
 	{
-		RENDERER.SetLightEnable(false);
+		RENDERER.Getcb10().Work().m_enable = false;
+		RENDERER.Getcb10().Write();
 		Actor::Draw(deltaTime);
-		RENDERER.SetLightEnable(true);
+		RENDERER.Getcb10().Work().m_enable = true;
+		RENDERER.Getcb10().Write();
 	}
 
 private:

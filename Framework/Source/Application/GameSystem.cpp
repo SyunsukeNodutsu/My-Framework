@@ -18,11 +18,6 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
-	// 大照明設定
-	RENDERER.SetDirectionalLightDir(float3(1, -1, 0));
-	// ディザリング設定
-	RENDERER.SetDitherEnable(false);
-
 	//--------------------------------------------------
 	// ActorList初期化
 	// TODO: 外部ファイルへ
@@ -78,7 +73,9 @@ void GameSystem::Update()
 	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	// 時間系を設定/送信
-	RENDERER.SetTime(totalTime, deltaTime);
+	RENDERER.Getcb12().Work().m_deltaTime = deltaTime;
+	RENDERER.Getcb12().Work().m_totalTime = totalTime;
+	RENDERER.Getcb12().Write();
 
 	// Actorリスト更新
 	for (auto itr = m_spActorList.begin(); itr != m_spActorList.end();)

@@ -19,9 +19,11 @@ void Tank::Awake()
 //-----------------------------------------------------------------------------
 void Tank::Draw(float deltaTime)
 {
-	RENDERER.SetDitherEnable(true);
+	RENDERER.Getcb8().Work().m_dither_enable = true;
+	RENDERER.Getcb8().Write();
 	Actor::Draw(deltaTime);
-	RENDERER.SetDitherEnable(false);
+	RENDERER.Getcb8().Work().m_dither_enable = false;
+	RENDERER.Getcb8().Write();
 
 	m_tire.Draw(deltaTime);
 }
