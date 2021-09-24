@@ -73,6 +73,9 @@
     <Filter Include="Library\Effekseer">
       <UniqueIdentifier>{ba4c3405-194c-4b43-ae7e-5cdb1914a309}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Graphics\Effect">
+      <UniqueIdentifier>{d9d01096-9c8e-446c-acb1-502026d24ddb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -218,6 +221,15 @@
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Tank.cpp">
       <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,6 +421,15 @@
     </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
       <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
