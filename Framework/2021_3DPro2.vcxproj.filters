@@ -70,6 +70,9 @@
     <Filter Include="Source\Application\Actors">
       <UniqueIdentifier>{ac513adc-a8e3-4897-8407-420f75fc3ab2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library\Effekseer">
+      <UniqueIdentifier>{ba4c3405-194c-4b43-ae7e-5cdb1914a309}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -394,6 +397,18 @@
     </ClInclude>
     <ClInclude Include="Source\Application\ApplicationInterface.h">
       <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\Effekseer.Modules.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\Effekseer.SIMD.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
+      <Filter>Library\Effekseer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,27 @@
 ﻿//-----------------------------------------------------------------------------
 // File: main.h
-//
-// アプリケーション
-// TODO: visual stdio側 でプロジェクトを分けたい
+// 
+// ■フレームワーク全体像(2021/09/24)
+// 
+// Application ----------------AudioDevice
+//   |    |  |                   |
+// Window |  |             AudioDeviceChild
+//		  |  |                |        |
+//		  |  ┗-----┓  SoundDirector Sound
+//		  |         |                  |
+//	RawInputDevice  |                Sound3D
+//	  |       |     |
+// Keyboard   Mouse |
+//					|
+//			  GraphicsDevice            Model---Animation
+//					|                   |   |
+//			GraphicsDeviceChild--------Mesh |
+//			 |      |       |  ┗--┓       |
+//		   Buffer Texture Shader   |      Material
+//			 |              |      |
+//	   ConstantBuffer -- 各Shader  |
+//			 |                     |
+//			 ┗------------------Renderer
 //-----------------------------------------------------------------------------
 #pragma once
 #include "GameSystem.h"

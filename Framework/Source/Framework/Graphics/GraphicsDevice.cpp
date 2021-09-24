@@ -86,7 +86,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	sampleDesc.Count = desc.m_useMSAA ? sampleDesc.Count : 1;
 
 	// MSAA非対応の場合
-	if (sampleDesc.Count == 1) {
+	if (sampleDesc.Count <= 1) {
 		// MSAAをOFFにします
 		sampleDesc.Quality = 0;
 		desc.m_useMSAA = false;

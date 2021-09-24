@@ -86,6 +86,13 @@
 // json
 #include "../../Library/json/json.hpp"
 
+// Effekseer
+#include <Effekseer.h>
+#include <EffekseerRendererDX11.h>
+
+#pragma comment(lib, "Effekseer.lib")
+#pragma comment(lib, "EffekseerRendererDX11.lib")
+
 //--------------------------------------------------
 //
 // My Framework
