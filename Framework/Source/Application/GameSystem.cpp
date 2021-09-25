@@ -2,6 +2,7 @@
 #include "Actors/Actor.h"
 #include "main.h"
 #include "../Framework/Audio/SoundDirector.h"
+#include "../Framework/Graphics/Effect/EffekseerManager.h"
 
 #include <fstream>
 
@@ -85,6 +86,8 @@ void GameSystem::Initialize()
 	if (ofs) {
 		ofs.write(s.c_str(), s.size());
 	}
+
+	EFFEKSEER.Initialize();
 }
 
 //-----------------------------------------------------------------------------
@@ -94,6 +97,8 @@ void GameSystem::Finalize()
 {
 	for (auto& object : m_spActorList)
 		object->Finalize();
+
+	EFFEKSEER.Finalize();
 }
 
 //-----------------------------------------------------------------------------
@@ -125,6 +130,15 @@ void GameSystem::Update()
 		else
 			++itr;
 	}
+
+	auto camera = RENDERER.Getcb9().Get().m_view_matrix;
+	auto proj = RENDERER.Getcb9().Get().m_proj_matrix;
+	EFFEKSEER.SetCameraMatrix(camera, proj);
+
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space)) {
+		float3 pos = float3(0, 0, 0);
+		EFFEKSEER.Play(u"Resource/Effect/Explosion.efk", pos);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -144,6 +158,7 @@ void GameSystem::LateUpdate()
 void GameSystem::Draw()
 {
 	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	// カメラ情報をGPUに転送
 	if (m_spCamera)
@@ -153,6 +168,9 @@ void GameSystem::Draw()
 
 	for (auto& object : m_spActorList)
 		object->Draw(deltaTime);
+
+	constexpr float effectSpeed = 100.0f;
+	EFFEKSEER.Update(effectSpeed * deltaTime);
 }
 
 //-----------------------------------------------------------------------------

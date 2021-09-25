@@ -48,6 +48,7 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerManager.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerManager.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
@@ -395,7 +397,7 @@
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -417,6 +419,7 @@
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -438,6 +441,7 @@
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
