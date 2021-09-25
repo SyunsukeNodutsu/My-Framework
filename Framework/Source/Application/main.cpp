@@ -1,10 +1,11 @@
 ﻿#include "main.h"
 
-Window*			Application::g_window = 0;
-GraphicsDevice* Application::g_graphicsDevice = 0;
-AudioDevice*	Application::g_audioDevice = 0;
-RawInputDevice* Application::g_rawInputDevice = 0;
-FpsTimer*		Application::g_fpsTimer = 0;
+Window*				Application::g_window = 0;
+GraphicsDevice*		Application::g_graphicsDevice = 0;
+EffekseerDevice*	Application::g_effectDevice = 0;
+AudioDevice*		Application::g_audioDevice = 0;
+RawInputDevice*		Application::g_rawInputDevice = 0;
+FpsTimer*			Application::g_fpsTimer = 0;
 
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
 std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
@@ -79,6 +80,7 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	g_graphicsDevice = new GraphicsDevice();
+	g_effectDevice = new EffekseerDevice();
 	g_audioDevice = new AudioDevice();
 	g_rawInputDevice = new RawInputDevice();
 	g_fpsTimer = new FpsTimer();
@@ -86,7 +88,9 @@ bool Application::Initialize(int width, int height)
 	g_gameSystem = std::make_shared<GameSystem>();
 	g_imGuiSystem = std::make_shared<ImGuiSystem>();
 
+	// デバイスセット
 	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice);
+	EffekseerDeviceChild::SetEffekseerDevice(g_effectDevice);
 	AudioDeviceChild::SetAudioDevice(g_audioDevice);
 
 	// 描画デバイス Direct3D
@@ -100,8 +104,10 @@ bool Application::Initialize(int width, int height)
 	desc.m_useMSAA		= true;
 	desc.m_deferredRendering = false;
 	desc.m_hwnd			= g_window->GetWndHandle();
-
 	g_graphicsDevice->Initialize(desc);
+
+	// エフェクトデバイス
+	g_effectDevice->Initialize();
 
 	// オーディオデバイス
 	g_audioDevice->Initialize();
@@ -138,8 +144,6 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	// TODO: 終了の順番要調査 特にRAW INPUT
-
 	// アプリケーション
 	g_imGuiSystem->Finalize();
 	g_gameSystem->Finalize();
@@ -147,12 +151,14 @@ void Application::Release()
 	// デバイス
 	g_rawInputDevice->Finalize();
 	g_audioDevice->Finalize();
+	g_effectDevice->Finalize();
 	g_graphicsDevice->Finalize();
 
 	// ウィンドウ
 	g_window->Release();
 
 	delete g_graphicsDevice;
+	delete g_effectDevice;
 	delete g_audioDevice;
 	delete g_rawInputDevice;
 	delete g_fpsTimer;
@@ -217,6 +223,9 @@ void Application::Execute()
 			g_gameSystem->Draw();
 			// 2D想定
 			g_gameSystem->Draw2D();
+
+			// エフェクト描画
+			g_effectDevice->Update(static_cast<float>(g_fpsTimer->GetDeltaTime()));
 
 			// ImGui 描画
 			g_imGuiSystem->Begin();

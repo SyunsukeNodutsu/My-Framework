@@ -1,8 +1,9 @@
 ﻿#include "GameSystem.h"
-#include "Actors/Actor.h"
 #include "main.h"
+
+#include "Actors/Actor.h"
+
 #include "../Framework/Audio/SoundDirector.h"
-#include "../Framework/Graphics/Effect/EffekseerManager.h"
 
 #include <fstream>
 
@@ -86,8 +87,6 @@ void GameSystem::Initialize()
 	if (ofs) {
 		ofs.write(s.c_str(), s.size());
 	}
-
-	EFFEKSEER.Initialize();
 }
 
 //-----------------------------------------------------------------------------
@@ -97,8 +96,6 @@ void GameSystem::Finalize()
 {
 	for (auto& object : m_spActorList)
 		object->Finalize();
-
-	EFFEKSEER.Finalize();
 }
 
 //-----------------------------------------------------------------------------
@@ -131,13 +128,18 @@ void GameSystem::Update()
 			++itr;
 	}
 
-	auto camera = RENDERER.Getcb9().Get().m_view_matrix;
-	auto proj = RENDERER.Getcb9().Get().m_proj_matrix;
-	EFFEKSEER.SetCameraMatrix(camera, proj);
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space))
+	{
+		float3 pos = float3(10, 0, 0);
+		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
 
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space)) {
-		float3 pos = float3(0, 0, 0);
-		EFFEKSEER.Play(u"Resource/Effect/Explosion.efk", pos);
+		auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/Cannon01.wav", false);
+		if (sound3d)
+		{
+			float3 pos = float3(10, 0, 0);
+			sound3d->Play3D(pos);
+			sound3d->SetVolume(1.0f);
+		}
 	}
 }
 
@@ -168,9 +170,6 @@ void GameSystem::Draw()
 
 	for (auto& object : m_spActorList)
 		object->Draw(deltaTime);
-
-	constexpr float effectSpeed = 100.0f;
-	EFFEKSEER.Update(effectSpeed * deltaTime);
 }
 
 //-----------------------------------------------------------------------------

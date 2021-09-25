@@ -59,6 +59,8 @@ public:
 	
 	// 描画デバイス
 	static GraphicsDevice* g_graphicsDevice;
+	// エフェクトデバイス
+	static EffekseerDevice* g_effectDevice;
 	// オーディオデバイス
 	static AudioDevice* g_audioDevice;
 	// 入力デバイス

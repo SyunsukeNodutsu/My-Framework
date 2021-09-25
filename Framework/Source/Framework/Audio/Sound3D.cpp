@@ -119,7 +119,7 @@ void SoundWork3D::SetEmitter(const float3& pos)
     m_emitter.pLPFDirectCurve   = nullptr; // use default curve
     m_emitter.pLPFReverbCurve   = nullptr; // use default curve
     m_emitter.pReverbCurve      = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_Reverb_Curve;
-    m_emitter.CurveDistanceScaler = 100.0f;// 曲線距離スケーラー 世界の大きさに合わせる必要あり
+    m_emitter.CurveDistanceScaler = 200.0f;// 曲線距離スケーラー 世界の大きさに合わせる必要あり
     m_emitter.DopplerScaler     = 1.0f;
 
     m_dspSettings.SrcChannelCount = INPUTCHANNELS;

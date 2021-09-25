@@ -222,9 +222,6 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerManager.cpp">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -418,9 +415,6 @@
     </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
       <Filter>Library\Effekseer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerManager.h">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

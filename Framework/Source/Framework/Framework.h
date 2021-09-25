@@ -49,6 +49,11 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Renderer.h"
+
+#include "Graphics/Effect/EffekseerDevice.h"
+#include "Graphics/Effect/EffekseerDeviceChild.h"
+#include "Graphics/Effect/EffekseerEffect.h"
+
 #include "Graphics/Camera/Camera.h"
 
 #include "Model/Mesh.h"
