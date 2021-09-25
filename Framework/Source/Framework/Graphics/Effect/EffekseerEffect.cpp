@@ -10,7 +10,6 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 EffectData::EffectData()
-	: m_effect()
 {
 }
 
@@ -20,13 +19,13 @@ EffectData::EffectData()
 bool EffectData::Load(const std::string& filepath)
 {
 	if (!g_effectDevice) return false;
-	if (!g_effectDevice->g_manager.Get()) return false;
+	////if (!g_effectDevice->g_manager.Get()) return false;
 
 	/*m_effect = Effekseer::Effect::Create(
 		g_effectDevice->g_manager, "Laser01.efk"
 	);*/
 
-	return false;
+	return true;
 }
 
 

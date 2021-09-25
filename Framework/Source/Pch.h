@@ -71,10 +71,6 @@
 // string converter (文字列変換)
 #include "../../Library/strconv.h"
 
-// Lua
-#include <lua.hpp>
-#pragma comment(lib, "lua53.lib")
-
 // imGui
 #include "../../Library/imGui/imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS

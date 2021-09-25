@@ -57,8 +57,6 @@
 
 #include "Input/RawInputDevice.h"
 
-#include "Scripting/Lua.h"
-
 #include "Shader/ShaderManager.h"
 
 #include "Audio/AudioDevice.h"

@@ -14,6 +14,8 @@ EffekseerDevice::EffekseerDevice()
 //-----------------------------------------------------------------------------
 bool EffekseerDevice::Initialize()
 {
+	g_manager->Create(MAX_EFFECT);
+
 	// エフェクトのレンダラーの作成
 	/*g_renderer = ::EffekseerRendererDX11::Renderer::Create(
 		g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get(), MAX_EFFECT
@@ -37,6 +39,6 @@ bool EffekseerDevice::Initialize()
 //-----------------------------------------------------------------------------
 void EffekseerDevice::Finalize()
 {
-	g_manager.Reset();
-	g_renderer.Reset();
+	//g_manager->Destroy();
+	//g_renderer->Destroy();
 }

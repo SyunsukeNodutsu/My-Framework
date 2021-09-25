@@ -25,12 +25,6 @@
     <Filter Include="Source\Framework\Utility">
       <UniqueIdentifier>{b0192caf-8f51-4130-bdae-2b9459e10216}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Scripting">
-      <UniqueIdentifier>{e847911b-34a9-4c66-b762-a0566017bc3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scripting">
-      <UniqueIdentifier>{8afbb06b-4208-4609-bc52-9d0ee6ac3966}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Library">
       <UniqueIdentifier>{f059ad7b-08b2-47ca-b325-4e9a02f6bc5c}</UniqueIdentifier>
     </Filter>
@@ -89,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp">
       <Filter>Source\Framework\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Scripting\Lua.cpp">
-      <Filter>Source\Framework\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp">
       <Filter>Source\Framework\Shader\Sprite</Filter>
@@ -251,9 +242,6 @@
     <ClInclude Include="Source\Framework\Utility\Enums.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Scripting\Lua.h">
-      <Filter>Source\Framework\Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Timer.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
@@ -410,18 +398,6 @@
     <ClInclude Include="Source\Application\ApplicationInterface.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
-      <Filter>Library\Effekseer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Effekseer\include\Effekseer.Modules.h">
-      <Filter>Library\Effekseer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Effekseer\include\Effekseer.SIMD.h">
-      <Filter>Library\Effekseer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
-      <Filter>Library\Effekseer</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
@@ -431,16 +407,19 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\Effekseer.Internal.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
+      <Filter>Library\Effekseer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
       <Filter>Source\Framework\Shader</Filter>
-    </None>
-    <None Include="Scripting\Test.lua">
-      <Filter>Scripting</Filter>
-    </None>
-    <None Include="Scripting\Test2.lua">
-      <Filter>Scripting</Filter>
     </None>
     <None Include="Source\Framework\Shader\Sprite\SpriteShader.hlsli">
       <Filter>Source\Framework\Shader\Sprite</Filter>

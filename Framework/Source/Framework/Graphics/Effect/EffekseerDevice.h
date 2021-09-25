@@ -30,7 +30,7 @@ public:
 
 public:
 
-	EffekseerRendererDX11::RendererRef g_renderer;
-	Effekseer::ManagerRef g_manager;
+	EffekseerRendererDX11::Renderer* g_renderer;
+	Effekseer::Manager* g_manager;
 
 };

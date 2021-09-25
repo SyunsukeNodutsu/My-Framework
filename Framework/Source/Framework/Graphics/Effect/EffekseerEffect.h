@@ -22,7 +22,7 @@ public:
 
 private:
 
-	Effekseer::EffectRef m_effect;
+	//Effekseer::EffectRef m_effect;
 
 };
 
