@@ -22,6 +22,9 @@ public:
 	// @brief 描画開始
 	void Begin();
 
+	// @brief 描画終了
+	void End();
+
 	// @brief imGui描画
 	void DrawImGui();
 

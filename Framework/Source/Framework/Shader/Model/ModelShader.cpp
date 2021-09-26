@@ -1,4 +1,5 @@
 ﻿#include "ModelShader.h"
+#include "../../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -88,14 +89,24 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 	auto& data = model.GetData();
 	if (data == nullptr) return;
 
+	auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+
 	// 全メッシュノードを描画
 	for (auto& index : data->GetMeshNodeIndices())
 	{
-		auto& rWorkNode = model.GetNodes()[index];
+		auto& node = model.GetNodes()[index];
 		auto& mesh = model.GetMesh(index);
 
+		// AABB -> OBB作成
+		DirectX::BoundingOrientedBox obb = {};
+		DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->GetBoundingBox());
+		obb.Transform(obb, (node.m_localTransform * worldMatrix));
+
+		// 試錐台の中？
+		//if (!camera->GetFrustum().Intersects(obb)) continue;
+
 		// ワールド行列 設定
-		RENDERER.Getcb8().Work().m_world_matrix = rWorkNode.m_worldTransform * worldMatrix;
+		RENDERER.Getcb8().Work().m_world_matrix = node.m_worldTransform * worldMatrix;
 		RENDERER.Getcb8().Write();
 
 		// メッシュ描画

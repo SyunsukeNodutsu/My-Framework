@@ -72,15 +72,15 @@
 #include "../../Library/strconv.h"
 
 // imGui
-#include "../../Library/imGui/imgui.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui.h>
 #define IMGUI_DEFINE_PLACEMENT_NEW
-#include "../../Library/imGui/imgui_internal.h"
-#include "../../Library/imGui/imgui_impl_win32.h"
-#include "../../Library/imGui/imgui_impl_dx11.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui_internal.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
 
 // json
-#include "../../Library/json/json.hpp"
+#include <json.hpp>
 
 // Effekseer
 #include <Effekseer.h>

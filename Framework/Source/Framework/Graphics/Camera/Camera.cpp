@@ -8,6 +8,7 @@ Camera::Camera()
 	, m_viewMatrix(mfloat4x4::Identity)
 	, m_projMatrix(mfloat4x4::Identity)
 	, m_frustum()
+	, g_priority()
 	, m_dirtyCamera(false)
 	, m_dirtyProj(false)
 {

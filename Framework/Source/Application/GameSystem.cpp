@@ -2,6 +2,7 @@
 #include "main.h"
 
 #include "Actors/Actor.h"
+#include "Actors/EditorCamera.h"
 
 #include "../Framework/Audio/SoundDirector.h"
 
@@ -11,7 +12,7 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 GameSystem::GameSystem()
-	: m_spCamera(nullptr)
+	: g_cameraSystem()
 	, m_spActorList()
 {
 }
@@ -34,34 +35,32 @@ void GameSystem::Initialize()
 		auto object = std::make_shared<Actor>();
 		object->LoadModel("Resource/Model/DebugSphere.gltf");
 		m_spActorList.push_back(object);
+
+		auto ecamera = std::make_shared<EditorCamera>();
+		m_spActorList.push_back(ecamera);
 	}
 
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
 	// BGM再生
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/New Happy Day by fennec beats.wav", true, true);
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Germany.wav", true, true);
 	if (sound)
 	{
-		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
-		//sound->Play(1000);
+		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		sound->Play(1000);
 		sound->SetVolume(1.0f);
 	}
-
-	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/heli.wav", true);
+	// 3DBGM再生
+	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/heli.wav", true);
 	if (sound3d)
 	{
 		float3 pos = float3(0, 0, 0);
 		sound3d->Play3D(pos);
-		sound3d->SetVolume(1.0f);
+		sound3d->SetVolume(0.0f);
 	}
 
-	m_spTexture = std::make_shared<Texture>();
-	m_spTexture2 = std::make_shared<Texture>();
-
-	m_spTexture->Create("Resource/Texture/01.jpg");
-	m_spTexture2->Create("Resource/Texture/02.jpg");
-
+#pragma region Json test.
 	// デシリアライズ
 	std::ifstream ifs("Resource/test.json");
 	if (!ifs.fail()) {
@@ -87,6 +86,7 @@ void GameSystem::Initialize()
 	if (ofs) {
 		ofs.write(s.c_str(), s.size());
 	}
+#pragma endregion
 }
 
 //-----------------------------------------------------------------------------
@@ -133,7 +133,7 @@ void GameSystem::Update()
 		float3 pos = float3(10, 0, 0);
 		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
 
-		auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/Cannon01.wav", false);
+		auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/Cannon01.wav", false);
 		if (sound3d)
 		{
 			float3 pos = float3(10, 0, 0);
@@ -141,6 +141,8 @@ void GameSystem::Update()
 			sound3d->SetVolume(1.0f);
 		}
 	}
+
+	g_cameraSystem.Update(deltaTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -160,11 +162,9 @@ void GameSystem::LateUpdate()
 void GameSystem::Draw()
 {
 	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
-	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	// カメラ情報をGPUに転送
-	if (m_spCamera)
-		m_spCamera->SetToShader();
+	g_cameraSystem.SetToDevice();
 
 	SHADER.GetModelShader().Begin();
 
@@ -177,13 +177,7 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
-	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
-
 	SHADER.GetSpriteShader().Begin(true, true);
-
-	SHADER.GetSpriteShader().DrawTexture(m_spTexture.get(), float2(-680, 300), cfloat4x4(1, 1, 1, std::abs(sinf(totalTime))));
-	SHADER.GetSpriteShader().DrawTexture(m_spTexture2.get(), float2(-450, 300), cfloat4x4(1, 1, 1, std::abs(cosf(totalTime))));
 
 	SHADER.GetSpriteShader().End();
 }

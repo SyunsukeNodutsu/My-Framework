@@ -88,12 +88,14 @@ bool SoundData::Create(bool loop, bool useFilter)
 
     // ソースボイスの作成
     if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat,
-        0, 2.0f, nullptr, &sendList))) {
+        useFilter ? XAUDIO2_VOICE_USEFILTER : 0, 2.0f, nullptr, &sendList))) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create source voice.");
         return false;
     }
 
     // 音声キューに新しいオーディオバッファを追加
     if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&m_buffer))) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to submit source buffer.");
         return false;
     }
 

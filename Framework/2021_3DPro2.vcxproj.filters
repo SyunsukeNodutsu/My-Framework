@@ -222,6 +222,12 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
+      <Filter>Source\Application\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\EditorCamera.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -415,6 +421,12 @@
     </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
       <Filter>Library\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Camera\CameraSystem.h">
+      <Filter>Source\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\EditorCamera.h">
+      <Filter>Source\Application\Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

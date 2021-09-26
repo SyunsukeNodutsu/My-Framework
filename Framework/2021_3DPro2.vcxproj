@@ -28,9 +28,11 @@
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Application\Actors\Actor.cpp" />
+    <ClCompile Include="Source\Application\Actors\EditorCamera.cpp" />
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
     <ClCompile Include="Source\Application\Actors\Tank.cpp" />
+    <ClCompile Include="Source\Application\Camera\CameraSystem.cpp" />
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp" />
     <ClCompile Include="Source\Application\Camera\TPSCamera.cpp" />
     <ClCompile Include="Source\Application\GameSystem.cpp" />
@@ -94,11 +96,13 @@
     <ClInclude Include="..\Library\imGui\imstb_textedit.h" />
     <ClInclude Include="..\Library\imGui\imstb_truetype.h" />
     <ClInclude Include="Source\Application\Actors\Actor.h" />
+    <ClInclude Include="Source\Application\Actors\EditorCamera.h" />
     <ClInclude Include="Source\Application\Actors\Human.h" />
     <ClInclude Include="Source\Application\Actors\Sky.h" />
     <ClInclude Include="Source\Application\Actors\StageMap.h" />
     <ClInclude Include="Source\Application\Actors\Tank.h" />
     <ClInclude Include="Source\Application\ApplicationInterface.h" />
+    <ClInclude Include="Source\Application\Camera\CameraSystem.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
     <ClInclude Include="Source\Application\Camera\TPSCamera.h" />
     <ClInclude Include="Source\Application\GameSystem.h" />
@@ -372,7 +376,7 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/Effekseer/include;../Library/json;../Library/imGui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -394,7 +398,7 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/Effekseer/include;../Library/json;../Library/imGui</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>

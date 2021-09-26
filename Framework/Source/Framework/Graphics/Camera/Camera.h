@@ -47,13 +47,30 @@ public:
 	// @return 射影行列
 	inline const mfloat4x4& GetProjMatrix() const { return m_projMatrix; }
 
+	// @brief 試錐台を返す
+	// @return 試錐台
+	inline const DirectX::BoundingFrustum& GetFrustum() const { return m_frustum; }
+
 protected:
 
+	// 各行列
 	mfloat4x4	m_cameraMatrix;	// カメラ行列
 	mfloat4x4	m_viewMatrix;	// ビュー行列
 	mfloat4x4	m_projMatrix;	// 射影行列
 
+	// 試錐台
 	DirectX::BoundingFrustum m_frustum;
+
+public:
+
+	// 優先度
+	float g_priority;
+
+	// 使用中？
+	bool g_use;
+
+	// カメラ名
+	std::string g_name = "empty";
 
 private:
 

@@ -5,6 +5,7 @@
 // TODO: Visualstdio側でProjectを分ける
 //-----------------------------------------------------------------------------
 #pragma once
+#include "Camera/CameraSystem.h"
 
 class Actor;
 
@@ -38,31 +39,21 @@ public:
 	// 取得・設定
 	//--------------------------------------------------
 	
-	// @brief 使用カメラの設定
-	// @param camera 設定するカメラ
-	void SetCamera(std::shared_ptr<Camera> camera) { m_spCamera = camera; }
-
 	// @brief シーンのActorリストを返す
 	// @return Actorリスト
 	const std::list<std::shared_ptr<Actor>>& GetActorList() const {
 		return m_spActorList;
 	}
 
-	// @brief 使用カメラを返す
-	// @return 使用カメラ
-	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }
+public:
+
+	// カメラ管理システム
+	CameraSystem g_cameraSystem;
 
 private:
 
-	// 使用カメラ
-	std::shared_ptr<Camera> m_spCamera;
-
 	// 登場Actorリスト
 	std::list<std::shared_ptr<Actor>> m_spActorList;
-
-	//
-	std::shared_ptr<Texture> m_spTexture;
-	std::shared_ptr<Texture> m_spTexture2;
 
 private:
 

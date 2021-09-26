@@ -32,8 +32,9 @@ void Human::Initialize()
 
 		m_spCamera->SetEnable(false);
 
-		// GameSystemにもカメラをシェアさせる
-		APP.g_gameSystem->SetCamera(m_spCamera);
+		m_spCamera->g_priority = 1.0f;
+		m_spCamera->g_name = "HumanTPS";
+		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera);
 	}
 
 	m_spState = std::make_shared<StateWait>();
@@ -55,6 +56,8 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
+	if (!m_spCamera->g_use) return;
+
 	// Escでカメラ操作切り替え
 	static bool enable = false;
 	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape))

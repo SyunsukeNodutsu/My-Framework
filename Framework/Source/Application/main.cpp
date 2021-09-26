@@ -79,14 +79,14 @@ bool Application::Initialize(int width, int height)
 	// 各種デバイス
 	//--------------------------------------------------
 
-	g_graphicsDevice = new GraphicsDevice();
-	g_effectDevice = new EffekseerDevice();
-	g_audioDevice = new AudioDevice();
-	g_rawInputDevice = new RawInputDevice();
-	g_fpsTimer = new FpsTimer();
+	g_graphicsDevice	= new GraphicsDevice();
+	g_effectDevice		= new EffekseerDevice();
+	g_audioDevice		= new AudioDevice();
+	g_rawInputDevice	= new RawInputDevice();
+	g_fpsTimer			= new FpsTimer();
 
-	g_gameSystem = std::make_shared<GameSystem>();
-	g_imGuiSystem = std::make_shared<ImGuiSystem>();
+	g_gameSystem	= std::make_shared<GameSystem>();
+	g_imGuiSystem	= std::make_shared<ImGuiSystem>();
 
 	// デバイスセット
 	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice);
@@ -205,7 +205,7 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ行列の取得
-		auto cameraMatrix = g_gameSystem->GetCamera()->GetCameraMatrix();
+		auto cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
 		// サウンド更新
 		g_audioDevice->Update(cameraMatrix);
 
@@ -230,8 +230,7 @@ void Application::Execute()
 			// ImGui 描画
 			g_imGuiSystem->Begin();
 			g_imGuiSystem->DrawImGui();
-			ImGui::Render();
-			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+			g_imGuiSystem->End();
 		}
 		g_graphicsDevice->End();
 

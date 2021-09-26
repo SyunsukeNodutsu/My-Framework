@@ -53,7 +53,7 @@ public:
 	}
 
 	// @brief 回転の設定
-	// @param angle
+	// @param angle 設定するDegree度
 	void SetAngle(const float3& angle) {
 		m_worldAngle = angle;
 		m_needUpdateMatrix = true;

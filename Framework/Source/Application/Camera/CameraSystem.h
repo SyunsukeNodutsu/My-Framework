@@ -1,0 +1,60 @@
+﻿//-----------------------------------------------------------------------------
+// File: Camera.h
+//
+// カメラシステム
+// 優先度から使用カメラを遷移させたり
+//-----------------------------------------------------------------------------
+#pragma once
+
+// カメラの遷移モード
+enum class ChangeMode
+{
+	eImmediate,	// 遷移アニメーションなし
+	eLiner,		// 線形
+};
+
+// カメラシステムクラス
+class CameraSystem
+{
+public:
+
+	// @brief コンストラクタ
+	CameraSystem();
+
+	// @brief 更新
+	// @param deltaTime 前フレームからの経過時間
+	void Update(float deltaTime);
+
+	// @brief カメラ情報をGPUに転送
+	void SetToDevice();
+
+	//--------------------------------------------------
+	// 取得・設定
+	//--------------------------------------------------
+
+	// @brief カメラを管理リストに追加
+	// @param camera 追加するカメラ
+	void SetCameraList(std::shared_ptr<Camera> camera);
+
+	// @brief 現在使用しているカメラを返す
+	// @return 使用カメラ ※最も優先度の高いカメラ(遷移中を除く)
+	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }
+
+	// @brief カメラを名前検索で返す
+	// @return 発見...カメラ 見つからない...nullptr
+	std::shared_ptr<Camera> SearchCamera(std::string name) const;
+
+private:
+
+	// 管理するカメラ一覧
+	std::list<std::shared_ptr<Camera>> m_cameraList;
+
+	// 使用カメラ
+	std::shared_ptr<Camera> m_spCamera;
+
+private:
+
+	// @brief 優先度の確認
+	void CheckPriority();
+
+};

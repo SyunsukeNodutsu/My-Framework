@@ -75,16 +75,10 @@ void SoundWork3D::Update()
 //-----------------------------------------------------------------------------
 void SoundWork3D::SetEmitter(const float3& pos)
 {
+    // コーン設定
     m_emitter.pCone = &m_emitterCone;
     m_emitter.pCone->InnerAngle = 0.0f;
-    // 内側のコーンの角度をX3DAUDIO_2PI、外側のコーンの角度を0以外にすると
-    // 外側の円錐の角度を0以外にすると
-    // m_emitter は、点の m_emitter のように動作します。
-    // 内側のコーンの設定のみを使用して、点のように動作します。
     m_emitter.pCone->OuterAngle = 0.0f;
-    // 外側の円錐の角度をゼロにすると
-    // Emitter は、外円錐の設定のみを使用したポイント Emitter のように動作します。
-    // 外側の円錐の設定のみを使用して、点状のEmitterのように動作します。
     m_emitter.pCone->InnerVolume = 0.0f;
     m_emitter.pCone->OuterVolume = 1.0f;
     m_emitter.pCone->InnerLPF = 0.0f;
@@ -92,6 +86,7 @@ void SoundWork3D::SetEmitter(const float3& pos)
     m_emitter.pCone->InnerReverb = 0.0f;
     m_emitter.pCone->OuterReverb = 1.0f;
 
+    // transform
     m_emitter.Position.x = pos.x;
     m_emitter.Position.y = pos.y;
     m_emitter.Position.z = pos.z;
@@ -104,7 +99,8 @@ void SoundWork3D::SetEmitter(const float3& pos)
     m_emitter.OrientFront.z =
     m_emitter.OrientTop.y   = 1.f;
 
-    m_emitter.ChannelCount  = INPUTCHANNELS;
+    // チャンネル情報
+    m_emitter.ChannelCount  = INPUTCHANNELS;// TODO: 要調査 ステレオ...2 に設定する必要？
     m_emitter.ChannelRadius = 1.0f;
     m_emitter.pChannelAzimuths = g_audioDevice->g_emitterAzimuths;
 
@@ -114,14 +110,19 @@ void SoundWork3D::SetEmitter(const float3& pos)
     m_emitter.InnerRadius = 2.0f;
     m_emitter.InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
 
+    // 各カーブ nullでDefaultのカーブを使用
     m_emitter.pVolumeCurve      = (X3DAUDIO_DISTANCE_CURVE*)&X3DAudioDefault_LinearCurve;
     m_emitter.pLFECurve         = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_LFE_Curve;
     m_emitter.pLPFDirectCurve   = nullptr; // use default curve
     m_emitter.pLPFReverbCurve   = nullptr; // use default curve
     m_emitter.pReverbCurve      = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_Reverb_Curve;
-    m_emitter.CurveDistanceScaler = 200.0f;// 曲線距離スケーラー 世界の大きさに合わせる必要あり
-    m_emitter.DopplerScaler     = 1.0f;
 
+    // 各曲線距離スケーラー ※世界の大きさに合わせる必要あり
+    m_emitter.CurveDistanceScaler = 200.0f;
+    m_emitter.DopplerScaler     = 200.0f;
+
+    // DSP設定
+    // 3D信号処理のための低レベルオーディオレンダリングAPIに送られる。
     m_dspSettings.SrcChannelCount = INPUTCHANNELS;
     m_dspSettings.DstChannelCount = g_audioDevice->g_channels;
     m_dspSettings.pMatrixCoefficients = g_audioDevice->g_matrixCoefficients;
