@@ -88,6 +88,8 @@ private:
 	struct cdWorldMatrix
 	{
 		mfloat4x4 m_world_matrix;
+		float2 m_uv_offset = float2(0, 0);
+		float2 m_uv_tiling = float2(1, 1);
 		float m_dist_to_eye;  // カメラとの距離
 		float m_dither_enable;// ディザリング有効？
 		float tmp[2];

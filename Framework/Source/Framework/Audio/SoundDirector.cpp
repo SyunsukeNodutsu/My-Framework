@@ -56,6 +56,48 @@ void SoundDirector::AllStop()
 }
 
 //-----------------------------------------------------------------------------
+// 再生
+//-----------------------------------------------------------------------------
+bool SoundDirector::Play(const std::string& filepath, DWORD delay, float volume, bool loop, bool useFilter)
+{
+    auto sound = std::make_shared<SoundWork>();
+    if (!sound) return false;
+
+    if (sound->Load(filepath, loop, useFilter) == false) {
+        DebugLog("読み込み失敗.\n");
+        return false;
+    }
+
+    AddSoundList(sound);
+
+    sound->Play(delay);
+    sound->SetVolume(volume);
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// 3D再生
+//-----------------------------------------------------------------------------
+bool SoundDirector::Play3D(const std::string& filepath, float3& pos, DWORD delay, float volume, bool loop, bool useFilter)
+{
+    auto sound = std::make_shared<SoundWork3D>();
+    if (!sound) return false;
+
+    if (sound->Load(filepath, loop, useFilter) == false) {
+        DebugLog("読み込み失敗.\n");
+        return false;
+    }
+
+    AddSoundList(sound);
+
+    sound->Play3D(pos, delay);
+    sound->SetVolume(volume);
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
 // ゲームサウンドの作成
 //-----------------------------------------------------------------------------
 std::shared_ptr<SoundWork> SoundDirector::CreateSoundWork(const std::string& filepath, bool loop, bool useFilter)

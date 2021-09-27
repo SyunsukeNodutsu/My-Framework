@@ -20,7 +20,7 @@ void Mouse::Initialize(HWND hwnd)
     m_deviceMouse.hwndTarget    = hwnd;// nullptrでもいけるっぽい
 
     if (RegisterRawInputDevices(&m_deviceMouse, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        MessageBoxA(nullptr, "[WARNING]マウスデバイスの登録に失敗しました.", "Failed", MB_OK);
+        MessageBoxA(nullptr, "WARNING: マウスデバイスの登録に失敗しました.", "Failed", MB_OK);
 }
 
 //-----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ void Mouse::Finalize(HWND hwnd)
     m_deviceMouse.hwndTarget    = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceMouse, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]マウスデバイスの登録解除に失敗しました.");
+        DebugLog("WARNING: マウスデバイスの登録解除に失敗しました.\n");
 }
 
 //-----------------------------------------------------------------------------

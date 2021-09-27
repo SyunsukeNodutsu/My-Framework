@@ -36,6 +36,12 @@ public:
 	// @param camera 追加するカメラ
 	void SetCameraList(std::shared_ptr<Camera> camera);
 
+	// @brief カメラ管理リストを返す
+	// @return カメラ管理リスト(読み取り専用)
+	const std::list<std::shared_ptr<Camera>>& GetCameraList() const {
+		return m_cameraList;
+	}
+
 	// @brief 現在使用しているカメラを返す
 	// @return 使用カメラ ※最も優先度の高いカメラ(遷移中を除く)
 	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }

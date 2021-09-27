@@ -24,6 +24,25 @@ public:
 	// @brief 再生リスト全停止
 	void AllStop();
 
+	// @brief 再生
+	// @param filepath ファイルのパス
+	// @param delay ディレイ
+	// @param volume 音量
+	// @param loop ループ再生？
+	// @param useFilter フィルター機能使用？
+	// @return 成功...true
+	bool Play(const std::string& filepath, DWORD delay = 0, float volume = 1.0f, bool loop = false, bool useFilter = false);
+
+	// @brief 3D再生
+	// @param filepath ファイルのパス
+	// @param pos 発生座標
+	// @param delay ディレイ
+	// @param volume 音量
+	// @param loop ループ再生？
+	// @param useFilter フィルター機能使用？
+	// @return 成功...true
+	bool Play3D(const std::string& filepath, float3& pos, DWORD delay = 0, float volume = 1.0f, bool loop = false, bool useFilter = false);
+
 	// @brief ゲームサウンドの作成
 	// @param filepath ファイルのパス
 	// @param loop ループ再生？

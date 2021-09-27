@@ -416,6 +416,20 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 		ImGui::PopID();
 	}
 
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Camera List");
+	ImGui::PopStyleColor();
+
+	// カメラ一覧
+	for (auto&& camera : APP.g_gameSystem->g_cameraSystem.GetCameraList())
+	{
+		ImGui::PushID(camera.get());
+		ImGui::Text(camera->g_name.c_str());
+		ImGui::PopID();
+	}
+
 	ImGui::End();
 }
 

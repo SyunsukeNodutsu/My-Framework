@@ -1,4 +1,5 @@
 ﻿#include "Keyboard.h"
+#include "../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // 初期化
@@ -14,7 +15,7 @@ void Keyboard::Initialize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]キーボードデバイスの登録に失敗しました.\n");
+        DebugLog("WARNING: キーボードデバイスの登録に失敗しました.\n");
 
     m_isDown.fill(false);
     m_isPressed.fill(false);
@@ -36,7 +37,7 @@ void Keyboard::Finalize(HWND hwnd)
     m_deviceKeyboard.hwndTarget  = hwnd;
 
     if (RegisterRawInputDevices(&m_deviceKeyboard, 1, sizeof(RAWINPUTDEVICE)) == FALSE)
-        DebugLog("[WARNING]キーボードデバイスの登録解除に失敗しました.\n");
+        DebugLog("WARNING: キーボードデバイスの登録解除に失敗しました.\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -55,9 +56,17 @@ void Keyboard::ParseKeyboardData(RAWKEYBOARD keyboard)
 {
     // 押されている間
     m_isDown[keyboard.VKey] = (keyboard.Flags & RI_KEY_BREAK) == 0;
+    if (m_isDown[keyboard.VKey]) {
+        // 押されている秒数を加算
+        m_pushTime[keyboard.VKey] += APP.g_fpsTimer->GetDeltaTime();
+    }
 
     // 離された瞬間
     m_isReleased[keyboard.VKey] = keyboard.Flags & RI_KEY_BREAK;
+    if (m_isReleased[keyboard.VKey]) {
+        // 押されている秒数をリセット
+        m_pushTime[keyboard.VKey] = 0;
+    }
 
     // 押した瞬間
     switch (keyboard.Message)

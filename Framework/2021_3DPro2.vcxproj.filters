@@ -228,6 +228,9 @@
     <ClCompile Include="Source\Application\Actors\EditorCamera.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -427,6 +430,9 @@
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\EditorCamera.h">
       <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

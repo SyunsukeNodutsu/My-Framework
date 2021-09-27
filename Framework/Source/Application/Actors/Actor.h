@@ -124,6 +124,14 @@ public:
 			m_modelWork.SetModel(model);
 	}
 
+	// @brief UVスクロールを行うかを設定する
+	// @param onoff UVスクロールを行うかどうか
+	void SetUVScroll(bool onoff) { m_isUVScroll = onoff; }
+
+	// @brief UVOffsetの値を設定する
+	// @param val 設定するOffset値
+	void SetUVOffset(float2 val) { m_numUVOffset = val; }
+
 	//--------------------------------------------------
 	// 取得
 	//--------------------------------------------------
@@ -155,6 +163,9 @@ protected:
 	bool		m_isActiv;		// 動作？
 	bool		m_isEnable;		// 有効？ ※falseになると消滅します
 	std::string m_name;			// オブジェクトの名前
+
+	bool m_isUVScroll = false;
+	float2 m_numUVOffset = float2::Zero;
 
 };
 

@@ -28,9 +28,16 @@ public:
 
 private:
 
-	std::shared_ptr<TPSCamera> m_spCamera;
-	Actor m_tire;
-	mfloat4x4 m_tireOffset;
+	std::shared_ptr<TPSCamera> m_spCamera;// 使用カメラ
+	float m_moveSpeed;// 移動速度
+	float m_rotateSpeed;// 回転速度
+
+	// 親子
+	Actor m_trackR; mfloat4x4 m_trackOffsetR;
+	Actor m_trackL; mfloat4x4 m_trackOffsetL;
+
+	Actor m_turret; mfloat4x4 m_turretOffset;
+	Actor m_mainGun; mfloat4x4 m_mainGunOffset;
 
 private:
 

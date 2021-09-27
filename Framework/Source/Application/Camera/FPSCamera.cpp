@@ -11,6 +11,7 @@ FPSCamera::FPSCamera()
 	, m_degAngle(float3::Zero)
 	, m_minAngleX(-360)
 	, m_maxAngleX(360)
+	, m_enable(false)
 {
 }
 

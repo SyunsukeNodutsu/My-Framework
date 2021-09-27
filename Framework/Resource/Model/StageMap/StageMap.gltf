@@ -10,8 +10,7 @@
             "nodes" : [
                 0,
                 1,
-                2,
-                3
+                2
             ]
         }
     ],
@@ -33,18 +32,9 @@
             "mesh" : 2,
             "name" : "Wall",
             "translation" : [
-                -16.40806007385254,
+                -19.752727508544922,
                 0.5321410298347473,
                 0.49075543880462646
-            ]
-        },
-        {
-            "mesh" : 3,
-            "name" : "Cube",
-            "translation" : [
-                -10.142900466918945,
-                0.26359739899635315,
-                5.019509315490723
             ]
         }
     ],
@@ -73,20 +63,6 @@
                 "baseColorTexture" : {
                     "index" : 3
                 },
-                "metallicFactor" : 0,
-                "roughnessFactor" : 0.5
-            }
-        },
-        {
-            "doubleSided" : true,
-            "name" : "\u30de\u30c6\u30ea\u30a2\u30eb",
-            "pbrMetallicRoughness" : {
-                "baseColorFactor" : [
-                    0.8999999761581421,
-                    0.8999999761581421,
-                    0.8999999761581421,
-                    1
-                ],
                 "metallicFactor" : 0,
                 "roughnessFactor" : 0.5
             }
@@ -147,21 +123,6 @@
                     },
                     "indices" : 21,
                     "material" : 1
-                }
-            ]
-        },
-        {
-            "name" : "\u7acb\u65b9\u4f53",
-            "primitives" : [
-                {
-                    "attributes" : {
-                        "POSITION" : 22,
-                        "NORMAL" : 23,
-                        "TANGENT" : 24,
-                        "TEXCOORD_0" : 25
-                    },
-                    "indices" : 16,
-                    "material" : 2
                 }
             ]
         }
@@ -380,40 +341,6 @@
             "componentType" : 5123,
             "count" : 60,
             "type" : "SCALAR"
-        },
-        {
-            "bufferView" : 22,
-            "componentType" : 5126,
-            "count" : 24,
-            "max" : [
-                0.6225696206092834,
-                2.4311060905456543,
-                0.6225690841674805
-            ],
-            "min" : [
-                -0.6225689053535461,
-                -0.3054882287979126,
-                -0.6225694417953491
-            ],
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 23,
-            "componentType" : 5126,
-            "count" : 24,
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 24,
-            "componentType" : 5126,
-            "count" : 24,
-            "type" : "VEC4"
-        },
-        {
-            "bufferView" : 25,
-            "componentType" : 5126,
-            "count" : 24,
-            "type" : "VEC2"
         }
     ],
     "bufferViews" : [
@@ -526,26 +453,6 @@
             "buffer" : 0,
             "byteLength" : 120,
             "byteOffset" : 592856
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 288,
-            "byteOffset" : 592976
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 288,
-            "byteOffset" : 593264
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 384,
-            "byteOffset" : 593552
-        },
-        {
-            "buffer" : 0,
-            "byteLength" : 192,
-            "byteOffset" : 593936
         }
     ],
     "samplers" : [
@@ -556,7 +463,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 594128,
+            "byteLength" : 592976,
             "uri" : "StageMap.bin"
         }
     ]

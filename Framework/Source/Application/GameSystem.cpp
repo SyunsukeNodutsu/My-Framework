@@ -27,7 +27,7 @@ void GameSystem::Initialize()
 	// TODO: 外部ファイルへ
 	//--------------------------------------------------
 	{
-		AddActor("Human");
+		//AddActor("Human");
 		AddActor("Sky");
 		AddActor("StageMap");
 		AddActor("Tank");
@@ -44,21 +44,17 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Germany.wav", true, true);
+	// フィルターなどをかける場合は インスタンスを取得
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/rain1.wav", true, true);
 	if (sound)
 	{
-		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play(1000);
 		sound->SetVolume(1.0f);
 	}
 	// 3DBGM再生
-	auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/heli.wav", true);
-	if (sound3d)
-	{
-		float3 pos = float3(0, 0, 0);
-		sound3d->Play3D(pos);
-		sound3d->SetVolume(0.0f);
-	}
+	float3 pos = float3(0, 0, 0);
+	//SOUND_DIRECTOR.Play3D("Resource/Audio/SE/heli.wav", pos, 0, 1.0f, true);
 
 #pragma region Json test.
 	// デシリアライズ
@@ -104,8 +100,8 @@ void GameSystem::Finalize()
 void GameSystem::Update()
 {
 	// 前フレームからの経過時間を計算/取得
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
-	const float totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
+	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
 	// 時間系を設定/送信
 	RENDERER.Getcb12().Work().m_deltaTime = deltaTime;
@@ -115,8 +111,7 @@ void GameSystem::Update()
 	// Actorリスト更新
 	for (auto itr = m_spActorList.begin(); itr != m_spActorList.end();)
 	{
-		if ((*itr) == nullptr)
-			continue;
+		if ((*itr) == nullptr) continue;
 
 		// 更新
 		(*itr)->Update(deltaTime);
@@ -132,14 +127,6 @@ void GameSystem::Update()
 	{
 		float3 pos = float3(10, 0, 0);
 		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
-
-		auto sound3d = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/Cannon01.wav", false);
-		if (sound3d)
-		{
-			float3 pos = float3(10, 0, 0);
-			sound3d->Play3D(pos);
-			sound3d->SetVolume(1.0f);
-		}
 	}
 
 	g_cameraSystem.Update(deltaTime);
@@ -150,7 +137,7 @@ void GameSystem::Update()
 //-----------------------------------------------------------------------------
 void GameSystem::LateUpdate()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	for (auto& object : m_spActorList)
 		object->LateUpdate(deltaTime);
@@ -161,7 +148,7 @@ void GameSystem::LateUpdate()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw()
 {
-	const float deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();

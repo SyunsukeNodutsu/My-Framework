@@ -12,6 +12,8 @@
 cbuffer cdObject : register(b8)
 {
     row_major float4x4  g_world_matrix; // キャラクター用 ワールド行列
+    float2              g_uv_offset;    // UVスクロール用
+    float2              g_uv_tiling;    // UVタイリング用
     float               g_dist_to_eye;  // カメラとの距離
     float               g_dither_enable;// ディザリング有効？
 }

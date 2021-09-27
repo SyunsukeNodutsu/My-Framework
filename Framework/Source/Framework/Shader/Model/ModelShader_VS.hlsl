@@ -24,7 +24,7 @@ VertexOutput main(
     ret.position = mul(ret.position, g_view_matrix);
     ret.position = mul(ret.position, g_proj_matrix);
 	
-    ret.uv = uv;
+    ret.uv = uv * g_uv_tiling + g_uv_offset;
     
     // object‚Ì‰ñ“]‚ğ‰Á–¡
     // float3 ... 41 42 43 ‚ÌÀ•W‚ğ–³‹
