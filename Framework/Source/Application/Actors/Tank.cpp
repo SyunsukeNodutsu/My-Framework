@@ -1,4 +1,6 @@
 ﻿#include "Tank.h"
+#include "TankParts.h"
+
 #include "../../Framework/Audio/SoundDirector.h"
 
 //-----------------------------------------------------------------------------
@@ -6,6 +8,7 @@
 //-----------------------------------------------------------------------------
 Tank::Tank()
 	: m_spCamera(nullptr)
+	, m_spTankParts(nullptr)
 	, m_moveSpeed(0.0f)
 	, m_rotateSpeed(0.0f)
 {
@@ -19,21 +22,12 @@ void Tank::Awake()
 	m_name = "T43";
 
 	LoadModel("Resource/Model/T43/T43_Body.gltf");
+	
+	m_spTankParts = std::make_shared<TankParts>(*this);
+	m_spTankParts->Initialize();
+
+	// 初期化後に浮かせる ※TODO: モデルのY座標修正
 	m_transform.SetPosition(float3(0, 1.2f, 0));
-
-	m_trackR.LoadModel("Resource/Model/T43/T43_Track.gltf");
-	m_trackR.SetUVScroll(true);
-	m_trackOffsetR = mfloat4x4::CreateTranslation(float3(1.1f, -1.1f, 0.32f));
-
-	m_trackL.LoadModel("Resource/Model/T43/T43_Track.gltf");
-	m_trackL.SetUVScroll(true);
-	m_trackOffsetL = mfloat4x4::CreateTranslation(float3(-1.1f, -1.1f, 0.32f));
-
-	m_turret.LoadModel("Resource/Model/T43/T43_Turret.gltf");
-	m_turretOffset = mfloat4x4::CreateTranslation(float3(0.0f, 0.42f, 0.94f));
-
-	m_mainGun.LoadModel("Resource/Model/T43/T43_MainGun.gltf");
-	m_mainGunOffset = mfloat4x4::CreateTranslation(float3(0.0f, 0.8f, 1.8f));
 
 	// カメラ作成
 	m_spCamera = std::make_shared<TPSCamera>();
@@ -80,22 +74,7 @@ void Tank::Update(float deltaTime)
 		SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Cannon01.wav", pos);
 	}
 
-	m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * m_transform.GetWorldMatrix());
-	m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * m_transform.GetWorldMatrix());
-
-	float trackMove = m_moveSpeed * 0.4f;
-	trackMove = std::clamp(trackMove, -1.6f, 1.6f);
-
-	static float uvoffsetR = 0;
-	uvoffsetR -= trackMove * deltaTime;
-	m_trackR.SetUVOffset(float2(0, uvoffsetR));
-
-	static float uvoffsetL = 0;
-	uvoffsetL -= trackMove * deltaTime;
-	m_trackL.SetUVOffset(float2(0, uvoffsetL));
-
-	m_turret.GetTransform().SetWorldMatrix(m_turretOffset * m_transform.GetWorldMatrix());
-	m_mainGun.GetTransform().SetWorldMatrix(m_mainGunOffset * m_transform.GetWorldMatrix());
+	m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
 
 	if (m_spCamera)
 	{
@@ -114,11 +93,7 @@ void Tank::Draw(float deltaTime)
 {
 	Actor::Draw(deltaTime);
 
-	m_trackR.Draw(deltaTime);
-	m_trackL.Draw(deltaTime);
-
-	m_turret.Draw(deltaTime);
-	m_mainGun.Draw(deltaTime);
+	m_spTankParts->Draw(deltaTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -200,13 +175,13 @@ void Tank::UpdateRotate(float deltaTime)
 }
 
 // State待機 更新
-void Tank::StateWait::Update(float deltaTime, Tank& owner)
+void Tank::State3rd::Update(float deltaTime, Tank& owner)
 {
 
 }
 
 // State移動 更新
-void Tank::StateMove::Update(float deltaTime, Tank& owner)
+void Tank::StateAim::Update(float deltaTime, Tank& owner)
 {
 
 }

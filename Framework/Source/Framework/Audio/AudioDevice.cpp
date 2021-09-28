@@ -52,42 +52,15 @@ bool AudioDevice::Initialize()
     // デバイスの詳細を確認
     XAUDIO2_VOICE_DETAILS details;
     g_pMasteringVoice->GetVoiceDetails(&details);
+    g_inputSampleRate = details.InputSampleRate;
+    g_inputChannels = details.InputChannels;
 
     if (details.InputChannels > OUTPUTCHANNELS) {
+        APP.g_imGuiSystem->AddLog("ERROR: We have exceeded the number of channels we support.");
         return false;
     }
 
-    UINT32 nSampleRate = details.InputSampleRate;
-    g_channels = details.InputChannels;
-
-    // ReverbEffectの作成
-    UINT32 rflags = 0;
-    if (FAILED(XAudio2CreateReverb(&g_pReverbEffect, rflags))) {
-        return false;
-    }
-
-    // SubmixVoiceの作成
-
-    // パフォーマンスのヒント：グローバルFXを最終ミックスと同じサンプル数のチャンネルで実行する必要はありません。
-    // のチャンネル数でグローバルFXを実行する必要はありません。 例えば、このサンプルでは
-    // 例えば、このサンプルではリバーブをモノラルモードで動作させ、CPUのオーバーヘッドを減らしています。
-    XAUDIO2_EFFECT_DESCRIPTOR effects[] = { { g_pReverbEffect, TRUE, 1 } };
-    XAUDIO2_EFFECT_CHAIN effectChain = { 1, effects };
-
-    if (FAILED(hr = g_xAudio2->CreateSubmixVoice(&g_pSubmixVoice,
-        1, nSampleRate, 0, 0, nullptr, &effectChain))) {
-        return false;
-    }
-
-    // デフォルトのFXパラメータ設定
-    XAUDIO2FX_REVERB_PARAMETERS native;
-    XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_DEFAULT;
-    ReverbConvertI3DL2ToNative(&param, &native);
-    if (FAILED(g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native)))) {
-        APP.g_imGuiSystem->AddLog("WORNING: Failed to set EffectParameters.");
-        return false;
-    }
-
+    // 3DAuido初期化
     Initialize3D();
 
     // ボリュームメータAPO作成
@@ -103,20 +76,32 @@ bool AudioDevice::Initialize()
 //-----------------------------------------------------------------------------
 bool AudioDevice::Initialize3D()
 {
-    //
-    // X3DAudioの初期化 X3DAudio の初期化
-    // 最終ミックスでのスピーカーのジオメトリ設定。WAVEFORMATEXTENSIBLE.dwChannelMaskで定義された、
-    // スピーカーの位置へのチャンネルの割り当てを指定します。
-    //
-    // SpeedOfSound - ユーザー定義のワールドユニット/秒での音速，ドップラー計算にのみ使用されます．
-    // ドップラー計算にのみ使用され、 >= FLT_MIN でなければなりません。
-    //
+    // ReverbEffectの作成
+    if (FAILED(XAudio2CreateReverb(&g_pReverbEffect))) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create reverb.");
+        return false;
+    }
 
-    DWORD dwChannelMask;
-    g_pMasteringVoice->GetChannelMask(&dwChannelMask);
+    // SubmixVoiceの作成
+    XAUDIO2_EFFECT_DESCRIPTOR effects[] = { { g_pReverbEffect, TRUE, g_inputChannels } };
+    XAUDIO2_EFFECT_CHAIN effectChain = { 1, effects };
 
+    if (FAILED(g_xAudio2->CreateSubmixVoice(&g_pSubmixVoice,
+        g_inputChannels, g_inputSampleRate, 0, 0, nullptr, &effectChain))) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to create submix voice.");
+        return false;
+    }
+
+    // デフォルトのFXパラメータ設定
+    XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_GENERIC;
+    if (!SetReverb(param)) {
+        APP.g_imGuiSystem->AddLog("ERROR: Failed to set effect parameters.");
+        return false;
+    }
+
+    // X3DAudio初期化
     constexpr float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
-    X3DAudioInitialize(dwChannelMask, SPEEDOFSOUND, g_x3DAudioInstance);
+    X3DAudioInitialize(g_channelMask, SPEEDOFSOUND, g_x3DAudioInstance);
 
     //--------------------------------------------------
     // リスナー初期化
@@ -177,33 +162,28 @@ void AudioDevice::Update(const mfloat4x4& listener)
     if (!g_xAudio2) return;
     if (!g_pMasteringVoice) return;
 
-    UpdateVolumeMeter();
+    {
+        // 座標
+        float3 pos = listener.Translation();
+        m_listener.Position.x = pos.x;
+        m_listener.Position.y = pos.y;
+        m_listener.Position.z = pos.z;
 
-    //--------------------------------------------------
-    // リスナー
-    //--------------------------------------------------
+        // 方向
+        float3 front = listener.Backward();
+        m_listener.OrientFront.x = front.x;
+        m_listener.OrientFront.y = front.y;
+        m_listener.OrientFront.z = front.z;
 
-    // 座標
-    float3 pos = listener.Translation();
-    m_listener.Position.x = pos.x;
-    m_listener.Position.y = pos.y;
-    m_listener.Position.z = pos.z;
+        float3 top = listener.Up();
+        m_listener.OrientTop.x = top.x;
+        m_listener.OrientTop.y = top.y;
+        m_listener.OrientTop.z = top.z;
+    }
 
-    // 方向
-    float3 front = listener.Backward();
-    m_listener.OrientFront.x = front.x;
-    m_listener.OrientFront.y = front.y;
-    m_listener.OrientFront.z = front.z;
-
-    float3 top = listener.Up();
-    m_listener.OrientTop.x = top.x;
-    m_listener.OrientTop.y = top.y;
-    m_listener.OrientTop.z = top.z;
-
-    //--------------------------------------------------
-
-    // 3Dサウンドなどの更新
     SOUND_DIRECTOR.Update();
+
+    UpdateVolumeMeter();
 }
 
 //-----------------------------------------------------------------------------
@@ -310,6 +290,21 @@ float AudioDevice::GetMasterVolume() const
 }
 
 //-----------------------------------------------------------------------------
+// リバーブを設定する
+//-----------------------------------------------------------------------------
+bool AudioDevice::SetReverb(XAUDIO2FX_REVERB_I3DL2_PARAMETERS rparam)
+{
+    if (!g_xAudio2) return false;
+    if (!g_pSubmixVoice) return false;
+
+    XAUDIO2FX_REVERB_PARAMETERS native = {};
+    ReverbConvertI3DL2ToNative(&rparam, &native);
+    HRESULT hr = g_pSubmixVoice->SetEffectParameters(0, &native, sizeof(native));
+
+    return SUCCEEDED(hr);
+}
+
+//-----------------------------------------------------------------------------
 // ボリュームメータ(APO)の作成
 //-----------------------------------------------------------------------------
 bool AudioDevice::InitializeVolumeMeterAPO()
@@ -327,7 +322,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     // EFFECT_DESCRIPTOR の作成
     XAUDIO2_EFFECT_DESCRIPTOR descriptor = {};
     descriptor.InitialState     = true;
-    descriptor.OutputChannels   = g_channels;
+    descriptor.OutputChannels   = g_inputChannels;
     descriptor.pEffect          = pVolumeMeterAPO;
 
     // EFFECT_CHAIN の作成
@@ -359,7 +354,7 @@ void AudioDevice::UpdateVolumeMeter()
     XAUDIO2FX_VOLUMEMETER_LEVELS Levels = {};
     Levels.pPeakLevels  = &g_peakLevels[0];
     Levels.pRMSLevels   = &g_RMSLevels[0];
-    Levels.ChannelCount = g_channels;
+    Levels.ChannelCount = g_inputChannels;
 
     // パラメータ受信
     if (FAILED(g_pMasteringVoice->GetEffectParameters(0, &Levels, sizeof(Levels)))) {

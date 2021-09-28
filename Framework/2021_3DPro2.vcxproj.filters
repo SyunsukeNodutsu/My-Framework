@@ -70,6 +70,18 @@
     <Filter Include="Source\Framework\Graphics\Effect">
       <UniqueIdentifier>{d9d01096-9c8e-446c-acb1-502026d24ddb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Input\BasicInput">
+      <UniqueIdentifier>{6a0a131c-f2f3-48d7-9f19-3638bb4d2a7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Input\RawInput">
+      <UniqueIdentifier>{5baa3c36-11bf-449c-9011-e7db5c3f2e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Input\XInput">
+      <UniqueIdentifier>{e9b34def-f380-4ec3-b85d-a2cab5ac9c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\HighLevel">
+      <UniqueIdentifier>{499e5c6d-52fb-42fc-b8b9-51143972feda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -198,9 +210,6 @@
     <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp">
       <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Utility\JobSystem.cpp">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application\Actors\Actor.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
@@ -230,6 +239,15 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\TankParts.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\ResourceFactory.cpp">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp">
+      <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,9 +404,6 @@
     <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h">
       <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\JobSystem.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Application\Actors\Actor.h">
       <Filter>Source\Application\Actors</Filter>
     </ClInclude>
@@ -433,6 +448,18 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h">
+      <Filter>Library\imGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\TankParts.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\ResourceFactory.h">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h">
+      <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

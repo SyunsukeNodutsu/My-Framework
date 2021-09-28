@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
     <ClCompile Include="Source\Application\Actors\Tank.cpp" />
+    <ClCompile Include="Source\Application\Actors\TankParts.cpp" />
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp" />
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp" />
     <ClCompile Include="Source\Application\Camera\TPSCamera.cpp" />
@@ -55,6 +56,7 @@
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
+    <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Framework\Input\Mouse.cpp" />
     <ClCompile Include="Source\Framework\Input\RawInputDevice.cpp" />
@@ -69,12 +71,7 @@
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp" />
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
-    <ClCompile Include="Source\Framework\Utility\JobSystem.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\ResourceFactory.cpp" />
     <ClCompile Include="Source\Framework\Window\Window.cpp" />
     <ClCompile Include="Source\Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -88,6 +85,7 @@
     <ClInclude Include="..\Library\Effekseer\include\Effekseer.Internal.h" />
     <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h" />
     <ClInclude Include="..\Library\gltfLoader\KdGLTFLoader.h" />
+    <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h" />
     <ClInclude Include="..\Library\imGui\imconfig.h" />
     <ClInclude Include="..\Library\imGui\imgui.h" />
     <ClInclude Include="..\Library\imGui\imgui_impl_dx11.h" />
@@ -102,6 +100,7 @@
     <ClInclude Include="Source\Application\Actors\Sky.h" />
     <ClInclude Include="Source\Application\Actors\StageMap.h" />
     <ClInclude Include="Source\Application\Actors\Tank.h" />
+    <ClInclude Include="Source\Application\Actors\TankParts.h" />
     <ClInclude Include="Source\Application\ApplicationInterface.h" />
     <ClInclude Include="Source\Application\Camera\CameraSystem.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
@@ -126,6 +125,7 @@
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
+    <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />
     <ClInclude Include="Source\Framework\Input\KeyCode.h" />
     <ClInclude Include="Source\Framework\Input\Mouse.h" />
@@ -145,12 +145,7 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h" />
     <ClInclude Include="Source\Framework\Utility\Enums.h" />
     <ClInclude Include="Source\Framework\Utility\FpsTimer.h" />
-    <ClInclude Include="Source\Framework\Utility\JobSystem.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\ResourceFactory.h" />
     <ClInclude Include="Source\Framework\Utility\Timer.h" />
     <ClInclude Include="Source\Framework\Utility\Types.h" />
     <ClInclude Include="Source\Framework\Utility\Utility.h" />

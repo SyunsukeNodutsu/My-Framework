@@ -7,6 +7,8 @@
 #include "Actor.h"
 #include "../Camera/TPSCamera.h"
 
+class TankParts;
+
 // 戦車クラス
 class Tank : public Actor
 {
@@ -28,16 +30,11 @@ public:
 
 private:
 
-	std::shared_ptr<TPSCamera> m_spCamera;// 使用カメラ
-	float m_moveSpeed;// 移動速度
+	std::shared_ptr<TPSCamera>	m_spCamera;		// 使用カメラ
+	std::shared_ptr<TankParts>	m_spTankParts;	// 部品
+
+	float m_moveSpeed;	// 移動速度
 	float m_rotateSpeed;// 回転速度
-
-	// 親子
-	Actor m_trackR; mfloat4x4 m_trackOffsetR;
-	Actor m_trackL; mfloat4x4 m_trackOffsetL;
-
-	Actor m_turret; mfloat4x4 m_turretOffset;
-	Actor m_mainGun; mfloat4x4 m_mainGunOffset;
 
 private:
 
@@ -57,11 +54,11 @@ private:
 	public:
 		virtual void Update(float deltaTime, Tank& owner) override {}
 	};
-	class StateWait : public StateBase {
+	class State3rd : public StateBase {
 	public:
 		virtual void Update(float deltaTime, Tank& owner) override;
 	};
-	class StateMove : public StateBase {
+	class StateAim : public StateBase {
 	public:
 		virtual void Update(float deltaTime, Tank& owner) override;
 	};

@@ -118,11 +118,7 @@ public:
 	void SetActive(bool activ) { m_isActiv = activ; }
 
 	// モデル読み込み
-	void LoadModel(const std::string& filepath) {
-		auto model = std::make_shared<ModelData>();
-		if (model->Load(filepath))
-			m_modelWork.SetModel(model);
-	}
+	void LoadModel(const std::string& filepath);
 
 	// @brief UVスクロールを行うかを設定する
 	// @param onoff UVスクロールを行うかどうか

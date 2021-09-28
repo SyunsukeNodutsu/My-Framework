@@ -44,13 +44,13 @@ void GameSystem::Initialize()
 		object->Initialize();
 
 	// BGM再生
-	// フィルターなどをかける場合は インスタンスを取得
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/rain1.wav", true, true);
+	// 音量操作や停止、フィルターなどをかける場合は インスタンスを取得
+	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/USA.wav", true, true);
 	if (sound)
 	{
-		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
 		sound->Play(1000);
-		sound->SetVolume(1.0f);
+		sound->SetVolume(0.0f);
 	}
 	// 3DBGM再生
 	float3 pos = float3(0, 0, 0);

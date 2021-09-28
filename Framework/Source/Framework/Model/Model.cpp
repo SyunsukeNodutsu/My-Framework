@@ -31,8 +31,10 @@ bool ModelData::Load(const std::string& filepath)
 	m_filepath = filepath;// パス保存
 
 	std::shared_ptr<KdGLTFModel> model = KdLoadGLTFModel(filepath);
-	if (model == nullptr)
+	if (model == nullptr) {
+		APP.g_imGuiSystem->AddLog(std::string("ERROR: Failed load model. path: " + filepath).c_str());
 		return false;
+	}
 
 	// モデルを構成する各要素を作成
 	CreateNodes(model);
@@ -144,27 +146,23 @@ void ModelData::CreateMaterials(std::shared_ptr<KdGLTFModel>& model)
 		std::filesystem::path texturepath = m_filepath;
 		// 基本色
 		if (!srcMaterial.m_baseColorTexture.empty()) {
-			dstMaterial.m_baseColorTexture = std::make_shared<Texture>();
 			texturepath.replace_filename(srcMaterial.m_baseColorTexture);
-			dstMaterial.m_baseColorTexture->Create(texturepath.string());
+			dstMaterial.m_baseColorTexture = RES_FAC.GetTexture(texturepath.string());
 		}
 		// 法線マップ
 		if (!srcMaterial.m_normalTexture.empty()) {
-			dstMaterial.m_normalTexture = std::make_shared<Texture>();
 			texturepath.replace_filename(srcMaterial.m_normalTexture);
-			dstMaterial.m_normalTexture->Create(texturepath.string());
+			dstMaterial.m_normalTexture = RES_FAC.GetTexture(texturepath.string());
 		}
 		// 金属性 粗さ
 		if (!srcMaterial.m_metallicRoughnessTexture.empty()) {
-			dstMaterial.m_metallicRoughnessTexture = std::make_shared<Texture>();
 			texturepath.replace_filename(srcMaterial.m_metallicRoughnessTexture);
-			dstMaterial.m_metallicRoughnessTexture->Create(texturepath.string());
+			dstMaterial.m_metallicRoughnessTexture = RES_FAC.GetTexture(texturepath.string());
 		}
 		// エミッシブ
 		if (!srcMaterial.m_emissiveTexture.empty()) {
-			dstMaterial.m_emissiveTexture = std::make_shared<Texture>();
 			texturepath.replace_filename(srcMaterial.m_emissiveTexture);
-			dstMaterial.m_emissiveTexture->Create(texturepath.string());
+			dstMaterial.m_emissiveTexture = RES_FAC.GetTexture(texturepath.string());
 		}
 	}
 }

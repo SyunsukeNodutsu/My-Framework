@@ -49,6 +49,11 @@ public:
     // @return 成功...マスター音量 失敗...FLT_MAX
     float GetMasterVolume() const;
 
+    // @brief リバーブを設定する
+    // @param rparam 設定するリバーブ
+    // @return 成功...true
+    bool SetReverb(XAUDIO2FX_REVERB_I3DL2_PARAMETERS rparam);
+
 public:
 
     IXAudio2*               g_xAudio2;
@@ -58,7 +63,8 @@ public:
     IUnknown*               g_pReverbEffect;
 
     X3DAUDIO_LISTENER       m_listener;
-    UINT32                  g_channels;
+    UINT32                  g_inputSampleRate;
+    UINT32                  g_inputChannels;
     DWORD                   g_channelMask;
 
     FLOAT32 g_emitterAzimuths[INPUTCHANNELS];

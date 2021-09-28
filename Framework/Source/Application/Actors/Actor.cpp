@@ -135,3 +135,12 @@ void Actor::Draw(float deltaTime)
 void Actor::Destroy()
 {
 }
+
+//-----------------------------------------------------------------------------
+// モデル読み込み
+//-----------------------------------------------------------------------------
+void Actor::LoadModel(const std::string& filepath)
+{
+	auto model = RES_FAC.GetModelData(filepath);
+	if (model) m_modelWork.SetModel(model);
+}

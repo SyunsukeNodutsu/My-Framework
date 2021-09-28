@@ -4,9 +4,10 @@
 // レンダーターゲットクラス
 //-----------------------------------------------------------------------------
 #pragma once
+#include "GraphicsDeviceChild.h"
 
 // レンダーターゲットクラス
-class RenderTarget
+class RenderTarget : public GraphicsDeviceChild
 {
 public:
 

@@ -68,3 +68,5 @@
 #include "Audio/AudioDeviceChild.h"
 #include "Audio/Sound.h"
 #include "Audio/Sound3D.h"
+
+#include "Utility/ResourceFactory.h"

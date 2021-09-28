@@ -260,7 +260,7 @@ bool SoundWork::SetPan(float pan)
     // 本フレームワークは単一のターゲットボイスではないので
     // 宛先(第一引数)はNULLではなくMasteringVoiceを指定
     if (FAILED(m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice,
-        INPUTCHANNELS, g_audioDevice->g_channels, outputMatrix))) {
+        INPUTCHANNELS, g_audioDevice->g_inputChannels, outputMatrix))) {
         APP.g_imGuiSystem->AddLog("ERROR: Failed to pan voice. 多くの場合、モノラル音源じゃないのが理由です.\n");
         return false;
     }

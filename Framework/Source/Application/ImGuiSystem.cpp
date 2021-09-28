@@ -44,7 +44,7 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
-	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, io.Fonts->GetGlyphRangesJapanese());
+	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, glyphRangesJapanese);
 
 	// 初期スタイル
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -54,6 +54,7 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	style.ScrollbarSize = 10;
 
 	AddLog("INFO: Dear imGui Initialized.");
+	AddLog(u8"u8を付けるとUTF-8に対応.");
 
 	Cpuid::Research();
 	AddLog("INFO: CPUID Researched.");

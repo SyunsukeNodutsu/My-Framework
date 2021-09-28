@@ -49,6 +49,8 @@ void SoundWork3D::Update()
     DWORD dwCalcFlags = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT |
         X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;
 
+    //dwCalcFlags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
+
     // DSP設定の計算
     X3DAudioCalculate(g_audioDevice->g_x3DAudioInstance, &g_audioDevice->m_listener,
         &m_emitter, dwCalcFlags, &m_dspSettings);
@@ -58,7 +60,7 @@ void SoundWork3D::Update()
         // X3DAudioが生成したDSP設定をXAudio2に適用する
         // MasteringVoice SubmixVoice にそれぞれ送信
         m_pSourceVoice->SetFrequencyRatio(m_dspSettings.DopplerFactor);
-        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice, INPUTCHANNELS, g_audioDevice->g_channels, g_audioDevice->g_matrixCoefficients);
+        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice, INPUTCHANNELS, g_audioDevice->g_inputChannels, g_audioDevice->g_matrixCoefficients);
         m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pSubmixVoice, 1, 1, &m_dspSettings.ReverbLevel);
 
         // この式の詳細については、XAudio2.h の XAudio2CutoffFrequencyToRadians() を参照してください。
@@ -119,11 +121,11 @@ void SoundWork3D::SetEmitter(const float3& pos)
 
     // 各曲線距離スケーラー ※世界の大きさに合わせる必要あり
     m_emitter.CurveDistanceScaler = 200.0f;
-    m_emitter.DopplerScaler     = 200.0f;
+    m_emitter.DopplerScaler     = 1.0f;
 
     // DSP設定
     // 3D信号処理のための低レベルオーディオレンダリングAPIに送られる。
     m_dspSettings.SrcChannelCount = INPUTCHANNELS;
-    m_dspSettings.DstChannelCount = g_audioDevice->g_channels;
+    m_dspSettings.DstChannelCount = g_audioDevice->g_inputChannels;
     m_dspSettings.pMatrixCoefficients = g_audioDevice->g_matrixCoefficients;
 }
