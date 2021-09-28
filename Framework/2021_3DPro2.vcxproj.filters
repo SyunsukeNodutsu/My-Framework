@@ -82,6 +82,9 @@
     <Filter Include="Source\Framework\HighLevel">
       <UniqueIdentifier>{499e5c6d-52fb-42fc-b8b9-51143972feda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Physics">
+      <UniqueIdentifier>{784a3f1a-b024-482a-95ef-4000038da077}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -248,6 +251,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp">
       <Filter>Source\Framework\Input\BasicInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Physics\Collision.cpp">
+      <Filter>Source\Framework\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -460,6 +466,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h">
       <Filter>Source\Framework\Input\BasicInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Physics\Collision.h">
+      <Filter>Source\Framework\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

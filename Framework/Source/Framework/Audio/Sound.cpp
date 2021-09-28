@@ -142,8 +142,6 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
     // TODO: インターフェースのDeepCopy方法の調査 今のままだとShallowCopy
     m_pSourceVoice = m_soundData.GetRawVoice();
 
-    APP.g_imGuiSystem->AddLog(std::string("INFO: Load voice done: " + filepath).c_str());
-
     return true;
 }
 

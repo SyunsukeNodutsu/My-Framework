@@ -61,7 +61,7 @@ void SoundWork3D::Update()
         // MasteringVoice SubmixVoice にそれぞれ送信
         m_pSourceVoice->SetFrequencyRatio(m_dspSettings.DopplerFactor);
         m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice, INPUTCHANNELS, g_audioDevice->g_inputChannels, g_audioDevice->g_matrixCoefficients);
-        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pSubmixVoice, 1, 1, &m_dspSettings.ReverbLevel);
+        m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pSubmixVoice, INPUTCHANNELS, g_audioDevice->g_inputChannels, &m_dspSettings.ReverbLevel);
 
         // この式の詳細については、XAudio2.h の XAudio2CutoffFrequencyToRadians() を参照してください。
         XAUDIO2_FILTER_PARAMETERS FilterParametersDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * m_dspSettings.LPFDirectCoefficient), 1.0f };

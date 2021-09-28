@@ -109,6 +109,9 @@ public:
 	// @brief 自身を破棄
 	void Destroy();
 
+	// レイとメッシュの当たり判定
+	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange);
+
 	//--------------------------------------------------
 	// 設定
 	//--------------------------------------------------

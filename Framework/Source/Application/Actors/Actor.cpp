@@ -137,6 +137,20 @@ void Actor::Destroy()
 }
 
 //-----------------------------------------------------------------------------
+// レイとメッシュの当たり判定
+//-----------------------------------------------------------------------------
+bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange)
+{
+	RayResult result = {};
+
+	const auto& mesh = m_modelWork.GetDataNodes()[0].m_spMesh;
+
+	Collision::RayToMesh(rayPos, rayDir, hitRange, *(mesh.get()), m_transform.GetWorldMatrix(), &result);
+
+	return result.m_hit;
+}
+
+//-----------------------------------------------------------------------------
 // モデル読み込み
 //-----------------------------------------------------------------------------
 void Actor::LoadModel(const std::string& filepath)

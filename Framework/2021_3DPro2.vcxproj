@@ -64,6 +64,7 @@
     <ClCompile Include="Source\Framework\Model\Animation.cpp" />
     <ClCompile Include="Source\Framework\Model\Mesh.cpp" />
     <ClCompile Include="Source\Framework\Model\Model.cpp" />
+    <ClCompile Include="Source\Framework\Physics\Collision.cpp" />
     <ClCompile Include="Source\Framework\Shader\Effect\EffectShader.cpp" />
     <ClCompile Include="Source\Framework\Shader\Model\ModelShader.cpp" />
     <ClCompile Include="Source\Framework\Shader\Shader.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Source\Framework\Model\Animation.h" />
     <ClInclude Include="Source\Framework\Model\Mesh.h" />
     <ClInclude Include="Source\Framework\Model\Model.h" />
+    <ClInclude Include="Source\Framework\Physics\Collision.h" />
     <ClInclude Include="Source\Framework\Shader\Effect\EffectShader.h" />
     <ClInclude Include="Source\Framework\Shader\Model\ModelShader.h" />
     <ClInclude Include="Source\Framework\Shader\Shader.h" />

@@ -60,6 +60,8 @@
 #include "Model/Model.h"
 #include "Model/Animation.h"
 
+#include "Physics/Collision.h"
+
 #include "Input/RawInputDevice.h"
 
 #include "Shader/ShaderManager.h"

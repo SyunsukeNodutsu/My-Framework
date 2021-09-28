@@ -36,7 +36,9 @@ public:
 	// @param onoff 設定する値
 	void SetEnable(bool onoff) { m_enable = onoff; }
 
-	// @brief LogMonitorにログを追加
+	// @brief LogMonitorにログを追加 ※Logの追加はFPSの低下につながります
+	// @param fmt フォーマット付き文字列
+	// @param args フォーマットに対応した引数
 	template<class... Args>
 	inline void AddLog(const char* fmt, Args ...args)
 	{
@@ -46,6 +48,9 @@ public:
 		m_addLog = true;
 		DebugLog(string.c_str());
 	}
+
+	// @brief LogMonitorのクリア
+	void ClearLog() { m_logBuffer.clear(); }
 
 private:
 
