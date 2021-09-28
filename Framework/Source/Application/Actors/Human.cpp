@@ -30,8 +30,6 @@ void Human::Initialize()
 		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -m_zoom));
 		m_spCamera->SetLocalGazePosition(float3(0.0f, 1.4f, 0.0f));
 
-		m_spCamera->SetEnable(false);
-
 		m_spCamera->g_priority = 1.0f;
 		m_spCamera->g_name = "HumanTPS";
 		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera);
@@ -56,16 +54,6 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
-	if (!m_spCamera->g_use) return;
-
-	// Escでカメラ操作切り替え
-	static bool enable = false;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape))
-	{
-		enable = !enable;
-		m_spCamera->SetEnable(enable);
-	}
-
 	m_spState->Update(deltaTime, *this);
 
 	// アニメーション

@@ -229,8 +229,6 @@ bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh&
 //-----------------------------------------------------------------------------
 void Collision::PointToTriangle(const XMVECTOR& p, const XMVECTOR& a, const XMVECTOR& b, const XMVECTOR& c, DirectX::XMVECTOR& outPt)
 {
-	// ※参考:[書籍]「ゲームプログラミングのためのリアルタイム衝突判定」
-
 	// pがaの外側の頂点領域の中にあるかどうかチェック
 	XMVECTOR ab = b - a;
 	XMVECTOR ac = c - a;

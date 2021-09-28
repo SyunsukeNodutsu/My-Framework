@@ -73,6 +73,17 @@ void SoundWork3D::Update()
 }
 
 //-----------------------------------------------------------------------------
+// エミッター座標の設定
+//-----------------------------------------------------------------------------
+void SoundWork3D::SetPosition(const float3& pos)
+{
+    if (!AudioDeviceChild::g_audioDevice) return;
+    if (!AudioDeviceChild::g_audioDevice->g_xAudio2) return;
+
+    SetEmitter(pos);
+}
+
+//-----------------------------------------------------------------------------
 // エミッターの初期設定
 //-----------------------------------------------------------------------------
 void SoundWork3D::SetEmitter(const float3& pos)

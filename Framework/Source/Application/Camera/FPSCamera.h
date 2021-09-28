@@ -21,12 +21,6 @@ public:
 	// @brief 視線用のローカル座標の指定
 	void SetLocalPos(float3 pos) { m_localPos = pos; }
 
-	// @brief 有効かどうかを設定
-	void SetEnable(bool enable) {
-		m_enable = enable;
-		APP.g_rawInputDevice->g_spMouse->SetCursorShow(!enable);
-	}
-
 	// @brief FPSカメラのカメラ行列を設定(override)
 	// @param cameraMat 設定するカメラ行列
 	virtual void SetCameraMatrix(const mfloat4x4& cameraMat) override;
@@ -78,7 +72,5 @@ private:
 	// X軸の回転を制限する
 	float m_minAngleX; // 上向きの制限
 	float m_maxAngleX; // 下向きの制限
-
-	bool m_enable;
 
 };

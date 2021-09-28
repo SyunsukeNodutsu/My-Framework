@@ -7,7 +7,8 @@
 // コンストラクタ
 //-----------------------------------------------------------------------------
 Tank::Tank()
-	: m_spCamera(nullptr)
+	: m_spCamera3rd(nullptr)
+	, m_spCamera1st(nullptr)
 	, m_spTankParts(nullptr)
 	, m_moveSpeed(0.0f)
 	, m_rotateSpeed(0.0f)
@@ -36,26 +37,35 @@ void Tank::Awake()
 	m_runSound3D = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/TankRun.wav", true, true);
 	if (m_runSound3D)
 	{
-		m_runSound3D->Play();
+		m_runSound3D->Play3D(m_transform.GetPosition());
 		m_runSound3D->SetVolume(0.4f);
 	}
 
 	// カメラ作成
-	m_spCamera = std::make_shared<TPSCamera>();
-	if (m_spCamera)
+	m_spCamera3rd = std::make_shared<TPSCamera>();
+	if (m_spCamera3rd)
 	{
-		m_spCamera->Initialize();
+		m_spCamera3rd->Initialize();
 
-		m_spCamera->SetClampAngleX(-75.0f, 90.0f);
-		m_spCamera->SetAngle(0, 0);
+		m_spCamera3rd->SetClampAngleX(-75.0f, 90.0f);
+		m_spCamera3rd->SetAngle(0, 0);
 
-		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -10));
-		m_spCamera->SetLocalGazePosition(float3(0.0f, 2.4f, 0.0f));
+		m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
+		m_spCamera3rd->SetLocalGazePosition(float3(0.0f, 2.4f, 0.0f));
 
-		m_spCamera->g_name = "TankTPS";
-		m_spCamera->g_priority = 10.0f;
-		m_spCamera->SetEnable(true);
-		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera);
+		m_spCamera3rd->g_name = "TankTPS";
+		m_spCamera3rd->g_priority = 1.0f;
+
+		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera3rd);
+	}
+
+	m_spCamera1st = std::make_shared<FPSCamera>();
+	if (m_spCamera1st)
+	{
+		m_spCamera1st->g_name = "TankFPS";
+		m_spCamera1st->g_priority = 0.0f;
+
+		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera1st);
 	}
 }
 
@@ -64,12 +74,11 @@ void Tank::Awake()
 //-----------------------------------------------------------------------------
 void Tank::Update(float deltaTime)
 {
-	// Escでカメラ操作切り替え
 	static bool enable = true;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape))
-	{
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape)) {
 		enable = !enable;
-		m_spCamera->SetEnable(enable);
+		APP.g_rawInputDevice->g_spMouse->SetCursorShow(!enable);
+		APP.g_gameSystem->g_cameraSystem.AllSetEnable(enable);
 	}
 
 	if (!enable) return;
@@ -79,15 +88,6 @@ void Tank::Update(float deltaTime)
 
 	// 部品更新
 	m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
-
-	if (m_spCamera)
-	{
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
-
-		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -10));
-		m_spCamera->Update();
-		m_spCamera->SetCameraMatrix(trans);
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -181,7 +181,7 @@ void Tank::UpdateRotate(float deltaTime)
 //-----------------------------------------------------------------------------
 // 走行の音更新
 //-----------------------------------------------------------------------------
-void Tank::UpdateRunSound()
+void Tank::UpdateRunSound(bool state1st)
 {
 	if (!m_runSound3D) return;
 
@@ -190,7 +190,8 @@ void Tank::UpdateRunSound()
 	auto volume = std::max(moveSpeed, rotSpeed);
 	volume *= 0.08f;
 	volume = std::clamp(volume, 0.2f, 0.6f);
-	m_runSound3D->SetVolume(volume * 0.5f);
+	m_runSound3D->SetVolume(volume * (state1st ? 1.0f : 0.5f));
+	m_runSound3D->SetPosition(m_transform.GetPosition());
 }
 
 //-----------------------------------------------------------------------------
@@ -207,6 +208,7 @@ void Tank::UpdateShot(bool state1st)
 		APP.g_effectDevice->Play(u"Resource/Effect/TankFire.efk", pos);
 		// Sound
 		m_shotSound3D = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/TankShot01.wav", false, true);
+		m_shotSound3D->SetVolume(state1st ? 4.0f : 2.0f);
 		m_shotSound3D->Play3D(pos);
 		// 1人称の際は室内を表現
 		if (state1st) m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
@@ -221,34 +223,56 @@ void Tank::UpdateShot(bool state1st)
 // 
 //=============================================================================
 
+//-----------------------------------------------------------------------------
 // 三人称State: 更新
+//-----------------------------------------------------------------------------
 void Tank::State3rd::Update(Tank& owner, float deltaTime)
 {
 	owner.UpdateMove(deltaTime);
 	owner.UpdateRotate(deltaTime);
 
-	owner.UpdateRunSound();
+	owner.UpdateRunSound(false);
 
 	owner.UpdateShot(false);
+
+	if (owner.m_spCamera3rd) {
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_transform.GetPosition());
+		owner.m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
+		owner.m_spCamera3rd->Update();
+		owner.m_spCamera3rd->SetCameraMatrix(trans);
+	}
 
 	// 遷移
 	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Right)) {
 		owner.m_spState = std::make_shared<State1st>();
 		// 室内を表現
-		if (owner.m_runSound3D) owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
-		if (owner.m_shotSound3D) owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.08f);
+		if (owner.m_runSound3D) owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.2f);
+		if (owner.m_shotSound3D) owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.6f);
+
+		owner.m_spCamera3rd->g_priority = 0;
+		owner.m_spCamera1st->g_priority = 1;
 	}
 }
 
+//-----------------------------------------------------------------------------
 // 一人称State: 更新
+//-----------------------------------------------------------------------------
 void Tank::State1st::Update(Tank& owner, float deltaTime)
 {
 	owner.UpdateMove(deltaTime);
 	owner.UpdateRotate(deltaTime);
 
-	owner.UpdateRunSound();
+	owner.UpdateRunSound(true);
 
 	owner.UpdateShot(true);
+
+	if (owner.m_spCamera1st) {
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_transform.GetPosition());
+		float3 axisZ = owner.m_transform.GetWorldMatrix().Backward();
+		owner.m_spCamera1st->SetLocalPos(float3(0, 1, 0));
+		owner.m_spCamera1st->Update();
+		owner.m_spCamera1st->SetCameraMatrix(trans);
+	}
 
 	// 遷移
 	if (APP.g_rawInputDevice->g_spMouse->IsReleased(MouseButton::Right)) {
@@ -256,5 +280,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 		// フィルターをもとに戻す
 		if (owner.m_runSound3D) owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
 		if (owner.m_shotSound3D) owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
+
+		owner.m_spCamera3rd->g_priority = 1;
+		owner.m_spCamera1st->g_priority = 0;
 	}
 }

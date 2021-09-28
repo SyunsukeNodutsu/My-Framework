@@ -33,7 +33,9 @@ public:
 
 	// @brief 射影行列を設定
 	// @param proj 設定する射影行列
-	void SetProjectionMatrix(const mfloat4x4& proj) { m_projMatrix = proj; m_dirtyProj = true; }
+	void SetProjectionMatrix(const mfloat4x4& proj) {
+		m_projMatrix = proj; m_dirtyProj = true;
+	}
 
 	// @brief カメラ行列を返す
 	// @return カメラ行列
@@ -66,11 +68,11 @@ public:
 	// 優先度
 	float g_priority;
 
-	// 使用中？
-	bool g_use;
+	// 有効？
+	bool g_enable;
 
 	// カメラ名
-	std::string g_name = "empty";
+	std::string g_name;
 
 private:
 

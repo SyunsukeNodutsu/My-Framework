@@ -37,7 +37,10 @@ public:
 
 public:
 
+	// キーボードデバイス
 	std::shared_ptr<Keyboard>	g_spKeyboard;
+
+	// マウスデバイス
 	std::shared_ptr<Mouse>		g_spMouse;
 
 };

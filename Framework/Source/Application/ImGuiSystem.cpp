@@ -350,9 +350,8 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume Meter (Bug)");
 	ImGui::PopStyleColor();
 
-	// PlotLinesはFPSの低下につながる
-	static bool showMeter = false;
-	HelpMarker("PlotLines will result in a decrease in FPS.\nIt is recommended to turn it on only when you want more details.");
+	static bool showMeter = true;
+	HelpMarker(u8"PlotLinesの継続的な表示は\nFPSの低下につながります.");
 	ImGui::Checkbox("Show Meter", &showMeter);
 	if (showMeter)
 	{

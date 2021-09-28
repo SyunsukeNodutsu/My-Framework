@@ -30,7 +30,8 @@ public:
 
 private:
 
-	std::shared_ptr<TPSCamera>	m_spCamera;		// 使用カメラ
+	std::shared_ptr<TPSCamera>	m_spCamera3rd;	// 三人称
+	std::shared_ptr<FPSCamera>	m_spCamera1st;	// 一人称
 	std::shared_ptr<TankParts>	m_spTankParts;	// 部品
 
 	float m_moveSpeed;	// 移動速度
@@ -50,9 +51,11 @@ private:
 	void UpdateRotate(float deltaTime);
 
 	// @brief 走行の音更新
-	void UpdateRunSound();
+	// @param state1st 一人称かどうか ※車内の方が音が大きいはず
+	void UpdateRunSound(bool state1st);
 
 	// @brief 射撃更新
+	// @param state1st 一人称かどうか ※射撃音のフィルターに使用
 	void UpdateShot(bool state1st);
 
 private:

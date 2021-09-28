@@ -9,6 +9,8 @@ Camera::Camera()
 	, m_projMatrix(mfloat4x4::Identity)
 	, m_frustum()
 	, g_priority()
+	, g_enable(true)
+	, g_name("empty")
 	, m_dirtyCamera(false)
 	, m_dirtyProj(false)
 {

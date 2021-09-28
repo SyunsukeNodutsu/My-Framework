@@ -50,6 +50,10 @@ public:
 	// @return 発見...カメラ 見つからない...nullptr
 	std::shared_ptr<Camera> SearchCamera(std::string name) const;
 
+	// @brief 全てのカメラに有効かどうかを設定する
+	// @param enable 設定する値
+	void AllSetEnable(bool enable);
+
 private:
 
 	// 管理するカメラ一覧
@@ -61,6 +65,7 @@ private:
 private:
 
 	// @brief 優先度の確認
+	// @note 確認後 最優先のカメラを有効にします
 	void CheckPriority();
 
 };

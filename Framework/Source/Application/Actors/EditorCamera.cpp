@@ -16,9 +16,8 @@ void EditorCamera::Initialize()
 	m_transform.SetPosition(float3(0, 10, 0));
 
 	m_spCamera = std::make_shared<FPSCamera>();
-	m_spCamera->g_priority = 0.0f;
 
-	m_spCamera->g_priority = 2.0f;
+	m_spCamera->g_priority = 0.0f;
 	m_spCamera->g_name = "EditorFPS";
 	APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera);
 }
@@ -29,7 +28,7 @@ void EditorCamera::Initialize()
 void EditorCamera::Update(float deltaTime)
 {
 	if (m_spCamera == nullptr) return;
-	if (!m_spCamera->g_use) return;
+	if (!m_spCamera->g_enable) return;
 
 	// 入力ベクトル取得
 	float3 moveVec;

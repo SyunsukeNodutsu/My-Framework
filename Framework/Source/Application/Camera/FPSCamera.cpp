@@ -11,7 +11,6 @@ FPSCamera::FPSCamera()
 	, m_degAngle(float3::Zero)
 	, m_minAngleX(-360)
 	, m_maxAngleX(360)
-	, m_enable(false)
 {
 }
 
@@ -29,8 +28,7 @@ void FPSCamera::Initialize()
 //-----------------------------------------------------------------------------
 void FPSCamera::Update()
 {
-	if (!m_enable)
-		return;
+	if (!g_enable) return;
 
 	{
 		float2 nowPos = APP.g_rawInputDevice->g_spMouse->GetMousePos();

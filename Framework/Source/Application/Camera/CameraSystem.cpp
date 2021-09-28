@@ -14,23 +14,6 @@ CameraSystem::CameraSystem()
 //-----------------------------------------------------------------------------
 void CameraSystem::Update(float deltaTime)
 {
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::I))
-	{
-		auto cameraH = SearchCamera("HumanTPS");
-		if (cameraH) cameraH->g_priority = 1.0f;
-
-		auto cameraE = SearchCamera("EditorFPS");
-		if (cameraE) cameraE->g_priority = 0.0f;
-	}
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::O))
-	{
-		auto cameraH = SearchCamera("HumanTPS");
-		if (cameraH) cameraH->g_priority = 0.0f;
-
-		auto cameraE = SearchCamera("EditorFPS");
-		if (cameraE) cameraE->g_priority = 1.0f;
-	}
-
 	CheckPriority();
 }
 
@@ -68,6 +51,15 @@ std::shared_ptr<Camera> CameraSystem::SearchCamera(std::string name) const
 }
 
 //-----------------------------------------------------------------------------
+// 全てのカメラに有効かどうかを設定する
+//-----------------------------------------------------------------------------
+void CameraSystem::AllSetEnable(bool enable)
+{
+	for (auto& camera : m_cameraList)
+		camera->g_enable = enable;
+}
+
+//-----------------------------------------------------------------------------
 // 優先度の確認
 //-----------------------------------------------------------------------------
 void CameraSystem::CheckPriority()
@@ -75,7 +67,7 @@ void CameraSystem::CheckPriority()
 	float priorityTmp = FLT_MIN;
 	for (auto& camera : m_cameraList)
 	{
-		camera->g_use = false;
+		camera->g_enable = false;
 
 		// 優先度が高い方(以上)を設定
 		if (camera->g_priority >= priorityTmp)
@@ -85,5 +77,6 @@ void CameraSystem::CheckPriority()
 		}
 	}
 
-	m_spCamera->g_use = true;
+	// 最も優先度が高いカメラの有効FlgをON
+	m_spCamera->g_enable = true;
 }

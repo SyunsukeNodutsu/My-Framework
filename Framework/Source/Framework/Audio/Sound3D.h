@@ -20,8 +20,12 @@ public:
 	// @param delay 再生までの待ち時間(ミリ秒)
 	void Play3D(const float3& pos, DWORD delay = 0);
 
-	// 更新
+	// @brief 更新
 	virtual void Update() override;
+
+	// @brief エミッター座標の設定
+	// @param pos 設定する座標
+	void SetPosition(const float3& pos);
 
 private:
 
