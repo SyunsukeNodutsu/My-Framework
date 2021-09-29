@@ -10,8 +10,11 @@ Tank::Tank()
 	: m_spCamera3rd(nullptr)
 	, m_spCamera1st(nullptr)
 	, m_spTankParts(nullptr)
+	, m_runSound3D(nullptr)
+	, m_shotSound3D(nullptr)
 	, m_moveSpeed(0.0f)
 	, m_rotateSpeed(0.0f)
+	, m_cameraAngleY(0.0f)
 {
 }
 
@@ -47,7 +50,7 @@ void Tank::Awake()
 	{
 		m_spCamera3rd->Initialize();
 
-		m_spCamera3rd->SetClampAngleX(-75.0f, 90.0f);
+		m_spCamera3rd->SetClampAngleX(-75.0f, 75.0f);
 		m_spCamera3rd->SetAngle(0, 0);
 
 		m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
@@ -62,6 +65,8 @@ void Tank::Awake()
 	m_spCamera1st = std::make_shared<FPSCamera>();
 	if (m_spCamera1st)
 	{
+		m_spCamera1st->SetClampAngleX(-75.0f, 75.0f);
+
 		m_spCamera1st->g_name = "TankFPS";
 		m_spCamera1st->g_priority = 0.0f;
 
@@ -88,6 +93,10 @@ void Tank::Update(float deltaTime)
 
 	// 部品更新
 	m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
+
+	// カメラ角度
+	auto& camera = RENDERER.Getcb9().Get().m_camera_matrix;
+	m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 }
 
 //-----------------------------------------------------------------------------
@@ -201,8 +210,9 @@ void Tank::UpdateShot(bool state1st)
 {
 	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Left))
 	{
-		float3 axisZ = m_transform.GetWorldMatrix().Backward();
-		float3 pos = m_transform.GetPosition() + float3(0.2f, 1.0f, 0.0f) + axisZ * 6.6f;
+		float3 axisZ = m_spTankParts->GetMainGunMatrix().Backward();
+		float3 pos = m_spTankParts->GetMainGunMatrix().Translation()
+			+ float3(0.2f, 0.0f, 0.0f) + axisZ * 6.6f;
 
 		// Effect
 		APP.g_effectDevice->Play(u"Resource/Effect/TankFire.efk", pos);
@@ -269,7 +279,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 	if (owner.m_spCamera1st) {
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_transform.GetPosition());
 		float3 axisZ = owner.m_transform.GetWorldMatrix().Backward();
-		owner.m_spCamera1st->SetLocalPos(float3(0, 1, 0));
+		float3 pos = float3(0.0f, 0.6f, 0.0f) + axisZ;
+		owner.m_spCamera1st->SetLocalPos(pos);
 		owner.m_spCamera1st->Update();
 		owner.m_spCamera1st->SetCameraMatrix(trans);
 	}

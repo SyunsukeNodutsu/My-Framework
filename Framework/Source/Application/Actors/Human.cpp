@@ -142,10 +142,6 @@ void Human::UpdateRotate(float deltaTime)
 	else if (rotateRadian < -PI)
 		rotateRadian += 2 * float(PI);
 
-	// 回転制限
-	constexpr float rotlimit = 30.0f;
-	//rotateRadian = std::clamp(rotateRadian, -rotlimit * ToRadians, rotlimit * ToRadians);
-
 	constexpr float rotPow = 400.0f;
 	m_rotation.y += rotateRadian * rotPow * deltaTime;
 	m_transform.SetAngle(m_rotation);

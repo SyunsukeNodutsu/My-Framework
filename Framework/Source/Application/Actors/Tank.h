@@ -28,17 +28,27 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	void Draw(float deltaTime) override;
 
+	//--------------------------------------------------
+	// 設定.取得
+	//--------------------------------------------------
+
+	// @brief カメラのY回転を返す
+	// @return カメラのY回転
+	float GetCameraAngleY() const { return m_cameraAngleY; }
+
 private:
 
 	std::shared_ptr<TPSCamera>	m_spCamera3rd;	// 三人称
 	std::shared_ptr<FPSCamera>	m_spCamera1st;	// 一人称
 	std::shared_ptr<TankParts>	m_spTankParts;	// 部品
 
+	std::shared_ptr<SoundWork3D> m_runSound3D;	// 走行時の音
+	std::shared_ptr<SoundWork3D> m_shotSound3D;	// 射撃時の音
+
 	float m_moveSpeed;	// 移動速度
 	float m_rotateSpeed;// 回転速度
 
-	std::shared_ptr<SoundWork3D> m_runSound3D;
-	std::shared_ptr<SoundWork3D> m_shotSound3D;
+	float m_cameraAngleY;// カメラのY角度
 
 private:
 

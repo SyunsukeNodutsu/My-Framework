@@ -39,13 +39,26 @@ void TankParts::Initialize()
 	m_mainGunOffset = mfloat4x4::CreateTranslation(ownerOffset + float3(0.0f, 0.8f, 1.8f));
 
 	// 左右5個づつのタイヤ
-	constexpr float diff = 0.88f;
-	for (int i = 0; i < 5; i++) {
-		m_tireR[i].LoadModel("Resource/Model/T43/T43_Tire.gltf");
-		m_tireL[i].LoadModel("Resource/Model/T43/T43_Tire.gltf");
+	{
+		constexpr float diff = 0.852f;
+		for (int i = 0; i < 5; i++) {
+			m_tireR[i].LoadModel("Resource/Model/T43/T43_Tire.gltf");
+			m_tireL[i].LoadModel("Resource/Model/T43/T43_Tire.gltf");
 
-		m_tireOffsetR[i] = mfloat4x4::CreateTranslation(ownerOffset + float3( 1.2f, -0.68f, -1.48f + (diff * i)));
-		m_tireOffsetL[i] = mfloat4x4::CreateTranslation(ownerOffset + float3(-1.2f, -0.68f, -1.48f + (diff * i)));
+			m_tireOffsetR[i] = mfloat4x4::CreateTranslation(ownerOffset + float3( 1.2f, -0.64f, -1.48f + (diff * i)));
+			m_tireOffsetL[i] = mfloat4x4::CreateTranslation(ownerOffset + float3(-1.2f, -0.64f, -1.48f + (diff * i)));
+		}
+	}
+	// 左右2個ずつのミニタイヤ
+	{
+		constexpr float diff = 4.76f;
+		for (int i = 0; i < 2; i++) {
+			m_miniTireR[i].LoadModel("Resource/Model/T43/T43_TireMin.gltf");
+			m_miniTireL[i].LoadModel("Resource/Model/T43/T43_TireMin.gltf");
+
+			m_miniTireOffsetR[i] = mfloat4x4::CreateTranslation(ownerOffset + float3( 1.2f, -0.42f, -2.16f + (diff * i)));
+			m_miniTireOffsetL[i] = mfloat4x4::CreateTranslation(ownerOffset + float3(-1.2f, -0.42f, -2.16f + (diff * i)));
+		}
 	}
 }
 
@@ -54,6 +67,10 @@ void TankParts::Initialize()
 //-----------------------------------------------------------------------------
 void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 {
+	// 行列計算
+	auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
+
+	// キャタピラ
 	{
 		// 前後移動から
 		float trackMove = moveSpeed * 0.4f;
@@ -71,14 +88,24 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 		uvoffsetL -= trackRotMove * deltaTime;
 		uvoffsetL -= trackMove * deltaTime;
 		m_trackL.SetUVOffset(float2(0, uvoffsetL));
+
+		m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
+		m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);
 	}
 
-	// 行列計算
-	auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
-	m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
-	m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);
-	m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
-	m_mainGun.GetTransform().SetWorldMatrix(m_mainGunOffset * ownerMatrix);
+	// 砲塔.主砲
+	{
+		auto& ownerAngle = m_owner.GetTransform().GetAngle();
+		auto ownerCameraAngleY = m_owner.GetCameraAngleY();
+
+		mfloat4x4 rotMat = mfloat4x4::CreateRotationY((ownerCameraAngleY - ownerAngle.y) * ToRadians);
+		m_mainGunOffset = rotMat * m_turretOffset;
+
+		m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
+		m_mainGun.GetTransform().SetWorldMatrix(m_mainGunOffset * ownerMatrix);
+
+		m_turret.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngleY, ownerAngle.z));
+	}
 
 	// タイヤ
 	{
@@ -106,6 +133,16 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 			m_tireR[i].GetTransform().SetAngle(float3(tireRotR, ownerAngle.y, ownerAngle.z));
 			m_tireL[i].GetTransform().SetAngle(float3(tireRotL, ownerAngle.y + 180, ownerAngle.z));
 		}
+
+		// ミニタイヤ
+		for (int i = 0; i < 2; i++)
+		{
+			m_miniTireR[i].GetTransform().SetWorldMatrix(m_miniTireOffsetR[i] * ownerMatrix);
+			m_miniTireL[i].GetTransform().SetWorldMatrix(m_miniTireOffsetL[i] * ownerMatrix);
+
+			m_miniTireR[i].GetTransform().SetAngle(float3(tireRotR, ownerAngle.y, ownerAngle.z));
+			m_miniTireL[i].GetTransform().SetAngle(float3(tireRotL, ownerAngle.y + 180, ownerAngle.z));
+		}
 	}
 }
 
@@ -123,5 +160,10 @@ void TankParts::Draw(float deltaTime)
 	for (int i = 0; i < 5; i++) {
 		m_tireR[i].Draw(deltaTime);
 		m_tireL[i].Draw(deltaTime);
+	}
+
+	for (int i = 0; i < 2; i++) {
+		m_miniTireR[i].Draw(deltaTime);
+		m_miniTireL[i].Draw(deltaTime);
 	}
 }

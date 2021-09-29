@@ -28,6 +28,10 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	void Draw(float deltaTime);
 
+	// @brief 主砲のワールド行列を返す
+	// @return 主砲のワールド行列
+	mfloat4x4 GetMainGunMatrix() const { return m_mainGun.GetTransform().GetWorldMatrix(); }
+
 private:
 
 	// オーナー
@@ -44,5 +48,9 @@ private:
 	// 車輪 左右5個ずつ
 	Actor m_tireR[5]; mfloat4x4 m_tireOffsetR[5];
 	Actor m_tireL[5]; mfloat4x4 m_tireOffsetL[5];
+
+	// 端の小さい車輪 左右2つずつ
+	Actor m_miniTireR[2]; mfloat4x4 m_miniTireOffsetR[2];
+	Actor m_miniTireL[2]; mfloat4x4 m_miniTireOffsetL[2];
 
 };
