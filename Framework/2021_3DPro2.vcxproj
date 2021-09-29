@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
     <ClCompile Include="Source\Application\Actors\Tank.cpp" />
+    <ClCompile Include="Source\Application\Actors\TankBullet.cpp" />
     <ClCompile Include="Source\Application\Actors\TankParts.cpp" />
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp" />
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp" />
@@ -53,6 +54,7 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
@@ -101,8 +103,9 @@
     <ClInclude Include="Source\Application\Actors\Sky.h" />
     <ClInclude Include="Source\Application\Actors\StageMap.h" />
     <ClInclude Include="Source\Application\Actors\Tank.h" />
+    <ClInclude Include="Source\Application\Actors\TankBullet.h" />
     <ClInclude Include="Source\Application\Actors\TankParts.h" />
-    <ClInclude Include="Source\Application\ApplicationInterface.h" />
+    <ClInclude Include="Source\Application\Application.h" />
     <ClInclude Include="Source\Application\Camera\CameraSystem.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
     <ClInclude Include="Source\Application\Camera\TPSCamera.h" />
@@ -123,6 +126,7 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Graphics\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />

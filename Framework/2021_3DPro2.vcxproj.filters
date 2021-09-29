@@ -255,6 +255,12 @@
     <ClCompile Include="Source\Framework\Physics\Collision.cpp">
       <Filter>Source\Framework\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\Actors\TankBullet.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\GraphicsPipeline.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -425,7 +431,7 @@
     <ClInclude Include="Source\Application\Actors\Tank.h">
       <Filter>Source\Application\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\ApplicationInterface.h">
+    <ClInclude Include="Source\Application\Application.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
@@ -469,6 +475,12 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Physics\Collision.h">
       <Filter>Source\Framework\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\TankBullet.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\GraphicsPipeline.h">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -50,16 +50,4 @@ private:
 	mfloat4x4					m_prevProjMat;	// 保存用 射影行列
 	bool						m_isBegin;		// Flag
 
-	Buffer m_tempFixedVertexBuffer[10];			// 固定長 頂点バッファ
-	Buffer m_tempVertexBuffer;					// 可変長 頂点バッファ
-
-private:
-
-	// @brief 最終的な描画 TODO: のちに移動
-	// @param topology
-	// @param vertexCount
-	// @param pVertexStream
-	// @param stride
-	void DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
-
 };

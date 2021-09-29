@@ -4,8 +4,7 @@
 // 戦車クラス 親子構造
 //-----------------------------------------------------------------------------
 #pragma once
-#include "Actor.h"
-#include "../Camera/TPSCamera.h"
+#include "../Application.h"
 
 class TankParts;
 

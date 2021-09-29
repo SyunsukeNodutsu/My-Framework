@@ -217,6 +217,15 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		m_texNormal->Create("Resource/Texture/Blue1x1.bmp");// todo: fix
 	}
 
+	// DrawVertices用頂点バッファを作成
+	UINT bufferSize = 80;
+	for (int i = 0; i < 10; i++)
+	{
+		m_tempFixedVertexBuffer[i] = std::make_shared<Buffer>();
+		m_tempFixedVertexBuffer[i]->Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, D3D11_USAGE_DYNAMIC, nullptr);
+		bufferSize *= 2;
+	}
+
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	return true;
@@ -254,4 +263,48 @@ void GraphicsDevice::End(UINT syncInterval, UINT flags)
 		assert(0 && "エラー：画面更新の失敗.");
 	if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		assert(0 && "エラー：ビデオカードがシステムから物理的に取り外されたか アップデートが行われました");
+}
+
+//-----------------------------------------------------------------------------
+// 頂点を描画する簡易的な関数
+//-----------------------------------------------------------------------------
+void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
+{
+	g_cpContext->IASetPrimitiveTopology(topology);
+
+	// 全頂点の総バイトサイズ
+	UINT totalSize = vertexCount * stride;
+
+	// 最適な固定長バッファを検索
+	std::shared_ptr<Buffer> buffer = nullptr;
+	for (auto&& n : m_tempFixedVertexBuffer)
+	{
+		if (totalSize < n->GetSize()) {
+			buffer = n; break;
+		}
+	}
+	// 可変長のバッファを使用
+	if (buffer == nullptr)
+	{
+		buffer = m_tempVertexBuffer;
+
+		// 頂点バッファのサイズが小さいときは、リサイズのため再作成する
+		if (m_tempVertexBuffer->GetSize() < totalSize) {
+			m_tempVertexBuffer->Create(D3D11_BIND_VERTEX_BUFFER, totalSize, D3D11_USAGE_DYNAMIC, nullptr);
+		}
+	}
+
+	// 単純なDISCARDでの書き込み TODO: 修正
+	
+	// 全頂点をバッファに書き込み(DISCARD指定)
+	buffer->WriteData(pVertexStream, totalSize);
+
+	// 頂点バッファーをデバイスへセット
+	{
+		UINT offset = 0;
+		g_cpContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+	}
+
+	// 描画
+	g_cpContext->Draw(vertexCount, 0);
 }

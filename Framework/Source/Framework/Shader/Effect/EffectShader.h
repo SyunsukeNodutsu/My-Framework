@@ -1,8 +1,8 @@
 ﻿//-----------------------------------------------------------------------------
 // File: EffectShader.h
 //
-// エフェクト用シェーダ
-// 光の計算を行いません
+// 光の計算を行わないシェーダ
+// デバッグ用に直線描画などを行います
 //-----------------------------------------------------------------------------
 #pragma once
 #include "../Shader.h"
@@ -23,9 +23,6 @@ public:
 	// @brief コンストラクタ
 	EffectShader();
 
-	// @brief デストラクタ
-	~EffectShader() = default;
-
 	// @brief 初期化
 	// @return 成功...true 失敗...false
 	bool Initialize();
@@ -33,15 +30,10 @@ public:
 	// @brief 開始
 	void Begin();
 
-	// @brief Vertices描画
-	void DrawVertices(const std::vector<Vertex>& vertices, D3D_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-	// @brief モデル描画
-	void DrawModel(ModelWork* modelWork);
+	// 3D線描画
+	void DrawLine(const float3& p1, const float3& p2, const cfloat4x4& color);
 
 private:
 
-	ComPtr<ID3D11InputLayout>	m_cpInputLayout_model;	// モデル描画用 頂点入力レイアウト
-	std::vector<Buffer>			m_vertexBuffers;		// 頂点ごとのバッファ 3の倍数である程度確保
 
 };

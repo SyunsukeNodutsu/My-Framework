@@ -12,7 +12,7 @@
 VertexOutput main( float4 position : POSITION, float2 uv : TEXCOORD0, float4 color : COLOR )
 {
 	// ’†ŠÔ•âŠ®‚³‚ê‚éPS‚É“n‚·î•ñ‚ğì¬‚·‚é
-	VertexOutput ret;
+    VertexOutput ret = (VertexOutput) 0;
 	
     position.w = 1;
     ret.position = mul(position, g_world_matrix);

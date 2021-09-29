@@ -1,8 +1,6 @@
 ﻿#include "Tank.h"
 #include "TankParts.h"
 
-#include "../../Framework/Audio/SoundDirector.h"
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -51,7 +49,6 @@ void Tank::Awake()
 		m_spCamera3rd->Initialize();
 
 		m_spCamera3rd->SetClampAngleX(-75.0f, 75.0f);
-		m_spCamera3rd->SetAngle(0, 0);
 
 		m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
 		m_spCamera3rd->SetLocalGazePosition(float3(0.0f, 2.4f, 0.0f));
@@ -261,6 +258,9 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 
 		owner.m_spCamera3rd->g_priority = 0;
 		owner.m_spCamera1st->g_priority = 1;
+
+		auto& angle = owner.m_spCamera3rd->GetRotationAngles();
+		owner.m_spCamera1st->SetAngle(float2(angle.x, angle.y));
 	}
 }
 
@@ -294,5 +294,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 
 		owner.m_spCamera3rd->g_priority = 1;
 		owner.m_spCamera1st->g_priority = 0;
+
+		auto& angle = owner.m_spCamera1st->GetRotationAngles();
+		owner.m_spCamera3rd->SetAngle(float2(angle.x, angle.y));
 	}
 }

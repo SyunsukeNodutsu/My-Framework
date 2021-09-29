@@ -31,13 +31,6 @@ void GameSystem::Initialize()
 		AddActor("Sky");
 		AddActor("StageMap");
 		AddActor("Tank");
-
-		auto object = std::make_shared<Actor>();
-		object->LoadModel("Resource/Model/DebugSphere.gltf");
-		m_spActorList.push_back(object);
-
-		auto ecamera = std::make_shared<EditorCamera>();
-		m_spActorList.push_back(ecamera);
 	}
 
 	for (auto& object : m_spActorList)
@@ -120,12 +113,7 @@ void GameSystem::Update()
 			++itr;
 	}
 
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space))
-	{
-		float3 pos = float3(10, 0, 0);
-		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
-	}
-
+	// カメラシステム更新
 	g_cameraSystem.Update(deltaTime);
 }
 
@@ -161,9 +149,28 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	SHADER.GetSpriteShader().Begin(true, true);
+	// Sprite描画
+	{
+		SHADER.GetSpriteShader().Begin(true, true);
 
-	SHADER.GetSpriteShader().End();
+		SHADER.GetSpriteShader().End();
+	}
+
+	// Effect描画
+	{
+		SHADER.GetEffectShader().Begin();
+
+		// RENDERERの詳細パラメータを設定
+		RENDERER.SetTexture(APP.g_graphicsDevice->GetWhiteTex().get());
+		RENDERER.SetDepthStencil(false, false);
+		RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
+		RENDERER.Getcb8().Write();
+
+		SHADER.GetEffectShader().DrawLine(float3(0, 0, 0), float3(0, 10, 0), cfloat4x4::Red);
+
+		// デプスステンシルステートをもとに戻す
+		RENDERER.SetDepthStencil(true, true);
+	}
 }
 
 //-----------------------------------------------------------------------------

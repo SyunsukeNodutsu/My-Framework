@@ -24,8 +24,6 @@ void Human::Initialize()
 	{
 		m_spCamera->Initialize();
 		m_spCamera->SetClampAngleX(-75.0f, 90.0f);
-		//m_spCamera->SetProjectionMatrix(60.0f);
-		m_spCamera->SetAngle(0, 0);
 
 		m_spCamera->SetLocalPos(float3(0.0f, 0.0f, -m_zoom));
 		m_spCamera->SetLocalGazePosition(float3(0.0f, 1.4f, 0.0f));

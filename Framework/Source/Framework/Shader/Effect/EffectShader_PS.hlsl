@@ -15,10 +15,11 @@ SamplerState	g_samplerState		: register(s0);
 //-----------------------------------------------------------------------------
 float4 main(VertexOutput In) : SV_TARGET
 {
-	// テクスチャから色を取得
-	const float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv);
-	// 頂点の色と合成
-	float4 color = baseColor * In.color;
+    const float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv);
+    const float4 color = albedo * In.color;
 
+    // アルファテスト
+    if (color.a <= 0.0f) discard;
+    
 	return color;
 }

@@ -7,8 +7,6 @@ SpriteShader::SpriteShader()
 	: m_cb4Sprite()
 	, m_prevProjMat(mfloat4x4::Identity)
 	, m_isBegin(false)
-	, m_tempFixedVertexBuffer()
-	, m_tempVertexBuffer()
 {
 }
 
@@ -71,16 +69,6 @@ bool SpriteShader::Initialize()
 	}
 
 	m_cb4Sprite.SetToDevice(4);
-
-	//-------------------------------------
-	// DrawVertices用頂点バッファを作成
-	//-------------------------------------
-	UINT bufferSize = 80;
-	for (int i = 0; i < 10; i++)
-	{
-		m_tempFixedVertexBuffer[i].Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, D3D11_USAGE_DYNAMIC, nullptr);
-		bufferSize *= 2;// 容量を倍にしていく
-	}
 
 	return true;
 }
@@ -201,50 +189,9 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 	};
 
 	// 描画
-	DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
+	g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
 
 	// セットしたテクスチャを解除しておく
 	ID3D11ShaderResourceView* null_srv = nullptr;
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, &null_srv);
-}
-
-//-----------------------------------------------------------------------------
-// 最終的な描画
-//-----------------------------------------------------------------------------
-void SpriteShader::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
-{
-	if (!g_graphicsDevice) return;
-	if (!g_graphicsDevice->g_cpContext) return;
-
-	//--------------------------------------------------
-	// バッファ設定
-	//--------------------------------------------------
-	UINT size = vertexCount * stride;
-
-	// 最適な固定長Buffer検索
-	Buffer* buffer = nullptr;
-	for (auto&& n : m_tempFixedVertexBuffer)
-		if (size < n.GetSize()) { buffer = &n; break; }
-
-	// なければ作成
-	if (buffer == nullptr)
-	{
-		buffer = &m_tempVertexBuffer;
-
-		// しょうがなく再作成
-		if (m_tempVertexBuffer.GetSize() < size)
-			m_tempVertexBuffer.Create(D3D11_BIND_VERTEX_BUFFER, size, D3D11_USAGE_DYNAMIC, nullptr);
-	}
-
-	// バッファに書き込み ※DISCARD指定
-	buffer->WriteData(pVertexStream, size);
-
-	//--------------------------------------------------
-	// 描画
-	//--------------------------------------------------
-	UINT offset = 0;
-	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
-	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
-
-	g_graphicsDevice->g_cpContext.Get()->Draw(vertexCount, 0);
 }

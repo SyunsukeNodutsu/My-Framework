@@ -1,26 +1,26 @@
-﻿#pragma once
+﻿//-----------------------------------------------------------------------------
+// File: FPSCamera.h
+//
+// TPS視点(3人称視点)カメラクラス
+//-----------------------------------------------------------------------------
+#pragma once
 #include "FPSCamera.h"
 
-// 3人称視点のカメラ
+// TPS視点カメラクラス
 class TPSCamera : public FPSCamera
 {
 public:
 
-	// コンストラクタ
-	TPSCamera() {}
+	// @brief コンストラクタ
+	TPSCamera();
 
-	// デストラクタ
-	~TPSCamera() {}
-
-	// カメラ行列の設定
+	// @brief カメラ行列の設定
 	void SetCameraMatrix(const mfloat4x4& mWorld) override;
 
-	// 注視点調整用ベクトルを設定
+	// @brief 注視点調整用ベクトルを設定
+	// @param pos 設定するベクトル
 	void SetLocalGazePosition(const float3& pos) {
 		m_localGazePos = pos;
-	}
-	void SetLocalGazePosition(float x, float y, float z) {
-		m_localGazePos = float3(x, y, z);
 	}
 
 private:

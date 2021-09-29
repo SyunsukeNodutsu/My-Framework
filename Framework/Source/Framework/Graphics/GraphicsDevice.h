@@ -7,6 +7,7 @@
 #pragma once
 
 class Texture;
+class Buffer;
 
 // 設定データ
 struct MY_DIRECT3D_DESC
@@ -44,15 +45,28 @@ public:
 	void Begin(const float* clearColor = nullptr);
 
 	// @brief 描画終了と画面更新
+	// @param syncInterval
+	// @param flags
 	void End(UINT syncInterval = 0, UINT flags = 0);
 
-	// @brief
+	// @brief 1x1 白色テクスチャを返す
+	// @return デフォルトの白色テクスチャ
 	std::shared_ptr<Texture> GetWhiteTex() { return m_texWhite; }
 
-	// @brief
+	// @brief 1x1 Z向きテクスチャを返す
+	// @return デフォルトの法線マップ
 	std::shared_ptr<Texture> GetNormalTex() { return m_texNormal; }
 
+	// @brief 使用しているアダプタ名を返す
+	// @return GPUアダプタ名
 	const std::string GetAdapterName() const { return m_adapterName; }
+
+	// @brief 頂点を描画する簡易的な関数
+	// @param topology 頂点をどのような形状で描画するか
+	// @param vertexCount 頂点数
+	// @param pVertexStream 頂点配列の先頭アドレス
+	// @param stride 1頂点のバイトサイズ
+	void DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
 
 public:
 
@@ -81,6 +95,10 @@ private:
 
 	// アダプタ名
 	std::string						m_adapterName;
+
+	// DrawVertices用 頂点バッファ
+	std::shared_ptr<Buffer> m_tempFixedVertexBuffer[10];	// 固定長 頂点バッファ
+	std::shared_ptr<Buffer> m_tempVertexBuffer;				// 可変長 頂点バッファ
 
 	//------------------------
 	// 便利テクスチャ

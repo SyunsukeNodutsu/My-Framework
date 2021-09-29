@@ -1,6 +1,12 @@
-﻿#pragma once
+﻿//-----------------------------------------------------------------------------
+// File: FPSCamera.h
+//
+// FPS視点(1人称視点)カメラクラス
+//-----------------------------------------------------------------------------
+#pragma once
 #include"../main.h"
 
+// FPS視点カメラクラス
 class FPSCamera : public Camera
 {
 public:
@@ -31,9 +37,8 @@ public:
 	}
 
 	// @brief 角度の設定
-	void SetAngle(float angX, float angY) {
-		m_degAngle.x = angX; m_degAngle.y = angY;
-	}
+	// @param angle 設定する角度(Dgree)
+	void SetAngle(float2 angle) { m_degAngle = float3(angle.x, angle.y, m_degAngle.z); }
 
 	// @brief 回転行列を返す
 	// @return 回転行列

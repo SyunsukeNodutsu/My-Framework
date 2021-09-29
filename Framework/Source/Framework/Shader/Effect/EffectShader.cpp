@@ -12,7 +12,10 @@ EffectShader::EffectShader()
 //-----------------------------------------------------------------------------
 bool EffectShader::Initialize()
 {
-	HRESULT hr = S_OK;
+	if (!g_graphicsDevice) return false;
+	if (!g_graphicsDevice->g_cpContext) return false;
+
+	HRESULT hr = S_FALSE;
 
 	//--------------------------------------------------
 	// 頂点シェーダ
@@ -26,39 +29,18 @@ bool EffectShader::Initialize()
 			return false;
 		}
 
-		// Effect用
+		// 1頂点の詳細な情報
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layout =
 		{
-			// 1頂点の詳細な情報
-			std::vector<D3D11_INPUT_ELEMENT_DESC> layout =
-			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			};
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",	  0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
 
-			hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
-			if (FAILED(hr)) {
-				assert(0 && "エラー：頂点入力レイアウト作成失敗.");
-				return false;
-			}
-		}
-
-		// DrawModel用
-		{
-			// １頂点の詳細な情報
-			std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM,		0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			};
-
-			// 頂点入力レイアウト作成
-			hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout_model.GetAddressOf());
-			if (FAILED(hr)) {
-				assert(0 && "エラー：頂点入力レイアウト作成失敗.");
-				return false;
-			}
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpInputLayout.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "エラー：頂点入力レイアウト作成失敗.");
+			return false;
 		}
 	}
 
@@ -75,19 +57,6 @@ bool EffectShader::Initialize()
 		}
 	}
 
-	//--------------------------------------------------
-	// DrawVertices用頂点バッファ作成
-	//--------------------------------------------------
-	UINT bufferSize = sizeof(Vertex) * 2;
-	Buffer tmpBuff = {};
-	for (int i = 0; i < 6; i++)
-	{
-		//tmpBuff.Create(D3D11_BIND_VERTEX_BUFFER, bufferSize, nullptr);
-		//m_vertexBuffers.push_back(tmpBuff);
-
-		bufferSize *= 2;// 容量を倍にしていく
-	}
-
 	return true;
 }
 
@@ -96,6 +65,9 @@ bool EffectShader::Initialize()
 //-----------------------------------------------------------------------------
 void EffectShader::Begin()
 {
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
+
 	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
 	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 
@@ -103,67 +75,17 @@ void EffectShader::Begin()
 }
 
 //-----------------------------------------------------------------------------
-// 複数頂点の描画
-// TODO: バッファの書き込みについて考える
+// 3D線描画
 //-----------------------------------------------------------------------------
-void EffectShader::DrawVertices(const std::vector<Vertex>& vertices, D3D_PRIMITIVE_TOPOLOGY topology)
+void EffectShader::DrawLine(const float3& p1, const float3& p2, const cfloat4x4& color)
 {
-	if (vertices.size() <= 2)
-		return;
+	if (!g_graphicsDevice) return;
 
-	// 1頂点のサイズ
-	UINT oneSize = sizeof(Vertex);
-	// 合計サイズ
-	UINT totalSize = static_cast<UINT>(vertices.size()) * oneSize;
+	Vertex vertex[2] = {
+		{ p1, float2(0, 0), color},
+		{ p2, float2(1, 0), color},
+	};
 
-	// 最適な固定長バッファを検索
-	Buffer* buffer = nullptr;
-	for (auto&& buf : m_vertexBuffers)
-	{
-		if (totalSize < buf.GetSize())
-		{
-			buffer = &buf;
-			break;
-		}
-	}
-
-	// TODO: ここ可変長にして対応
-	if (buffer == nullptr) {
-		assert(0 && "エラー：サイズ超過.");
-		return;
-	}
-
-	// 全頂点書き込み
-	// TODO: ここなんか無駄っぽい
-	buffer->WriteData(&vertices[0], totalSize);
-
-	// デバイスに頂点情報設定
-	UINT offset = 0;
-	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &oneSize, &offset);
-
-	// プリミティブトポロジー(ポリゴンの描画方法)の設定
-	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(topology);
-
-	// 描画
-	g_graphicsDevice->g_cpContext.Get()->Draw(static_cast<UINT>(vertices.size()), 0);
-}
-
-//-----------------------------------------------------------------------------
-// モデル描画
-//-----------------------------------------------------------------------------
-void EffectShader::DrawModel(ModelWork* modelWork)
-{
-	if (modelWork == nullptr)
-		return;
-
-	if (modelWork->GetData() == nullptr)
-		return;
-
-	modelWork->CalcNodeMatrices();
-
-	// 全ノードのメッシュ描画
-	for (UINT nodeIndex = 0; nodeIndex < modelWork->GetData()->GetOriginalNodes().size(); nodeIndex++)
-	{
-
-	}
+	// 頂点を描画
+	g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, 2, &vertex[0], sizeof(Vertex));
 }

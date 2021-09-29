@@ -43,11 +43,12 @@
 
 #include "Window/Window.h"
 
+#include "Graphics/Buffer.h"
+
 #include "Graphics/GraphicsDevice.h"
 #include "Graphics/GraphicsDeviceChild.h"
 
 #include "Graphics/Texture.h"
-#include "Graphics/Buffer.h"
 #include "Graphics/Renderer.h"
 
 #include "Graphics/Effect/EffekseerDevice.h"
