@@ -1,19 +1,6 @@
 ﻿#include "EffekseerDevice.h"
 #include "../../../Application/main.h"
 
-static Effekseer::Matrix44 ToE4x4(mfloat4x4 matrix)
-{
-	Effekseer::Matrix44 result = {};
-	for (int height = 0; height < 4; height++)
-	{
-		for (int width = 0; width < 4; width++)
-		{
-			result.Values[height][width] = matrix.m[height][width];
-		}
-	}
-	return result;
-}
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------

@@ -149,13 +149,6 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	// Sprite描画
-	{
-		SHADER.GetSpriteShader().Begin(true, true);
-
-		SHADER.GetSpriteShader().End();
-	}
-
 	// Effect描画
 	{
 		SHADER.GetEffectShader().Begin();
@@ -166,11 +159,41 @@ void GameSystem::Draw2D()
 		RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 		RENDERER.Getcb8().Write();
 
-		SHADER.GetEffectShader().DrawLine(float3(0, 0, 0), float3(0, 10, 0), cfloat4x4::Red);
+		// debugLinesの中身があるとき
+		if (m_debugLines.size() >= 1)
+		{
+			APP.g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
+			m_debugLines.clear();
+		}
 
-		// デプスステンシルステートをもとに戻す
+		// DepthStencilを元に戻す
 		RENDERER.SetDepthStencil(true, true);
 	}
+
+	// Sprite描画
+	{
+		SHADER.GetSpriteShader().Begin(true, true);
+
+		SHADER.GetSpriteShader().End();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// デバッグ用の3D線を追加
+//-----------------------------------------------------------------------------
+void GameSystem::AddDebugLine(const float3& pos01, const float3& pos02, const cfloat4x4 color)
+{
+	EffectShader::Vertex ver = {};
+
+	// ラインの開始頂点
+	ver.m_position = pos01;
+	ver.m_color = color;
+	ver.m_uv = float2(0, 0);
+	m_debugLines.push_back(ver);
+
+	// ラインの終了頂点
+	ver.m_position = pos02;
+	m_debugLines.push_back(ver);
 }
 
 //-----------------------------------------------------------------------------

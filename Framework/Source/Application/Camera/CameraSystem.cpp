@@ -15,6 +15,9 @@ CameraSystem::CameraSystem()
 void CameraSystem::Update(float deltaTime)
 {
 	CheckPriority();
+
+	for (auto& camera : m_cameraList)
+		camera->DrawFrustum();
 }
 
 //-----------------------------------------------------------------------------

@@ -409,12 +409,42 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	// SceneのActor一覧
+	ImGui::BeginChild("##wav list", ImVec2(0, 60), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
+
+	static std::weak_ptr<Actor> wpActor;
 	for (auto&& actor : APP.g_gameSystem->GetActorList())
 	{
 		ImGui::PushID(actor.get());
-		ImGui::Text(actor->GetName().c_str());
+
+		// 選択したActor
+		bool selected = (actor == wpActor.lock());
+		if (ImGui::Selectable(actor->GetName().c_str(), selected))
+			wpActor = actor;
+
 		ImGui::PopID();
 	}
+	ImGui::EndChild();
+
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Detailed data");
+	ImGui::PopStyleColor();
+
+	if (wpActor.lock())
+	{
+		auto transform = wpActor.lock()->GetTransform();
+		auto pos = transform.GetPosition();
+		auto angle = transform.GetAngle();
+		auto scale = transform.GetScale();
+
+		ImGui::Text(std::string("Select: " + wpActor.lock()->GetName()).c_str());
+		ImGui::DragFloat3("Position", &pos.x, 0.1f);
+		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
+		ImGui::DragFloat3("Scale", &scale.x, 0.1f);
+
+	}
+	else ImGui::Text("Select: none");
 
 	ImGui::Separator();
 

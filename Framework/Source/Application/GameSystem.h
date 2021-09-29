@@ -45,6 +45,10 @@ public:
 		return m_spActorList;
 	}
 
+	// @brief デバッグ用の3D線を追加
+	// @param
+	void AddDebugLine(const float3& pos01, const float3& pos02, const cfloat4x4 color = cfloat4x4::White);
+
 public:
 
 	// カメラ管理システム
@@ -54,6 +58,9 @@ private:
 
 	// 登場Actorリスト
 	std::list<std::shared_ptr<Actor>> m_spActorList;
+
+	// デバッグライン用の頂点情報
+	std::vector<EffectShader::Vertex> m_debugLines;
 
 private:
 

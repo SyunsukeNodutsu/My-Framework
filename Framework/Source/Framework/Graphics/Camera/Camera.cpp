@@ -1,4 +1,5 @@
 ﻿#include "Camera.h"
+#include "../../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -11,9 +12,11 @@ Camera::Camera()
 	, g_priority()
 	, g_enable(true)
 	, g_name("empty")
-	, m_dirtyCamera(false)
-	, m_dirtyProj(false)
+	, m_dirtyCamera(true)
+	, m_dirtyProj(true)
 {
+
+	m_projMatrix = DirectX::XMMatrixPerspectiveFovLH(60.0f * ToRadians, 16.0f / 9.0f, 0.01f, 2000.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -24,13 +27,6 @@ void Camera::SetToShader()
 	// カメラが変更されていれば更新
 	if (m_dirtyCamera)
 	{
-		// 試錐台作成
-		qfloat4x4 quaternion = DirectX::XMQuaternionRotationMatrix(m_cameraMatrix);
-		DirectX::BoundingFrustum::CreateFromMatrix(m_frustum, m_projMatrix);
-		m_frustum.Origin = m_cameraMatrix.Translation();
-		m_frustum.Orientation = quaternion;
-
-		m_viewMatrix = m_cameraMatrix.Invert();
 		RENDERER.Getcb9().Work().m_camera_matrix = m_cameraMatrix;
 		RENDERER.Getcb9().Work().m_view_matrix = m_viewMatrix;
 		RENDERER.Getcb9().Write();
@@ -74,10 +70,40 @@ void Camera::ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, flo
 }
 
 //-----------------------------------------------------------------------------
+// 試錐台をデバッグラインで描画
+//-----------------------------------------------------------------------------
+void Camera::DrawFrustum()
+{
+	const int CORNER_COUNT = m_frustum.CORNER_COUNT;
+
+	// コーナーの所得
+	float3 corners[CORNER_COUNT];
+	m_frustum.GetCorners(corners);
+
+	auto& gameSystem = APP.g_gameSystem;
+	gameSystem->AddDebugLine(corners[0], corners[4]);
+	gameSystem->AddDebugLine(corners[1], corners[5]);
+	gameSystem->AddDebugLine(corners[2], corners[6]);
+	gameSystem->AddDebugLine(corners[3], corners[7]);
+
+	gameSystem->AddDebugLine(corners[4], corners[5]);
+	gameSystem->AddDebugLine(corners[5], corners[6]);
+	gameSystem->AddDebugLine(corners[6], corners[7]);
+	gameSystem->AddDebugLine(corners[7], corners[4]);
+}
+
+//-----------------------------------------------------------------------------
 // カメラ行列・ビュー行列セット
 //-----------------------------------------------------------------------------
 void Camera::SetCameraMatrix(const mfloat4x4& mCam)
 {
 	m_cameraMatrix = mCam;
+	m_viewMatrix = m_cameraMatrix.Invert();
 	m_dirtyCamera = true;
+
+	// 試錐台作成
+	qfloat4x4 quaternion = DirectX::XMQuaternionRotationMatrix(m_cameraMatrix);
+	DirectX::BoundingFrustum::CreateFromMatrix(m_frustum, m_projMatrix);
+	m_frustum.Origin = m_cameraMatrix.Translation();
+	m_frustum.Orientation = quaternion;
 }

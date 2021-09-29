@@ -47,4 +47,10 @@ private:
 	};
 	ConstantBuffer<cdMaterial> m_cd11Material;
 
+private:
+
+	// @brief OBBを3D線でデバッグ描画
+	// @param obb
+	void DrawOBB(const DirectX::BoundingOrientedBox& obb);
+
 };

@@ -63,3 +63,18 @@ private:
 	float m_speed;
 
 };
+
+// float3 -> Effekseer::Vector3D
+static Effekseer::Vector3D ToE3D(float3 vector) {
+	return Effekseer::Vector3D(vector.x, vector.y, vector.z);
+}
+
+// mfloat4x4 -> Effekseer::Matrix44
+static Effekseer::Matrix44 ToE4x4(mfloat4x4 matrix) {
+	Effekseer::Matrix44 result = {};
+	for (int height = 0; height < 4; height++) {
+		for (int width = 0; width < 4; width++)
+			result.Values[height][width] = matrix.m[height][width];
+	}
+	return result;
+}

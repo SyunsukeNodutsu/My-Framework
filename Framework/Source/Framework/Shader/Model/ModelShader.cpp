@@ -89,7 +89,7 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 	auto& data = model.GetData();
 	if (data == nullptr) return;
 
-	auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+	auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera();
 
 	// 全メッシュノードを描画
 	for (auto& index : data->GetMeshNodeIndices())
@@ -103,7 +103,9 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 		obb.Transform(obb, (node.m_localTransform * worldMatrix));
 
 		// 試錐台の中？
-		//if (!camera->GetFrustum().Intersects(obb)) continue;
+		if (!camera->GetFrustum().Intersects(obb)) continue;
+
+		//DrawOBB(obb);
 
 		// ワールド行列 設定
 		RENDERER.Getcb8().Work().m_world_matrix = node.m_worldTransform * worldMatrix;
@@ -146,4 +148,30 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 		// サブセット描画
 		mesh->DrawSubset(i);
 	}
+}
+
+//-----------------------------------------------------------------------------
+// OBBを3D線でデバッグ描画
+//-----------------------------------------------------------------------------
+void ModelShader::DrawOBB(const DirectX::BoundingOrientedBox& obb)
+{
+	float3 obbCorners[obb.CORNER_COUNT];
+	obb.GetCorners(obbCorners);
+
+	auto& gameSystem = APP.g_gameSystem;
+
+	gameSystem->AddDebugLine(obbCorners[0], obbCorners[1]);
+	gameSystem->AddDebugLine(obbCorners[1], obbCorners[2]);
+	gameSystem->AddDebugLine(obbCorners[2], obbCorners[3]);
+	gameSystem->AddDebugLine(obbCorners[3], obbCorners[0]);
+
+	gameSystem->AddDebugLine(obbCorners[4], obbCorners[5]);
+	gameSystem->AddDebugLine(obbCorners[5], obbCorners[6]);
+	gameSystem->AddDebugLine(obbCorners[6], obbCorners[7]);
+	gameSystem->AddDebugLine(obbCorners[7], obbCorners[4]);
+
+	gameSystem->AddDebugLine(obbCorners[0], obbCorners[4]);
+	gameSystem->AddDebugLine(obbCorners[1], obbCorners[5]);
+	gameSystem->AddDebugLine(obbCorners[2], obbCorners[6]);
+	gameSystem->AddDebugLine(obbCorners[3], obbCorners[7]);
 }

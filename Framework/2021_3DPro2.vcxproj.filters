@@ -85,6 +85,9 @@
     <Filter Include="Source\Framework\Physics">
       <UniqueIdentifier>{784a3f1a-b024-482a-95ef-4000038da077}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Shader\Shadow">
+      <UniqueIdentifier>{656c1584-6c28-4319-a4ce-a99487144fee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -258,8 +261,11 @@
     <ClCompile Include="Source\Application\Actors\TankBullet.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\GraphicsPipeline.cpp">
-      <Filter>Source\Framework\Graphics</Filter>
+    <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader.cpp">
+      <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -479,8 +485,11 @@
     <ClInclude Include="Source\Application\Actors\TankBullet.h">
       <Filter>Source\Application\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\GraphicsPipeline.h">
-      <Filter>Source\Framework\Graphics</Filter>
+    <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h">
+      <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

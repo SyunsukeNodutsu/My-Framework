@@ -54,10 +54,10 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
-    <ClCompile Include="Source\Framework\Graphics\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
+    <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Framework\Input\Mouse.cpp" />
@@ -71,6 +71,7 @@
     <ClCompile Include="Source\Framework\Shader\Model\ModelShader.cpp" />
     <ClCompile Include="Source\Framework\Shader\Shader.cpp" />
     <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp" />
+    <ClCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader.cpp" />
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp" />
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
@@ -126,10 +127,10 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
-    <ClInclude Include="Source\Framework\Graphics\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
+    <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />
     <ClInclude Include="Source\Framework\Input\KeyCode.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Source\Framework\Shader\Model\ModelShader.h" />
     <ClInclude Include="Source\Framework\Shader\Shader.h" />
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h" />
+    <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h" />
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h" />
     <ClInclude Include="Source\Framework\Utility\Cpuid.h" />
     <ClInclude Include="Source\Framework\Utility\Easing.h" />
