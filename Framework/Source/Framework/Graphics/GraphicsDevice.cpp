@@ -181,7 +181,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	// 遅延デバイスコンテキスト作成
 	//--------------------------------------------------
 
-	// 読み込み用遅延コンテキスト作成
+	// 遅延コンテキスト作成
 	g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
 
 	// RT/VP設定
@@ -270,8 +270,6 @@ void GraphicsDevice::End(UINT syncInterval, UINT flags)
 //-----------------------------------------------------------------------------
 void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
 {
-	g_cpContext->IASetPrimitiveTopology(topology);
-
 	// 全頂点の総バイトサイズ
 	UINT totalSize = vertexCount * stride;
 
@@ -299,8 +297,11 @@ void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCou
 	// 全頂点をバッファに書き込み(DISCARD指定)
 	buffer->WriteData(pVertexStream, totalSize);
 
-	// 頂点バッファーをデバイスへセット
+	// バインド
 	{
+		g_cpContext->IASetPrimitiveTopology(topology);
+
+		// 頂点バッファーをデバイスへセット
 		UINT offset = 0;
 		g_cpContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
 	}

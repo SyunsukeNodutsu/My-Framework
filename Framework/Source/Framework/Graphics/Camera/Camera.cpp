@@ -70,29 +70,6 @@ void Camera::ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, flo
 }
 
 //-----------------------------------------------------------------------------
-// 試錐台をデバッグラインで描画
-//-----------------------------------------------------------------------------
-void Camera::DrawFrustum()
-{
-	const int CORNER_COUNT = m_frustum.CORNER_COUNT;
-
-	// コーナーの所得
-	float3 corners[CORNER_COUNT];
-	m_frustum.GetCorners(corners);
-
-	auto& gameSystem = APP.g_gameSystem;
-	gameSystem->AddDebugLine(corners[0], corners[4]);
-	gameSystem->AddDebugLine(corners[1], corners[5]);
-	gameSystem->AddDebugLine(corners[2], corners[6]);
-	gameSystem->AddDebugLine(corners[3], corners[7]);
-
-	gameSystem->AddDebugLine(corners[4], corners[5]);
-	gameSystem->AddDebugLine(corners[5], corners[6]);
-	gameSystem->AddDebugLine(corners[6], corners[7]);
-	gameSystem->AddDebugLine(corners[7], corners[4]);
-}
-
-//-----------------------------------------------------------------------------
 // カメラ行列・ビュー行列セット
 //-----------------------------------------------------------------------------
 void Camera::SetCameraMatrix(const mfloat4x4& mCam)
@@ -107,3 +84,25 @@ void Camera::SetCameraMatrix(const mfloat4x4& mCam)
 	m_frustum.Origin = m_cameraMatrix.Translation();
 	m_frustum.Orientation = quaternion;
 }
+
+/*
+	float3 corners[8];
+	m_frustum.GetCorners(corners);
+
+	auto& gameSystem = APP.g_gameSystem;
+
+	gameSystem->AddDebugLine(corners[0], corners[1]);
+	gameSystem->AddDebugLine(corners[1], corners[2]);
+	gameSystem->AddDebugLine(corners[2], corners[3]);
+	gameSystem->AddDebugLine(corners[3], corners[0]);
+
+	gameSystem->AddDebugLine(corners[0], corners[4]);
+	gameSystem->AddDebugLine(corners[1], corners[5]);
+	gameSystem->AddDebugLine(corners[2], corners[6]);
+	gameSystem->AddDebugLine(corners[3], corners[7]);
+
+	gameSystem->AddDebugLine(corners[4], corners[5]);
+	gameSystem->AddDebugLine(corners[5], corners[6]);
+	gameSystem->AddDebugLine(corners[6], corners[7]);
+	gameSystem->AddDebugLine(corners[7], corners[4]);
+*/

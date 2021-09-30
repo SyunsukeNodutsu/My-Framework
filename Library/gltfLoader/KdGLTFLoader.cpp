@@ -537,7 +537,7 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 					auto& nName = destNode->m_name;
 					APP.g_imGuiSystem->AddLog(std::string(
 						"WARNING: Could not obtain tangent line. model path: "
-						+ path + " node name: " + nName).c_str()
+						+ path + " node name: " + nName + " -KdGLTFLoader.KdLoadGLTFModel()").c_str()
 					);
 				}
 

@@ -124,21 +124,17 @@ float4 main( VertexOutput In ) : SV_TARGET
     //------------------------------------------
     
     // 材質色
-    float4 baseColor = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
+    float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
     if (g_show_base_color)
-        return float4(baseColor.rgb, 1);
+        return float4(albedo.rgb, 1);
     
     // メタリック/ラフネス テクスチャ
     float4 mrColor = g_mrTexture.Sample(g_samplerState, In.uv);
     float metallic   = mrColor.b * g_material.m_metallic;   // 金属性
     float roughuness = mrColor.g * g_material.m_roughness;  // 粗さ
     
-    if (g_show_metallic_rough)
-        return float4(mrColor.rgb, 1);
-    
     // アルファテスト
-    if (baseColor.a <= 0.0f)
-        discard;
+    if (albedo.a <= 0.0f) discard;
     
     //==========================================
 	//
@@ -169,8 +165,8 @@ float4 main( VertexOutput In ) : SV_TARGET
             diffusePower /= PI;
         
             // 色 = 物質の色 * 光の色 * 物質の透明度 * 拡散光の強さ
-            diffuseColor = baseColor.rgb * g_directional_light_color
-                * baseColor.a * diffusePower;
+            diffuseColor = albedo.rgb * g_directional_light_color
+                * albedo.a * diffusePower;
         }
         
         // Specular(鏡面反射光)
@@ -183,13 +179,13 @@ float4 main( VertexOutput In ) : SV_TARGET
             float spec = GGX(g_directional_light_dir, vCam, normal, roughuness);
             
             // 光の色 * 反射光の強さ * 材質の反射色 * 正規化係数 * 透明率
-            specularColor += (g_directional_light_color * spec) * 0.06f * baseColor.a;
+            specularColor += (g_directional_light_color * spec) * 0.06f * albedo.a;
         }
     
         //------------------------------------------
         // 環境光
         //------------------------------------------
-        diffuseColor += 0.8f * baseColor.rgb * baseColor.a;
+        diffuseColor += 0.8f * albedo.rgb * albedo.a;
         
         //------------------------------------------
 		// エミッシブ
@@ -199,7 +195,7 @@ float4 main( VertexOutput In ) : SV_TARGET
     else
     {
         // ライト無効の際はベースカラーをそのまま使用
-        return baseColor;
+        return albedo;
     }
     
     // 拡散色と反射色を混ぜる
@@ -226,5 +222,5 @@ float4 main( VertexOutput In ) : SV_TARGET
     //------------------------------------------
 	// 出力
 	//------------------------------------------
-    return float4(color, baseColor.a);
+    return float4(color, albedo.a);
 }

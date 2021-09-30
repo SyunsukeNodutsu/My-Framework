@@ -3,6 +3,7 @@
 #include "Sky.h"
 #include "StageMap.h"
 #include "Tank.h"
+#include "Tree.h"
 
 #include "../main.h"
 
@@ -18,6 +19,7 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (name == "Sky")			result = std::make_shared<Sky>();
 	if (name == "StageMap")		result = std::make_shared<StageMap>();
 	if (name == "Tank")			result = std::make_shared<Tank>();
+	if (name == "Tree")			result = std::make_shared<Tree>();
 
 	if (result)
 		result->Awake();

@@ -23,9 +23,6 @@ public:
 	// @param result 結果格納用
 	void ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, float2& result);
 
-	// @brief 試錐台をデバッグラインで描画
-	void DrawFrustum();
-
 	//--------------------------------------------------
 	// 設定.取得
 	//--------------------------------------------------
@@ -79,7 +76,7 @@ public:
 
 private:
 
-	// ダーティーフラグ ※初回設定のため true設定
+	// ダーティーフラグ
 	bool m_dirtyCamera;	// カメラ行列
 	bool m_dirtyProj;	// 射影行列
 

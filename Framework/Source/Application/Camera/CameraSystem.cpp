@@ -1,4 +1,5 @@
 ﻿#include "CameraSystem.h"
+#include "EditorCamera.h"
 #include "../main.h"
 
 //-----------------------------------------------------------------------------
@@ -6,7 +7,15 @@
 //-----------------------------------------------------------------------------
 CameraSystem::CameraSystem()
 	: m_cameraList()
+	, m_spCamera(nullptr)
+	, m_spEditorCamera(nullptr)
+	, m_editorMode(false)
 {
+	m_spEditorCamera = std::make_shared<EditorCamera>();
+	m_spEditorCamera->g_enable = false;
+	m_spEditorCamera->g_name = "EditorCamera";
+
+	m_spEditorCamera->SetCameraMatrix(mfloat4x4::CreateTranslation(float3(0, 4, -4)));
 }
 
 //-----------------------------------------------------------------------------
@@ -14,10 +23,33 @@ CameraSystem::CameraSystem()
 //-----------------------------------------------------------------------------
 void CameraSystem::Update(float deltaTime)
 {
-	CheckPriority();
+	auto& keyboard = APP.g_rawInputDevice->g_spKeyboard;
+	auto& mouse = APP.g_rawInputDevice->g_spMouse;
 
-	for (auto& camera : m_cameraList)
-		camera->DrawFrustum();
+	if (m_editorMode)
+	{
+		m_spEditorCamera->Update(deltaTime);
+
+		// 通常モードに移行
+		if (keyboard->IsPressed(KeyCode::Escape))
+		{
+			m_editorMode = false;
+			AllSetEnable(true);
+			mouse->SetCursorShow(false);
+		}
+	}
+	else
+	{
+		CheckPriority();
+
+		// 編集モードに移行
+		if (keyboard->IsPressed(KeyCode::Escape))
+		{
+			m_editorMode = true;
+			AllSetEnable(false);
+			mouse->SetCursorShow(true);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -25,8 +57,14 @@ void CameraSystem::Update(float deltaTime)
 //-----------------------------------------------------------------------------
 void CameraSystem::SetToDevice()
 {
-	if (!m_spCamera) return;
-	m_spCamera->SetToShader();
+	if (m_editorMode)
+	{
+		m_spEditorCamera->SetToShader();
+	}
+	else
+	{
+		m_spCamera->SetToShader();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -49,7 +87,7 @@ std::shared_ptr<Camera> CameraSystem::SearchCamera(std::string name) const
 		if (camera->g_name == name)
 			return camera;
 	}
-	APP.g_imGuiSystem->AddLog("Camera not found.");
+	APP.g_imGuiSystem->AddLog("ERROR: Camera not found. -CameraSystem.SearchCamera()");
 	return nullptr;
 }
 

@@ -6,6 +6,8 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
+class EditorCamera;
+
 // カメラの遷移モード
 enum class ChangeMode
 {
@@ -54,6 +56,10 @@ public:
 	// @param enable 設定する値
 	void AllSetEnable(bool enable);
 
+	// @brief 編集モードかどうかを返す
+	// @return 編集モード...true
+	bool IsEditorMode() const { return m_editorMode; }
+
 private:
 
 	// 管理するカメラ一覧
@@ -61,6 +67,12 @@ private:
 
 	// 使用カメラ
 	std::shared_ptr<Camera> m_spCamera;
+
+	// 編集カメラ
+	std::shared_ptr<EditorCamera> m_spEditorCamera;
+
+	// 編集モード
+	bool m_editorMode;
 
 private:
 

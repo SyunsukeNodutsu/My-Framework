@@ -70,8 +70,8 @@ public:
 	static const int use_slot_shader_debug		=  7;
 	// ワールド変換行列が使用するバッファのスロット番号
 	static const int use_slot_world_matrix		=  8;
-	// ビュー 射影 変換行列が使用するバッファのスロット番号
-	static const int use_slot_view_proj_matrix	=  9;
+	// カメラが使用するバッファのスロット番号
+	static const int use_slot_camera			=  9;
 	// ライトが使用するバッファのスロット番号
 	static const int use_slot_light				= 10;
 	// マテリアルが使用するバッファのスロット番号
@@ -95,8 +95,8 @@ private:
 		float tmp[2];
 	};
 
-	// ビュー 射影 変換行列
-	struct cdViwProjMatrix
+	// カメラ
+	struct cdCamera
 	{
 		mfloat4x4 m_view_matrix;
 		mfloat4x4 m_proj_matrix;
@@ -145,9 +145,7 @@ private:
 	{
 		float g_show_base_color;    // PSの出力をそのままの色に(ライト無効)
 		float g_show_normal;        // PSの出力を法線に
-		float g_show_emissive;      // PSの出力を自己発行に
-		float g_show_metallic_rough;// PSの出力を金属/粗さに
-		//float tmp[3];
+		float tmp[2];
 	};
 #pragma endregion
 
@@ -172,7 +170,7 @@ private:
 
 	ConstantBuffer<cbShaderDebug>					m_cb7ShaderDebug;		// Shaderデバッグ
 	ConstantBuffer<cdWorldMatrix>					m_cb8WorldMatrix;		// ワールド変換行列
-	ConstantBuffer<cdViwProjMatrix>					m_cb9ViewProjMatrix;	// ビュー 射影 変換行列
+	ConstantBuffer<cdCamera>						m_cb9Camera;			// カメラ
 	ConstantBuffer<cdLight>							m_cb10Light;			// ライト
 	ConstantBuffer<cdTime>							m_cb12Time;				// ゲーム内 時間関連
 	ConstantBuffer<cdAtmosphere>					m_cb13Atmosphere;		// 大気
@@ -181,7 +179,7 @@ public:
 
 	ConstantBuffer<cbShaderDebug>& Getcb7() { return m_cb7ShaderDebug; }
 	ConstantBuffer<cdWorldMatrix>& Getcb8() { return m_cb8WorldMatrix; }
-	ConstantBuffer<cdViwProjMatrix>& Getcb9() { return m_cb9ViewProjMatrix; }
+	ConstantBuffer<cdCamera>& Getcb9() { return m_cb9Camera; }
 	ConstantBuffer<cdLight>& Getcb10() { return m_cb10Light; }
 	ConstantBuffer<cdTime>& Getcb12() { return m_cb12Time; }
 	ConstantBuffer<cdAtmosphere>& Getcb13() { return m_cb13Atmosphere; }

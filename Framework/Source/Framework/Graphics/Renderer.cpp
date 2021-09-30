@@ -21,7 +21,7 @@ bool Renderer::Initialize()
 	bool result = false;
 	result = m_cb7ShaderDebug.Create();
 	result = m_cb8WorldMatrix.Create();
-	result = m_cb9ViewProjMatrix.Create();
+	result = m_cb9Camera.Create();
 	result = m_cb10Light.Create();
 	result = m_cb12Time.Create();
 	result = m_cb13Atmosphere.Create();
@@ -29,15 +29,13 @@ bool Renderer::Initialize()
 	// 指定スロットにバッファを設定
 	m_cb7ShaderDebug.SetToDevice(use_slot_shader_debug);
 	m_cb8WorldMatrix.SetToDevice(use_slot_world_matrix);
-	m_cb9ViewProjMatrix.SetToDevice(use_slot_view_proj_matrix);
+	m_cb9Camera.SetToDevice(use_slot_camera);
 	m_cb10Light.SetToDevice(use_slot_light);
 	m_cb12Time.SetToDevice(use_slot_time);
 	m_cb13Atmosphere.SetToDevice(use_slot_atmosphere);
 
 	m_cb7ShaderDebug.Work().g_show_base_color = 0;
 	m_cb7ShaderDebug.Work().g_show_normal = 0;
-	m_cb7ShaderDebug.Work().g_show_emissive = 0;
-	m_cb7ShaderDebug.Work().g_show_metallic_rough = 0;
 	m_cb7ShaderDebug.Write();
 
 	m_cb10Light.Work().m_ambient_power = 0.6f;
@@ -70,9 +68,9 @@ bool Renderer::Initialize()
 	mfloat4x4 viewMatrix, projMatrix;
 	viewMatrix = mfloat4x4::CreateTranslation(0.0f, 0.0f, 0.0f);
 	projMatrix = DirectX::XMMatrixPerspectiveFovLH(60.0f * ToRadians, 16.0f / 9.0f, 0.01f, 2000.0f);
-	m_cb9ViewProjMatrix.Work().m_view_matrix = viewMatrix;
-	m_cb9ViewProjMatrix.Work().m_proj_matrix = projMatrix;
-	m_cb9ViewProjMatrix.Write();
+	m_cb9Camera.Work().m_view_matrix = viewMatrix;
+	m_cb9Camera.Work().m_proj_matrix = projMatrix;
+	m_cb9Camera.Write();
 
 	return true;
 }

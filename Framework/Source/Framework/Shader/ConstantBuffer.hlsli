@@ -81,8 +81,6 @@ cbuffer cdObject : register(b7)
 {
     float g_show_base_color;    // PSの出力をそのままの色に(ライト無効)
     float g_show_normal;        // PSの出力を法線に
-    float g_show_emissive;      // PSの出力を自己発行に
-    float g_show_metallic_rough;// PSの出力を金属/粗さに
 }
 
 

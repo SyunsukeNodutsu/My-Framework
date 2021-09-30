@@ -39,7 +39,7 @@ void Tank::Awake()
 	if (m_runSound3D)
 	{
 		m_runSound3D->Play3D(m_transform.GetPosition());
-		m_runSound3D->SetVolume(0.4f);
+		m_runSound3D->SetVolume(0.0f);
 	}
 
 	// カメラ作成
@@ -76,14 +76,7 @@ void Tank::Awake()
 //-----------------------------------------------------------------------------
 void Tank::Update(float deltaTime)
 {
-	static bool enable = true;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Escape)) {
-		enable = !enable;
-		APP.g_rawInputDevice->g_spMouse->SetCursorShow(!enable);
-		APP.g_gameSystem->g_cameraSystem.AllSetEnable(enable);
-	}
-
-	if (!enable) return;
+	if (APP.g_gameSystem->g_cameraSystem.IsEditorMode()) return;
 
 	// 現在のステート更新
 	m_spState->Update(*this, deltaTime);

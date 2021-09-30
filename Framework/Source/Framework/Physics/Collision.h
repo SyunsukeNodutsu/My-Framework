@@ -16,9 +16,9 @@ struct SphereResult
 // レイ判定の結果
 struct RayResult
 {
-	float	m_distance = FLT_MAX;	// レイの座標からヒットした位置までの距離が入る
-	float3	m_HitPos = float3::Zero;// 衝突座標
-	bool	m_hit = false;			// ヒットしたかどうか
+	float	m_distance	= FLT_MAX;		// レイの座標からヒットした位置までの距離
+	float3	m_HitPos	= float3::Zero;	// 衝突座標
+	bool	m_hit		= false;		// ヒットしたかどうか
 };
 
 // 衝突判定

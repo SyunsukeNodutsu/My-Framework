@@ -2,11 +2,8 @@
 #include "main.h"
 
 #include "Actors/Actor.h"
-#include "Actors/EditorCamera.h"
 
 #include "../Framework/Audio/SoundDirector.h"
-
-#include <fstream>
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -14,6 +11,7 @@
 GameSystem::GameSystem()
 	: g_cameraSystem()
 	, m_spActorList()
+	, m_debugLines()
 {
 }
 
@@ -31,6 +29,7 @@ void GameSystem::Initialize()
 		AddActor("Sky");
 		AddActor("StageMap");
 		AddActor("Tank");
+		AddActor("Tree");
 	}
 
 	for (auto& object : m_spActorList)
@@ -41,7 +40,6 @@ void GameSystem::Initialize()
 	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Germany.wav", true, true);
 	if (sound)
 	{
-		sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.6f);
 		sound->Play(1000);
 		sound->SetVolume(0.36f);
 	}
@@ -82,6 +80,8 @@ void GameSystem::Finalize()
 {
 	for (auto& object : m_spActorList)
 		object->Finalize();
+
+	m_debugLines.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -153,13 +153,15 @@ void GameSystem::Draw2D()
 	{
 		SHADER.GetEffectShader().Begin();
 
+		// TODO: ここで3DモデルのEffect描画
+
 		// RENDERERの詳細パラメータを設定
 		RENDERER.SetTexture(APP.g_graphicsDevice->GetWhiteTex().get());
 		RENDERER.SetDepthStencil(false, false);
 		RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 		RENDERER.Getcb8().Write();
 
-		// debugLinesの中身があるとき
+		// DebugLines
 		if (m_debugLines.size() >= 1)
 		{
 			APP.g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));

@@ -45,8 +45,10 @@ public:
 		return m_spActorList;
 	}
 
-	// @brief デバッグ用の3D線を追加
-	// @param
+	// @brief デバッグ用の3D線を追加 TODO: 移動
+	// @param pos01 開始座標
+	// @param pos02 終了座標
+	// @param color 色 デフォルトは白
 	void AddDebugLine(const float3& pos01, const float3& pos02, const cfloat4x4 color = cfloat4x4::White);
 
 public:
