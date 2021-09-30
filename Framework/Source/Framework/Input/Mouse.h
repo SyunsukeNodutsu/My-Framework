@@ -80,8 +80,9 @@ public:
     bool IsReleased(MouseButton mkey);
 
     // @brief マウス座標を返す
+    // @param haste 解析を待たず、即座に取得？
     // @return マウス座標(全体)
-    float2 GetMousePos() const { return m_mousePos; }
+    float2 GetMousePos(bool haste = false);
 
 private:
 
@@ -128,6 +129,8 @@ private:
 
     // マウス座標
     float2 m_mousePos;
+
+    HWND m_owner;
 
 private:
 

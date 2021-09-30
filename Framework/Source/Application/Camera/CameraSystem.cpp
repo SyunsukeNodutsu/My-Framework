@@ -14,6 +14,7 @@ CameraSystem::CameraSystem()
 	m_spEditorCamera = std::make_shared<EditorCamera>();
 	m_spEditorCamera->g_enable = false;
 	m_spEditorCamera->g_name = "EditorCamera";
+	m_cameraList.push_back(m_spEditorCamera);
 
 	m_spEditorCamera->SetCameraMatrix(mfloat4x4::CreateTranslation(float3(0, 4, -4)));
 }
@@ -70,7 +71,7 @@ void CameraSystem::SetToDevice()
 //-----------------------------------------------------------------------------
 // カメラ追加
 //-----------------------------------------------------------------------------
-void CameraSystem::SetCameraList(std::shared_ptr<Camera> camera)
+void CameraSystem::AddCameraList(std::shared_ptr<Camera> camera)
 {
 	if (!camera) return;
 	m_cameraList.push_back(camera);

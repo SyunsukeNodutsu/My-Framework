@@ -30,7 +30,7 @@ void Human::Initialize()
 
 		m_spCamera->g_priority = 1.0f;
 		m_spCamera->g_name = "HumanTPS";
-		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera);
+		APP.g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera);
 	}
 
 	m_spState = std::make_shared<StateWait>();

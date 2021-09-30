@@ -3,7 +3,7 @@
 // 
 // ■フレームワーク全体像(2021/09/24)
 // 
-// Application ----------------AudioDevice
+// Application(main.h)------AudioDevice
 //   |    |  |                   |
 // Window |  |             AudioDeviceChild
 //		  |  |                |        |
@@ -22,6 +22,13 @@
 //	   ConstantBuffer -- 各Shader  |
 //			 |                     |
 //			 ┗------------------Renderer
+// 
+// ■使用ライブラリ
+// DirectXTK
+// Dear imGui
+// Effekseer
+// nlohmann - json
+// gltfLoader
 //-----------------------------------------------------------------------------
 #pragma once
 #include "GameSystem.h"

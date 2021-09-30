@@ -14,6 +14,8 @@ Mouse::Mouse()
 //-----------------------------------------------------------------------------
 void Mouse::Initialize(HWND hwnd)
 {
+    m_owner = hwnd;
+
     m_deviceMouse.usUsagePage   = 0x01;
     m_deviceMouse.usUsage       = 0x02;
     m_deviceMouse.dwFlags       = RIDEV_INPUTSINK;
@@ -122,6 +124,23 @@ bool Mouse::IsPressed(MouseButton mkey)
 bool Mouse::IsReleased(MouseButton mkey)
 {
     return _mStates.KeyState(mkey) == ButtonState::RELEASED;
+}
+
+//-----------------------------------------------------------------------------
+// マウス座標を返す
+//-----------------------------------------------------------------------------
+float2 Mouse::GetMousePos(bool haste)
+{
+    if (haste)
+    {
+        // 座標
+        POINT tmpPos; GetCursorPos(&tmpPos);
+        ScreenToClient(m_owner, &tmpPos);
+        m_mousePos.x = static_cast<float>(tmpPos.x);
+        m_mousePos.y = static_cast<float>(tmpPos.y);
+        return m_mousePos;
+    }
+    return m_mousePos;
 }
 
 //-----------------------------------------------------------------------------

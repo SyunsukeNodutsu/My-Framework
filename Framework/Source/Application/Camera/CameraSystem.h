@@ -36,7 +36,7 @@ public:
 
 	// @brief カメラを管理リストに追加
 	// @param camera 追加するカメラ
-	void SetCameraList(std::shared_ptr<Camera> camera);
+	void AddCameraList(std::shared_ptr<Camera> camera);
 
 	// @brief カメラ管理リストを返す
 	// @return カメラ管理リスト(読み取り専用)

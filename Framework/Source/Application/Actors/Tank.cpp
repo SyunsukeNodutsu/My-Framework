@@ -56,7 +56,7 @@ void Tank::Awake()
 		m_spCamera3rd->g_name = "TankTPS";
 		m_spCamera3rd->g_priority = 1.0f;
 
-		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera3rd);
+		APP.g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera3rd);
 	}
 
 	m_spCamera1st = std::make_shared<FPSCamera>();
@@ -67,7 +67,7 @@ void Tank::Awake()
 		m_spCamera1st->g_name = "TankFPS";
 		m_spCamera1st->g_priority = 0.0f;
 
-		APP.g_gameSystem->g_cameraSystem.SetCameraList(m_spCamera1st);
+		APP.g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera1st);
 	}
 }
 

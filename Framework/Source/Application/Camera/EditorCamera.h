@@ -26,4 +26,7 @@ private:
 	// 現在のマウス座標
 	float2 m_mousePosNow;
 
+	float3 m_position;
+	float3 m_rotation;
+
 };
