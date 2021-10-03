@@ -19,7 +19,8 @@ public:
 	bool Initialize();
 
 	// @brief 描画開始
-	void Begin();
+	// @param numShadow 何枚目のシャドウ
+	void Begin(int numShadow = 0);
 
 	// @brief 描画終了
 	void End();
@@ -33,13 +34,28 @@ public:
 	// 設定・取得
 	//--------------------------------------------------
 
-	// @brief 平行光用深度マップを返す
-	std::shared_ptr<Texture> GetDirShadowMap() const { return m_dirLightShadowMap; }
+	// @brief シャドウマップを返す
+	// @param numShadow 何枚目のシャドウマップ
+	// @return 平行光用深度マップ
+	std::shared_ptr<Texture> GetShadowMap(int numShadow = 0) const {
+		if (numShadow > NUM_SHADOW_MAP || numShadow < 0) return nullptr;
+		return m_shadowMaps[numShadow];
+	}
 
 private:
 
-	std::shared_ptr<Texture> m_dirLightShadowMap;
-	std::shared_ptr<Texture> m_dirLightZBuffer;
+	// シャドウマップの数
+	static constexpr int NUM_SHADOW_MAP = 3;
+
+	// レンダーターゲット
+	std::shared_ptr<Texture> m_shadowMaps[NUM_SHADOW_MAP];
+	std::shared_ptr<Texture> m_zBuffer[NUM_SHADOW_MAP];
+
+	// ライトビュープロジェクションクロップ行列
+	mfloat4x4 m_lvpcMatrix[NUM_SHADOW_MAP];
+
+	// 分割エリアの最大深度値
+	float m_cascadeAreaTable[NUM_SHADOW_MAP];
 
 	// State記憶用
 	ID3D11RenderTargetView* m_saveRT;
@@ -47,26 +63,17 @@ private:
 	UINT					m_numVP;
 	D3D11_VIEWPORT			m_saveVP;
 
-	// ライトカメラの向き
-	float3 m_lightCameraLook;
-
-	// シャドウ用 定数バッファ
-	struct cbShadow {
-		mfloat4x4 m_lvpcMatrix;
-	};
-	ConstantBuffer<cbShadow> m_cb02Shadow;
+	// TODO: fix
+	ComPtr<ID3D11SamplerState> state = nullptr;
 
 private:
 
-	// @brief GPUに転送
-	void SetToDevice();
+	// @brief ライトカメラの設定
+	void SettingLightCamera();
 
 	// @brief メッシュ描画
 	// @param mesh メッシュ
 	// @param materials マテリアル配列
 	void DrawMeshDepth(const Mesh* mesh, const std::vector<Material>& materials);
-
-	//
-	void SettingLightCamera();
 
 };

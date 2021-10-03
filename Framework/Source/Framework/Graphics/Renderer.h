@@ -35,10 +35,14 @@ public:
 	// @brief デフォルト設定
 	void SetDefaultState();
 
-	// @brief テクスチャ設定
-	// @param texture テクスチャ
+	// @brief シェーダーリソースをバインド
+	// @param texture リソース(テクスチャ)
 	// @param slot 使用スロット
-	void SetTexture(Texture* texture, int slot = 0);
+	void SetResources(Texture* texture, int slot = 0);
+
+	// @brief Nullリソースをバインド
+	// @param slot 使用スロット
+	void SetNullResources(int slot);
 
 	// @brief Zバッファ使用設定
 	// @param zUse

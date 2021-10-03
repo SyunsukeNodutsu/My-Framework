@@ -21,7 +21,7 @@ EditorCamera::EditorCamera()
 // 更新
 //-----------------------------------------------------------------------------
 void EditorCamera::Update(float deltaTime)
-{	
+{
 	auto& mouse = APP.g_rawInputDevice->g_spMouse;
 	auto& keyboard = APP.g_rawInputDevice->g_spKeyboard;
 

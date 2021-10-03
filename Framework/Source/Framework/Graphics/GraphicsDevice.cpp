@@ -243,7 +243,7 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 void GraphicsDevice::Begin(const float* clearColor)
 {
-	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	//g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);

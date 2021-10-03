@@ -140,10 +140,10 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 		m_cd11Material.Write();
 
 		// テクスチャセット
-		RENDERER.SetTexture(material.m_baseColorTexture.get(), 0);
-		RENDERER.SetTexture(material.m_emissiveTexture.get(), 1);
-		RENDERER.SetTexture(material.m_metallicRoughnessTexture.get(), 2);
-		RENDERER.SetTexture(material.m_normalTexture.get(), 3);
+		RENDERER.SetResources(material.m_baseColorTexture.get(), 0);
+		RENDERER.SetResources(material.m_emissiveTexture.get(), 1);
+		RENDERER.SetResources(material.m_metallicRoughnessTexture.get(), 2);
+		RENDERER.SetResources(material.m_normalTexture.get(), 3);
 
 		// サブセット描画
 		mesh->DrawSubset(i);

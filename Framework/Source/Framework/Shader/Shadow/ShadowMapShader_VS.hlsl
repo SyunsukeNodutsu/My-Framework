@@ -17,7 +17,7 @@ VertexOutput main(
     VertexOutput ret = (VertexOutput) 0;
     
     ret.position = mul(position, g_world_matrix);
-    ret.position = mul(ret.position, g_light_vp_matrix);
+    ret.position = mul(ret.position, g_directional_light_vp);
     
     ret.wvpPosition = ret.position;
     

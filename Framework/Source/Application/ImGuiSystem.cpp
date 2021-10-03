@@ -126,8 +126,7 @@ void ImGuiSystem::DrawImGui()
 	if (ImGui::Begin("Shadow Test"))
 	{
 		ImGui::Image(
-			//(ImTextureID)APP.g_graphicsDevice->GetBackbuffer()->SRV(),
-			(ImTextureID)SHADER.GetShadowMapShader().GetDirShadowMap()->SRV(),
+			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap()->SRV(),
 			ImVec2(200, 200)
 		);
 	}

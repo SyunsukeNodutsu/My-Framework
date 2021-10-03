@@ -87,16 +87,33 @@ void Renderer::SetDefaultState()
 }
 
 //-----------------------------------------------------------------------------
-// テクスチャ設定
+// シェーダーリソースをバインド
 //-----------------------------------------------------------------------------
-void Renderer::SetTexture(Texture* texture, int slot)
+void Renderer::SetResources(Texture* texture, int slot)
 {
 	if (!g_graphicsDevice) return;
 	if (!g_graphicsDevice->g_cpContext) return;
 	if (!texture) return;
 
+	if (slot > D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT && slot < 0) return;
+
 	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
+}
+
+//-----------------------------------------------------------------------------
+// Nullリソースをバインド
+//-----------------------------------------------------------------------------
+void Renderer::SetNullResources(int slot)
+{
+	if (!g_graphicsDevice) return;
+	if (!g_graphicsDevice->g_cpContext) return;
+
+	if (slot > D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT && slot < 0) return;
+
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, &nullSRV);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, &nullSRV);
 }
 
 //-----------------------------------------------------------------------------

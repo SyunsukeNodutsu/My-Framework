@@ -7,7 +7,7 @@
 #include "ShadowMapShader.hlsli"
 
 // テクスチャ
-Texture2D g_baseColorTexture : register(t0); // 基本色
+Texture2D g_baseColorTexture : register(t0);
 
 // サンプラ
 SamplerState g_samplerState  : register(s0);

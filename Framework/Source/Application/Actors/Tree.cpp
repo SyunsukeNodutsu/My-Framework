@@ -15,7 +15,7 @@ void Tree::Initialize()
 	LoadModel("Resource/Model/Tree/02/Tree02.gltf");
 	//LoadModel("Resource/Model/Tree/01/Tree01.gltf");
 
-	m_transform.SetPosition(float3(0, 0, 10));
+	m_transform.SetPosition(float3(0, -0.08f, 10));
 	m_transform.SetScale(float3(0.5f));
 }
 

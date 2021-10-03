@@ -26,7 +26,7 @@ void GameSystem::Initialize()
 	//--------------------------------------------------
 	{
 		//AddActor("Human");
-		//AddActor("Sky");
+		AddActor("Sky");
 		AddActor("StageMap");
 		AddActor("Tank");
 		AddActor("Tree");
@@ -140,7 +140,7 @@ void GameSystem::Draw()
 
 	// シャドウマップ描画
 	{
-		SHADER.GetShadowMapShader().Begin();
+		SHADER.GetShadowMapShader().Begin(0);
 
 		for (auto& object : m_spActorList)
 			object->DrawShadowMap(deltaTime);
@@ -150,12 +150,18 @@ void GameSystem::Draw()
 	
 	// 通常3D描画
 	{
-		RENDERER.SetTexture(SHADER.GetShadowMapShader().GetDirShadowMap().get(), 10);
+		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(0).get(), 10);
+		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(1).get(), 11);
+		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(2).get(), 12);
 
 		SHADER.GetModelShader().Begin();
 
 		for (auto& object : m_spActorList)
 			object->Draw(deltaTime);
+
+		RENDERER.SetNullResources(10);
+		RENDERER.SetNullResources(11);
+		RENDERER.SetNullResources(12);
 	}
 }
 
@@ -171,7 +177,7 @@ void GameSystem::Draw2D()
 		// TODO: ここで3DモデルのEffect描画
 
 		// RENDERERの詳細パラメータを設定
-		RENDERER.SetTexture(APP.g_graphicsDevice->GetWhiteTex().get());
+		RENDERER.SetResources(APP.g_graphicsDevice->GetWhiteTex().get());
 		RENDERER.SetDepthStencil(false, false);
 		RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 		RENDERER.Getcb8().Write();

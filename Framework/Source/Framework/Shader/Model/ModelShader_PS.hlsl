@@ -12,7 +12,9 @@ Texture2D g_emissiveTexture     : register(t1); // エミッシブテクスチャ
 Texture2D g_mrTexture           : register(t2); // メタリック/ラフネステクスチャ
 Texture2D g_normalTexture       : register(t3); // 法線マップ(テクスチャ)
 
-Texture2D g_shadowMap : register(t10);
+Texture2D<float4> g_shadowMap_0 : register(t10); // 近距離のシャドウマップ
+Texture2D<float4> g_shadowMap_1 : register(t11); // 中距離のシャドウマップ
+Texture2D<float4> g_shadowMap_2 : register(t12); // 遠距離のシャドウマップ
 
 // サンプラ
 SamplerState g_samplerState : register(s0);
@@ -62,7 +64,9 @@ float GGX(float3 lightDir, float3 vCam, float3 normal, float roughness)
     return (alpha * alpha) / d;
 }
 
-//
+// @brief ソフトシャドウ
+// @param In VSからの出力
+// @retrun シャドウ パラメータ
 float CheckShadow( VertexOutput In )
 {
 	// 最終的な値
@@ -87,7 +91,7 @@ float CheckShadow( VertexOutput In )
 
 		// ぼかし
         float width, height;
-        g_shadowMap.GetDimensions(width, height);
+        g_shadowMap_0.GetDimensions(width, height);
         float tw = 1.0f / width;
         float th = 1.0f / height;
 
@@ -98,7 +102,7 @@ float CheckShadow( VertexOutput In )
             for (int x = -1; x <= 1; x++)
             {
 				// 影判定
-                shadow += g_shadowMap.SampleCmpLevelZero(g_shadowSamplerState, uv + float2(x * tw, y * th), z);
+                shadow += g_shadowMap_0.SampleCmpLevelZero(g_shadowSamplerState, uv + float2(x * tw, y * th), z);
             }
         }
         shadow *= 0.11f;
@@ -138,6 +142,14 @@ float4 main( VertexOutput In ) : SV_TARGET
         
         clip(dither - 15 * clipRate);
     }
+    
+    //------------------------------------------
+    // シャドウイング用テクスチャ配列
+    //------------------------------------------
+    Texture2D<float4> shadowMapArray[3];
+    shadowMapArray[0] = g_shadowMap_0;
+    shadowMapArray[1] = g_shadowMap_1;
+    shadowMapArray[2] = g_shadowMap_2;
     
     //------------------------------------------
     // カメラ情報
@@ -206,25 +218,7 @@ float4 main( VertexOutput In ) : SV_TARGET
         // シャドウイング
         //------------------------------------------
         
-        float shadow = 1.0f;
-
-	    // ピクセルの3D座標から、シャドウマップ空間へ変換
-        float4 liPos = mul(float4(In.wPosition, 1), g_directional_light_vp);
-
-	    // 射影座標に変換
-        liPos.xyz /= liPos.w;
-        
-        if (abs(liPos.x) <= 1 && abs(liPos.y) <= 1 && liPos.z <= 1)
-        {
-		    // 射影座標 -> UV座標へ変換
-            float2 uv = liPos.xy * float2(1, -1) * 0.5f + 0.5f;
-            
-		    // ライトカメラからの距離
-            float z = liPos.z - 0.002f;
-            
-		    // 影判定
-            shadow = g_shadowMap.Sample(g_samplerState, uv).r < z ? 0 : 1;
-        }
+        float shadow = CheckShadow(In);
         
         //------------------------------------------
         // 平行光
@@ -261,6 +255,7 @@ float4 main( VertexOutput In ) : SV_TARGET
         //------------------------------------------
         // 環境光
         //------------------------------------------
+        // TODO: 環境光の強さをShadowによって変更
         diffuseColor += 0.8f * albedo.rgb * albedo.a;
         
         //------------------------------------------
