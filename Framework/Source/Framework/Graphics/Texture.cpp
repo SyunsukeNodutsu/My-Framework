@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 Texture::Texture()
 	: m_cpBuffer(nullptr)
-	, m_info()
+	, m_desc()
 	, m_cpRTV(nullptr)
 	, m_cpSRV(nullptr)
 	, m_cpDSV(nullptr)
@@ -22,7 +22,7 @@ bool Texture::Create( ID3D11Texture2D* pTexBuffer, bool useMSAA )
 
 	m_cpBuffer = pTexBuffer;
 	// 指定されたバッファから情報を抜き出す
-	pTexBuffer->GetDesc(&m_info);
+	pTexBuffer->GetDesc(&m_desc);
 
 	return CreateRTV(useMSAA);
 }
@@ -55,15 +55,49 @@ bool Texture::Create( const std::string& filepath )
 //-----------------------------------------------------------------------------
 // DESC情報から作成
 //-----------------------------------------------------------------------------
-bool Texture::Create(D3D11_TEXTURE2D_DESC& desc)
+bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc)
 {
 	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：テクスチャバッファ作成失敗.");
 		return false;
 	}
+	
+	// DESC情報を取得
+	m_cpBuffer->GetDesc(&m_desc);
 
-	m_cpBuffer->GetDesc(&m_info);
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// 作成
+//-----------------------------------------------------------------------------
+bool Texture::CreateRenderTarget(int height, int width, bool useMSAA, DXGI_FORMAT format, UINT arrayCnt)
+{
+	auto& smpleDesc = g_graphicsDevice->GetSampleDesc();
+
+	D3D11_TEXTURE2D_DESC desc = {};
+
+	desc.Usage				= D3D11_USAGE_DEFAULT;
+	desc.Format				= format;
+
+	// ↓読み書き兼用で作成
+	desc.BindFlags			= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	desc.Width				= static_cast<UINT>(width);
+	desc.Height				= static_cast<UINT>(height);
+	desc.CPUAccessFlags		= 0;
+	desc.MipLevels			= 1;
+	desc.ArraySize			= arrayCnt;
+	desc.MiscFlags			= 0;
+	desc.SampleDesc.Count	= useMSAA ? smpleDesc.Count : 1;
+	desc.SampleDesc.Quality = useMSAA ? smpleDesc.Quality : 0;
+	
+	if (!Create(desc))
+		return false;
+
+	// Viewの作成
+	if (!CreateRTV(useMSAA))
+		return false;
 
 	return true;
 }
@@ -73,26 +107,28 @@ bool Texture::Create(D3D11_TEXTURE2D_DESC& desc)
 //-----------------------------------------------------------------------------
 bool Texture::CreateDepthStencil(int height, int width, bool useMSAA, DXGI_FORMAT format)
 {
+	auto& smpleDesc = g_graphicsDevice->GetSampleDesc();
+
 	D3D11_TEXTURE2D_DESC desc = {};
 
 	// 種類
-	desc.Format = format;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	desc.Format				= format;
+	desc.BindFlags			= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 
-	desc.Height = static_cast<UINT>(height);
-	desc.Width = static_cast<UINT>(width);
+	desc.Height				= static_cast<UINT>(height);
+	desc.Width				= static_cast<UINT>(width);
 
 	// アクセスの種類
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.CPUAccessFlags = 0;
+	desc.Usage				= D3D11_USAGE_DEFAULT;
+	desc.CPUAccessFlags		= 0;
 
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
+	desc.MipLevels			= 1;
+	desc.ArraySize			= 1;
 
 	// その他の設定
-	desc.MiscFlags = 0;
-	desc.SampleDesc.Count = useMSAA ? 8 : 1;
-	desc.SampleDesc.Quality = 0;
+	desc.MiscFlags			= 0;
+	desc.SampleDesc.Count	= useMSAA ? smpleDesc.Count : 1;
+	desc.SampleDesc.Quality = useMSAA ? smpleDesc.Quality : 0;
 
 	if (!Create(desc))
 		return false;
@@ -133,7 +169,7 @@ ID3D11Texture2D* Texture::GetResource() const
 bool Texture::CreateRTV(bool useMSAA)
 {
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format			= m_info.Format;
+	rtvDesc.Format			= m_desc.Format;
 	rtvDesc.ViewDimension	= useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	// RTV作成
@@ -141,6 +177,56 @@ bool Texture::CreateRTV(bool useMSAA)
 	if (FAILED(hr)) {
 		assert(0 && "エラー：RenderTargetView作成失敗.");
 		return false;
+	}
+
+	if (m_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		// 作成するビューの設定
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+
+		// テクスチャがZバッファの場合は、最適なフォーマットにする
+		if (m_desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+		{
+			switch (m_desc.Format)
+			{
+			case DXGI_FORMAT_R16_TYPELESS: srvDesc.Format = DXGI_FORMAT_R16_UNORM; break;// 16ビット
+			case DXGI_FORMAT_R32_TYPELESS: srvDesc.Format = DXGI_FORMAT_R32_FLOAT; break;// 32ビット
+			case DXGI_FORMAT_R24G8_TYPELESS: srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;// 24ビット(Zバッファ) + 8ビット(ステンシルバッファ) 
+			default: assert(0 && "[ShaderResource] 対応していないフォーマットです"); break;
+			}
+		}
+		// Zバッファでない場合は、そのまま同じフォーマットを使用
+		else srvDesc.Format = m_desc.Format;
+
+		// 単品のテクスチャ(通常テクスチャ)の場合
+		if (m_desc.ArraySize == 1)
+		{
+			srvDesc.ViewDimension = useMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MostDetailedMip = 0;
+			srvDesc.Texture2D.MipLevels = m_desc.MipLevels;
+			if (srvDesc.Texture2D.MipLevels <= 0) srvDesc.Texture2D.MipLevels = -1;
+		}
+		// テクスチャ配列の場合
+		else
+		{
+			// さらにキューブマップの場合
+			if (m_desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE) srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+			// 通常テクスチャ配列
+			else srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+
+			srvDesc.Texture2DArray.MostDetailedMip = 0;
+			srvDesc.Texture2DArray.MipLevels = m_desc.MipLevels;
+			srvDesc.Texture2DArray.ArraySize = m_desc.ArraySize;	// 要素数
+			srvDesc.Texture2DArray.FirstArraySlice = 0;
+		}
+
+		// シェーダリソースビュー作成
+		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateShaderResourceView(m_cpBuffer.Get(), &srvDesc, &m_cpSRV);
+		if (FAILED(hr))
+		{
+			assert(0 && "ShaderResourceViewの作成に失敗");
+			return false;
+		}
 	}
 
 	return true;
@@ -154,7 +240,7 @@ bool Texture::CreateDSV(bool useMSAA)
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 
 	// 互換性を確認し最適なフォーマットを指定
-	switch (m_info.Format)
+	switch (m_desc.Format)
 	{
 		// 16bit
 	case DXGI_FORMAT_R16_TYPELESS:

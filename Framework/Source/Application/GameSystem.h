@@ -51,6 +51,12 @@ public:
 	// @param color 色 デフォルトは白
 	void AddDebugLine(const float3& pos01, const float3& pos02, const cfloat4x4 color = cfloat4x4::White);
 
+	// @brief デバッグ用の3D球を追加 TODO: 移動
+	// @param pos 座標
+	// @param radius 半径
+	// @param color 色 デフォルトは白
+	void AddDebugSphereLine(const float3& pos, const float radius, const cfloat4x4 color = cfloat4x4::White);
+
 public:
 
 	// カメラ管理システム

@@ -188,7 +188,7 @@ void Tank::UpdateRunSound(bool state1st)
 	auto rotSpeed = std::abs(m_rotateSpeed) * 0.36f;
 	auto volume = std::max(moveSpeed, rotSpeed);
 	volume *= 0.08f;
-	volume = std::clamp(volume, 0.2f, 0.6f);
+	volume = std::clamp(volume, 0.02f, 0.6f);
 	m_runSound3D->SetVolume(volume * (state1st ? 1.0f : 0.5f));
 	m_runSound3D->SetPosition(m_transform.GetPosition());
 }

@@ -8,6 +8,7 @@
 #include "Effect/EffectShader.h"
 #include "Model/ModelShader.h"
 #include "Sprite/SpriteShader.h"
+#include "Shadow/ShadowMapShader.h"
 
 // シェーダーの管理クラス
 class ShaderManager
@@ -39,11 +40,16 @@ public:
 	// @return Spriteシェーダ
 	SpriteShader& GetSpriteShader() const { return *m_spSpriteShader; }
 
+	// @brief ShadowMapShaderを返す
+	// @return ShadowMapShader
+	ShadowMapShader& GetShadowMapShader() const { return *m_spShadowMapShader; }
+
 private:
 
 	std::shared_ptr<EffectShader>	m_spEffectShader;	// Effect描画シェーダ
 	std::shared_ptr<ModelShader>	m_spModelShader;	// 3Dモデル描画シェーダ
 	std::shared_ptr<SpriteShader>	m_spSpriteShader;	// 画像描画用シェーダ
+	std::shared_ptr<ShadowMapShader>m_spShadowMapShader;// 画像描画用シェーダ
 
 private:
 

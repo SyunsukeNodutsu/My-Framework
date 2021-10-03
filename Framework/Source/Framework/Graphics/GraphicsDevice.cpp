@@ -8,9 +8,15 @@
 GraphicsDevice::GraphicsDevice()
 	: g_cpDevice(nullptr)
 	, g_cpContext(nullptr)
-	, g_cpDeviceN(nullptr)
-	, g_cpContextN(nullptr)
-	, g_cpContextDeferred(nullptr)
+	, m_cpGISwapChain(nullptr)
+	, m_spBackbuffer(nullptr)
+	, m_spDefaultZbuffer(nullptr)
+	, m_adapterName("")
+	, m_sampleDesc()
+	, m_tempFixedVertexBuffer()
+	, m_tempVertexBuffer(nullptr)
+	, m_texWhite(nullptr)
+	, m_texNormal(nullptr)
 {
 }
 
@@ -69,7 +75,6 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	// 現環境で使用できるMSAAをチェック
 	//--------------------------------------------------
 
-	DXGI_SAMPLE_DESC sampleDesc = {};
 	for (int i = 1; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i <<= 1)
 	{
 		UINT Quality;
@@ -77,21 +82,25 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		{
 			if (0 < Quality)
 			{
-				sampleDesc.Count = i;
-				sampleDesc.Quality = Quality - 1;
+				m_sampleDesc.Count = i;
+				m_sampleDesc.Quality = Quality - 1;
 			}
 		}
 	}
 
-	sampleDesc.Count = desc.m_useMSAA ? sampleDesc.Count : 1;
+	m_sampleDesc.Count = desc.m_useMSAA ? m_sampleDesc.Count : 1;
 
 	// MSAA非対応の場合
-	if (sampleDesc.Count <= 1) {
+	if (m_sampleDesc.Count <= 1) {
 		// MSAAをOFFにします
-		sampleDesc.Quality = 0;
+		m_sampleDesc.Quality = 0;
 		desc.m_useMSAA = false;
 		APP.g_imGuiSystem->AddLog("MSAA is not supported.");
 	}
+
+	APP.g_imGuiSystem->AddLog(
+		std::string("INFO: SampleDesc Count: " + std::to_string(m_sampleDesc.Count) + " Quality: " + std::to_string(m_sampleDesc.Quality)).c_str()
+	);
 
 	//--------------------------------------------------
 	// スワップチェイン作成
@@ -107,7 +116,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	DXGISwapChainDesc.BufferDesc.ScanlineOrdering		= DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	DXGISwapChainDesc.BufferDesc.Scaling				= DXGI_MODE_SCALING_UNSPECIFIED;
 
-	DXGISwapChainDesc.SampleDesc						= sampleDesc;
+	DXGISwapChainDesc.SampleDesc						= m_sampleDesc;
 
 	DXGISwapChainDesc.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	DXGISwapChainDesc.BufferCount						= desc.m_bufferCount;
@@ -142,9 +151,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 		pIDXGIFactory->MakeWindowAssociation(desc.m_hwnd, DXGI_MWA_NO_ALT_ENTER);
 
-		pDXGIDevice->Release();
-		pDXGIAdapter->Release();
-		pIDXGIFactory->Release();
+		SafeRelease(pDXGIDevice);
+		SafeRelease(pDXGIAdapter);
+		SafeRelease(pIDXGIFactory);
 	}
 
 	//--------------------------------------------------
@@ -176,17 +185,6 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-
-	//--------------------------------------------------
-	// 遅延デバイスコンテキスト作成
-	//--------------------------------------------------
-
-	// 遅延コンテキスト作成
-	g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
-
-	// RT/VP設定
-	g_cpContextDeferred->RSSetViewports(1, &vp);
-	g_cpContextDeferred->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成

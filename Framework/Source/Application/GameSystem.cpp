@@ -26,7 +26,7 @@ void GameSystem::Initialize()
 	//--------------------------------------------------
 	{
 		//AddActor("Human");
-		AddActor("Sky");
+		//AddActor("Sky");
 		AddActor("StageMap");
 		AddActor("Tank");
 		AddActor("Tree");
@@ -138,10 +138,25 @@ void GameSystem::Draw()
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();
 
-	SHADER.GetModelShader().Begin();
+	// シャドウマップ描画
+	{
+		SHADER.GetShadowMapShader().Begin();
 
-	for (auto& object : m_spActorList)
-		object->Draw(deltaTime);
+		for (auto& object : m_spActorList)
+			object->DrawShadowMap(deltaTime);
+
+		SHADER.GetShadowMapShader().End();
+	}
+	
+	// 通常3D描画
+	{
+		RENDERER.SetTexture(SHADER.GetShadowMapShader().GetDirShadowMap().get(), 10);
+
+		SHADER.GetModelShader().Begin();
+
+		for (auto& object : m_spActorList)
+			object->Draw(deltaTime);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -196,6 +211,53 @@ void GameSystem::AddDebugLine(const float3& pos01, const float3& pos02, const cf
 	// ラインの終了頂点
 	ver.m_position = pos02;
 	m_debugLines.push_back(ver);
+}
+
+//-----------------------------------------------------------------------------
+// デバッグ用の3D球を追加
+//-----------------------------------------------------------------------------
+void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const cfloat4x4 color)
+{
+	EffectShader::Vertex ver = {};
+	ver.m_color = color;
+	ver.m_uv = { 0.0f,0.0f };
+
+	static constexpr int kDetail = 32;
+	for (UINT i = 0; i < kDetail + 1; ++i)
+	{
+		// XZ平面
+		ver.m_position = pos;
+		ver.m_position.x += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+
+		ver.m_position = pos;
+		ver.m_position.x += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+
+		// XY平面
+		ver.m_position = pos;
+		ver.m_position.x += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.y += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+
+		ver.m_position = pos;
+		ver.m_position.x += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.y += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+
+		// YZ平面
+		ver.m_position = pos;
+		ver.m_position.y += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+
+		ver.m_position = pos;
+		ver.m_position.y += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		m_debugLines.push_back(ver);
+	}
 }
 
 //-----------------------------------------------------------------------------

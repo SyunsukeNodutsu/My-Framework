@@ -56,7 +56,6 @@
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
-    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
@@ -130,7 +129,6 @@
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
-    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
@@ -166,6 +164,7 @@
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli" />
     <None Include="Source\Framework\Shader\Effect\EffectShader.hlsli" />
     <None Include="Source\Framework\Shader\Model\ModelShader.hlsli" />
+    <None Include="Source\Framework\Shader\Shadow\ShadowMapShader.hlsli" />
     <None Include="Source\Framework\Shader\Sprite\SpriteShader.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +271,36 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compiledBuffer</VariableName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ObjectFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">compiledBuffer</VariableName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ObjectFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compiledBuffer</VariableName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ObjectFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">compiledBuffer</VariableName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ObjectFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

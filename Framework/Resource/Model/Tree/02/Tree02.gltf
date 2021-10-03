@@ -49,9 +49,12 @@
         {
             "doubleSided" : true,
             "name" : "Tree",
+            "normalTexture" : {
+                "index" : 0
+            },
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 0
+                    "index" : 1
                 },
                 "metallicFactor" : 0,
                 "roughnessFactor" : 0.5
@@ -60,9 +63,12 @@
         {
             "doubleSided" : true,
             "name" : "Leaf",
+            "normalTexture" : {
+                "index" : 2
+            },
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 1
+                    "index" : 3
                 },
                 "metallicFactor" : 0,
                 "roughnessFactor" : 0.5
@@ -77,9 +83,10 @@
                     "attributes" : {
                         "POSITION" : 0,
                         "NORMAL" : 1,
-                        "TEXCOORD_0" : 2
+                        "TANGENT" : 2,
+                        "TEXCOORD_0" : 3
                     },
-                    "indices" : 3,
+                    "indices" : 4,
                     "material" : 0
                 }
             ]
@@ -89,11 +96,12 @@
             "primitives" : [
                 {
                     "attributes" : {
-                        "POSITION" : 4,
-                        "NORMAL" : 5,
-                        "TEXCOORD_0" : 6
+                        "POSITION" : 5,
+                        "NORMAL" : 6,
+                        "TANGENT" : 7,
+                        "TEXCOORD_0" : 8
                     },
-                    "indices" : 7,
+                    "indices" : 9,
                     "material" : 1
                 }
             ]
@@ -107,13 +115,31 @@
         {
             "sampler" : 0,
             "source" : 1
+        },
+        {
+            "sampler" : 0,
+            "source" : 2
+        },
+        {
+            "sampler" : 0,
+            "source" : 3
         }
     ],
     "images" : [
         {
             "mimeType" : "image/png",
+            "name" : "maple_bark_n",
+            "uri" : "maple_bark_n.png"
+        },
+        {
+            "mimeType" : "image/png",
             "name" : "maple_bark",
             "uri" : "maple_bark.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "nm",
+            "uri" : "nm.png"
         },
         {
             "mimeType" : "image/png",
@@ -148,16 +174,22 @@
             "bufferView" : 2,
             "componentType" : 5126,
             "count" : 33332,
-            "type" : "VEC2"
+            "type" : "VEC4"
         },
         {
             "bufferView" : 3,
+            "componentType" : 5126,
+            "count" : 33332,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 4,
             "componentType" : 5123,
             "count" : 113040,
             "type" : "SCALAR"
         },
         {
-            "bufferView" : 4,
+            "bufferView" : 5,
             "componentType" : 5126,
             "count" : 7420,
             "max" : [
@@ -173,19 +205,25 @@
             "type" : "VEC3"
         },
         {
-            "bufferView" : 5,
+            "bufferView" : 6,
             "componentType" : 5126,
             "count" : 7420,
             "type" : "VEC3"
         },
         {
-            "bufferView" : 6,
+            "bufferView" : 7,
+            "componentType" : 5126,
+            "count" : 7420,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 8,
             "componentType" : 5126,
             "count" : 7420,
             "type" : "VEC2"
         },
         {
-            "bufferView" : 7,
+            "bufferView" : 9,
             "componentType" : 5123,
             "count" : 11130,
             "type" : "SCALAR"
@@ -204,33 +242,43 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 266656,
+            "byteLength" : 533312,
             "byteOffset" : 799968
         },
         {
             "buffer" : 0,
+            "byteLength" : 266656,
+            "byteOffset" : 1333280
+        },
+        {
+            "buffer" : 0,
             "byteLength" : 226080,
-            "byteOffset" : 1066624
+            "byteOffset" : 1599936
         },
         {
             "buffer" : 0,
             "byteLength" : 89040,
-            "byteOffset" : 1292704
+            "byteOffset" : 1826016
         },
         {
             "buffer" : 0,
             "byteLength" : 89040,
-            "byteOffset" : 1381744
+            "byteOffset" : 1915056
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 118720,
+            "byteOffset" : 2004096
         },
         {
             "buffer" : 0,
             "byteLength" : 59360,
-            "byteOffset" : 1470784
+            "byteOffset" : 2122816
         },
         {
             "buffer" : 0,
             "byteLength" : 22260,
-            "byteOffset" : 1530144
+            "byteOffset" : 2182176
         }
     ],
     "samplers" : [
@@ -241,7 +289,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 1552404,
+            "byteLength" : 2204436,
             "uri" : "Tree02.bin"
         }
     ]

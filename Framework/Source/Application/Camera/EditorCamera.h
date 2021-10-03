@@ -6,6 +6,8 @@
 #pragma once
 #include "../../Framework/Graphics/Camera/Camera.h"
 
+class Transform;
+
 // 編集カメラ
 class EditorCamera : public Camera
 {
@@ -20,13 +22,12 @@ public:
 
 private:
 
-	// 1フレーム前のマウス座標
-	float2 m_mousePosOld;
-
-	// 現在のマウス座標
-	float2 m_mousePosNow;
+	std::shared_ptr<Transform> m_transform;
 
 	float3 m_position;
 	float3 m_rotation;
+
+	float2 m_mousePosOld;// 前フレーム
+	float2 m_mousePosNow;
 
 };

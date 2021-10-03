@@ -98,13 +98,20 @@ public:
 	virtual void Finalize() {};
 
 	// @brief 更新
+	// @param deltaTime 前フレームからの経過時間
 	virtual void Update(float deltaTime);
 
 	// @brief 描画後更新
+	// @param deltaTime 前フレームからの経過時間
 	virtual void LateUpdate(float deltaTime) {};
 
 	// @brief 描画
+	// @param deltaTime 前フレームからの経過時間
 	virtual void Draw(float deltaTime);
+
+	// @brief シャドウマップ描画
+	// @param deltaTime 前フレームからの経過時間
+	virtual void DrawShadowMap(float deltaTime);
 
 	// @brief 自身を破棄
 	void Destroy();

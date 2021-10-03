@@ -122,6 +122,16 @@ void ImGuiSystem::DrawImGui()
 		AudioMonitor(wflags);
 		ProfilerMonitor(wflags);
 	}
+
+	if (ImGui::Begin("Shadow Test"))
+	{
+		ImGui::Image(
+			//(ImTextureID)APP.g_graphicsDevice->GetBackbuffer()->SRV(),
+			(ImTextureID)SHADER.GetShadowMapShader().GetDirShadowMap()->SRV(),
+			ImVec2(200, 200)
+		);
+	}
+	ImGui::End();
 }
 
 //-----------------------------------------------------------------------------

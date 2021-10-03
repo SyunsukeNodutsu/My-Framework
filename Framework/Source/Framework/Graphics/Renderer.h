@@ -110,6 +110,7 @@ private:
 		float3 m_directional_light_dir = float3::Down;		// 方向
 		float3 m_directional_light_color = float3(1, 1, 1);	// 色
 		float m_ambient_power = 0.4f;						// 環境光の強さ
+		mfloat4x4 m_directional_light_vp;					// ライトカメラのビュー行列x射影行列
 	};
 
 	// 時間系

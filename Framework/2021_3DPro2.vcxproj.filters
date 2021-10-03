@@ -237,9 +237,6 @@
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
       <Filter>Source\Application\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application\Actors\TankParts.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
@@ -461,9 +458,6 @@
     <ClInclude Include="Source\Application\Camera\CameraSystem.h">
       <Filter>Source\Application\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
-      <Filter>Source\Framework\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h">
       <Filter>Library\imGui</Filter>
     </ClInclude>
@@ -508,6 +502,9 @@
     <None Include="Source\Framework\Shader\Effect\EffectShader.hlsli">
       <Filter>Source\Framework\Shader\Effect</Filter>
     </None>
+    <None Include="Source\Framework\Shader\Shadow\ShadowMapShader.hlsli">
+      <Filter>Source\Framework\Shader\Shadow</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
@@ -527,6 +524,12 @@
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Effect\EffectShader_VS.hlsl">
       <Filter>Source\Framework\Shader\Effect</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_PS.hlsl">
+      <Filter>Source\Framework\Shader\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_VS.hlsl">
+      <Filter>Source\Framework\Shader\Shadow</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -31,11 +31,22 @@ public:
 	// @brief DESC情報から作成
 	// @param desc DESC情報
 	// @return 成功...true 失敗...false
-	bool Create(D3D11_TEXTURE2D_DESC& desc);
+	bool Create(const D3D11_TEXTURE2D_DESC& desc);
+
+	// @brief レンダーターゲットテクスチャとして作成
+	// @note テクスチャリソースを作成し、ShaderResourceViewのみを作成します
+	// @param height テクスチャ高さ
+	// @param width テクスチャ幅
+	// @param useMSAA MSAA機能？
+	// @param format 画像の形式　DXGI_FORMATを使用
+	// @param arrayCnt 「テクスチャ配列」を使用する場合、その数。1で通常の1枚テクスチャ
+	// @return 成功...true 失敗...false
+	bool CreateRenderTarget(int height, int width, bool useMSAA = false, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM, UINT arrayCnt = 1);
 
 	// @brief 深度テクスチャとして作成
 	// @param height テクスチャ高さ
 	// @param width テクスチャ幅
+	// @param useMSAA MSAA機能？
 	// @param format フォーマット
 	// @return 成功...true 失敗...false
 	bool CreateDepthStencil(int height, int width, bool useMSAA = false, DXGI_FORMAT format = DXGI_FORMAT_R24G8_TYPELESS);
@@ -70,12 +81,12 @@ public:
 
 	// @brief 画像の全情報を返す
 	// @return desc情報
-	const D3D11_TEXTURE2D_DESC& GetInfo() const { return m_info; }
+	const D3D11_TEXTURE2D_DESC& GetInfo() const { return m_desc; }
 
 private:
 
 	ComPtr<ID3D11Texture2D>				m_cpBuffer;	// 作成されたテクスチャバッファ
-	D3D11_TEXTURE2D_DESC				m_info;		// テクスチャ情報
+	D3D11_TEXTURE2D_DESC				m_desc;		// テクスチャ情報
 	ComPtr<ID3D11RenderTargetView>		m_cpRTV;	// RTV
 	ComPtr<ID3D11ShaderResourceView>	m_cpSRV;	// SRV
 	ComPtr<ID3D11DepthStencilView>		m_cpDSV;	// DSV 深度バッファ書き込み用

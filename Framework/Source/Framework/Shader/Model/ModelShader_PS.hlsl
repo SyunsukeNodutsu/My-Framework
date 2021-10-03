@@ -12,8 +12,11 @@ Texture2D g_emissiveTexture     : register(t1); // エミッシブテクスチャ
 Texture2D g_mrTexture           : register(t2); // メタリック/ラフネステクスチャ
 Texture2D g_normalTexture       : register(t3); // 法線マップ(テクスチャ)
 
+Texture2D g_shadowMap : register(t10);
+
 // サンプラ
 SamplerState g_samplerState : register(s0);
+SamplerComparisonState g_shadowSamplerState : register(s10);
 
 // ディザパターン(Bayer Matrix)
 // https://en.wikipedia.org/wiki/Ordered_dithering
@@ -57,6 +60,54 @@ float GGX(float3 lightDir, float3 vCam, float3 normal, float roughness)
     d = max(0.000001f, PI * d * d);
 
     return (alpha * alpha) / d;
+}
+
+//
+float CheckShadow( VertexOutput In )
+{
+	// 最終的な値
+    float shadow = 1.0f;
+
+	// ピクセルの3D座標から、シャドウマップ空間へ変換
+    float4 liPos = mul(float4(In.wPosition, 1), g_directional_light_vp);
+
+	// 自身で射影座標に変換する場合は奥行で変換してやる(長さが求まる)
+    liPos.xyz /= liPos.w;
+    float shadowX = abs(liPos.x);
+    float shadowY = abs(liPos.y);
+
+	// 深度マップの範囲内か確認
+    if (shadowX <= 1 && shadowY <= 1 && liPos.z <= 1)
+    {
+		// 射影座標 -> UV座標へ変換 ※右下を拡大すればいいだけ(イメージ)
+        float2 uv = liPos.xy * float2(1, -1) * 0.5 + 0.5;
+
+		// ライトカメラからの距離 ※シャドウアクネ対策(ImGuiで変更できるように修正する)
+        float z = liPos.z - 0.002f;
+
+		// ぼかし
+        float width, height;
+        g_shadowMap.GetDimensions(width, height);
+        float tw = 1.0f / width;
+        float th = 1.0f / height;
+
+		// UVの周辺3x3も考慮し、平均値を算出
+        shadow = 0;
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+				// 影判定
+                shadow += g_shadowMap.SampleCmpLevelZero(g_shadowSamplerState, uv + float2(x * tw, y * th), z);
+            }
+        }
+        shadow *= 0.11f;
+
+		// UV座標から離れていると薄く
+        shadow = min(1.0f, shadow + pow(shadowX, 3.0f) + pow(shadowY, 3.0f));
+    }
+
+    return shadow;
 }
 
 //-----------------------------------------------------------------------------
@@ -152,6 +203,30 @@ float4 main( VertexOutput In ) : SV_TARGET
     if (g_light_enable)
     {
         //------------------------------------------
+        // シャドウイング
+        //------------------------------------------
+        
+        float shadow = 1.0f;
+
+	    // ピクセルの3D座標から、シャドウマップ空間へ変換
+        float4 liPos = mul(float4(In.wPosition, 1), g_directional_light_vp);
+
+	    // 射影座標に変換
+        liPos.xyz /= liPos.w;
+        
+        if (abs(liPos.x) <= 1 && abs(liPos.y) <= 1 && liPos.z <= 1)
+        {
+		    // 射影座標 -> UV座標へ変換
+            float2 uv = liPos.xy * float2(1, -1) * 0.5f + 0.5f;
+            
+		    // ライトカメラからの距離
+            float z = liPos.z - 0.002f;
+            
+		    // 影判定
+            shadow = g_shadowMap.Sample(g_samplerState, uv).r < z ? 0 : 1;
+        }
+        
+        //------------------------------------------
         // 平行光
         //------------------------------------------
         
@@ -164,9 +239,9 @@ float4 main( VertexOutput In ) : SV_TARGET
             float diffusePower = saturate(Dot);
             diffusePower /= PI;
         
-            // 色 = 物質の色 * 光の色 * 物質の透明度 * 拡散光の強さ
-            diffuseColor = albedo.rgb * g_directional_light_color
-                * albedo.a * diffusePower;
+            // 物質の色 * 光の色 * 物質の透明度 * 拡散光の強さ
+            diffuseColor += albedo.rgb * g_directional_light_color
+                * albedo.a * diffusePower * shadow;
         }
         
         // Specular(鏡面反射光)
@@ -179,7 +254,8 @@ float4 main( VertexOutput In ) : SV_TARGET
             float spec = GGX(g_directional_light_dir, vCam, normal, roughuness);
             
             // 光の色 * 反射光の強さ * 材質の反射色 * 正規化係数 * 透明率
-            specularColor += (g_directional_light_color * spec) * 0.06f * albedo.a;
+            specularColor += (g_directional_light_color * spec) * 0.06f
+                * albedo.a * shadow;
         }
     
         //------------------------------------------

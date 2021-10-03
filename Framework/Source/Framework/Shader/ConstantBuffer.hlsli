@@ -33,6 +33,8 @@ cbuffer cdObject : register(b10)
     float3  g_directional_light_dir;    // 方向
     float3  g_directional_light_color;  // 色
     float   g_ambient_power;            // 環境光の強さ
+    
+    row_major float4x4 g_directional_light_vp; // ライトカメラのビュー行列*射影行列
 }
 
 // マテリアル
