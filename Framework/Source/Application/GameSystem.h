@@ -45,6 +45,10 @@ public:
 		return m_spActorList;
 	}
 
+	// @brief シーンのActorリストに新規Actorを追加
+	// @param actor 追加するActor
+	void AddActorList(std::shared_ptr<Actor> actor);
+
 	// @brief デバッグ用の3D線を追加 TODO: 移動
 	// @param pos01 開始座標
 	// @param pos02 終了座標

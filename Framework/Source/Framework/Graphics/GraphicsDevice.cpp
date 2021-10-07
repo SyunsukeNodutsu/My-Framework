@@ -224,6 +224,8 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		bufferSize *= 2;
 	}
 
+	m_tempVertexBuffer = std::make_shared<Buffer>();
+
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	return true;

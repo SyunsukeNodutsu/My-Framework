@@ -436,7 +436,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	// SceneのActor一覧
-	ImGui::BeginChild("##wav list", ImVec2(0, 60), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
+	ImGui::BeginChild("##wav list", ImVec2(0, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
 
 	static std::weak_ptr<Actor> wpActor;
 	for (auto&& actor : APP.g_gameSystem->GetActorList())

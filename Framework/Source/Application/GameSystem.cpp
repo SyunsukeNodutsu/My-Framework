@@ -202,6 +202,16 @@ void GameSystem::Draw2D()
 }
 
 //-----------------------------------------------------------------------------
+// シーンのActorリストに新規Actorを追加
+//-----------------------------------------------------------------------------
+void GameSystem::AddActorList(std::shared_ptr<Actor> actor)
+{
+	if (!actor) return;
+
+	m_spActorList.push_back(actor);
+}
+
+//-----------------------------------------------------------------------------
 // デバッグ用の3D線を追加
 //-----------------------------------------------------------------------------
 void GameSystem::AddDebugLine(const float3& pos01, const float3& pos02, const cfloat4x4 color)

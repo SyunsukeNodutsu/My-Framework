@@ -99,6 +99,8 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 			obb.Transform(obb, (node.m_localTransform * worldMatrix));
 
 			if (!camera->GetFrustum().Intersects(obb)) continue;
+
+			DrawOBB(obb);
 		}
 
 		// ワールド行列 設定

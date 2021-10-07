@@ -156,9 +156,21 @@ bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hit
 {
 	RayResult result = {};
 
-	const auto& mesh = m_modelWork.GetDataNodes()[0].m_spMesh;
+	auto& data = m_modelWork.GetData();
+	if (data == nullptr) return false;
 
-	Collision::RayToMesh(rayPos, rayDir, hitRange, *(mesh.get()), m_transform.GetWorldMatrix(), &result);
+	for (auto& index : data->GetMeshNodeIndices())
+	{
+		auto& mesh = m_modelWork.GetMesh(index);
+		auto& node = m_modelWork.GetNodes()[index];
+
+		RayResult tmpResult = {};
+		Collision::RayToMesh(rayPos, rayDir, hitRange, *(mesh.get()), node.m_localTransform * m_transform.GetWorldMatrix(), &tmpResult);
+
+		// 最も近いnodeを優先
+		if (tmpResult.m_distance < result.m_distance)
+			result = tmpResult;
+	}
 
 	return result.m_hit;
 }

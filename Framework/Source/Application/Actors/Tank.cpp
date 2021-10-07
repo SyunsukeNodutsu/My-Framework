@@ -1,6 +1,8 @@
 ﻿#include "Tank.h"
 #include "TankParts.h"
 
+#include "TankBullet.h"
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -203,6 +205,11 @@ void Tank::UpdateShot(bool state1st)
 		float3 axisZ = m_spTankParts->GetMainGunMatrix().Backward();
 		float3 pos = m_spTankParts->GetMainGunMatrix().Translation()
 			+ float3(0.2f, 0.0f, 0.0f) + axisZ * 6.6f;
+
+		APP.g_gameSystem->AddDebugSphereLine(pos, 2.0f);
+
+		std::shared_ptr<Actor> cannon = std::make_shared<TankBullet>(*this, pos + axisZ, axisZ);
+		APP.g_gameSystem->AddActorList(cannon);
 
 		// Effect
 		APP.g_effectDevice->Play(u"Resource/Effect/TankFire.efk", pos);
