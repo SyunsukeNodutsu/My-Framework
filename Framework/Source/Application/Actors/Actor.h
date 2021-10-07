@@ -166,12 +166,15 @@ protected:
 
 	ModelWork	m_modelWork;	// モデル管理
 	Transform	m_transform;	// トランスフォーム
-	bool		m_isActiv;		// 動作？
-	bool		m_isEnable;		// 有効？ ※falseになると消滅します
 	std::string m_name;			// オブジェクトの名前
 
-	bool m_isUVScroll = false;
-	float2 m_numUVOffset = float2::Zero;
+	bool		m_isActiv;		// 動作？
+	bool		m_isEnable;		// 有効？ ※falseになると消滅します
+	bool		m_shadowCaster;	// 影を落とす？
+
+	// UVスクロール
+	float2		m_numUVOffset;
+	bool		m_isUVScroll;
 
 };
 

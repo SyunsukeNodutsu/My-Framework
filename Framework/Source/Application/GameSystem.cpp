@@ -139,14 +139,14 @@ void GameSystem::Draw()
 	g_cameraSystem.SetToDevice();
 
 	// シャドウマップ描画
+	for (int i = 0; i < 3; i++)
 	{
-		SHADER.GetShadowMapShader().Begin(0);
+		SHADER.GetShadowMapShader().Begin(i);
 
 		for (auto& object : m_spActorList)
 			object->DrawShadowMap(deltaTime);
-
-		SHADER.GetShadowMapShader().End();
 	}
+	SHADER.GetShadowMapShader().End();
 	
 	// 通常3D描画
 	{

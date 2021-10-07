@@ -264,6 +264,9 @@
     <ClCompile Include="Source\Application\Camera\EditorCamera.cpp">
       <Filter>Source\Application\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -487,6 +490,9 @@
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\EditorCamera.h">
       <Filter>Source\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

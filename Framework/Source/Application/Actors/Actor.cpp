@@ -88,9 +88,12 @@ void Transform::SetWorldMatrix(const mfloat4x4& matrix)
 Actor::Actor()
 	: m_modelWork()
 	, m_transform()
+	, m_name("empty")
 	, m_isActiv(true)
 	, m_isEnable(true)
-	, m_name("empty")
+	, m_shadowCaster(true)
+	, m_numUVOffset(float2::Zero)
+	, m_isUVScroll(false)
 {
 }
 
@@ -134,6 +137,8 @@ void Actor::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Actor::DrawShadowMap(float deltaTime)
 {
+	if (!m_shadowCaster) return;
+
 	SHADER.GetShadowMapShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());
 }
 

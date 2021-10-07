@@ -16,12 +16,13 @@ VertexOutput main(
 {
     VertexOutput ret = (VertexOutput) 0;
     
-    ret.position = mul(position, g_world_matrix);
-    ret.position = mul(ret.position, g_directional_light_vp);
-    
-    ret.wvpPosition = ret.position;
+    ret.position = mul(g_world_matrix, position);
+    ret.position = mul(g_view_matrix, ret.position);
+    ret.position = mul(g_proj_matrix, ret.position);
     
     ret.uv = uv;
+    
+    ret.wvpPosition = ret.position;
     
 	return ret;
 }

@@ -21,13 +21,10 @@ Easing::Easing()
 //-----------------------------------------------------------------------------
 void Easing::Update()
 {
-	// すでに発生
-	if (!m_isEmit)
-		return;
+	if (!m_isEmit) return;
 
 	// 終了
-	if (m_nowTime >= m_easingTime)
-	{
+	if (m_nowTime >= m_easingTime) {
 		m_progress = m_endX;
 		m_isEmit = false;
 		return;
@@ -78,17 +75,15 @@ void Easing::Update()
 //-----------------------------------------------------------------------------
 void Easing::Emit(EASING_TYPE a_type, float a_timeLength, float a_startX, float a_endX)
 {
-	// すでに発生しているか確認
 	if (m_isEmit) return;
 
-	m_easingType	= a_type;		// 種類
-	m_startX		= a_startX;		// 開始座標
-	m_endX			= a_endX;		// 終了座標
-	m_easingTime	= a_timeLength;	// 時間
+	m_easingType = a_type;
+	m_startX = a_startX;
+	m_endX = a_endX;
+	m_easingTime = a_timeLength;
 
-	// タイマー設定
+	// 計測開始
 	m_timer.Record();
 
-	// 発生フラグON
 	m_isEmit = true;
 }

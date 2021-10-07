@@ -56,6 +56,7 @@
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
+    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />

@@ -17,12 +17,10 @@ SamplerState g_samplerState  : register(s0);
 //-----------------------------------------------------------------------------
 float4 main( VertexOutput In ) : SV_TARGET
 {
-    float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv);
+    //float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv);
     
-    if (albedo.a < 0.1)
-        discard;
-
-    // R¬•ª‚ÉŽË‰eÀ•WŒn‚Å‚Ì[“x’l(Å‹ßÚ‹——£F0.0 ` Å‰“•û‹——£F1.0)‚ðo—Í
-    // ¦ŽË‰eÀ•WŒn‚Ìxyz‚Íw‚ÅœŽZ‚·‚é•K—v‚ª‚ ‚é
-    return float4(In.wvpPosition.z / In.wvpPosition.w, 0, 0, 1);
+    //if (albedo.a < 0.1)
+    //    discard;
+    
+    return float4(In.position.z, In.position.z, In.position.z, 1.0f);
 }

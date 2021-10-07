@@ -179,8 +179,8 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	vp.TopLeftY = 0;
 	vp.Width	= static_cast<float>(desc.m_width);
 	vp.Height	= static_cast<float>(desc.m_height);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
+	vp.MinDepth = D3D11_MIN_DEPTH;
+	vp.MaxDepth = D3D11_MAX_DEPTH;
 	g_cpContext->RSSetViewports(1, &vp);
 
 	// レンダーターゲット設定

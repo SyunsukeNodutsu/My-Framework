@@ -66,16 +66,9 @@ bool ModelShader::Initialize()
 //-----------------------------------------------------------------------------
 void ModelShader::Begin()
 {
-	if (/*mesh->IsSkinMesh()*/false)
-	{
+	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 
-	}
-	else
-	{
-		g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-		g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
-	}
-
+	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
 	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 }
 
@@ -97,15 +90,16 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 		auto& node = model.GetNodes()[index];
 		auto& mesh = model.GetMesh(index);
 
-		// AABB -> OBB作成
-		DirectX::BoundingOrientedBox obb = {};
-		DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->GetBoundingBox());
-		obb.Transform(obb, (node.m_localTransform * worldMatrix));
+		// 視錐台カリング
+		if(camera->g_isFrustumCull)
+		{
+			// AABB -> OBB作成
+			DirectX::BoundingOrientedBox obb = {};
+			DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->GetBoundingBox());
+			obb.Transform(obb, (node.m_localTransform * worldMatrix));
 
-		// 試錐台の中？
-		if (!camera->GetFrustum().Intersects(obb)) continue;
-
-		//DrawOBB(obb);
+			if (!camera->GetFrustum().Intersects(obb)) continue;
+		}
 
 		// ワールド行列 設定
 		RENDERER.Getcb8().Work().m_world_matrix = node.m_worldTransform * worldMatrix;
@@ -158,7 +152,7 @@ void ModelShader::DrawOBB(const DirectX::BoundingOrientedBox& obb)
 	float3 obbCorners[obb.CORNER_COUNT];
 	obb.GetCorners(obbCorners);
 
-	auto& gameSystem = APP.g_gameSystem;
+	auto& gameSystem = APP.g_gameSystem;// TODO: APP側で管理すべきではない
 
 	gameSystem->AddDebugLine(obbCorners[0], obbCorners[1]);
 	gameSystem->AddDebugLine(obbCorners[1], obbCorners[2]);

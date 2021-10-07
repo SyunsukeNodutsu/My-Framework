@@ -8,6 +8,12 @@
 // 定数バッファ
 //--------------------------------------------------
 
+// シャドウ パラメータ
+cbuffer cdObject : register(b2)
+{
+    row_major float4x4 g_mLVPC[3]; // ライトビュープロジェクションクロップ行列
+}
+
 // キャラクターに付与予定
 cbuffer cdObject : register(b8)
 {

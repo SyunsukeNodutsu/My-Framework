@@ -65,8 +65,25 @@ const std::shared_ptr<Texture> ResourceFactory::GetTexture(const std::string& fi
 //-----------------------------------------------------------------------------
 // マップ確認の後サウンドデータを返す
 //-----------------------------------------------------------------------------
-const std::shared_ptr<SoundData> ResourceFactory::GetSoundData(const std::string& filepath)
+const std::shared_ptr<SoundData> ResourceFactory::GetSoundData(const std::string& filepath, bool loop, bool useFilter)
 {
+	auto foundItr = m_soundMap.find(filepath);
+
+	// リストにある
+	if (foundItr != m_soundMap.end())
+		return (*foundItr).second;
+
+	// リストに無い
+	std::shared_ptr<SoundData> newSound = std::make_shared<SoundData>();
+	// 音を読み込む
+	if (newSound->Load(filepath, loop, useFilter))
+	{
+		// リストに追加
+		m_soundMap.insert(std::pair<
+			std::string, std::shared_ptr<SoundData>>(filepath, newSound));
+
+		return m_soundMap[filepath];
+	}
 
 	return nullptr;
 }

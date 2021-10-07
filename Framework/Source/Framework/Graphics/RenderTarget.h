@@ -47,7 +47,7 @@ public:
 
 	// @brief カラーバッファのフォーマットを返す
 	// @return カラーバッファのフォーマット
-	DXGI_FORMAT GetColorBufferFormat() const { return m_renderTargetTexture.GetInfo().Format; }
+	DXGI_FORMAT GetColorBufferFormat() const { return m_renderTargetTexture.GetDesc().Format; }
 
 	// @brief
 	// @return

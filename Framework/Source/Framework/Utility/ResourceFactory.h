@@ -3,6 +3,7 @@
 //
 // リソース管理クラス
 // フライウェイトパターン
+// TODO: SoundDataはループ情報なども含まれるので、管理しない方がいいかも
 //-----------------------------------------------------------------------------
 #pragma once
 
@@ -24,20 +25,20 @@ public:
 		static ResourceFactory instance; return instance;
 	}
 
-	// @brief マップ確認の後モデルデータを返す
+	// @brief マップ確認の後モデルデータを返す ※初回の場合登録
 	// @param filepath ファイルのパス
 	// @return モデルデータ
 	const std::shared_ptr<ModelData> GetModelData(const std::string& filepath);
 
-	// @brief マップ確認の後テクスチャデータを返す
+	// @brief マップ確認の後テクスチャデータを返す ※初回の場合登録
 	// @param filepath ファイルのパス
 	// @return テクスチャデータ
 	const std::shared_ptr<Texture> GetTexture(const std::string& filepath);
 
-	// @brief マップ確認の後サウンドデータを返す
+	// @brief マップ確認の後サウンドデータを返す ※初回の場合登録
 	// @param filepath ファイルのパス
 	// @return サウンドデータ
-	const std::shared_ptr<SoundData> GetSoundData(const std::string& filepath);
+	const std::shared_ptr<SoundData> GetSoundData(const std::string& filepath, bool loop = false, bool useFilter = false);
 
 private:
 

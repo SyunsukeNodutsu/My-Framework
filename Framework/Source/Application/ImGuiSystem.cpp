@@ -123,10 +123,28 @@ void ImGuiSystem::DrawImGui()
 		ProfilerMonitor(wflags);
 	}
 
-	if (ImGui::Begin("Shadow Test"))
+	if (ImGui::Begin("Shadow 00"))
 	{
 		ImGui::Image(
-			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap()->SRV(),
+			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(0)->SRV(),
+			ImVec2(200, 200)
+		);
+	}
+	ImGui::End();
+
+	if (ImGui::Begin("Shadow 01"))
+	{
+		ImGui::Image(
+			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(1)->SRV(),
+			ImVec2(200, 200)
+		);
+	}
+	ImGui::End();
+
+	if (ImGui::Begin("Shadow 02"))
+	{
+		ImGui::Image(
+			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(2)->SRV(),
 			ImVec2(200, 200)
 		);
 	}

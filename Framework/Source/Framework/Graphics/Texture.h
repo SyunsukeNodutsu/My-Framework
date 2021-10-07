@@ -81,7 +81,7 @@ public:
 
 	// @brief 画像の全情報を返す
 	// @return desc情報
-	const D3D11_TEXTURE2D_DESC& GetInfo() const { return m_desc; }
+	const D3D11_TEXTURE2D_DESC& GetDesc() const { return m_desc; }
 
 private:
 

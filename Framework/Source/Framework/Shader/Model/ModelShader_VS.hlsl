@@ -33,6 +33,12 @@ VertexOutput main(
     ret.wBinormal   = normalize(mul(binormal, (float3x3) g_world_matrix));
     
     ret.color = color;
+    
+    // ライトビュースクリーン空間の座標を計算
+    float4 worldPos = mul(g_world_matrix, position);
+    ret.posInLVP[0] = mul(g_mLVPC[0], worldPos);
+    ret.posInLVP[1] = mul(g_mLVPC[1], worldPos);
+    ret.posInLVP[2] = mul(g_mLVPC[2], worldPos);
 
     return ret;
 }

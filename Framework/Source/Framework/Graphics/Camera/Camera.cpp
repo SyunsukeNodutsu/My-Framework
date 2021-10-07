@@ -1,22 +1,34 @@
 ﻿#include "Camera.h"
 #include "../../../Application/main.h"
 
+using namespace DirectX;
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
 Camera::Camera()
-	: m_cameraMatrix(mfloat4x4::Identity)
+	: m_projectionMethod(ProjectionMethod::ePerspective)
+	, m_cameraMatrix(mfloat4x4::Identity)
 	, m_viewMatrix(mfloat4x4::Identity)
 	, m_projMatrix(mfloat4x4::Identity)
+	, m_viewProjMatrix(mfloat4x4::Identity)
 	, m_frustum()
+	, m_position(float3::Zero)
+	, m_fovAngleY(60.0f * ToRadians)
+	, m_aspectRatio(16.0f / 9.0f)
+	, m_nearZ(0.01f)
+	, m_farZ(500.0f)
+	, m_viewWidth(1280.0f)
+	, m_viewHeight(780.0f)
 	, g_priority()
 	, g_enable(true)
+	, g_isFrustumCull(true)
 	, g_name("empty")
 	, m_dirtyCamera(true)
 	, m_dirtyProj(true)
 {
-
-	m_projMatrix = DirectX::XMMatrixPerspectiveFovLH(60.0f * ToRadians, 16.0f / 9.0f, 0.01f, 2000.0f);
+	// 初期 射影行列
+	m_projMatrix = XMMatrixPerspectiveFovLH(m_fovAngleY, m_aspectRatio, m_nearZ, m_farZ);
 }
 
 //-----------------------------------------------------------------------------
@@ -24,17 +36,30 @@ Camera::Camera()
 //-----------------------------------------------------------------------------
 void Camera::SetToShader()
 {
-	// カメラが変更されていれば更新
 	if (m_dirtyCamera)
 	{
+		m_position = m_cameraMatrix.Translation();
+
+		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
+
 		RENDERER.Getcb9().Work().m_camera_matrix = m_cameraMatrix;
 		RENDERER.Getcb9().Work().m_view_matrix = m_viewMatrix;
 		RENDERER.Getcb9().Write();
 	}
 
-	// 射影行列が変更されていれば更新
 	if (m_dirtyProj)
 	{
+		if (m_projectionMethod == ProjectionMethod::ePerspective) {
+			// 透視投影変換行列
+			m_projMatrix = XMMatrixPerspectiveFovLH(m_fovAngleY, m_aspectRatio, m_nearZ, m_farZ);
+		}
+		else {
+			// 平行投影変換行列
+			m_projMatrix = XMMatrixOrthographicLH(m_viewWidth, m_viewHeight, m_nearZ, m_farZ);
+		}
+
+		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
+
 		RENDERER.Getcb9().Work().m_proj_matrix = m_projMatrix;
 		RENDERER.Getcb9().Write();
 	}
@@ -56,10 +81,10 @@ void Camera::ConvertWorldToScreen(const float3& pos, const mfloat4x4 matrix, flo
 	const float HalfViewportWidth = vp.Width * 0.5f;
 	const float HalfViewportHeight = vp.Height * 0.5f;
 
-	float3 Scale = DirectX::XMVectorSet(HalfViewportWidth, -HalfViewportHeight, vp.MaxDepth - vp.MinDepth, 0.0f);
-	float3 Offset = DirectX::XMVectorSet(vp.TopLeftX + HalfViewportWidth, vp.TopLeftY + HalfViewportHeight, vp.MinDepth, 0.0f);
+	float3 Scale = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, vp.MaxDepth - vp.MinDepth, 0.0f);
+	float3 Offset = XMVectorSet(vp.TopLeftX + HalfViewportWidth, vp.TopLeftY + HalfViewportHeight, vp.MinDepth, 0.0f);
 
-	mfloat4x4 Transform = DirectX::XMMatrixMultiply(matrix, GetViewMatrix());
+	mfloat4x4 Transform = XMMatrixMultiply(matrix, GetViewMatrix());
 	Transform = XMMatrixMultiply(Transform, GetProjMatrix());
 
 	float3 Pos = { GetCameraMatrix()._41,GetCameraMatrix()._42 ,GetCameraMatrix()._43 };
@@ -79,8 +104,8 @@ void Camera::SetCameraMatrix(const mfloat4x4& mCam)
 	m_dirtyCamera = true;
 
 	// 試錐台作成
-	qfloat4x4 quaternion = DirectX::XMQuaternionRotationMatrix(m_cameraMatrix);
-	DirectX::BoundingFrustum::CreateFromMatrix(m_frustum, m_projMatrix);
+	qfloat4x4 quaternion = XMQuaternionRotationMatrix(m_cameraMatrix);
+	BoundingFrustum::CreateFromMatrix(m_frustum, m_projMatrix);
 	m_frustum.Origin = m_cameraMatrix.Translation();
 	m_frustum.Orientation = quaternion;
 }

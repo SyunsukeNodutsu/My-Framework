@@ -38,7 +38,6 @@ public:
 	// @param numShadow 何枚目のシャドウマップ
 	// @return 平行光用深度マップ
 	std::shared_ptr<Texture> GetShadowMap(int numShadow = 0) const {
-		if (numShadow > NUM_SHADOW_MAP || numShadow < 0) return nullptr;
 		return m_shadowMaps[numShadow];
 	}
 
@@ -57,19 +56,26 @@ private:
 	// 分割エリアの最大深度値
 	float m_cascadeAreaTable[NUM_SHADOW_MAP];
 
+	// エリアの近平面までの距離
+	float m_nearDepth;
+
 	// State記憶用
 	ID3D11RenderTargetView* m_saveRT;
 	ID3D11DepthStencilView* m_saveZ;
 	UINT					m_numVP;
 	D3D11_VIEWPORT			m_saveVP;
 
-	// TODO: fix
-	ComPtr<ID3D11SamplerState> state = nullptr;
+	//
+	struct ShadowParam {
+		mfloat4x4 m_mLVPC;
+		mfloat4x4 tmp[2];
+	};
+	ConstantBuffer<ShadowParam> m_cb2;
 
 private:
 
 	// @brief ライトカメラの設定
-	void SettingLightCamera();
+	void SettingLightCamera(int numShadow);
 
 	// @brief メッシュ描画
 	// @param mesh メッシュ
