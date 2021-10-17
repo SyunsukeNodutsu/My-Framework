@@ -3,6 +3,7 @@
 // 
 // 戦車クラス 親子構造
 // キャタピラx2, タイヤx10, ミニタイヤx4, 砲塔, 主砲
+// TODO: Bodyも部品として扱う
 //-----------------------------------------------------------------------------
 #pragma once
 #include "../Application.h"
@@ -38,9 +39,9 @@ public:
 
 private:
 
-	std::shared_ptr<TPSCamera>	m_spCamera3rd;	// 三人称
-	std::shared_ptr<FPSCamera>	m_spCamera1st;	// 一人称
-	std::shared_ptr<TankParts>	m_spTankParts;	// 部品
+	std::shared_ptr<TPSCamera>	m_spCamera3rd;	// 三人称カメラ
+	std::shared_ptr<FPSCamera>	m_spCamera1st;	// 一人称カメラ
+	std::shared_ptr<TankParts>	m_spTankParts;	// 戦車の部品
 
 	std::shared_ptr<SoundWork3D> m_runSound3D;	// 走行時の音
 	std::shared_ptr<SoundWork3D> m_shotSound3D;	// 射撃時の音
@@ -73,18 +74,22 @@ private:
 	class StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) = 0;
+		virtual void Draw(Tank& owner, float deltaTime) = 0;
 	};
 	class StateNull : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override {}
+		virtual void Draw(Tank& owner, float deltaTime) override {}
 	};
 	class State3rd : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override;
+		virtual void Draw(Tank& owner, float deltaTime) override;
 	};
 	class State1st : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override;
+		virtual void Draw(Tank& owner, float deltaTime) override;
 	};
 	std::shared_ptr<StateBase> m_spState;
 

@@ -44,16 +44,16 @@ public:
 	// @return 回転行列
 	const mfloat4x4 GetRotationMatrix();
 
-	// @brief を返す
-	// @return
+	// @brief Y軸の回転行列を返す
+	// @return Y軸の回転行列
 	const mfloat4x4 GetRotationYMatrix();
 
 	// @brief 回転ベクトルを返す
 	// @return 回転ベクトル
 	const float3& GetRotationAngles() const { return m_degAngle; }
 
-	// @brief を返す
-	// @return
+	// @brief カメラのY回転を返す ※Y回転は行わないので0
+	// @return カメラのY回転の値
 	const float GetRotationYAngle() const { return 0; }
 
 	//--------------------------------------------------

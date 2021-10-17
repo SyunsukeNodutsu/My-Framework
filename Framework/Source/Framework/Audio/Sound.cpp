@@ -27,16 +27,15 @@ bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
     std::wstring wfilepath = sjis_to_wide(filepath);
 
     // 波形ファイルをディレクトリから探す
-    // TODO: WinAPIに似たような機能があるらしい
     WCHAR strFilePath[MAX_PATH];
-    HRESULT hr = g_audioDevice->FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
+    HRESULT hr = FindMediaFileCch(strFilePath, MAX_PATH, wfilepath.c_str());
     if (FAILED(hr)) {
         DebugLog(std::string("ERROR: Failed to find media file: " + filepath).c_str());
         return false;
     }
 
     // 波形ファイルの読み込み
-    // TODO: .wavにシーク設定やループ設定があると下記の方法だと対応できない
+    // TODO: .wavにシーク設定やループ設定があると下記の方法だと対応できない ... ま、ええか^^
     const uint8_t* sampleData;
     uint32_t waveSize;
     if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, m_pWaveData, &m_pWaveFormat, &sampleData, &waveSize))) {
@@ -48,7 +47,7 @@ bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
     m_buffer.pAudioData = sampleData;
     m_buffer.Flags      = XAUDIO2_END_OF_STREAM;
     m_buffer.AudioBytes = waveSize;
-    m_buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
+    m_buffer.LoopCount  = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
     return Create(loop, useFilter);
 }
@@ -81,7 +80,7 @@ bool SoundData::Create(bool loop, bool useFilter)
     XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
     sendDescriptors[0].Flags        = XAUDIO2_SEND_USEFILTER; // LPFダイレクトパス
     sendDescriptors[0].pOutputVoice = g_audioDevice->g_pMasteringVoice;
-    sendDescriptors[1].Flags        = XAUDIO2_SEND_USEFILTER; // LPFリバーブパス -- 省略するとパフォーマンスが向上しますが、オクルージョンがリアルでなくなります。
+    sendDescriptors[1].Flags        = XAUDIO2_SEND_USEFILTER; // LPFリバーブパス ※少し重いらしい
     sendDescriptors[1].pOutputVoice = g_audioDevice->g_pSubmixVoice;
 
     const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
@@ -140,7 +139,7 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
 
     // ボイスコピー
     // TODO: インターフェースのDeepCopy方法の調査 今のままだとShallowCopy
-    m_pSourceVoice = m_soundData.GetRawVoice();
+    m_pSourceVoice = m_soundData.GetRawSourceVoice();
 
     return true;
 }

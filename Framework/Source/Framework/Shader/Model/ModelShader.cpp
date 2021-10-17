@@ -100,7 +100,7 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 
 			if (!camera->GetFrustum().Intersects(obb)) continue;
 
-			DrawOBB(obb);
+			//DrawOBB(obb);
 		}
 
 		// ワールド行列 設定

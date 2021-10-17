@@ -82,21 +82,27 @@ public:
 	//--------------------------------------------------
 
 	// @brief サブセット情報配列を返す
+	// @return サブセット情報配列
 	const std::vector<MeshSubset>& GetSubsets() const { return m_subsets; }
 
 	// @brief 頂点の座標配列を返す
+	// @return 頂点の座標配列
 	const std::vector<float3>& GetVertexPositions() const { return m_positions; }
 
 	// @brief 面の配列を返す
+	// @return 面の配列
 	const std::vector<MeshFace>& GetFaces() const { return m_faces; }
 
 	// @brief 軸平行境界ボックスを返す
+	// @return 軸平行境界ボックス
 	const DirectX::BoundingBox& GetBoundingBox() const { return m_boundingB; }
 
 	// @brief 境界球を返す
+	// @return 境界球
 	const DirectX::BoundingSphere& GetBoundingSphere() const { return m_boundingS; }
 
 	// @brief スキンメッシュかどうかを返す
+	// @return スキンメッシュ...true
 	bool IsSkinMesh() const { return m_isSkinMesh; }
 
 private:
@@ -132,30 +138,28 @@ private:
 //==========================================================
 struct Material : public GraphicsDeviceChild
 {
-	typedef std::shared_ptr<Texture> texture_sharedPtr;
-
 	//---------------------------------------
 	// 材質データ
 	//---------------------------------------
 
 	// 名前
-	std::string			m_name;
+	std::string				 m_name;
 
 	// 基本色
-	texture_sharedPtr	m_baseColorTexture;					// 基本色テクスチャ
-	float4				m_baseColor = float4(1, 1, 1, 1);	// 基本色のスケーリング係数(RGBA)
+	std::shared_ptr<Texture> m_baseColorTexture;					// 基本色テクスチャ
+	float4					 m_baseColor = float4(1, 1, 1, 1);		// 基本色のスケーリング係数(RGBA)
 
 	// 金属性、粗さ
-	texture_sharedPtr	m_metallicRoughnessTexture;			// B:金属製 G:粗さ
-	float				m_metallic = 0.0f;					// 金属性のスケーリング係数
-	float				m_roughness = 1.0f;					// 粗さのスケーリング係数
+	std::shared_ptr<Texture> m_metallicRoughnessTexture;			// B:金属製 G:粗さ
+	float					 m_metallic = 0.0f;						// 金属性のスケーリング係数
+	float					 m_roughness = 1.0f;					// 粗さのスケーリング係数
 
 	// 自己発光
-	texture_sharedPtr	m_emissiveTexture;					// 自己発光テクスチャ
-	float3				m_emissive = float3(0, 0, 0);		// 自己発光のスケーリング係数(RGB)
+	std::shared_ptr<Texture> m_emissiveTexture;						// 自己発光テクスチャ
+	float3					 m_emissive = float3(0, 0, 0);			// 自己発光のスケーリング係数(RGB)
 
 	// 法線マップ
-	texture_sharedPtr	m_normalTexture;
+	std::shared_ptr<Texture> m_normalTexture;
 
 	// @brief コンストラクタ
 	Material()

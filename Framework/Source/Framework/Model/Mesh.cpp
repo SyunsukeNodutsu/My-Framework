@@ -20,6 +20,9 @@ Mesh::Mesh()
 //-----------------------------------------------------------------------------
 void Mesh::SetToDevice() const
 {
+	if (!GraphicsDeviceChild::g_graphicsDevice) return;
+	if (!GraphicsDeviceChild::g_graphicsDevice->g_cpContext) return;
+
 	// 頂点バッファセット
 	UINT stride = sizeof(MeshVertex);
 	UINT offset = 0;
@@ -105,6 +108,9 @@ bool Mesh::Create(const std::vector<MeshVertex>& vertices, const std::vector<Mes
 //-----------------------------------------------------------------------------
 void Mesh::DrawSubset(int subsetNo) const
 {
+	if (!GraphicsDeviceChild::g_graphicsDevice) return;
+	if (!GraphicsDeviceChild::g_graphicsDevice->g_cpContext) return;
+
 	if (subsetNo >= (int)m_subsets.size()) return; // 範囲外のサブセット
 	if (m_subsets[subsetNo].m_faceCount == 0) return; // 面数が0
 

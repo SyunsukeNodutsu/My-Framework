@@ -85,6 +85,9 @@
     <Filter Include="Source\Framework\Shader\Tree">
       <UniqueIdentifier>{2f648eca-21c6-4a06-be7a-4ce09a7520c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Input\DirectInput">
+      <UniqueIdentifier>{e4cf18b5-741c-499a-848b-dabc46554da0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -266,6 +269,12 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Utility\Utility.cpp">
+      <Filter>Source\Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp">
+      <Filter>Source\Framework\Input\DirectInput</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +502,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h">
+      <Filter>Source\Framework\Input\DirectInput</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

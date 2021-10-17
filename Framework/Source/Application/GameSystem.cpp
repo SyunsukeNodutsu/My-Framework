@@ -43,34 +43,6 @@ void GameSystem::Initialize()
 		sound->Play(1000);
 		sound->SetVolume(0.36f);
 	}
-
-#pragma region Json test.
-	// デシリアライズ
-	std::ifstream ifs("Resource/test.json");
-	if (!ifs.fail()) {
-		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-		json jobj = json::parse(strJson);
-		//auto pi = jobj["pi"].dump();// 文字列で取得？
-		auto pi = jobj["pi"].get<float>();// floatで取得
-		DebugLog(std::string("pi: " + std::to_string(pi) + "\n").c_str());
-	}
-
-	// シリアライズ
-	json j;
-	j["pi"] = 3.141;
-	j["happy"] = true;
-	j["name"] = "Niels";
-	j["nothing"] = nullptr;
-	j["answer"]["everything"] = 42;  // 存在しないキーを指定するとobjectが構築される
-	j["list"] = { 1, 0, 2 };         // [1,0,2]
-	j["object"] = { {"currency", "USD"}, {"value", 42.99} };  // {"currentcy": "USD", "value": 42.99}
-
-	std::string s = j.dump(1);// 引数1...インデント
-	std::ofstream ofs("Resource/test2.json");
-	if (ofs) {
-		ofs.write(s.c_str(), s.size());
-	}
-#pragma endregion
 }
 
 //-----------------------------------------------------------------------------
@@ -221,7 +193,7 @@ void GameSystem::AddDebugLine(const float3& pos01, const float3& pos02, const cf
 	// ラインの開始頂点
 	ver.m_position = pos01;
 	ver.m_color = color;
-	ver.m_uv = float2(0, 0);
+	ver.m_uv = float2::Zero;
 	m_debugLines.push_back(ver);
 
 	// ラインの終了頂点
@@ -236,42 +208,42 @@ void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const
 {
 	EffectShader::Vertex ver = {};
 	ver.m_color = color;
-	ver.m_uv = { 0.0f,0.0f };
+	ver.m_uv = float2::Zero;
 
-	static constexpr int kDetail = 32;
-	for (UINT i = 0; i < kDetail + 1; ++i)
+	static constexpr int detail = 32;
+	for (UINT i = 0; i < detail + 1; ++i)
 	{
 		// XZ平面
 		ver.m_position = pos;
-		ver.m_position.x += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.z += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.x += cosf((float)i * (360 / detail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)i * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 
 		ver.m_position = pos;
-		ver.m_position.x += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.z += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.x += cosf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 
 		// XY平面
 		ver.m_position = pos;
-		ver.m_position.x += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.y += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.x += cosf((float)i * (360 / detail) * ToRadians) * radius;
+		ver.m_position.y += sinf((float)i * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 
 		ver.m_position = pos;
-		ver.m_position.x += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.y += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.x += cosf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
+		ver.m_position.y += sinf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 
 		// YZ平面
 		ver.m_position = pos;
-		ver.m_position.y += cosf((float)i * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.z += sinf((float)i * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.y += cosf((float)i * (360 / detail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)i * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 
 		ver.m_position = pos;
-		ver.m_position.y += cosf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
-		ver.m_position.z += sinf((float)(i + 1) * (360 / kDetail) * ToRadians) * radius;
+		ver.m_position.y += cosf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
+		ver.m_position.z += sinf((float)(i + 1) * (360 / detail) * ToRadians) * radius;
 		m_debugLines.push_back(ver);
 	}
 }
@@ -288,3 +260,64 @@ void GameSystem::AddActor(const std::string& name)
 
 	m_spActorList.push_back(object);
 }
+
+//-----------------------------------------------------------------------------
+// シーンの読み込み
+//-----------------------------------------------------------------------------
+bool GameSystem::LoadScene(const std::string& filepath)
+{
+	json json = RES_FAC.GetJsonData(filepath);
+	if (json.is_null()) {
+		return false;
+	}
+
+	// json object の一覧
+	auto actorList = json::array();
+	actorList = json["ActorList"].dump();
+
+	// 生成ループ
+	for (auto&& actor : actorList)
+	{
+		const auto& str = actor["ClassName"].dump();
+		const std::shared_ptr<Actor>& newActor = GenerateActor(str);
+
+		if (newActor == nullptr) {
+			APP.g_imGuiSystem->AddLog("Failed to create actor.");
+			continue;
+		}
+
+		AddActorList(newActor);
+	}
+
+	return true;
+}
+
+/*
+* #pragma region Json test.
+	// デシリアライズ
+	std::ifstream ifs("Resource/test.json");
+	if (!ifs.fail()) {
+		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+		json jobj = json::parse(strJson);
+		//auto pi = jobj["pi"].dump();// 文字列で取得？
+		auto pi = jobj["pi"].get<float>();// floatで取得
+		DebugLog(std::string("pi: " + std::to_string(pi) + "\n").c_str());
+	}
+
+	// シリアライズ
+	json j;
+	j["pi"] = 3.141;
+	j["happy"] = true;
+	j["name"] = "Niels";
+	j["nothing"] = nullptr;
+	j["answer"]["everything"] = 42;  // 存在しないキーを指定するとobjectが構築される
+	j["list"] = { 1, 0, 2 };         // [1,0,2]
+	j["object"] = { {"currency", "USD"}, {"value", 42.99} };  // {"currentcy": "USD", "value": 42.99}
+
+	std::string s = j.dump(1);// 引数1...インデント
+	std::ofstream ofs("Resource/test2.json");
+	if (ofs) {
+		ofs.write(s.c_str(), s.size());
+	}
+#pragma endregion
+*/

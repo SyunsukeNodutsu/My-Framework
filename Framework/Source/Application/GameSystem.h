@@ -57,7 +57,7 @@ public:
 
 	// @brief デバッグ用の3D球を追加 TODO: 移動
 	// @param pos 座標
-	// @param radius 半径
+	// @param radius 半径(Degree)
 	// @param color 色 デフォルトは白
 	void AddDebugSphereLine(const float3& pos, const float radius, const cfloat4x4 color = cfloat4x4::White);
 
@@ -79,5 +79,10 @@ private:
 	// @brief Actorをシーンに追加
 	// @param name 追加するActorのクラス名
 	void AddActor(const std::string& name);
+
+	// @brief シーンの読み込み
+	// @param filepath 読み込むjsonファイルのパス
+	// @return 成功...true
+	bool LoadScene(const std::string& filepath);
 
 };

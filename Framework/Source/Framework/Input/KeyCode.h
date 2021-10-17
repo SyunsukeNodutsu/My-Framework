@@ -30,6 +30,16 @@ namespace KeyCode
         Right = 0x27,
         Down = 0x28,
 
+        K_1 = 0x31,
+        K_2 = 0x32,
+        K_3 = 0x33,
+        K_4 = 0x34,
+        K_5 = 0x35,
+        K_6 = 0x36,
+        K_7 = 0x37,
+        K_8 = 0x38,
+        K_9 = 0x39,
+
         A = 0x41,
         B = 0x42,
         C = 0x43,

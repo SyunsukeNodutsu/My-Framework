@@ -28,7 +28,7 @@
 // Dear imGui
 // Effekseer
 // nlohmann - json
-// gltfLoader
+// gltfLoader(KD)
 //-----------------------------------------------------------------------------
 #pragma once
 #include "GameSystem.h"
@@ -72,6 +72,8 @@ public:
 	static AudioDevice* g_audioDevice;
 	// 入力デバイス
 	static RawInputDevice* g_rawInputDevice;
+
+	static DirectInputDevice* g_directInputDevice;
 
 	// fps計測
 	static FpsTimer* g_fpsTimer;

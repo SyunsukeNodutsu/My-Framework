@@ -1,7 +1,8 @@
 ﻿//-----------------------------------------------------------------------------
 // File: Camera.h
 //
-// カメラ
+// カメラ基底クラス
+// 投影方法, 2D->3D変換, カリング有効設定など
 //-----------------------------------------------------------------------------
 #pragma once
 #include "../GraphicsDeviceChild.h"
@@ -12,7 +13,7 @@ class Camera : private GraphicsDeviceChild
 public:
 
 	// 投影方法
-	enum ProjectionMethod
+	enum class ProjectionMethod
 	{
 		ePerspective,	// 透視射影行列 パース
 		eOrthographic,	// 平行投影
@@ -109,12 +110,12 @@ public:
 	// @return カメラ遠平面
 	float GetFarZ() const { return m_farZ; }
 
-	// @brief を返す
-	// @return
+	// @brief 平行投影行列の幅を返す
+	// @return 平行投影行列の幅
 	float GetViewWidth() const { return m_viewWidth; }
 
-	// @brief を返す
-	// @return
+	// @brief 平行投影行列の高さを返す
+	// @return　平行投影行列の高さ
 	float GetViewHeight() const { return m_viewHeight; }
 
 protected:
@@ -145,6 +146,10 @@ protected:
 	float m_viewWidth;	// 幅
 	float m_viewHeight; // 高さ
 
+	// ダーティーフラグ
+	bool m_dirtyCamera;	// カメラ行列が変更
+	bool m_dirtyProj;	// 射影行列が変更
+
 public:
 
 	// 優先度
@@ -158,11 +163,5 @@ public:
 
 	// カメラ名
 	std::string g_name;
-
-private:
-
-	// ダーティーフラグ
-	bool m_dirtyCamera;	// カメラ行列が変更
-	bool m_dirtyProj;	// 射影行列が変更
 
 };

@@ -38,6 +38,13 @@ void SafeRelease(T*& p) { if (p) { p->Release(); p = nullptr; } }
 template<class T>
 void SafeDelete(T*& p) { if (p) { delete p; p = nullptr; } }
 
+// @brief メディアファイルの位置を確認するためのヘルパー関数
+// @param strDestPath
+// @param cchDest
+// @param strFilename ファイルを確認するパス(位置)
+// @return 成功...S_OK 失敗...エラーメッセージ
+HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
+
 //-----------------------------------------------------------------------------
 // プロセッサ
 //-----------------------------------------------------------------------------

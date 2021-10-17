@@ -79,7 +79,7 @@ bool SoundDirector::Play(const std::string& filepath, DWORD delay, float volume,
 //-----------------------------------------------------------------------------
 // 3D再生
 //-----------------------------------------------------------------------------
-bool SoundDirector::Play3D(const std::string& filepath, float3& pos, DWORD delay, float volume, bool loop, bool useFilter)
+bool SoundDirector::Play3D(const std::string& filepath, const float3 pos, DWORD delay, float volume, bool loop, bool useFilter)
 {
     auto sound = std::make_shared<SoundWork3D>();
     if (!sound) return false;

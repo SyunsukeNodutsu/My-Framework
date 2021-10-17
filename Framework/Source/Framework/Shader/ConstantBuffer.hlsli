@@ -24,7 +24,7 @@ cbuffer cdObject : register(b8)
     float               g_dither_enable;// ディザリング有効？
 }
 
-// ビュー 射影 変換行列
+// カメラ
 cbuffer cdObject : register(b9)
 {
     row_major float4x4 g_view_matrix;   // ビュー変換

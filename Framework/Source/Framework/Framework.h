@@ -20,6 +20,11 @@
 
 #pragma comment(lib,"xaudio2.lib")
 
+// DirectInput
+#include <dinput.h>
+
+#pragma comment(lib, "dinput8.lib")
+
 // 算術
 #include <DirectXMath.h>
 
@@ -64,6 +69,7 @@
 #include "Physics/Collision.h"
 
 #include "Input/RawInputDevice.h"
+#include "Input/DirectInput/DirectInputDevice.h"
 
 #include "Shader/ShaderManager.h"
 

@@ -145,13 +145,24 @@ void Human::UpdateRotate(float deltaTime)
 	m_transform.SetAngle(m_rotation);
 }
 
+
+
+//=============================================================================
+// 
+// State machine
+// 
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// 待機State: 更新
+//-----------------------------------------------------------------------------
 void Human::StateWait::Update(float deltaTime, Human& owner)
 {
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	if (moveVec.LengthSquared() >= 0.01f)
@@ -164,6 +175,9 @@ void Human::StateWait::Update(float deltaTime, Human& owner)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// 移動State: 更新
+//-----------------------------------------------------------------------------
 void Human::StateMove::Update(float deltaTime, Human& owner)
 {
 	owner.UpdateMove(deltaTime);
@@ -171,10 +185,10 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 
 	// TODO: fix
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f * deltaTime;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f * deltaTime;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	if (moveVec.LengthSquared() == 0)

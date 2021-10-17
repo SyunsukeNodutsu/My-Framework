@@ -89,7 +89,8 @@ float4 main( VertexOutput In ) : SV_TARGET
         // todo: üŒ`‚¶‚á‚È‚¢•û‚ª‚¢‚¢‚©‚à
         float clipRate = 1.0f - min(1.0f, eyeToClipRange / ditherRange);
         
-        clip(dither - 15 * clipRate);
+        float ditherMax = 15;
+        clip(dither - ditherMax * clipRate);
     }
     
     //------------------------------------------

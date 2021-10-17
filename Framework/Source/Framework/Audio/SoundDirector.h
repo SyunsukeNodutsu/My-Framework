@@ -41,7 +41,7 @@ public:
 	// @param loop ループ再生？
 	// @param useFilter フィルター機能使用？
 	// @return 成功...true
-	bool Play3D(const std::string& filepath, float3& pos, DWORD delay = 0, float volume = 1.0f, bool loop = false, bool useFilter = false);
+	bool Play3D(const std::string& filepath, const float3 pos, DWORD delay = 0, float volume = 1.0f, bool loop = false, bool useFilter = false);
 
 	// @brief ゲームサウンドの作成
 	// @param filepath ファイルのパス

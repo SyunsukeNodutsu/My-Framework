@@ -80,15 +80,15 @@ void Tank::Update(float deltaTime)
 {
 	if (APP.g_gameSystem->g_cameraSystem.IsEditorMode()) return;
 
+	// カメラ角度
+	auto& camera = m_spCamera3rd->GetCameraMatrix();
+	m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
+
 	// 現在のステート更新
 	m_spState->Update(*this, deltaTime);
 
 	// 部品更新
 	m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
-
-	// カメラ角度
-	auto& camera = RENDERER.Getcb9().Get().m_camera_matrix;
-	m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +98,8 @@ void Tank::Draw(float deltaTime)
 {
 	Actor::Draw(deltaTime);
 
-	m_spTankParts->Draw(deltaTime);
+	// 現在のステート描画
+	m_spState->Draw(*this, deltaTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -107,18 +108,18 @@ void Tank::Draw(float deltaTime)
 void Tank::UpdateMove(float deltaTime)
 {
 	// 外部ファイル定義のほうがええ
-	constexpr float advanceSpeed = 2.0f;// 前進速度
+	constexpr float forwardSpeed = 2.0f;// 前進速度
 	constexpr float backwardSpeed = 1.2f;// 後進速度
 	constexpr float decelerateSpeed = 4.0f;// 減速速度(操作無しの時)
 
-	constexpr float ADVANCE_SPEED_MAX = 6.0f;// 最大前進速度
+	constexpr float FORWARD_SPEED_MAX = 6.0f;// 最大前進速度
 	constexpr float BACKWARD_SPEED_MAX = 4.0f;// 最大後進速度
 	constexpr float DECELERATE_SPEED_MAX = 6.0f;// 最大減速速度
 
 	// 前進
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) {
-		m_moveSpeed += advanceSpeed * deltaTime;
-		m_moveSpeed = std::clamp(m_moveSpeed, -BACKWARD_SPEED_MAX, ADVANCE_SPEED_MAX);
+		m_moveSpeed += forwardSpeed * deltaTime;
+		m_moveSpeed = std::clamp(m_moveSpeed, -BACKWARD_SPEED_MAX, FORWARD_SPEED_MAX);
 	}
 	else if (m_moveSpeed > 0) {
 		m_moveSpeed -= decelerateSpeed * deltaTime;
@@ -128,7 +129,7 @@ void Tank::UpdateMove(float deltaTime)
 	// 後進
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) {
 		m_moveSpeed -= backwardSpeed * deltaTime;
-		m_moveSpeed = std::clamp(m_moveSpeed, -BACKWARD_SPEED_MAX, ADVANCE_SPEED_MAX);
+		m_moveSpeed = std::clamp(m_moveSpeed, -BACKWARD_SPEED_MAX, FORWARD_SPEED_MAX);
 	}
 	else if (m_moveSpeed < 0) {
 		m_moveSpeed += decelerateSpeed * deltaTime;
@@ -202,13 +203,13 @@ void Tank::UpdateShot(bool state1st)
 {
 	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Left))
 	{
-		float3 axisZ = m_spTankParts->GetMainGunMatrix().Backward();
-		float3 pos = m_spTankParts->GetMainGunMatrix().Translation()
-			+ float3(0.2f, 0.0f, 0.0f) + axisZ * 6.6f;
+		const auto& mMain = m_spTankParts->GetMainGunMatrix();
 
-		APP.g_gameSystem->AddDebugSphereLine(pos, 2.0f);
+		float3 axisZ = mMain.Backward();
+		float3 axisX = mMain.Right();
+		float3 pos = mMain.Translation() + (axisX * 0.1f) + (axisZ * 6.6f);
 
-		std::shared_ptr<Actor> cannon = std::make_shared<TankBullet>(*this, pos + axisZ, axisZ);
+		const auto& cannon = std::make_shared<TankBullet>(*this, pos + axisZ, axisZ);
 		APP.g_gameSystem->AddActorList(cannon);
 
 		// Effect
@@ -243,7 +244,7 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 	owner.UpdateShot(false);
 
 	if (owner.m_spCamera3rd) {
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_transform.GetPosition());
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetMainGunMatrix().Translation());
 		owner.m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
 		owner.m_spCamera3rd->Update();
 		owner.m_spCamera3rd->SetCameraMatrix(trans);
@@ -253,15 +254,27 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Right)) {
 		owner.m_spState = std::make_shared<State1st>();
 		// 室内を表現
-		if (owner.m_runSound3D) owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.2f);
-		if (owner.m_shotSound3D) owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.6f);
+		if (owner.m_runSound3D)
+			owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.2f);
+		if (owner.m_shotSound3D)
+			owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.6f);
 
 		owner.m_spCamera3rd->g_priority = 0;
 		owner.m_spCamera1st->g_priority = 1;
 
 		auto& angle = owner.m_spCamera3rd->GetRotationAngles();
 		owner.m_spCamera1st->SetAngle(float2(angle.x, angle.y));
+
+		owner.m_modelWork.SetEnable(false);
 	}
+}
+
+//-----------------------------------------------------------------------------
+// 三人称State: 描画
+//-----------------------------------------------------------------------------
+void Tank::State3rd::Draw(Tank& owner, float deltaTime)
+{
+	owner.m_spTankParts->Draw(deltaTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -277,9 +290,9 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 	owner.UpdateShot(true);
 
 	if (owner.m_spCamera1st) {
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_transform.GetPosition());
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetMainGunMatrix().Translation());
 		float3 axisZ = owner.m_transform.GetWorldMatrix().Backward();
-		float3 pos = float3(0.0f, 0.6f, 0.0f) + axisZ;
+		float3 pos = float3(0.0f, 0.4f, 0.0f);// +axisZ;
 		owner.m_spCamera1st->SetLocalPos(pos);
 		owner.m_spCamera1st->Update();
 		owner.m_spCamera1st->SetCameraMatrix(trans);
@@ -289,13 +302,25 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 	if (APP.g_rawInputDevice->g_spMouse->IsReleased(MouseButton::Right)) {
 		owner.m_spState = std::make_shared<State3rd>();
 		// フィルターをもとに戻す
-		if (owner.m_runSound3D) owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
-		if (owner.m_shotSound3D) owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
+		if (owner.m_runSound3D)
+			owner.m_runSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
+		if (owner.m_shotSound3D)
+			owner.m_shotSound3D->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 1, 1);
 
 		owner.m_spCamera3rd->g_priority = 1;
 		owner.m_spCamera1st->g_priority = 0;
 
 		auto& angle = owner.m_spCamera1st->GetRotationAngles();
 		owner.m_spCamera3rd->SetAngle(float2(angle.x, angle.y));
+
+		owner.m_modelWork.SetEnable(true);
 	}
+}
+
+//-----------------------------------------------------------------------------
+// 一人称State: 描画
+//-----------------------------------------------------------------------------
+void Tank::State1st::Draw(Tank& owner, float deltaTime)
+{
+	// 一人称の際は 照準器をSprite描画
 }

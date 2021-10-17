@@ -39,10 +39,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	UINT flags = 0;
 
-#ifdef _DEBUG
 	// 詳細なデバッグ情報を取得する
-	flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+	if (desc.m_debugMode)
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
 
 	// DXGIファクトリー作成
 	ComPtr<IDXGIFactory1> factory = nullptr;

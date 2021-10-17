@@ -1,11 +1,12 @@
 ﻿#include "main.h"
 
-Window*				Application::g_window = 0;
-GraphicsDevice*		Application::g_graphicsDevice = 0;
-EffekseerDevice*	Application::g_effectDevice = 0;
-AudioDevice*		Application::g_audioDevice = 0;
-RawInputDevice*		Application::g_rawInputDevice = 0;
-FpsTimer*			Application::g_fpsTimer = 0;
+Window* Application::g_window = 0;
+GraphicsDevice* Application::g_graphicsDevice = 0;
+EffekseerDevice* Application::g_effectDevice = 0;
+AudioDevice* Application::g_audioDevice = 0;
+RawInputDevice* Application::g_rawInputDevice = 0;
+DirectInputDevice* Application::g_directInputDevice = 0;
+FpsTimer* Application::g_fpsTimer = 0;
 
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
 std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
@@ -83,6 +84,7 @@ bool Application::Initialize(int width, int height)
 	g_effectDevice		= new EffekseerDevice();
 	g_audioDevice		= new AudioDevice();
 	g_rawInputDevice	= new RawInputDevice();
+	g_directInputDevice = new DirectInputDevice();
 	g_fpsTimer			= new FpsTimer();
 
 	g_gameSystem	= std::make_shared<GameSystem>();
@@ -101,8 +103,8 @@ bool Application::Initialize(int width, int height)
 	desc.m_refreshRate	= 0;
 	desc.m_windowed		= true;
 	desc.m_useHDR		= false;
-	desc.m_useMSAA		= true;
-	desc.m_deferredRendering = false;
+	desc.m_useMSAA		= false;
+	desc.m_debugMode	= false;
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
 
@@ -111,10 +113,11 @@ bool Application::Initialize(int width, int height)
 
 	// オーディオデバイス
 	g_audioDevice->Initialize();
-	g_audioDevice->SetMasterVolume(0.4f);
+	g_audioDevice->SetMasterVolume(0.0f);
 	
 	// 入力デバイス
 	g_rawInputDevice->Initialize();
+	g_directInputDevice->Initialize(g_window->GetWndHandle());
 
 	//--------------------------------------------------
 	// その他
@@ -149,6 +152,7 @@ void Application::Release()
 	g_gameSystem->Finalize();
 
 	// デバイス
+	g_directInputDevice->Finalize();
 	g_rawInputDevice->Finalize();
 	g_audioDevice->Finalize();
 	g_effectDevice->Finalize();
@@ -160,6 +164,7 @@ void Application::Release()
 	delete g_graphicsDevice;
 	delete g_effectDevice;
 	delete g_audioDevice;
+	delete g_directInputDevice;
 	delete g_rawInputDevice;
 	delete g_fpsTimer;
 
@@ -183,8 +188,7 @@ void Application::Execute()
 
 	while (1)
 	{
-		if (m_endFlag)
-			break;
+		if (m_endFlag) break;
 
 		g_fpsTimer->Tick();
 
@@ -193,7 +197,7 @@ void Application::Execute()
 		//----------------------------------------
 
 		// ウィンドウのメッセージを処理する
-		if (g_window->ProcessMessage() == false)
+		if (!g_window->ProcessMessage())
 			break;
 
 		// ウィンドウが破棄されてるならループ終了
@@ -205,7 +209,7 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ行列の取得
-		auto cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+		const auto& cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
 		// サウンド更新
 		g_audioDevice->Update(cameraMatrix);
 
@@ -238,8 +242,10 @@ void Application::Execute()
 		g_gameSystem->LateUpdate();
 
 		//----------------------------------------
-		// Presentの不具合が治らなければここでFPS制御
+		// FPS制御
 		//----------------------------------------
+
+		// TODO: どうしても最大画面時のPresentの不具合が治らなければここで
 	}
 
 	//==================================================

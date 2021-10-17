@@ -60,6 +60,7 @@
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
+    <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
     <ClCompile Include="Source\Framework\Input\Mouse.cpp" />
     <ClCompile Include="Source\Framework\Input\RawInputDevice.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
     <ClCompile Include="Source\Framework\Utility\ResourceFactory.cpp" />
+    <ClCompile Include="Source\Framework\Utility\Utility.cpp" />
     <ClCompile Include="Source\Framework\Window\Window.cpp" />
     <ClCompile Include="Source\Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -134,6 +136,7 @@
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
+    <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h" />
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />
     <ClInclude Include="Source\Framework\Input\KeyCode.h" />
     <ClInclude Include="Source\Framework\Input\Mouse.h" />
@@ -288,6 +291,9 @@
       </ObjectFileOutput>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)\%(Filename).shaderinc</HeaderFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

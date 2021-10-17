@@ -30,30 +30,28 @@ void FPSCamera::Update()
 {
 	if (!g_enable) return;
 
-	{
-		float2 nowPos = APP.g_rawInputDevice->g_spMouse->GetMousePos();
+	float2 nowPos = APP.g_rawInputDevice->g_spMouse->GetMousePos();
 
-		float2 mouseMove;
+	float2 mouseMove;
+	mouseMove.x = nowPos.x - s_fixMousePos.x;
+	mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-		mouseMove.x = nowPos.x - s_fixMousePos.x;
-		mouseMove.y = nowPos.y - s_fixMousePos.y;
+	APP.g_rawInputDevice->g_spMouse->SetAt(s_fixMousePos, APP.g_window->GetWndHandle());
 
-		APP.g_rawInputDevice->g_spMouse->SetAt(s_fixMousePos, APP.g_window->GetWndHandle());
-
-		// カメラを回転させる処理
-		m_degAngle.x += mouseMove.y * 0.1f;
-		m_degAngle.y += mouseMove.x * 0.1f;
-	}
+	// カメラを回転
+	m_degAngle.x += mouseMove.y * 0.1f;
+	m_degAngle.y += mouseMove.x * 0.1f;
 
 	// 回転制御
 	m_degAngle.x = std::clamp(m_degAngle.x, m_minAngleX, m_maxAngleX);
 }
 
 //-----------------------------------------------------------------------------
-//
+// 回転行列を返す
 //-----------------------------------------------------------------------------
 const mfloat4x4 FPSCamera::GetRotationMatrix()
 {
+	// ヨー ピッチ およびロールから作成
 	return mfloat4x4::CreateFromYawPitchRoll(
 		m_degAngle.y * ToRadians,
 		m_degAngle.x * ToRadians,
@@ -62,7 +60,7 @@ const mfloat4x4 FPSCamera::GetRotationMatrix()
 }
 
 //-----------------------------------------------------------------------------
-//
+// Y軸の回転行列を返す
 //-----------------------------------------------------------------------------
 const mfloat4x4 FPSCamera::GetRotationYMatrix()
 {

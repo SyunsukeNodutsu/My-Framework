@@ -27,7 +27,7 @@ public:
 
     // @brief ソースボイスを返す ※TODO: 関数名変かも
     // @return 無加工のソースボイス
-    IXAudio2SourceVoice* GetRawVoice() const { return m_pSourceVoice; }
+    IXAudio2SourceVoice* GetRawSourceVoice() const { return m_pSourceVoice; }
 
 private:
 

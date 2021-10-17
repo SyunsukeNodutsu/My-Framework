@@ -20,14 +20,15 @@ Camera::Camera()
 	, m_farZ(500.0f)
 	, m_viewWidth(1280.0f)
 	, m_viewHeight(780.0f)
+	, m_dirtyCamera(true)
+	, m_dirtyProj(true)
+	// ↓public
 	, g_priority()
 	, g_enable(true)
 	, g_isFrustumCull(true)
 	, g_name("empty")
-	, m_dirtyCamera(true)
-	, m_dirtyProj(true)
 {
-	// 初期 射影行列
+	// 射影行列の初期設定
 	m_projMatrix = XMMatrixPerspectiveFovLH(m_fovAngleY, m_aspectRatio, m_nearZ, m_farZ);
 }
 

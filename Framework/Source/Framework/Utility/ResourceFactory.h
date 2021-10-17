@@ -40,6 +40,11 @@ public:
 	// @return サウンドデータ
 	const std::shared_ptr<SoundData> GetSoundData(const std::string& filepath, bool loop = false, bool useFilter = false);
 
+	// @brief マップ確認の後Jsonデータを返す ※初回の場合登録
+	// @param filepath ファイルのパス
+	// @return jsonデータ
+	const json GetJsonData(const std::string& filepath);
+
 private:
 
 	// モデルデータ管理マップ
@@ -51,10 +56,17 @@ private:
 	// サウンド管理マップ
 	std::unordered_map<std::string, std::shared_ptr<SoundData>> m_soundMap;
 
+	// json管理マップ
+	std::unordered_map<std::string, json> m_jsonMap;
+
 private:
 
 	// @brief 解放
 	void Release();
+
+	// @brief json読み込み
+	// @return
+	const json LoadJson(const std::string& filepath);
 
 };
 

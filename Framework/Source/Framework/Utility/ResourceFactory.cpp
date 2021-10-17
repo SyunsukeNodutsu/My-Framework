@@ -89,6 +89,30 @@ const std::shared_ptr<SoundData> ResourceFactory::GetSoundData(const std::string
 }
 
 //-----------------------------------------------------------------------------
+// マップ確認の後Jsonデータを返す
+//-----------------------------------------------------------------------------
+const json ResourceFactory::GetJsonData(const std::string& filepath)
+{
+	auto foundItr = m_jsonMap.find(filepath);
+
+	// リストにある
+	if (foundItr != m_jsonMap.end())
+		return (*foundItr).second;
+
+	// リストに無い
+	json newJson;
+	if (newJson = LoadJson(filepath))
+	{
+		// リストに追加
+		m_soundMap.insert(std::pair<std::string, json>(filepath, newJson));
+
+		return m_jsonMap[filepath];
+	}
+
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------
 // 解放
 //-----------------------------------------------------------------------------
 void ResourceFactory::Release()
@@ -96,4 +120,29 @@ void ResourceFactory::Release()
 	m_modelMap.clear();
 	m_textureMap.clear();
 	m_soundMap.clear();
+}
+
+//-----------------------------------------------------------------------------
+// jsonファイル読み込み 解析
+//-----------------------------------------------------------------------------
+const json ResourceFactory::LoadJson(const std::string& filepath)
+{
+	// jsonファイルを開く
+	std::fstream ifs(filepath);
+	if (ifs.fail()) {
+		assert(0 && "Error json filepath.");
+		return nullptr;
+	}
+
+	// 文字列として読み込み
+	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+	// 文字列のJSONを解析(パース)する
+	json jsonObject = json::parse(strJson);
+	if (jsonObject.is_null()) {
+		assert(0 && "Error json parse.");
+		return nullptr;
+	}
+
+	return jsonObject;
 }

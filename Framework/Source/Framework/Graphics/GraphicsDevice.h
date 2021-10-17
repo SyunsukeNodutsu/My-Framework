@@ -19,12 +19,12 @@ struct MY_DIRECT3D_DESC
 	bool m_windowed;
 	bool m_useHDR;
 	bool m_useMSAA;
-	bool m_deferredRendering;
+	bool m_debugMode;
 
 	HWND m_hwnd;
 };
 
-// Direct3D
+// Direct3D11 描画デバイスクラス
 class GraphicsDevice
 {
 public:
