@@ -78,13 +78,19 @@ void Tank::Awake()
 //-----------------------------------------------------------------------------
 void Tank::Update(float deltaTime)
 {
-	if (APP.g_gameSystem->g_cameraSystem.IsEditorMode()) return;
+	if (!APP.g_gameSystem->g_cameraSystem.IsEditorMode())
+	{
+		// 現在のステート更新
+		m_spState->Update(*this, deltaTime);
 
-	// 現在のステート更新
-	m_spState->Update(*this, deltaTime);
-
-	// 部品更新
-	m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
+		// 部品更新
+		m_spTankParts->Update(deltaTime, m_moveSpeed, m_rotateSpeed);
+	}
+	else
+	{
+		// 部品更新
+		m_spTankParts->Update(deltaTime, 0, 0);
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -98,13 +98,18 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 		auto& ownerAngle = m_owner.GetTransform().GetAngle();
 		auto ownerCameraAngleY = m_owner.GetCameraAngleY();
 
-		mfloat4x4 rotMat = mfloat4x4::CreateRotationY((ownerCameraAngleY - ownerAngle.y) * ToRadians);
-		m_mainGunOffset = rotMat * m_turretOffset;
-
 		m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
-		m_mainGun.GetTransform().SetWorldMatrix(m_mainGunOffset * ownerMatrix);
+		m_mainGun.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
 
+		// XZは車体の回転 Yはカメラの回転
 		m_turret.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngleY, ownerAngle.z));
+		m_mainGun.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngleY, ownerAngle.z));
+
+		auto pos = m_mainGun.GetTransform().GetPosition();
+		m_mainGun.GetTransform().SetPosition(
+			pos + float3(0, 0.4f, 0) +
+			(m_mainGun.GetTransform().GetWorldMatrix().Backward() * 0.8f)
+		);
 	}
 
 	// タイヤ
