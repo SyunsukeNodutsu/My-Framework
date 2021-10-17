@@ -103,7 +103,7 @@ bool Application::Initialize(int width, int height)
 	desc.m_refreshRate	= 0;
 	desc.m_windowed		= true;
 	desc.m_useHDR		= false;
-	desc.m_useMSAA		= false;
+	desc.m_useMSAA		= true;
 	desc.m_debugMode	= false;
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
@@ -225,11 +225,12 @@ void Application::Execute()
 		{
 			// 3D想定
 			g_gameSystem->Draw();
-			// 2D想定
-			g_gameSystem->Draw2D();
 
 			// エフェクト描画
 			g_effectDevice->Update(static_cast<float>(g_fpsTimer->GetDeltaTime()));
+
+			// 2D想定 描画は最も最後
+			g_gameSystem->Draw2D();
 
 			// ImGui 描画
 			g_imGuiSystem->Begin();

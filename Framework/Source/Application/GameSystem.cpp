@@ -142,6 +142,8 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
+	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+
 	// Effect描画
 	{
 		SHADER.GetEffectShader().Begin();
@@ -168,6 +170,9 @@ void GameSystem::Draw2D()
 	// Sprite描画
 	{
 		SHADER.GetSpriteShader().Begin(true, true);
+
+		for (auto& object : m_spActorList)
+			object->DrawSprite(deltaTime);
 
 		SHADER.GetSpriteShader().End();
 	}

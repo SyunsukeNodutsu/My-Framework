@@ -11,33 +11,22 @@ class Sky : public Actor
 {
 public:
 
-	// @brief 生成直後
-	void Awake() override
-	{
-		m_name = "Sky";
+	// @brief コンストラクタ
+	Sky();
 
-		LoadModel("Resource/Model/Sky/Sky.gltf");
-		m_transform.SetScale(float3(1000.0f));
-	}
+	// @brief 生成直後
+	void Awake() override;
 
 	// @brief 更新
-	void Update(float deltaTime) override
-	{
-		static mfloat4x4 matrix = m_transform.GetWorldMatrix();
-		matrix *= mfloat4x4::CreateRotationY(0.2f * ToRadians * deltaTime);
-		m_transform.SetWorldMatrix(matrix);
-	}
+	// @param deltaTime 前フレームからの経過時間
+	void Update(float deltaTime) override;
 
 	// @brief 描画
-	void Draw(float deltaTime)
-	{
-		RENDERER.Getcb10().Work().m_enable = false;
-		RENDERER.Getcb10().Write();
-		Actor::Draw(deltaTime);
-		RENDERER.Getcb10().Work().m_enable = true;
-		RENDERER.Getcb10().Write();
-	}
+	// @param deltaTime 前フレームからの経過時間
+	void Draw(float deltaTime) override;
 
 private:
+
+	float m_rotateSpeed;
 
 };

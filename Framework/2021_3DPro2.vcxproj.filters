@@ -276,6 +276,9 @@
     <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp">
       <Filter>Source\Framework\Input\DirectInput</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Sky.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">

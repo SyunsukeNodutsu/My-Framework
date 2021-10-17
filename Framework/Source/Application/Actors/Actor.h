@@ -113,6 +113,10 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	virtual void DrawShadowMap(float deltaTime);
 
+	// @brief スプライト描画
+	// @param deltaTime 前フレームからの経過時間
+	virtual void DrawSprite(float deltaTime) {}
+
 	// @brief 自身を破棄
 	void Destroy();
 

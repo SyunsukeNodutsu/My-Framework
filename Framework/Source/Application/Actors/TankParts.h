@@ -30,7 +30,9 @@ public:
 
 	// @brief 主砲のワールド行列を返す
 	// @return 主砲のワールド行列
-	const mfloat4x4& GetMainGunMatrix() const { return m_mainGun.GetTransform().GetWorldMatrix(); }
+	const mfloat4x4& GetMainGunMatrix() const {
+		return m_mainGun.GetTransform().GetWorldMatrix();
+	}
 
 private:
 

@@ -105,6 +105,14 @@ void Tank::Draw(float deltaTime)
 }
 
 //-----------------------------------------------------------------------------
+// スプライト描画
+//-----------------------------------------------------------------------------
+void Tank::DrawSprite(float deltaTime)
+{
+	m_spState->DrawSprite(*this, deltaTime);
+}
+
+//-----------------------------------------------------------------------------
 // 移動更新
 //-----------------------------------------------------------------------------
 void Tank::UpdateMove(float deltaTime)
@@ -328,9 +336,15 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 }
 
 //-----------------------------------------------------------------------------
-// 一人称State: 描画
+// 一人称State: スプライト描画
 //-----------------------------------------------------------------------------
-void Tank::State1st::Draw(Tank& owner, float deltaTime)
+void Tank::State1st::DrawSprite(Tank& owner, float deltaTime)
 {
-	// 一人称の際は 照準器をSprite描画
+	static std::shared_ptr<Texture> texture = nullptr;
+	if (!texture) {
+		texture = std::make_shared<Texture>();
+		texture->Create("Resource/Texture/TankAim.png");
+	}
+
+	SHADER.GetSpriteShader().DrawTexture(texture.get(), float2::Zero);
 }

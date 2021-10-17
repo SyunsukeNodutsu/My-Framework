@@ -29,6 +29,10 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	void Draw(float deltaTime) override;
 
+	// @brief スプライト描画
+	// @param deltaTime 前フレームからの経過時間
+	void DrawSprite(float deltaTime) override;
+
 	//--------------------------------------------------
 	// 設定.取得
 	//--------------------------------------------------
@@ -75,21 +79,25 @@ private:
 	public:
 		virtual void Update(Tank& owner, float deltaTime) = 0;
 		virtual void Draw(Tank& owner, float deltaTime) = 0;
+		virtual void DrawSprite(Tank& owner, float deltaTime) = 0;
 	};
 	class StateNull : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override {}
 		virtual void Draw(Tank& owner, float deltaTime) override {}
+		virtual void DrawSprite(Tank& owner, float deltaTime) override {}
 	};
 	class State3rd : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override;
 		virtual void Draw(Tank& owner, float deltaTime) override;
+		virtual void DrawSprite(Tank& owner, float deltaTime) override {}
 	};
 	class State1st : public StateBase {
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override;
-		virtual void Draw(Tank& owner, float deltaTime) override;
+		virtual void Draw(Tank& owner, float deltaTime) override {}
+		virtual void DrawSprite(Tank& owner, float deltaTime) override;
 	};
 	std::shared_ptr<StateBase> m_spState;
 
