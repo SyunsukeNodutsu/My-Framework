@@ -80,10 +80,6 @@ void Tank::Update(float deltaTime)
 {
 	if (APP.g_gameSystem->g_cameraSystem.IsEditorMode()) return;
 
-	// カメラ角度
-	auto& camera = m_spCamera3rd->GetCameraMatrix();
-	m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
-
 	// 現在のステート更新
 	m_spState->Update(*this, deltaTime);
 
@@ -248,6 +244,10 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 		owner.m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
 		owner.m_spCamera3rd->Update();
 		owner.m_spCamera3rd->SetCameraMatrix(trans);
+
+		// カメラ角度
+		auto& camera = owner.m_spCamera3rd->GetCameraMatrix();
+		owner.m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 	}
 
 	// 遷移
@@ -296,6 +296,10 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 		owner.m_spCamera1st->SetLocalPos(pos);
 		owner.m_spCamera1st->Update();
 		owner.m_spCamera1st->SetCameraMatrix(trans);
+
+		// カメラ角度
+		auto& camera = owner.m_spCamera1st->GetCameraMatrix();
+		owner.m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 	}
 
 	// 遷移

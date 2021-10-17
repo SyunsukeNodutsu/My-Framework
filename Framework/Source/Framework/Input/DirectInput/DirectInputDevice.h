@@ -15,8 +15,9 @@ public:
 
 	// @brief 初期化
 	// @param hwnd ウィンドウのハンドル
+	// @param priorityLevel 優先レベルのフラグ
 	// @return 成功...true
-	bool Initialize(HWND hwnd);
+	bool Initialize(HWND hwnd, DWORD priorityLevel = DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
 	// @brief 終了
 	void Finalize();
