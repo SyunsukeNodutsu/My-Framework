@@ -37,9 +37,9 @@ public:
 	// 設定.取得
 	//--------------------------------------------------
 
-	// @brief カメラのY回転を返す
-	// @return カメラのY回転
-	float GetCameraAngleY() const { return m_cameraAngleY; }
+	// @brief カメラの回転ベクトルを返す
+	// @return カメラの回転ベクトル
+	float2 GetCameraAngle() const { return m_cameraAngle; }
 
 private:
 
@@ -53,7 +53,7 @@ private:
 	float m_moveSpeed;	// 移動速度
 	float m_rotateSpeed;// 回転速度
 
-	float m_cameraAngleY;// カメラのY角度
+	float2 m_cameraAngle;// カメラの回転角度
 
 private:
 
@@ -91,7 +91,7 @@ private:
 	public:
 		virtual void Update(Tank& owner, float deltaTime) override;
 		virtual void Draw(Tank& owner, float deltaTime) override;
-		virtual void DrawSprite(Tank& owner, float deltaTime) override {}
+		virtual void DrawSprite(Tank& owner, float deltaTime) override;
 	};
 	class State1st : public StateBase {
 	public:

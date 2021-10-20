@@ -74,13 +74,10 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	// 現環境で使用できるMSAAをチェック
 	//--------------------------------------------------
 
-	for (int i = 1; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i <<= 1)
-	{
+	for (int i = 1; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i <<= 1) {
 		UINT Quality;
-		if (SUCCEEDED(g_cpDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, i, &Quality)))
-		{
-			if (0 < Quality)
-			{
+		if (SUCCEEDED(g_cpDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, i, &Quality))) {
+			if (0 < Quality) {
 				m_sampleDesc.Count = i;
 				m_sampleDesc.Quality = Quality - 1;
 			}
@@ -244,8 +241,6 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 void GraphicsDevice::Begin(const float* clearColor)
 {
-	//g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
 	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -280,31 +275,27 @@ void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCou
 			buffer = n; break;
 		}
 	}
+
 	// 可変長のバッファを使用
 	if (buffer == nullptr)
 	{
 		buffer = m_tempVertexBuffer;
 
 		// 頂点バッファのサイズが小さいときは、リサイズのため再作成する
-		if (m_tempVertexBuffer->GetSize() < totalSize) {
+		if (m_tempVertexBuffer->GetSize() < totalSize)
 			m_tempVertexBuffer->Create(D3D11_BIND_VERTEX_BUFFER, totalSize, D3D11_USAGE_DYNAMIC, nullptr);
-		}
 	}
 
 	// 単純なDISCARDでの書き込み TODO: 修正
-	
-	// 全頂点をバッファに書き込み(DISCARD指定)
 	buffer->WriteData(pVertexStream, totalSize);
 
 	// バインド
 	{
 		g_cpContext->IASetPrimitiveTopology(topology);
 
-		// 頂点バッファーをデバイスへセット
 		UINT offset = 0;
 		g_cpContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
 	}
 
-	// 描画
 	g_cpContext->Draw(vertexCount, 0);
 }

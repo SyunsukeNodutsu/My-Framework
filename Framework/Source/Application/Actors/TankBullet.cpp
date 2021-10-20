@@ -17,6 +17,8 @@ TankBullet::TankBullet(Tank owner, float3 position, float3 axis)
 	m_axisZ.Normalize();
 
 	m_name = "TankBullet";
+
+	m_tag = ACTOR_TAG::eWeapon | ACTOR_TAG::eBullet;
 }
 
 //-----------------------------------------------------------------------------
@@ -47,8 +49,8 @@ void TankBullet::Explosion()
 {
 	auto pos = m_transform.GetPosition();
 
+	// Sound and Effect
 	APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
-
 	SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
 
 	m_isEnable = false;
@@ -59,9 +61,12 @@ void TankBullet::Explosion()
 //-----------------------------------------------------------------------------
 void TankBullet::UpdateCollision()
 {
+	// TODO: 空間分割で最適化
 	for (auto& actor : APP.g_gameSystem->GetActorList())
 	{
+		// 自身と弾同士は判定を飛ばす
 		if (actor.get() == this) continue;
+		//if (actor->GetTAG() & ACTOR_TAG::eBullet) continue;
 
 		float range = float3::Distance(m_prevPos, m_transform.GetPosition());
 		float3 dir = m_prevPos - m_transform.GetPosition();

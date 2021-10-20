@@ -32,8 +32,7 @@ bool Texture::Create( ID3D11Texture2D* pTexBuffer, bool useMSAA )
 //-----------------------------------------------------------------------------
 bool Texture::Create( const std::string& filepath )
 {
-	if (filepath.empty())
-		return false;
+	if (filepath.empty()) return false;
 
 	// マルチバイト -> ワイドバイト
 	std::wstring wfilepath = sjis_to_wide(filepath.c_str());

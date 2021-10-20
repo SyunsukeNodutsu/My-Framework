@@ -83,6 +83,7 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 	if (data == nullptr) return;
 
 	auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera();
+	//const auto& camera = APP.g_gameSystem->g_cameraSystem.SearchCamera("TankTPS");
 
 	// 全メッシュノードを描画
 	for (auto& index : data->GetMeshNodeIndices())
@@ -107,7 +108,6 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 		RENDERER.Getcb8().Work().m_world_matrix = node.m_worldTransform * worldMatrix;
 		RENDERER.Getcb8().Write();
 
-		// メッシュ描画
 		DrawMesh(mesh.get(), data->GetMaterials());
 	}
 }
@@ -141,7 +141,6 @@ void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materi
 		RENDERER.SetResources(material.m_metallicRoughnessTexture.get(), 2);
 		RENDERER.SetResources(material.m_normalTexture.get(), 3);
 
-		// サブセット描画
 		mesh->DrawSubset(i);
 	}
 }

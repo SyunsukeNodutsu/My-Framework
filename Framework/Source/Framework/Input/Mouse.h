@@ -51,8 +51,7 @@ public:
 
     // @brief カーソルの表示切り替え
     // @param onoff 表示するか
-    void SetCursorShow(const bool onoff)
-    {
+    void SetCursorShow(const bool onoff) {
         if (onoff) { while (ShowCursor(TRUE) < 0) {} }
         else { while (ShowCursor(FALSE) >= 0) {} }
     }

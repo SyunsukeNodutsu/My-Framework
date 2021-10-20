@@ -96,14 +96,14 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 	// 砲塔.主砲
 	{
 		auto& ownerAngle = m_owner.GetTransform().GetAngle();
-		auto ownerCameraAngleY = m_owner.GetCameraAngleY();
+		auto ownerCameraAngle = m_owner.GetCameraAngle();
 
 		m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
 		m_mainGun.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
 
 		// XZは車体の回転 Yはカメラの回転
-		m_turret.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngleY, ownerAngle.z));
-		m_mainGun.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngleY, ownerAngle.z));
+		m_turret.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngle.y, ownerAngle.z));
+		m_mainGun.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngle.y, ownerAngle.z));
 
 		auto pos = m_mainGun.GetTransform().GetPosition();
 		m_mainGun.GetTransform().SetPosition(

@@ -279,6 +279,9 @@
     <ClCompile Include="Source\Application\Actors\Sky.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Physics\SpatialPartitioning.cpp">
+      <Filter>Source\Framework\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -508,6 +511,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h">
       <Filter>Source\Framework\Input\DirectInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Physics\SpatialPartitioning.h">
+      <Filter>Source\Framework\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

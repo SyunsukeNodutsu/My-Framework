@@ -14,7 +14,7 @@ Tank::Tank()
 	, m_shotSound3D(nullptr)
 	, m_moveSpeed(0.0f)
 	, m_rotateSpeed(0.0f)
-	, m_cameraAngleY(0.0f)
+	, m_cameraAngle(float2::Zero)
 {
 }
 
@@ -50,7 +50,7 @@ void Tank::Awake()
 	{
 		m_spCamera3rd->Initialize();
 
-		m_spCamera3rd->SetClampAngleX(-75.0f, 75.0f);
+		m_spCamera3rd->SetClampAngleX(-15.0f, 15.0f);
 
 		m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
 		m_spCamera3rd->SetLocalGazePosition(float3(0.0f, 2.4f, 0.0f));
@@ -64,7 +64,7 @@ void Tank::Awake()
 	m_spCamera1st = std::make_shared<FPSCamera>();
 	if (m_spCamera1st)
 	{
-		m_spCamera1st->SetClampAngleX(-75.0f, 75.0f);
+		m_spCamera1st->SetClampAngleX(-15.0f, 15.0f);
 
 		m_spCamera1st->g_name = "TankFPS";
 		m_spCamera1st->g_priority = 0.0f;
@@ -89,6 +89,7 @@ void Tank::Update(float deltaTime)
 	else
 	{
 		// 部品更新
+		// 編集カメラの際は UVスクロールをOFF
 		m_spTankParts->Update(deltaTime, 0, 0);
 	}
 }
@@ -109,6 +110,8 @@ void Tank::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Tank::DrawSprite(float deltaTime)
 {
+	if (APP.g_gameSystem->g_cameraSystem.IsEditorMode()) return;
+
 	m_spState->DrawSprite(*this, deltaTime);
 }
 
@@ -117,7 +120,7 @@ void Tank::DrawSprite(float deltaTime)
 //-----------------------------------------------------------------------------
 void Tank::UpdateMove(float deltaTime)
 {
-	// 外部ファイル定義のほうがええ
+	// TODO: 外部ファイル定義のほうがええ
 	constexpr float forwardSpeed = 2.0f;// 前進速度
 	constexpr float backwardSpeed = 1.2f;// 後進速度
 	constexpr float decelerateSpeed = 4.0f;// 減速速度(操作無しの時)
@@ -261,7 +264,12 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 
 		// カメラ角度
 		auto& camera = owner.m_spCamera3rd->GetCameraMatrix();
-		owner.m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
+		owner.m_cameraAngle.x = atan2(camera.Backward().y, camera.Backward().z) * ToDegrees;
+		owner.m_cameraAngle.y = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
+
+		APP.g_imGuiSystem->ClearLog();
+		APP.g_imGuiSystem->AddLog(std::string(u8"角度X: " + std::to_string(owner.m_cameraAngle.x)).c_str());
+		APP.g_imGuiSystem->AddLog(std::string(u8"角度Y: " + std::to_string(owner.m_cameraAngle.y)).c_str());
 	}
 
 	// 遷移
@@ -292,6 +300,20 @@ void Tank::State3rd::Draw(Tank& owner, float deltaTime)
 }
 
 //-----------------------------------------------------------------------------
+// 三人称State: スプライト描画
+//-----------------------------------------------------------------------------
+void Tank::State3rd::DrawSprite(Tank& owner, float deltaTime)
+{
+	static std::shared_ptr<Texture> texture = nullptr;
+	if (!texture) {
+		texture = std::make_shared<Texture>();
+		texture->Create("Resource/Texture/Aim_3rd_01.png");
+	}
+
+	SHADER.GetSpriteShader().DrawTexture(texture.get(), float2::Zero);
+}
+
+//-----------------------------------------------------------------------------
 // 一人称State: 更新
 //-----------------------------------------------------------------------------
 void Tank::State1st::Update(Tank& owner, float deltaTime)
@@ -313,7 +335,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 
 		// カメラ角度
 		auto& camera = owner.m_spCamera1st->GetCameraMatrix();
-		owner.m_cameraAngleY = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
+		owner.m_cameraAngle.x = atan2(camera.Backward().y, camera.Backward().z) * ToDegrees;
+		owner.m_cameraAngle.y = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 	}
 
 	// 遷移
@@ -341,10 +364,22 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 void Tank::State1st::DrawSprite(Tank& owner, float deltaTime)
 {
 	static std::shared_ptr<Texture> texture = nullptr;
+	static std::shared_ptr<Texture> texture2 = nullptr;
+	static std::shared_ptr<Texture> texture3 = nullptr;
 	if (!texture) {
 		texture = std::make_shared<Texture>();
-		texture->Create("Resource/Texture/TankAim.png");
+		texture->Create("Resource/Texture/Aim_1st_01.png");
+	}
+	if (!texture2) {
+		texture2 = std::make_shared<Texture>();
+		texture2->Create("Resource/Texture/Aim_1st_02.png");
+	}
+	if (!texture3) {
+		texture3 = std::make_shared<Texture>();
+		texture3->Create("Resource/Texture/Aim_1st_03.png");
 	}
 
 	SHADER.GetSpriteShader().DrawTexture(texture.get(), float2::Zero);
+	SHADER.GetSpriteShader().DrawTexture(texture2.get(), float2::Zero);
+	SHADER.GetSpriteShader().DrawTexture(texture3.get(), float2(0, -100));
 }

@@ -77,6 +77,16 @@ private:
 	mutable bool		m_needUpdateMatrix;	// 行列を更新する必要があるか？
 };
 
+// Actor の分別
+enum ACTOR_TAG
+{
+	eUntagged	= 0,
+	ePlayer		= 0 << 1,
+	eEnemy		= 0 << 2,
+	eWeapon		= 0 << 3,
+	eBullet		= 0 << 4,
+};
+
 // アクタークラス
 class Actor
 {
@@ -150,9 +160,13 @@ public:
 	// @return トランスフォーム(読み取り専用)
 	const Transform& GetTransform() const { return m_transform; }
 
-	// @brief トランスフォームの取得
+	// @brief トランスフォームを返す
 	// @return トランスフォーム
 	Transform& GetTransform() { return m_transform; }
+
+	// @brief ActorのTAGを返す
+	// @return ActorのTAG
+	UINT GetTAG() const { return m_tag; }
 
 	// @brief 動作中かどうかを返す
 	// @return 動作中...true
@@ -170,6 +184,7 @@ protected:
 
 	ModelWork	m_modelWork;	// モデル管理
 	Transform	m_transform;	// トランスフォーム
+	UINT		m_tag;			// TAG
 	std::string m_name;			// オブジェクトの名前
 
 	bool		m_isActiv;		// 動作？
