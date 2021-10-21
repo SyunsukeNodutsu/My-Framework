@@ -47,7 +47,7 @@ public:
 
 	// @brief シーンのActorリストに新規Actorを追加
 	// @param actor 追加するActor
-	void AddActorList(std::shared_ptr<Actor> actor);
+	void AddActor(std::shared_ptr<Actor> actor);
 
 	// @brief デバッグ用の3D線を追加 TODO: 移動
 	// @param pos01 開始座標
@@ -65,6 +65,9 @@ public:
 
 	// カメラ管理システム
 	CameraSystem g_cameraSystem;
+
+	// シーンのjsonファイルパス
+	std::string g_sceneFilepath;
 
 	// 空間分割テスト
 	CLiner8TreeManager<Actor> m_actorOctreeManager;

@@ -22,11 +22,7 @@ Tank::Tank()
 // インスタンス生成直後
 //-----------------------------------------------------------------------------
 void Tank::Awake()
-{
-	g_name = "T43";
-
-	LoadModel("Resource/Model/T43/T43_Body.gltf");
-	
+{	
 	m_spState = std::make_shared<State3rd>();
 
 	m_spTankParts = std::make_shared<TankParts>(*this);
@@ -223,7 +219,7 @@ void Tank::UpdateShot(bool state1st)
 		float3 pos = mMain.Translation() + (axisX * 0.1f) + (axisZ * 6.6f);
 
 		const auto& cannon = std::make_shared<TankBullet>(*this, pos + axisZ, axisZ);
-		APP.g_gameSystem->AddActorList(cannon);
+		APP.g_gameSystem->AddActor(cannon);
 
 		// Effect
 		APP.g_effectDevice->Play(u"Resource/Effect/TankFire.efk", pos);

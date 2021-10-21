@@ -14,9 +14,6 @@ public:
 	// @brief コンストラクタ
 	Sky();
 
-	// @brief 生成直後
-	void Awake() override;
-
 	// @brief 更新
 	// @param deltaTime 前フレームからの経過時間
 	void Update(float deltaTime) override;

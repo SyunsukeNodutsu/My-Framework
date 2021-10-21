@@ -15,11 +15,6 @@ public:
 	void Initialize() override
 	{
 		g_tag = ACTOR_TAG::eUntagged;
-
-		g_name = "StageMap";
-
-		LoadModel("Resource/Model/StageMap/StageMap.gltf");
-		m_transform.SetScale(float3(6));
 	}
 
 };

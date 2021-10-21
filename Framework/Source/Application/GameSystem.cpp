@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------
 GameSystem::GameSystem()
 	: g_cameraSystem()
+	, g_sceneFilepath("")
 	, m_spActorList()
 	, m_debugLines()
 {
@@ -22,9 +23,6 @@ void GameSystem::Initialize()
 {
 	// シーン読み込み ※ActorList初期化
 	LoadScene("Resource/Jsons/test.json");
-
-	for (auto& object : m_spActorList)
-		object->Initialize();
 
 	// BGM再生
 	// 音量操作や停止、フィルターなどをかける場合は インスタンスを取得
@@ -50,7 +48,10 @@ void GameSystem::Finalize()
 	for (auto& object : m_spActorList)
 		object->Finalize();
 
+	m_spActorList.clear();
 	m_debugLines.clear();
+
+	g_sceneFilepath.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -178,7 +179,7 @@ void GameSystem::Draw2D()
 //-----------------------------------------------------------------------------
 // シーンのActorリストに新規Actorを追加
 //-----------------------------------------------------------------------------
-void GameSystem::AddActorList(std::shared_ptr<Actor> actor)
+void GameSystem::AddActor(std::shared_ptr<Actor> actor)
 {
 	if (!actor) return;
 
@@ -255,13 +256,23 @@ void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const
 //-----------------------------------------------------------------------------
 bool GameSystem::LoadScene(const std::string& filepath)
 {
+	Finalize();
+
+	// "Resource/Jsons/"(15文字) 以降のみ
+	g_sceneFilepath = filepath.substr(15);
+
 	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
 	if (jsonObject.is_null()) {
-		APP.g_imGuiSystem->AddLog(std::string("ERROR: Failed to load Json file. path: " + filepath).c_str());
+		APP.g_imGuiSystem->AddLog(
+			std::string("ERROR: Failed to load Json file. path: " + filepath).c_str()
+		);
 		return false;
 	}
-	else
-		APP.g_imGuiSystem->AddLog(std::string("INFO: Load jsonfile. path: " + filepath).c_str());
+	else {
+		APP.g_imGuiSystem->AddLog(
+			std::string("INFO: Load jsonfile. path: " + filepath).c_str()
+		);
+	}
 
 	auto& jsonObjectList = jsonObject["actor_list"].array_items();
 
@@ -270,11 +281,17 @@ bool GameSystem::LoadScene(const std::string& filepath)
 		auto newActor = GenerateActor(json["class_name"].string_value());
 		if (newActor == nullptr) continue;
 
-		// プレハブ確認
+		// プレハブ確認/差し替え
 		MergePrefab(json);
+		// 逆シリアル化 Actorのデータを初期化
+		newActor->Deserialize(json);
 
 		m_spActorList.push_back(newActor);
 	}
+
+	// 生成を終えた後に一括で初期化
+	for (auto& object : m_spActorList)
+		object->Initialize();
 
 	return true;
 }

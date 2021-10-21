@@ -65,8 +65,8 @@ private:
 
 	// 各モニター
 	
-	// imGuiのレイヤー編集
-	void LayersMonitor(ImGuiWindowFlags wflags);
+	// ゲームのシーン
+	void SceneMonitor(ImGuiWindowFlags wflags);
 	// Shaderデバッグ
 	void ShaderDebugMonitor(ImGuiWindowFlags wflags);
 	// デバッグログ

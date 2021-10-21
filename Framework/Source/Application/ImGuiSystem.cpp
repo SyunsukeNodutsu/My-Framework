@@ -107,108 +107,119 @@ void ImGuiSystem::DrawImGui()
 	/*ImGuiWindowFlags wflags = ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
 
-	// レイヤーモニターは必ず表示
-	LayersMonitor(wflags);
-
 	// DemoWindow
 	if (m_showDemoMonitor)
 		ImGui::ShowDemoWindow();
 
-	// 詳細なモニターはフラグで表示のON/OFF切り替え
+	// フラグで表示のON/OFF切り替え
 	if (m_showEachMonitor)
 	{
+		SceneMonitor(wflags);
 		ShaderDebugMonitor(wflags);
 		LogMonitor(wflags);
 		AudioMonitor(wflags);
 		ProfilerMonitor(wflags);
-	}
 
-	if (ImGui::Begin("Shadow 00"))
-	{
-		ImGui::Image(
-			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(0)->SRV(),
-			ImVec2(200, 200)
-		);
-	}
-	ImGui::End();
+		// シャドウ
+		if (ImGui::Begin("Shadow 00"))
+		{
+			ImGui::Image(
+				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(0)->SRV(),
+				ImVec2(200, 200)
+			);
+		}
+		ImGui::End();
 
-	if (ImGui::Begin("Shadow 01"))
-	{
-		ImGui::Image(
-			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(1)->SRV(),
-			ImVec2(200, 200)
-		);
-	}
-	ImGui::End();
+		if (ImGui::Begin("Shadow 01"))
+		{
+			ImGui::Image(
+				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(1)->SRV(),
+				ImVec2(200, 200)
+			);
+		}
+		ImGui::End();
 
-	if (ImGui::Begin("Shadow 02"))
-	{
-		ImGui::Image(
-			(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(2)->SRV(),
-			ImVec2(200, 200)
-		);
+		if (ImGui::Begin("Shadow 02"))
+		{
+			ImGui::Image(
+				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(2)->SRV(),
+				ImVec2(200, 200)
+			);
+		}
+		ImGui::End();
 	}
-	ImGui::End();
 }
 
 //-----------------------------------------------------------------------------
-// imGuiのレイヤー(スタイルなど)編集
+// ゲームのシーン
 //-----------------------------------------------------------------------------
-void ImGuiSystem::LayersMonitor(ImGuiWindowFlags wflags)
+void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 {
-	if (!ImGui::Begin("Layers Monitor", nullptr, wflags | ImGuiWindowFlags_MenuBar)) {
+	if (!ImGui::Begin("Scene Monitor", nullptr, wflags | ImGuiWindowFlags_MenuBar)) {
 		ImGui::End();
 		return;
 	}
 
-	if (ImGui::BeginMenuBar())
+	// シーンのパス表示
+	ImGui::Text(std::string("Scene: " + APP.g_gameSystem->g_sceneFilepath).c_str());
+
+	ImGui::Separator();
+
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+	ImGui::Text("Actor List");
+	ImGui::PopStyleColor();
+
+	// SceneのActor一覧
+	ImGui::BeginChild("##wav list", ImVec2(0, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
+
+	static std::weak_ptr<Actor> wpActor;
+	for (auto&& actor : APP.g_gameSystem->GetActorList())
 	{
-		if (ImGui::BeginMenu("Menu"))
-		{
-			if (ImGui::MenuItem("Save", "Ctrl+S")) { AddLog("INFO: Save json file."); }
-			if (ImGui::MenuItem("Quit", "Alt+F4")) { APP.End(); }
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
+		ImGui::PushID(actor.get());
+
+		// 選択したActor
+		bool selected = (actor == wpActor.lock());
+		if (ImGui::Selectable(actor->g_name.c_str(), selected))
+			wpActor = actor;
+
+		ImGui::PopID();
 	}
-
-	ImGui::Text("Dear imGui version. (%s)", IMGUI_VERSION);
-
-	ImGui::Separator();
-
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Flags");
-	ImGui::PopStyleColor();
-
-	ImGui::Checkbox("CreateInifile", &m_createInifile);
-	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
-	ImGui::Checkbox("ShowDemoMonitor", &m_showDemoMonitor);
+	ImGui::EndChild();
 
 	ImGui::Separator();
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Colors");
+	ImGui::Text("Detailed data");
 	ImGui::PopStyleColor();
 
-	ImGuiStyle& style = ImGui::GetStyle();
-	ImGuiColorEditFlags cflags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview;
+	if (wpActor.lock())
+	{
+		auto transform = wpActor.lock()->GetTransform();
+		auto pos = transform.GetPosition();
+		auto angle = transform.GetAngle();
+		auto scale = transform.GetScale();
 
-	ImGui::ColorEdit4("Text", (float*)&style.Colors[ImGuiCol_Text], cflags);
-	ImGui::ColorEdit4("WindowBg", (float*)&style.Colors[ImGuiCol_WindowBg], cflags);
-	ImGui::ColorEdit4("PopupBg", (float*)&style.Colors[ImGuiCol_PopupBg], cflags);
-	ImGui::ColorEdit4("Border", (float*)&style.Colors[ImGuiCol_Border], cflags);
-	ImGui::ColorEdit4("FrameBg", (float*)&style.Colors[ImGuiCol_FrameBg], cflags);
-	ImGui::ColorEdit4("TitleBg", (float*)&style.Colors[ImGuiCol_TitleBg], cflags);
-	ImGui::ColorEdit4("MenuBarBg", (float*)&style.Colors[ImGuiCol_MenuBarBg], cflags);
-	ImGui::ColorEdit4("ScrollbarBg", (float*)&style.Colors[ImGuiCol_ScrollbarBg], cflags);
+		ImGui::Text(std::string("Select: " + wpActor.lock()->g_name).c_str());
+		ImGui::DragFloat3("Position", &pos.x, 0.1f);
+		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
+		ImGui::DragFloat3("Scale", &scale.x, 0.1f);
+
+	}
+	else ImGui::Text("Select: none");
 
 	ImGui::Separator();
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Sizes");
+	ImGui::Text("Camera List");
 	ImGui::PopStyleColor();
 
-	ImGui::SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
+	// カメラ一覧
+	for (auto&& camera : APP.g_gameSystem->g_cameraSystem.GetCameraList())
+	{
+		ImGui::PushID(camera.get());
+		ImGui::Text(camera->g_name.c_str());
+		ImGui::PopID();
+	}
 
 	ImGui::End();
 }
@@ -428,64 +439,6 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	static float timeScale = fpsTimer->GetTimeScale();
 	if (ImGui::SliderFloat("TimeScale", &timeScale, 0, 5, "%.2f"))
 		fpsTimer->SetTimeScale(timeScale);
-
-	ImGui::Separator();
-
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Actor List");
-	ImGui::PopStyleColor();
-
-	// SceneのActor一覧
-	ImGui::BeginChild("##wav list", ImVec2(0, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
-
-	static std::weak_ptr<Actor> wpActor;
-	for (auto&& actor : APP.g_gameSystem->GetActorList())
-	{
-		ImGui::PushID(actor.get());
-
-		// 選択したActor
-		bool selected = (actor == wpActor.lock());
-		if (ImGui::Selectable(actor->g_name.c_str(), selected))
-			wpActor = actor;
-
-		ImGui::PopID();
-	}
-	ImGui::EndChild();
-
-	ImGui::Separator();
-
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Detailed data");
-	ImGui::PopStyleColor();
-
-	if (wpActor.lock())
-	{
-		auto transform = wpActor.lock()->GetTransform();
-		auto pos = transform.GetPosition();
-		auto angle = transform.GetAngle();
-		auto scale = transform.GetScale();
-
-		ImGui::Text(std::string("Select: " + wpActor.lock()->g_name).c_str());
-		ImGui::DragFloat3("Position", &pos.x, 0.1f);
-		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
-		ImGui::DragFloat3("Scale", &scale.x, 0.1f);
-
-	}
-	else ImGui::Text("Select: none");
-
-	ImGui::Separator();
-
-	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-	ImGui::Text("Camera List");
-	ImGui::PopStyleColor();
-
-	// カメラ一覧
-	for (auto&& camera : APP.g_gameSystem->g_cameraSystem.GetCameraList())
-	{
-		ImGui::PushID(camera.get());
-		ImGui::Text(camera->g_name.c_str());
-		ImGui::PopID();
-	}
 
 	ImGui::End();
 }

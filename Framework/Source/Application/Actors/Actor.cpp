@@ -99,6 +99,52 @@ Actor::Actor()
 }
 
 //-----------------------------------------------------------------------------
+// jsonファイルの逆シリアル
+//-----------------------------------------------------------------------------
+void Actor::Deserialize(const json11::Json& jsonObject)
+{
+	if (jsonObject.is_null()) return;
+
+	if (!jsonObject["name"].is_null()) {
+		g_name = jsonObject["name"].string_value();
+	}
+	if (!jsonObject["tag"].is_null()) {
+		g_tag = jsonObject["tag"].int_value();
+	}
+	if (!jsonObject["model_filepath"].is_null()) {
+		LoadModel(jsonObject["model_filepath"].string_value());
+	}
+
+	// 座標
+	const std::vector<json11::Json>& position = jsonObject["position"].array_items();
+	if (position.size() == 3) {
+		m_transform.SetPosition(float3(
+			(float)position[0].number_value(),
+			(float)position[1].number_value(),
+			(float)position[2].number_value()
+		));
+	}
+	// 回転
+	const std::vector<json11::Json>& rotation = jsonObject["rotation"].array_items();
+	if (rotation.size() == 3) {
+		m_transform.SetAngle(float3(
+			(float)rotation[0].number_value(),
+			(float)rotation[1].number_value(),
+			(float)rotation[2].number_value()
+		));
+	}
+	// 拡縮
+	const std::vector<json11::Json>& scaling = jsonObject["scaling"].array_items();
+	if (position.size() == 3) {
+		m_transform.SetScale(float3(
+			(float)scaling[0].number_value(),
+			(float)scaling[1].number_value(),
+			(float)scaling[2].number_value()
+		));
+	}
+}
+
+//-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
 void Actor::Update(float deltaTime)
