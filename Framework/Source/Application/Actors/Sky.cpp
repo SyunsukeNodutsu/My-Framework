@@ -13,7 +13,7 @@ Sky::Sky()
 //-----------------------------------------------------------------------------
 void Sky::Awake()
 {
-	m_name = "Sky";
+	g_name = "Sky";
 
 	LoadModel("Resource/Model/Sky/Sky.gltf");
 	m_transform.SetScale(float3(3000.0f));

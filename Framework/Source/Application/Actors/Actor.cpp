@@ -88,13 +88,13 @@ void Transform::SetWorldMatrix(const mfloat4x4& matrix)
 Actor::Actor()
 	: m_modelWork()
 	, m_transform()
-	, m_tag(ACTOR_TAG::eUntagged)
-	, m_name("empty")
-	, m_isActiv(true)
-	, m_isEnable(true)
-	, m_shadowCaster(true)
-	, m_numUVOffset(float2::Zero)
-	, m_isUVScroll(false)
+	, g_tag(ACTOR_TAG::eUntagged)
+	, g_name("empty")
+	, g_activ(true)
+	, g_enable(true)
+	, g_shadowCaster(true)
+	, g_numUVOffset(float2::Zero)
+	, g_isUVScroll(false)
 {
 }
 
@@ -121,15 +121,15 @@ void Actor::Draw(float deltaTime)
 
 		// UVスクロール
 		RENDERER.Getcb8().Work().m_uv_offset = float2::Zero;
-		if (m_isUVScroll)
-			RENDERER.Getcb8().Work().m_uv_offset += m_numUVOffset;
+		if (g_isUVScroll)
+			RENDERER.Getcb8().Work().m_uv_offset += g_numUVOffset;
 		else
 			RENDERER.Getcb8().Work().m_uv_offset = float2::Zero;
 
 		RENDERER.Getcb8().Write();
 	}
 
-	// TODO: Shader分け
+	// もうShaderは固定でいいかも
 	SHADER.GetModelShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());
 }
 
@@ -138,7 +138,7 @@ void Actor::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Actor::DrawShadowMap(float deltaTime)
 {
-	if (!m_shadowCaster) return;
+	if (!g_shadowCaster) return;
 
 	SHADER.GetShadowMapShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());
 }

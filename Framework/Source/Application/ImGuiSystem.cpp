@@ -445,7 +445,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 
 		// 選択したActor
 		bool selected = (actor == wpActor.lock());
-		if (ImGui::Selectable(actor->GetName().c_str(), selected))
+		if (ImGui::Selectable(actor->g_name.c_str(), selected))
 			wpActor = actor;
 
 		ImGui::PopID();
@@ -465,7 +465,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 		auto angle = transform.GetAngle();
 		auto scale = transform.GetScale();
 
-		ImGui::Text(std::string("Select: " + wpActor.lock()->GetName()).c_str());
+		ImGui::Text(std::string("Select: " + wpActor.lock()->g_name).c_str());
 		ImGui::DragFloat3("Position", &pos.x, 0.1f);
 		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
 		ImGui::DragFloat3("Scale", &scale.x, 0.1f);

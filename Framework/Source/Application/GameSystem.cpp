@@ -43,6 +43,12 @@ void GameSystem::Initialize()
 		sound->Play(1000);
 		sound->SetVolume(0.36f);
 	}
+
+	// 8分木マネージャ初期化
+	int level = 6;
+	float3 min = float3(-300);// TODO: 適当な空間定義
+	float3 max = float3(300);
+	m_actorOctreeManager.Initialize(level, min, max);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +85,7 @@ void GameSystem::Update()
 		(*itr)->Update(deltaTime);
 
 		// 除外？
-		if ((*itr)->IsEnable() == false)
+		if ((*itr)->g_enable == false)
 			itr = m_spActorList.erase(itr);
 		else
 			++itr;

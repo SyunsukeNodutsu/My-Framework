@@ -23,7 +23,7 @@ Tank::Tank()
 //-----------------------------------------------------------------------------
 void Tank::Awake()
 {
-	m_name = "T43";
+	g_name = "T43";
 
 	LoadModel("Resource/Model/T43/T43_Body.gltf");
 	

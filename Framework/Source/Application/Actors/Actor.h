@@ -133,27 +133,11 @@ public:
 	// レイとメッシュの当たり判定
 	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange);
 
-	//--------------------------------------------------
-	// 設定
-	//--------------------------------------------------
-
-	// @brief 動作させるかを設定
-	// @param activ 設定する値
-	void SetActive(bool activ) { m_isActiv = activ; }
-
 	// モデル読み込み
 	void LoadModel(const std::string& filepath);
 
-	// @brief UVスクロールを行うかを設定する
-	// @param onoff UVスクロールを行うかどうか
-	void SetUVScroll(bool onoff) { m_isUVScroll = onoff; }
-
-	// @brief UVOffsetの値を設定する
-	// @param val 設定するOffset値
-	void SetUVOffset(float2 val) { m_numUVOffset = val; }
-
 	//--------------------------------------------------
-	// 取得
+	// 設定/取得
 	//--------------------------------------------------
 
 	// @brief トランスフォームを返す(読み取り専用)
@@ -164,36 +148,23 @@ public:
 	// @return トランスフォーム
 	Transform& GetTransform() { return m_transform; }
 
-	// @brief ActorのTAGを返す
-	// @return ActorのTAG
-	UINT GetTAG() const { return m_tag; }
-
-	// @brief 動作中かどうかを返す
-	// @return 動作中...true
-	bool IsActiv() const { return m_isActiv; }
-
-	// @brief 有効かどうかを返す
-	// @return 有効...true 無効...false
-	bool IsEnable() const { return m_isEnable; }
-
-	// @brief 設定された名前を返す
-	// @return Actor name
-	const std::string& GetName() const { return m_name; }
-
 protected:
 
 	ModelWork	m_modelWork;	// モデル管理
 	Transform	m_transform;	// トランスフォーム
-	UINT		m_tag;			// TAG
-	std::string m_name;			// オブジェクトの名前
 
-	bool		m_isActiv;		// 動作？
-	bool		m_isEnable;		// 有効？ ※falseになると消滅します
-	bool		m_shadowCaster;	// 影を落とす？
+public:
+
+	UINT		g_tag;			// TAG
+	std::string g_name;			// オブジェクトの名前
+
+	bool		g_activ;		// 動作？
+	bool		g_enable;		// 有効？ ※falseになると消滅します
+	bool		g_shadowCaster;	// 影を落とす？
 
 	// UVスクロール
-	float2		m_numUVOffset;
-	bool		m_isUVScroll;
+	float2		g_numUVOffset;
+	bool		g_isUVScroll;
 
 };
 

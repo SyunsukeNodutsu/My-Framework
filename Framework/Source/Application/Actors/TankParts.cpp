@@ -25,11 +25,11 @@ void TankParts::Initialize()
 	float3 ownerOffset = m_owner.GetTransform().GetPosition();
 
 	m_trackR.LoadModel("Resource/Model/T43/T43_Track.gltf");
-	m_trackR.SetUVScroll(true);
+	m_trackR.g_isUVScroll = true;
 	m_trackOffsetR = mfloat4x4::CreateTranslation(ownerOffset + float3(1.1f, -1.1f, 0.32f));
 
 	m_trackL.LoadModel("Resource/Model/T43/T43_Track.gltf");
-	m_trackL.SetUVScroll(true);
+	m_trackL.g_isUVScroll = true;
 	m_trackOffsetL = mfloat4x4::CreateTranslation(ownerOffset + float3(-1.1f, -1.1f, 0.32f));
 
 	m_turret.LoadModel("Resource/Model/T43/T43_Turret.gltf");
@@ -82,12 +82,12 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 		static float uvoffsetR = 0;
 		uvoffsetR += trackRotMove * deltaTime;
 		uvoffsetR -= trackMove * deltaTime;
-		m_trackR.SetUVOffset(float2(0, uvoffsetR));
+		m_trackR.g_numUVOffset = float2(0, uvoffsetR);
 
 		static float uvoffsetL = 0;
 		uvoffsetL -= trackRotMove * deltaTime;
 		uvoffsetL -= trackMove * deltaTime;
-		m_trackL.SetUVOffset(float2(0, uvoffsetL));
+		m_trackL.g_numUVOffset = float2(0, uvoffsetL);
 
 		m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
 		m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);

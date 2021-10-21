@@ -15,7 +15,7 @@ Human::Human()
 //-----------------------------------------------------------------------------
 void Human::Initialize()
 {
-	m_name = "Human";
+	g_name = "Human";
 
 	LoadModel("Resource/Model/Robot/Robot.gltf");
 

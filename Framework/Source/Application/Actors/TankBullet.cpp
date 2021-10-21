@@ -16,9 +16,9 @@ TankBullet::TankBullet(Tank owner, float3 position, float3 axis)
 	m_transform.SetPosition(position);
 	m_axisZ.Normalize();
 
-	m_name = "TankBullet";
+	g_name = "TankBullet";
 
-	m_tag = ACTOR_TAG::eWeapon | ACTOR_TAG::eBullet;
+	g_tag = ACTOR_TAG::eWeapon | ACTOR_TAG::eBullet;
 }
 
 //-----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ TankBullet::TankBullet(Tank owner, float3 position, float3 axis)
 //-----------------------------------------------------------------------------
 void TankBullet::Update(float deltaTime)
 {
-	if ((m_lifeSpan -= deltaTime) <= 0) m_isEnable = false;
+	if ((m_lifeSpan -= deltaTime) <= 0) g_enable = false;
 
 	float3 position = m_prevPos = m_transform.GetPosition();
 
@@ -53,7 +53,7 @@ void TankBullet::Explosion()
 	APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
 	SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
 
-	m_isEnable = false;
+	g_enable = false;
 }
 
 //-----------------------------------------------------------------------------

@@ -66,6 +66,10 @@ public:
 	// カメラ管理システム
 	CameraSystem g_cameraSystem;
 
+	// 空間分割テスト
+	CLiner8TreeManager<Actor> m_actorOctreeManager;
+	std::shared_ptr<ObjectForTree<Actor>> m_spActorList_Tree;
+
 private:
 
 	// 登場Actorリスト

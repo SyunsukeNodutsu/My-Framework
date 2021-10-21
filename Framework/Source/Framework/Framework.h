@@ -21,6 +21,7 @@
 #pragma comment(lib,"xaudio2.lib")
 
 // DirectInput
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 #pragma comment(lib, "dinput8.lib")
@@ -67,6 +68,7 @@
 #include "Model/Animation.h"
 
 #include "Physics/Collision.h"
+#include "Physics/SpatialPartitioning.h"
 
 #include "Input/RawInputDevice.h"
 #include "Input/DirectInput/DirectInputDevice.h"
