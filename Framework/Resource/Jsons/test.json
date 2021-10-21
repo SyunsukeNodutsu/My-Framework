@@ -1,12 +1,21 @@
-﻿{
-  "Actors": [
+{
+  "actor_list": [
     {
-      "ClassName": "StageMap",
-      "ModelFileName": "Data/Model/StageMap/Stage_01/StageMap.gltf",
-      "Name": "StageMap_01",
-      "Position": [ 0, 0, 0 ],
-      "Rotation": [ 0, 0, 0 ],
-      "Scaling": [ 0, 0, 0 ]
+      "class_name": "StageMap",
+      "model_filepath": "Data/Model/StageMap/Stage_01/StageMap.gltf",
+      "name": "StageMap_01",
+      "position": [ 0, 0, 0 ],
+      "rotation": [ 0, 0, 0 ],
+      "scaling": [ 0, 0, 0 ]
+    },
+    {
+      "class_name": "Sky"
+    },
+    {
+      "class_name": "Tank"
+    },
+    {
+      "class_name": "Tree"
     }
   ]
 }

@@ -80,10 +80,6 @@ private:
 
 private:
 
-	// @brief Actorをシーンに追加
-	// @param name 追加するActorのクラス名
-	void AddActor(const std::string& name);
-
 	// @brief シーンの読み込み
 	// @param filepath 読み込むjsonファイルのパス
 	// @return 成功...true

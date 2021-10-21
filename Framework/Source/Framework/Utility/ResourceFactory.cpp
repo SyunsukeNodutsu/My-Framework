@@ -92,30 +92,25 @@ const std::shared_ptr<SoundData> ResourceFactory::GetSoundData(const std::string
 //-----------------------------------------------------------------------------
 // マップ確認の後Jsonデータを返す
 //-----------------------------------------------------------------------------
-json11::Json ResourceFactory::GetJsonData(const std::string& filepath)
+const json11::Json ResourceFactory::GetJsonData(const std::string& filepath)
 {
-	// 検索
-	auto itFound = m_jsonMap.find(filepath);
+	auto foundItr = m_jsonMap.find(filepath);
 
-	// 初回
-	if (itFound == m_jsonMap.end())
+	// リストにある
+	if (foundItr != m_jsonMap.end())
+		return (*foundItr).second;
+
+	// Jsonファイル読み込み
+	json11::Json json = LoadJson(filepath);
+	if (!json.is_null())
 	{
-		// Jsonファイル読み込み
-		json11::Json json = LoadJson(filepath);
-		if (json.is_null()) {
-			assert(0 && "[GetJSON] : notfound jsonfile");
-			return nullptr;
-		}
-
 		// リストに登録
-		m_jsonMap[filepath] = json;
-		// 完了
-		return json;
+		m_jsonMap.insert(std::pair<std::string, json11::Json>(filepath, json));
+
+		return m_jsonMap[filepath];
 	}
-	else {
-		// 次回以降はすでに読み込んだデータ
-		return (*itFound).second;
-	}
+	
+	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -132,25 +127,22 @@ void ResourceFactory::Release()
 //-----------------------------------------------------------------------------
 // jsonファイル読み込み 解析
 //-----------------------------------------------------------------------------
-json11::Json ResourceFactory::LoadJson(const std::string& filepath)
+const json11::Json ResourceFactory::LoadJson(const std::string& filepath)
 {
-	// jsonファイルを開く
 	std::fstream ifs(filepath);
 	if (ifs.fail()) {
-		assert(0 && "[LoadJson] : error json filepath");
+		DebugLog(std::string("ERROR: Json file Not found. path: " + filepath).c_str());
 		return nullptr;
 	}
 
-	// 文字列として読み込み
 	std::string err, strjson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
-	// 文字列のJSONを解析(パース)する
-	json11::Json jsonObj = json11::Json::parse(strjson, err);
+	// jsonの解析
+	json11::Json result = json11::Json::parse(strjson, err);
 	if (err.size() > 0) {
-		DebugLog(std::string("ERROR: json parse. err: " + err + "\n").c_str());
+		DebugLog(std::string("ERROR: Json parse. Out error massage: " + err + "\n").c_str());
 		return nullptr;
 	}
 
-	// 完了
-	return jsonObj;
+	return result;
 }

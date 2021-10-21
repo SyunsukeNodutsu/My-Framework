@@ -20,21 +20,9 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
+	// シーン読み込み ※ActorList初期化
 	LoadScene("Resource/Jsons/test.json");
 
-	//--------------------------------------------------
-	// ActorList初期化
-	// TODO: 外部ファイルへ
-	//--------------------------------------------------
-	{
-		//AddActor("Human");
-		AddActor("Sky");
-		//AddActor("StageMap");
-		AddActor("Tank");
-		AddActor("Tree");
-	}
-
-	// 初期化 ※注意.全ActorのAwakeの後
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
@@ -263,34 +251,23 @@ void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const
 }
 
 //-----------------------------------------------------------------------------
-// Actorをシーンに追加
-//-----------------------------------------------------------------------------
-void GameSystem::AddActor(const std::string& name)
-{
-	auto object = GenerateActor(name);
-
-	// TODO: NullActor
-	if (object == nullptr) return;
-
-	m_spActorList.push_back(object);
-}
-
-//-----------------------------------------------------------------------------
 // シーンの読み込み
 //-----------------------------------------------------------------------------
 bool GameSystem::LoadScene(const std::string& filepath)
 {
 	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
 	if (jsonObject.is_null()) {
-		assert(0 && "エラー：jsonファイル読み込み失敗.");
+		APP.g_imGuiSystem->AddLog(std::string("ERROR: Failed to load Json file. path: " + filepath).c_str());
 		return false;
 	}
+	else
+		APP.g_imGuiSystem->AddLog(std::string("INFO: Load jsonfile. path: " + filepath).c_str());
 
-	auto& jsonObjectList = jsonObject["Actors"].array_items();
+	auto& jsonObjectList = jsonObject["actor_list"].array_items();
 
 	for (auto&& json : jsonObjectList)
 	{
-		auto newActor = GenerateActor(json["ClassName"].string_value());
+		auto newActor = GenerateActor(json["class_name"].string_value());
 		if (newActor == nullptr) continue;
 
 		// プレハブ確認

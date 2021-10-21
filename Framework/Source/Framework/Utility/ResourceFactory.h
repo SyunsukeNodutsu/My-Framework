@@ -42,7 +42,7 @@ public:
 	// @brief マップ確認の後Jsonデータを返す ※初回の場合登録
 	// @param filepath ファイルのパス
 	// @return jsonデータ
-	json11::Json GetJsonData(const std::string& filepath);
+	const json11::Json GetJsonData(const std::string& filepath);
 
 private:
 
@@ -66,7 +66,7 @@ private:
 	// @brief jsonを解析して読み込み結果を返す
 	// @param filepath 読み込むjsonファイルのパス
 	// @return パース(解析)結果
-	json11::Json LoadJson(const std::string& filepath);
+	const json11::Json LoadJson(const std::string& filepath);
 
 };
 
