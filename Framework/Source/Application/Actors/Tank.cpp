@@ -267,9 +267,9 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 		owner.m_cameraAngle.x = atan2(camera.Backward().y, camera.Backward().z) * ToDegrees;
 		owner.m_cameraAngle.y = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
 
-		APP.g_imGuiSystem->ClearLog();
-		APP.g_imGuiSystem->AddLog(std::string(u8"角度X: " + std::to_string(owner.m_cameraAngle.x)).c_str());
-		APP.g_imGuiSystem->AddLog(std::string(u8"角度Y: " + std::to_string(owner.m_cameraAngle.y)).c_str());
+		//APP.g_imGuiSystem->ClearLog();
+		//APP.g_imGuiSystem->AddLog(std::string(u8"角度X: " + std::to_string(owner.m_cameraAngle.x)).c_str());
+		//APP.g_imGuiSystem->AddLog(std::string(u8"角度Y: " + std::to_string(owner.m_cameraAngle.y)).c_str());
 	}
 
 	// 遷移

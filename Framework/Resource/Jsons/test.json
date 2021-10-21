@@ -1,0 +1,12 @@
+﻿{
+  "Actors": [
+    {
+      "ClassName": "StageMap",
+      "ModelFileName": "Data/Model/StageMap/Stage_01/StageMap.gltf",
+      "Name": "StageMap_01",
+      "Position": [ 0, 0, 0 ],
+      "Rotation": [ 0, 0, 0 ],
+      "Scaling": [ 0, 0, 0 ]
+    }
+  ]
+}

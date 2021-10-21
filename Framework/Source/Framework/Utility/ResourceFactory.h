@@ -1,8 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 // File: ResourceFactory.h
 //
-// リソース管理クラス
-// フライウェイトパターン
+// フライウェイトパターンによるリソース管理クラス
 // TODO: SoundDataはループ情報なども含まれるので、管理しない方がいいかも
 //-----------------------------------------------------------------------------
 #pragma once
@@ -16,7 +15,7 @@ public:
 	ResourceFactory();
 
 	//--------------------------------------------------
-	// 取得・設定
+	// 取得/設定
 	//--------------------------------------------------
 
 	// @brief 単一のインスタンスを返す
@@ -43,7 +42,7 @@ public:
 	// @brief マップ確認の後Jsonデータを返す ※初回の場合登録
 	// @param filepath ファイルのパス
 	// @return jsonデータ
-	const json GetJsonData(const std::string& filepath);
+	json11::Json GetJsonData(const std::string& filepath);
 
 private:
 
@@ -57,16 +56,17 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<SoundData>> m_soundMap;
 
 	// json管理マップ
-	std::unordered_map<std::string, json> m_jsonMap;
+	std::unordered_map<std::string, json11::Json> m_jsonMap;
 
 private:
 
 	// @brief 解放
 	void Release();
 
-	// @brief json読み込み
-	// @return
-	const json LoadJson(const std::string& filepath);
+	// @brief jsonを解析して読み込み結果を返す
+	// @param filepath 読み込むjsonファイルのパス
+	// @return パース(解析)結果
+	json11::Json LoadJson(const std::string& filepath);
 
 };
 

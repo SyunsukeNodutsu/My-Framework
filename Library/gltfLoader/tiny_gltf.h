@@ -49,9 +49,6 @@
 #ifndef TINY_GLTF_H_
 #define TINY_GLTF_H_
 
-#pragma warning(disable:4267)
-#pragma warning(disable:26495)
-
 #include <array>
 #include <cassert>
 #include <cstdint>

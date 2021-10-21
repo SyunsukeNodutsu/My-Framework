@@ -20,6 +20,8 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
+	LoadScene("Resource/Jsons/test.json");
+
 	//--------------------------------------------------
 	// ActorList初期化
 	// TODO: 外部ファイルへ
@@ -27,11 +29,12 @@ void GameSystem::Initialize()
 	{
 		//AddActor("Human");
 		AddActor("Sky");
-		AddActor("StageMap");
+		//AddActor("StageMap");
 		AddActor("Tank");
 		AddActor("Tree");
 	}
 
+	// 初期化 ※注意.全ActorのAwakeの後
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
@@ -277,58 +280,24 @@ void GameSystem::AddActor(const std::string& name)
 //-----------------------------------------------------------------------------
 bool GameSystem::LoadScene(const std::string& filepath)
 {
-	json json = RES_FAC.GetJsonData(filepath);
-	if (json.is_null()) {
+	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
+	if (jsonObject.is_null()) {
+		assert(0 && "エラー：jsonファイル読み込み失敗.");
 		return false;
 	}
 
-	// json object の一覧
-	auto actorList = json::array();
-	actorList = json["ActorList"].dump();
+	auto& jsonObjectList = jsonObject["Actors"].array_items();
 
-	// 生成ループ
-	for (auto&& actor : actorList)
+	for (auto&& json : jsonObjectList)
 	{
-		const auto& str = actor["ClassName"].dump();
-		const std::shared_ptr<Actor>& newActor = GenerateActor(str);
+		auto newActor = GenerateActor(json["ClassName"].string_value());
+		if (newActor == nullptr) continue;
 
-		if (newActor == nullptr) {
-			APP.g_imGuiSystem->AddLog("Failed to create actor.");
-			continue;
-		}
+		// プレハブ確認
+		MergePrefab(json);
 
-		AddActorList(newActor);
+		m_spActorList.push_back(newActor);
 	}
 
 	return true;
 }
-
-/*
-* #pragma region Json test.
-	// デシリアライズ
-	std::ifstream ifs("Resource/test.json");
-	if (!ifs.fail()) {
-		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-		json jobj = json::parse(strJson);
-		//auto pi = jobj["pi"].dump();// 文字列で取得？
-		auto pi = jobj["pi"].get<float>();// floatで取得
-		DebugLog(std::string("pi: " + std::to_string(pi) + "\n").c_str());
-	}
-
-	// シリアライズ
-	json j;
-	j["pi"] = 3.141;
-	j["happy"] = true;
-	j["name"] = "Niels";
-	j["nothing"] = nullptr;
-	j["answer"]["everything"] = 42;  // 存在しないキーを指定するとobjectが構築される
-	j["list"] = { 1, 0, 2 };         // [1,0,2]
-	j["object"] = { {"currency", "USD"}, {"value", 42.99} };  // {"currentcy": "USD", "value": 42.99}
-
-	std::string s = j.dump(1);// 引数1...インデント
-	std::ofstream ofs("Resource/test2.json");
-	if (ofs) {
-		ofs.write(s.c_str(), s.size());
-	}
-#pragma endregion
-*/

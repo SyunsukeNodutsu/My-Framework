@@ -76,3 +76,24 @@ HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename)
 
 	return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 }
+
+//-----------------------------------------------------------------------------
+// プレハブ指定の場合 mergeを試みる
+//-----------------------------------------------------------------------------
+void MergePrefab(json11::Json& srcJson, const std::string& prefab)
+{
+	// プレハブ指定ありの場合は、プレハブ側のものをベースにこのJSONをミックスする
+	std::string prefabFilename = srcJson["Prefab"].string_value();
+	if (prefabFilename.size() <= 0) return;
+
+	json11::Json prefJson = RES_FAC.GetJsonData(prefabFilename);
+	if (prefJson.is_null()) return;
+
+	json11::Json::object copyPrefab = prefJson.object_items();
+
+	// マージ
+	for (auto&& jsonObj : srcJson.object_items())
+		copyPrefab[jsonObj.first] = jsonObj.second;
+
+	srcJson = copyPrefab; // マージ結果と差し替え
+}

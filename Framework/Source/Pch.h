@@ -82,7 +82,7 @@
 #include <imgui_glyph_ranges_jp.h> // 日本語対応
 
 // json
-#include <json.hpp>
+#include "json11.hpp"
 
 // Effekseer
 #include <Effekseer.h>

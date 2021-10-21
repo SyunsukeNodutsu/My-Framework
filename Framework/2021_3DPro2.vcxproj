@@ -27,6 +27,7 @@
     <ClCompile Include="..\Library\imGui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\Library\json11KdCustom\json11.cpp" />
     <ClCompile Include="Source\Application\Actors\Actor.cpp" />
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="..\Library\imGui\imstb_rectpack.h" />
     <ClInclude Include="..\Library\imGui\imstb_textedit.h" />
     <ClInclude Include="..\Library\imGui\imstb_truetype.h" />
+    <ClInclude Include="..\Library\json11KdCustom\json11.hpp" />
     <ClInclude Include="Source\Application\Actors\Actor.h" />
     <ClInclude Include="Source\Application\Actors\Human.h" />
     <ClInclude Include="Source\Application\Actors\Sky.h" />
@@ -169,6 +171,8 @@
     <ClInclude Include="Source\Pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\Jsons\test.json" />
+    <None Include="Resource\Jsons\test2.json" />
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli" />
     <None Include="Source\Framework\Shader\Effect\EffectShader.hlsli" />
     <None Include="Source\Framework\Shader\Model\ModelShader.hlsli" />
@@ -395,22 +399,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Effekseer/include;$(IncludePath);../Library/nlohmann;../Library/json</IncludePath>
+    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Effekseer/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/;../Library/json11KdCustom</IncludePath>
     <LibraryPath>../Library/Effekseer/Lib/$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Effekseer/include;$(IncludePath);../Library/nlohmann;../Library/json</IncludePath>
+    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Effekseer/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/;../Library/json11KdCustom</IncludePath>
     <LibraryPath>../Library/Effekseer/Lib/$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Lua/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/json</IncludePath>
+    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Lua/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/json;../Library/;../Library/json11KdCustom</IncludePath>
     <LibraryPath>../Library/Lua;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Lua/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/json</IncludePath>
+    <IncludePath>.\Source;../Library/DirectXTK/Inc;../Library/Lua/include;$(IncludePath);../Library/nlohmann;../Library/json;../Library/json;../Library/;../Library/json11KdCustom</IncludePath>
     <LibraryPath>../Library/Lua;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -30,7 +30,7 @@ public:
 
 private:
 
-	//Effekseerのエフェクトデータ
+	// Effekseerのエフェクトデータ
 	Effekseer::Effect* m_pEffect;
 
 private:

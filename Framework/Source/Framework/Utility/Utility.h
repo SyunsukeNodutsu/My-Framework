@@ -13,9 +13,6 @@
 // COM短縮
 using Microsoft::WRL::ComPtr;
 
-// nlohmann Json
-using json = nlohmann::json;
-
 // OutputDebugStringA()の名前が長いので短縮
 #define DebugLog( str ) OutputDebugStringA( str )
 
@@ -44,6 +41,11 @@ void SafeDelete(T*& p) { if (p) { delete p; p = nullptr; } }
 // @param strFilename ファイルを確認するパス(位置)
 // @return 成功...S_OK 失敗...エラーメッセージ
 HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchDest, _In_z_ LPCWSTR strFilename);
+
+// @brief プレハブ指定の場合 mergeを試みる
+// @param srcJson ソースとなるjsonデータ
+// @param prefab プレハブを行うjsonデータの文字列
+void MergePrefab(json11::Json& srcJson, const std::string& prefab = "Prefab");
 
 //-----------------------------------------------------------------------------
 // プロセッサ

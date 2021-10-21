@@ -7,6 +7,7 @@ ResourceFactory::ResourceFactory()
 	: m_modelMap()
 	, m_textureMap()
 	, m_soundMap()
+	, m_jsonMap()
 {
 }
 
@@ -91,25 +92,30 @@ const std::shared_ptr<SoundData> ResourceFactory::GetSoundData(const std::string
 //-----------------------------------------------------------------------------
 // マップ確認の後Jsonデータを返す
 //-----------------------------------------------------------------------------
-const json ResourceFactory::GetJsonData(const std::string& filepath)
+json11::Json ResourceFactory::GetJsonData(const std::string& filepath)
 {
-	auto foundItr = m_jsonMap.find(filepath);
+	// 検索
+	auto itFound = m_jsonMap.find(filepath);
 
-	// リストにある
-	if (foundItr != m_jsonMap.end())
-		return (*foundItr).second;
-
-	// リストに無い
-	json newJson;
-	if (newJson = LoadJson(filepath))
+	// 初回
+	if (itFound == m_jsonMap.end())
 	{
-		// リストに追加
-		m_soundMap.insert(std::pair<std::string, json>(filepath, newJson));
+		// Jsonファイル読み込み
+		json11::Json json = LoadJson(filepath);
+		if (json.is_null()) {
+			assert(0 && "[GetJSON] : notfound jsonfile");
+			return nullptr;
+		}
 
-		return m_jsonMap[filepath];
+		// リストに登録
+		m_jsonMap[filepath] = json;
+		// 完了
+		return json;
 	}
-
-	return nullptr;
+	else {
+		// 次回以降はすでに読み込んだデータ
+		return (*itFound).second;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -120,29 +126,31 @@ void ResourceFactory::Release()
 	m_modelMap.clear();
 	m_textureMap.clear();
 	m_soundMap.clear();
+	m_jsonMap.clear();
 }
 
 //-----------------------------------------------------------------------------
 // jsonファイル読み込み 解析
 //-----------------------------------------------------------------------------
-const json ResourceFactory::LoadJson(const std::string& filepath)
+json11::Json ResourceFactory::LoadJson(const std::string& filepath)
 {
 	// jsonファイルを開く
 	std::fstream ifs(filepath);
 	if (ifs.fail()) {
-		assert(0 && "Error json filepath.");
+		assert(0 && "[LoadJson] : error json filepath");
 		return nullptr;
 	}
 
 	// 文字列として読み込み
-	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+	std::string err, strjson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
 	// 文字列のJSONを解析(パース)する
-	json jsonObject = json::parse(strJson);
-	if (jsonObject.is_null()) {
-		assert(0 && "Error json parse.");
+	json11::Json jsonObj = json11::Json::parse(strjson, err);
+	if (err.size() > 0) {
+		DebugLog(std::string("ERROR: json parse. err: " + err + "\n").c_str());
 		return nullptr;
 	}
 
-	return jsonObject;
+	// 完了
+	return jsonObj;
 }
