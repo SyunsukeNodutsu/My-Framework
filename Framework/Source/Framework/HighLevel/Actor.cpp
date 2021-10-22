@@ -145,26 +145,19 @@ void Actor::DrawShadowMap(float deltaTime)
 }
 
 //-----------------------------------------------------------------------------
-// 破棄
-//-----------------------------------------------------------------------------
-void Actor::Destroy()
-{
-}
-
-//-----------------------------------------------------------------------------
 // レイとメッシュの当たり判定
 //-----------------------------------------------------------------------------
 bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange)
 {
 	RayResult result = {};
 
-	auto& data = m_modelWork.GetData();
+	const auto& data = m_modelWork.GetData();
 	if (data == nullptr) return false;
 
-	for (auto& index : data->GetMeshNodeIndices())
+	for (const auto& index : data->GetMeshNodeIndices())
 	{
-		auto& mesh = m_modelWork.GetMesh(index);
-		auto& node = m_modelWork.GetNodes()[index];
+		const auto& mesh = m_modelWork.GetMesh(index);
+		const auto& node = m_modelWork.GetNodes()[index];
 
 		RayResult tmpResult = {};
 		Collision::RayToMesh(rayPos, rayDir, hitRange, *(mesh.get()), node.m_localTransform * m_transform.GetWorldMatrix(), &tmpResult);
@@ -182,6 +175,6 @@ bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hit
 //-----------------------------------------------------------------------------
 void Actor::LoadModel(const std::string& filepath)
 {
-	auto model = RES_FAC.GetModelData(filepath);
+	const auto& model = RES_FAC.GetModelData(filepath);
 	if (model) m_modelWork.SetModel(model);
 }

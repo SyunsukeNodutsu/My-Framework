@@ -3,6 +3,8 @@
 //
 // C++はC#と違いReflectionがないのでGetComponentの際にはキャスト必須です
 // Unity同様TransformはすべてのActorは最初から所持しています
+// 
+// TODO: データとロジックで分ける
 //-----------------------------------------------------------------------------
 #pragma once
 #include "Transform.h"
@@ -65,14 +67,23 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	virtual void DrawSprite(float deltaTime) {}
 
-	// @brief 自身を破棄
-	void Destroy();
-
-	// レイとメッシュの当たり判定
+	// @brief レイとメッシュの当たり判定
+	// @param rayPos レイの座標
+	// @param rayDir レイの方向
+	// @param hitRange 判定を行う距離
+	// @return 衝突...true
 	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange);
 
-	// モデル読み込み
+	// @brief モデル読み込み
+	// @param filepath 読み込むモデルのファイルパス
 	void LoadModel(const std::string& filepath);
+
+	//--------------------------------------------------
+	// 各イベント
+	//--------------------------------------------------
+
+	// @brief 破棄されたタイミングで呼ばれる
+	virtual void OnDestroy() {}
 
 	//--------------------------------------------------
 	// 設定/取得

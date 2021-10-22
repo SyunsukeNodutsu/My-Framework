@@ -92,11 +92,14 @@ void GameSystem::Update()
 		// 更新
 		(*itr)->Update(deltaTime);
 
-		// 除外？
+		// 除外
 		if ((*itr)->g_enable == false)
+		{
+			(*itr)->OnDestroy();
 			itr = m_spActorList.erase(itr);
-		else
-			++itr;
+		}
+
+		++itr;
 	}
 
 	// 遷移予約確認
