@@ -63,6 +63,7 @@
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
+    <ClCompile Include="Source\Framework\HighLevel\Transform.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
     <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp" />
     <ClCompile Include="Source\Framework\Input\Keyboard.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\Actor.h" />
     <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
+    <ClInclude Include="Source\Framework\HighLevel\Transform.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
     <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h" />
     <ClInclude Include="Source\Framework\Input\Keyboard.h" />

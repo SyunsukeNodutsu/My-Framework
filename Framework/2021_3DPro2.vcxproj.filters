@@ -306,6 +306,9 @@
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\Transform.cpp">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -546,6 +549,9 @@
       <Filter>Source\Application\Actors\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\Actor.h">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\Transform.h">
       <Filter>Source\Framework\HighLevel</Filter>
     </ClInclude>
   </ItemGroup>
