@@ -1,14 +1,15 @@
-﻿#include "Actor.h"
-#include "Human.h"
-#include "Sky.h"
-#include "StageMap.h"
-#include "Tank.h"
-#include "Tree.h"
+﻿#include "../main.h"
+
+#include "Environment/Sky.h"
+#include "Environment/StageMap.h"
+#include "Environment/Tree.h"
+
+#include "Weapon/Tank.h"
 
 #include "Process/GameProcess.h"
 #include "Process/TitleProcess.h"
 
-#include "../main.h"
+#include "Human.h"
 
 //-----------------------------------------------------------------------------
 // Actor生成

@@ -81,3 +81,5 @@
 #include "Audio/Sound3D.h"
 
 #include "Utility/ResourceFactory.h"
+
+#include "HighLevel/Actor.h"

@@ -1,5 +1,4 @@
 ﻿#include "EditorCamera.h"
-#include "../Actors/Actor.h"
 #include "../main.h"
 
 //-----------------------------------------------------------------------------

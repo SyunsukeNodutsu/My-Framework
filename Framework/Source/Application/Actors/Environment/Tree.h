@@ -1,29 +1,20 @@
 ﻿//-----------------------------------------------------------------------------
-// File: Sky.h
+// File: Tree.h
 //
-// 球体の空
+// 木クラス
 //-----------------------------------------------------------------------------
 #pragma once
-#include "Actor.h"
 
-// スカイスフィアクラス
-class Sky : public Actor
+// 木クラス
+class Tree : public Actor
 {
 public:
 
 	// @brief コンストラクタ
-	Sky();
-
-	// @brief 更新
-	// @param deltaTime 前フレームからの経過時間
-	void Update(float deltaTime) override;
+	Tree();
 
 	// @brief 描画
 	// @param deltaTime 前フレームからの経過時間
 	void Draw(float deltaTime) override;
-
-private:
-
-	float m_rotateSpeed;
 
 };

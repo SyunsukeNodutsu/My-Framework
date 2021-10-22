@@ -6,7 +6,7 @@
 // TODO: Bodyも部品として扱う
 //-----------------------------------------------------------------------------
 #pragma once
-#include "../Application.h"
+#include "../../Application.h"
 
 class TankParts;
 
