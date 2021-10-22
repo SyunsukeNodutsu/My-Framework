@@ -31,6 +31,7 @@
     <ClCompile Include="Source\Application\Actors\Actor.cpp" />
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
+    <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp" />
     <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp" />
     <ClCompile Include="Source\Application\Actors\Sky.cpp" />
     <ClCompile Include="Source\Application\Actors\Tank.cpp" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\Library\json11KdCustom\json11.hpp" />
     <ClInclude Include="Source\Application\Actors\Actor.h" />
     <ClInclude Include="Source\Application\Actors\Human.h" />
+    <ClInclude Include="Source\Application\Actors\Process\GameProcess.h" />
     <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h" />
     <ClInclude Include="Source\Application\Actors\Sky.h" />
     <ClInclude Include="Source\Application\Actors\StageMap.h" />
@@ -173,7 +175,7 @@
     <ClInclude Include="Source\Pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resource\Jsons\test.json" />
+    <None Include="Resource\Jsons\GameProcess.json" />
     <None Include="Resource\Jsons\TitleProcess.json" />
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli" />
     <None Include="Source\Framework\Shader\Effect\EffectShader.hlsli" />

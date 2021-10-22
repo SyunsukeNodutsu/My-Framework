@@ -32,6 +32,16 @@ public:
 	// @param deltaTime 前フレームからの経過時間
 	void Draw(float deltaTime);
 
+	//--------------------------------------------------
+	// 設定/取得
+	//--------------------------------------------------
+
+	// @brief 砲塔のワールド行列を返す
+	// @return 砲塔のワールド行列
+	const mfloat4x4& GetTurretMatrix() const {
+		return m_turret.GetTransform().GetWorldMatrix();
+	}
+
 	// @brief 主砲のワールド行列を返す
 	// @return 主砲のワールド行列
 	const mfloat4x4& GetMainGunMatrix() const {

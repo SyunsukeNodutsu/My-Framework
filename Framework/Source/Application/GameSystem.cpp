@@ -3,8 +3,6 @@
 
 #include "Actors/Actor.h"
 
-#include "../Framework/Audio/SoundDirector.h"
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -24,15 +22,6 @@ void GameSystem::Initialize()
 {
 	// シーン読み込み ※ActorList初期化
 	LoadScene("Resource/Jsons/TitleProcess.json");
-
-	// BGM再生
-	// 音量操作や停止、フィルターなどをかける場合は インスタンスを取得
-	auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Germany.wav", true, true);
-	if (sound)
-	{
-		sound->Play(1000);
-		sound->SetVolume(0.36f);
-	}
 
 	// 8分木マネージャ初期化
 	int level = 6;

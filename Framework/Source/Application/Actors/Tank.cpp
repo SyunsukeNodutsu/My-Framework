@@ -264,7 +264,7 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 	owner.UpdateShot(false);
 
 	if (owner.m_spCamera3rd) {
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetMainGunMatrix().Translation());
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());
 		owner.m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
 		owner.m_spCamera3rd->Update();
 		owner.m_spCamera3rd->SetCameraMatrix(trans);
@@ -333,7 +333,7 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 	owner.UpdateShot(true);
 
 	if (owner.m_spCamera1st) {
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetMainGunMatrix().Translation());
+		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());
 		float3 axisZ = owner.m_transform.GetWorldMatrix().Backward();
 		float3 pos = float3(0.0f, 0.4f, 0.0f);// +axisZ;
 		owner.m_spCamera1st->SetLocalPos(pos);

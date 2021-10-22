@@ -5,6 +5,7 @@
 #include "Tank.h"
 #include "Tree.h"
 
+#include "Process/GameProcess.h"
 #include "Process/TitleProcess.h"
 
 #include "../main.h"
@@ -23,14 +24,17 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (name == "Tank")			result = std::make_shared<Tank>();
 	if (name == "Tree")			result = std::make_shared<Tree>();
 
+	if (name == "GameProcess")	result = std::make_shared<GameProcess>();
 	if (name == "TitleProcess") result = std::make_shared<TitleProcess>();
 
 	if (result)
 		result->Awake();
 
-	APP.g_imGuiSystem->AddLog(std::string("INFO: Generate actor. name: " + name).c_str());
-	if (result == nullptr)
-		APP.g_imGuiSystem->AddLog(std::string("WARNING: Failed to generate actor. name: " + name).c_str());
+	APP.g_imGuiSystem->AddLog(
+		result
+		? std::string("INFO: Generate actor. name: " + name).c_str()
+		: std::string("WARNING: Failed to generate actor. name: " + name).c_str()
+	);
 
 	return result;
 }

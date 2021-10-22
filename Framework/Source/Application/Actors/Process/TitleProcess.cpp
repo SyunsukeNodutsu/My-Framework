@@ -1,5 +1,6 @@
 ﻿#include "TitleProcess.h"
 #include "../../main.h"
+#include "../../../Framework/Audio/SoundDirector.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -33,7 +34,8 @@ void TitleProcess::Update(float deltaTime)
 	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Left) ||
 		APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Right))
 	{
-		APP.g_gameSystem->RequestChangeScene("Resource/Jsons/test.json");
+		SOUND_DIRECTOR.Play("Resource/Audio/SE/Select.wav");
+		APP.g_gameSystem->RequestChangeScene("Resource/Jsons/GameProcess.json");
 	}
 }
 

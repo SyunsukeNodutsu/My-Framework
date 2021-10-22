@@ -111,10 +111,12 @@ void ImGuiSystem::DrawImGui()
 	if (m_showDemoMonitor)
 		ImGui::ShowDemoWindow();
 
+	// シーンモニターはいつでも表示
+	SceneMonitor(wflags);
+
 	// フラグで表示のON/OFF切り替え
 	if (m_showEachMonitor)
 	{
-		SceneMonitor(wflags);
 		ShaderDebugMonitor(wflags);
 		LogMonitor(wflags);
 		AudioMonitor(wflags);
@@ -159,6 +161,8 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 		ImGui::End();
 		return;
 	}
+
+	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
 
 	// シーンのパス表示
 	ImGui::Text(std::string("Scene: " + APP.g_gameSystem->g_sceneFilepath).c_str());

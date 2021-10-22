@@ -297,6 +297,9 @@
     <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp">
       <Filter>Source\Application\Actors\Process</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp">
+      <Filter>Source\Application\Actors\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -536,6 +539,9 @@
     <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h">
       <Filter>Source\Application\Actors\Process</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Process\GameProcess.h">
+      <Filter>Source\Application\Actors\Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
@@ -553,10 +559,10 @@
     <None Include="Source\Framework\Shader\Shadow\ShadowMapShader.hlsli">
       <Filter>Source\Framework\Shader\Shadow</Filter>
     </None>
-    <None Include="Resource\Jsons\test.json">
+    <None Include="Resource\Jsons\TitleProcess.json">
       <Filter>Jsons</Filter>
     </None>
-    <None Include="Resource\Jsons\TitleProcess.json">
+    <None Include="Resource\Jsons\GameProcess.json">
       <Filter>Jsons</Filter>
     </None>
   </ItemGroup>

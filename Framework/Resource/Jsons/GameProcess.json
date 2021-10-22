@@ -1,6 +1,10 @@
 {
   "actor_list": [
     {
+      "class_name": "GameProcess",
+      "name": "Process"
+    },
+    {
       "class_name": "StageMap",
       "model_filepath": "Resource/Model/StageMap/StageMap.gltf",
       "name": "StageMap_01",
