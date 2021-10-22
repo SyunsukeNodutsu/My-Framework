@@ -28,19 +28,17 @@ void Tank::Awake()
 	m_spTankParts = std::make_shared<TankParts>(*this);
 	m_spTankParts->Initialize();
 
-	// 初期化後に浮かせる ※TODO: モデルのY座標修正
-	m_transform.SetPosition(float3(0, 1.2f, 0));
-
 	// BGM再生
 	// 音量操作や停止、フィルターなどをかける場合は インスタンスを取得
 	m_runSound3D = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/TankRun.wav", true, true);
-	if (m_runSound3D)
-	{
+	if (m_runSound3D) {
 		m_runSound3D->Play3D(m_transform.GetPosition());
 		m_runSound3D->SetVolume(0.0f);
 	}
 
+	//--------------------------------------------------
 	// カメラ作成
+	//--------------------------------------------------
 	m_spCamera3rd = std::make_shared<TPSCamera>();
 	if (m_spCamera3rd)
 	{
@@ -70,6 +68,16 @@ void Tank::Awake()
 }
 
 //-----------------------------------------------------------------------------
+// jsonファイルの逆シリアル
+//-----------------------------------------------------------------------------
+void Tank::Deserialize(const json11::Json& jsonObject)
+{
+	Actor::Deserialize(jsonObject);
+
+	//m_spTankParts->Deserialize(jsonObject);
+}
+
+//-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
 void Tank::Update(float deltaTime)
@@ -88,6 +96,9 @@ void Tank::Update(float deltaTime)
 		// 編集カメラの際は UVスクロールをOFF
 		m_spTankParts->Update(deltaTime, 0, 0);
 	}
+
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Back))
+		APP.g_gameSystem->RequestChangeScene("Resource/Jsons/test.json");
 }
 
 //-----------------------------------------------------------------------------

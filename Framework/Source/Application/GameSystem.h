@@ -23,6 +23,10 @@ public:
 	// @brief 終了
 	void Finalize();
 
+	// @brief シーンのシリアル処理
+	// @param filepath jsonファイルの保存場所
+	void Serialize(const std::string& filepath);
+
 	// @brief 更新
 	void Update();
 
@@ -44,6 +48,10 @@ public:
 	const std::list<std::shared_ptr<Actor>>& GetActorList() const {
 		return m_spActorList;
 	}
+
+	// @brief シーンの遷移を予約
+	// @param filepath
+	void RequestChangeScene(const std::string& filepath);
 
 	// @brief シーンのActorリストに新規Actorを追加
 	// @param actor 追加するActor
@@ -81,7 +89,16 @@ private:
 	// デバッグライン用の頂点情報
 	std::vector<EffectShader::Vertex> m_debugLines;
 
+	// シーン遷移のリクエストの有無
+	bool m_isRequestChangeScene;
+
 private:
+
+	// @brief シーンの切り替え前にリセット
+	void Reset();
+
+	// @brief シーンの切り替えを実行
+	void ExecChangeScene();
 
 	// @brief シーンの読み込み
 	// @param filepath 読み込むjsonファイルのパス

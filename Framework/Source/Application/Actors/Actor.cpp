@@ -99,6 +99,40 @@ Actor::Actor()
 }
 
 //-----------------------------------------------------------------------------
+// jsonファイルのシリアル
+//-----------------------------------------------------------------------------
+void Actor::Serialize(json11::Json::array& jsonArray)
+{
+	json11::Json::object object = {};
+
+	object["class_name"] = g_name;
+	object["tag"] = static_cast<int>(g_tag);
+	//object["model_filepath"] = m_modelFilepath;
+
+	// 座標
+	json11::Json::array position(3);
+	position[0] = m_transform.GetPosition().x;
+	position[1] = m_transform.GetPosition().y;
+	position[2] = m_transform.GetPosition().z;
+	object["position"] = position;
+	// 回転
+	json11::Json::array rotation(3);
+	rotation[0] = m_transform.GetAngle().x * ToDegrees;
+	rotation[1] = m_transform.GetAngle().y * ToDegrees;
+	rotation[2] = m_transform.GetAngle().z * ToDegrees;
+	object["rotation"] = rotation;
+	// 拡縮
+	json11::Json::array scaling(3);
+	scaling[0] = m_transform.GetScale().x;
+	scaling[1] = m_transform.GetScale().y;
+	scaling[2] = m_transform.GetScale().z;
+	object["scaling"] = scaling;
+
+	// json arrayに追加
+	jsonArray.push_back(object);
+}
+
+//-----------------------------------------------------------------------------
 // jsonファイルの逆シリアル
 //-----------------------------------------------------------------------------
 void Actor::Deserialize(const json11::Json& jsonObject)
@@ -162,7 +196,10 @@ void Actor::Draw(float deltaTime)
 		// カメラ座標
 		float3 cameraPos = RENDERER.Getcb9().Get().m_camera_matrix.Translation();
 		// カメラとの距離
-		float dist = float3::Distance(cameraPos, m_transform.GetPosition());
+		float dist = float2::Distance(
+			float2(cameraPos.x, cameraPos.z),
+			float2(m_transform.GetPosition().x, m_transform.GetPosition().z)
+		);
 		RENDERER.Getcb8().Work().m_dist_to_eye = dist;
 
 		// UVスクロール

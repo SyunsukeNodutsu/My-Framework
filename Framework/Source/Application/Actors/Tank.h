@@ -21,6 +21,10 @@ public:
 	// @brief インスタンス生成直後
 	void Awake() override;
 
+	// @brief jsonファイルの逆シリアル
+	// @param jsonObject 逆シリアルを行うjsonオブジェクト
+	void Deserialize(const json11::Json& jsonObject) override;
+
 	// @brief 更新
 	// @param deltaTime 前フレームからの経過時間
 	void Update(float deltaTime) override;

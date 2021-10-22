@@ -104,6 +104,10 @@ public:
 	// @brief 初期化
 	virtual void Initialize() {};
 
+	// @brief jsonファイルのシリアル
+	// @param jsonArray
+	virtual void Serialize(json11::Json::array& jsonArray);
+
 	// @brief jsonファイルの逆シリアル
 	// @param jsonObject 逆シリアルを行うjsonオブジェクト
 	virtual void Deserialize(const json11::Json& jsonObject);

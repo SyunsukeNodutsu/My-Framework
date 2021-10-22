@@ -13,6 +13,7 @@ GameSystem::GameSystem()
 	, g_sceneFilepath("")
 	, m_spActorList()
 	, m_debugLines()
+	, m_isRequestChangeScene(false)
 {
 }
 
@@ -22,7 +23,7 @@ GameSystem::GameSystem()
 void GameSystem::Initialize()
 {
 	// シーン読み込み ※ActorList初期化
-	LoadScene("Resource/Jsons/test.json");
+	LoadScene("Resource/Jsons/TitleProcess.json");
 
 	// BGM再生
 	// 音量操作や停止、フィルターなどをかける場合は インスタンスを取得
@@ -55,6 +56,34 @@ void GameSystem::Finalize()
 }
 
 //-----------------------------------------------------------------------------
+// シーンのシリアル処理
+//-----------------------------------------------------------------------------
+void GameSystem::Serialize(const std::string& filepath)
+{
+	// 保存したい値を集約
+	json11::Json::object serial = {};
+	json11::Json::array objectArray = {};
+
+	// 一括シリアル化
+	for (auto& object : m_spActorList)
+		object->Serialize(objectArray);
+
+	serial["actor_list"] = objectArray;
+
+	// jsonファイル取得(初回は作成)
+	std::ofstream ofs(filepath);
+	if (!ofs) return;
+
+	// オブジェクトをjsonへ変換
+	json11::Json json = serial;
+	// jsonのフォーマットにあった書式に変換しながら文字列に変換
+	std::string strJson = json.dumpDebug();
+
+	// 指定されたjsonファイルへ文字列を書き込み
+	ofs.write(strJson.c_str(), strJson.size());
+}
+
+//-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
 void GameSystem::Update()
@@ -82,6 +111,10 @@ void GameSystem::Update()
 		else
 			++itr;
 	}
+
+	// 遷移予約確認
+	if (m_isRequestChangeScene)
+		ExecChangeScene();
 
 	// カメラシステム更新
 	g_cameraSystem.Update(deltaTime);
@@ -177,12 +210,20 @@ void GameSystem::Draw2D()
 }
 
 //-----------------------------------------------------------------------------
+// シーンの遷移を予約
+//-----------------------------------------------------------------------------
+void GameSystem::RequestChangeScene(const std::string& filepath)
+{
+	g_sceneFilepath = filepath;
+	m_isRequestChangeScene = true;
+}
+
+//-----------------------------------------------------------------------------
 // シーンのActorリストに新規Actorを追加
 //-----------------------------------------------------------------------------
 void GameSystem::AddActor(std::shared_ptr<Actor> actor)
 {
 	if (!actor) return;
-
 	m_spActorList.push_back(actor);
 }
 
@@ -194,13 +235,13 @@ void GameSystem::AddDebugLine(const float3& pos01, const float3& pos02, const cf
 	EffectShader::Vertex ver = {};
 
 	// ラインの開始頂点
-	ver.m_position = pos01;
-	ver.m_color = color;
-	ver.m_uv = float2::Zero;
+	ver.m_position	= pos01;
+	ver.m_color		= color;
+	ver.m_uv		= float2::Zero;
 	m_debugLines.push_back(ver);
 
 	// ラインの終了頂点
-	ver.m_position = pos02;
+	ver.m_position	= pos02;
 	m_debugLines.push_back(ver);
 }
 
@@ -252,14 +293,34 @@ void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const
 }
 
 //-----------------------------------------------------------------------------
+// シーンの切り替え前にリセット
+//-----------------------------------------------------------------------------
+void GameSystem::Reset()
+{
+	for (auto& object : m_spActorList)
+		object->Finalize();
+
+	m_spActorList.clear();
+	m_debugLines.clear();
+
+	g_cameraSystem.ResetCameraList();
+}
+
+//-----------------------------------------------------------------------------
+// シーンの切り替えを実行
+//-----------------------------------------------------------------------------
+void GameSystem::ExecChangeScene()
+{
+	LoadScene(g_sceneFilepath);
+	m_isRequestChangeScene = false;
+}
+
+//-----------------------------------------------------------------------------
 // シーンの読み込み
 //-----------------------------------------------------------------------------
 bool GameSystem::LoadScene(const std::string& filepath)
 {
-	Finalize();
-
-	// "Resource/Jsons/"(15文字) 以降のみ
-	g_sceneFilepath = filepath.substr(15);
+	Reset();
 
 	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
 	if (jsonObject.is_null()) {
@@ -283,7 +344,7 @@ bool GameSystem::LoadScene(const std::string& filepath)
 
 		// プレハブ確認/差し替え
 		MergePrefab(json);
-		// 逆シリアル化 Actorのデータを初期化
+		// json objectの逆シリアル化 Actorのデータを初期化
 		newActor->Deserialize(json);
 
 		m_spActorList.push_back(newActor);

@@ -5,6 +5,8 @@
 #include "Tank.h"
 #include "Tree.h"
 
+#include "Process/TitleProcess.h"
+
 #include "../main.h"
 
 //-----------------------------------------------------------------------------
@@ -20,6 +22,8 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (name == "StageMap")		result = std::make_shared<StageMap>();
 	if (name == "Tank")			result = std::make_shared<Tank>();
 	if (name == "Tree")			result = std::make_shared<Tree>();
+
+	if (name == "TitleProcess") result = std::make_shared<TitleProcess>();
 
 	if (result)
 		result->Awake();

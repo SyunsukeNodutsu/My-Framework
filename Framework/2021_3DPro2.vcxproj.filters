@@ -94,6 +94,9 @@
     <Filter Include="Jsons">
       <UniqueIdentifier>{7c6839b1-88b2-48e2-ab01-0c530018280f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Application\Actors\Process">
+      <UniqueIdentifier>{34d61980-356a-4fc8-9796-8f12fa744853}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -290,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp">
       <Filter>Library\json11KdCustom</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp">
+      <Filter>Source\Application\Actors\Process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -527,6 +533,9 @@
     <ClInclude Include="..\Library\json11KdCustom\json11.hpp">
       <Filter>Library\json11KdCustom</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h">
+      <Filter>Source\Application\Actors\Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
@@ -547,7 +556,7 @@
     <None Include="Resource\Jsons\test.json">
       <Filter>Jsons</Filter>
     </None>
-    <None Include="Resource\Jsons\test2.json">
+    <None Include="Resource\Jsons\TitleProcess.json">
       <Filter>Jsons</Filter>
     </None>
   </ItemGroup>

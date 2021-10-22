@@ -68,7 +68,9 @@ void TankBullet::UpdateCollision()
 		if (actor.get() == this) continue;
 		//if (actor->GetTAG() & ACTOR_TAG::eBullet) continue;
 
-		float range = float3::Distance(m_prevPos, m_transform.GetPosition());
+		// floatの桁落ち(すり抜け)防止で0.02fを加算
+		// TODO: 衝突判定側で対応
+		float range = float3::Distance(m_prevPos, m_transform.GetPosition()) + 0.02f;
 		float3 dir = m_prevPos - m_transform.GetPosition();
 		dir.Normalize();
 

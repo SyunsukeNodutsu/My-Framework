@@ -6,6 +6,8 @@
 //-----------------------------------------------------------------------------
 TankParts::TankParts(Tank& owner)
 	: m_owner(owner)
+	, m_uvoffsetR(0.0f)
+	, m_uvoffsetL(0.0f)
 	, m_trackR()
 	, m_trackOffsetR()
 	, m_trackL()
@@ -14,6 +16,14 @@ TankParts::TankParts(Tank& owner)
 	, m_turretOffset()
 	, m_mainGun()
 	, m_mainGunOffset()
+	, m_tireRotR(0.0f)
+	, m_tireRotL(0.0f)
+	, m_tireR()
+	, m_tireOffsetR()
+	, m_tireL()
+	, m_tireOffsetL()
+	, m_miniTireL()
+	, m_miniTireOffsetL()
 {
 }
 
@@ -63,6 +73,38 @@ void TankParts::Initialize()
 }
 
 //-----------------------------------------------------------------------------
+// jsonファイルの逆シリアル
+//-----------------------------------------------------------------------------
+void TankParts::Deserialize(const json11::Json& jsonObject)
+{
+	// 部品のモデルを読み込み
+
+	if (!jsonObject["track_model_filepath"].is_null()) {
+		m_trackR.LoadModel(jsonObject["track_model_filepath"].string_value());
+		m_trackL.LoadModel(jsonObject["track_model_filepath"].string_value());
+	}
+	if (!jsonObject["turret_model_filepath"].is_null()) {
+		m_turret.LoadModel(jsonObject["turret_model_filepath"].string_value());
+	}
+	if (!jsonObject["mainGun_model_filepath"].is_null()) {
+		m_mainGun.LoadModel(jsonObject["trackL_model_filepath"].string_value());
+	}
+
+	if (!jsonObject["tire_model_filepath"].is_null()) {
+		for (int i = 0; i < 5; i++) {
+			m_tireR[i].LoadModel(jsonObject["tire_model_filepath"].string_value());
+			m_tireL[i].LoadModel(jsonObject["tire_model_filepath"].string_value());
+		}
+	}
+	if (!jsonObject["miniTire_model_filepath"].is_null()) {
+		for (int i = 0; i < 2; i++) {
+			m_miniTireR[i].LoadModel(jsonObject["miniTire_model_filepath"].string_value());
+			m_miniTireL[i].LoadModel(jsonObject["miniTire_model_filepath"].string_value());
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 // 更新
 //-----------------------------------------------------------------------------
 void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
@@ -79,15 +121,13 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 		float trackRotMove = rotSpeed * 0.06f;
 		trackRotMove = std::clamp(trackRotMove, -1.6f, 1.6f);
 
-		static float uvoffsetR = 0;
-		uvoffsetR += trackRotMove * deltaTime;
-		uvoffsetR -= trackMove * deltaTime;
-		m_trackR.g_numUVOffset = float2(0, uvoffsetR);
+		m_uvoffsetR += trackRotMove * deltaTime;
+		m_uvoffsetR -= trackMove * deltaTime;
+		m_trackR.g_numUVOffset = float2(0, m_uvoffsetR);
 
-		static float uvoffsetL = 0;
-		uvoffsetL -= trackRotMove * deltaTime;
-		uvoffsetL -= trackMove * deltaTime;
-		m_trackL.g_numUVOffset = float2(0, uvoffsetL);
+		m_uvoffsetL -= trackRotMove * deltaTime;
+		m_uvoffsetL -= trackMove * deltaTime;
+		m_trackL.g_numUVOffset = float2(0, m_uvoffsetL);
 
 		m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
 		m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);
@@ -121,13 +161,11 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 		float trackRotMove = rotSpeed * 10.0f;
 		trackRotMove = std::clamp(trackRotMove, -200.0f, 200.0f);
 
-		static float tireRotR = 0;
-		tireRotR -= trackRotMove * deltaTime;
-		tireRotR += trackMove * deltaTime;
+		m_tireRotR -= trackRotMove * deltaTime;
+		m_tireRotR += trackMove * deltaTime;
 
-		static float tireRotL = 0;
-		tireRotL -= trackRotMove * deltaTime;
-		tireRotL -= trackMove * deltaTime;
+		m_tireRotL -= trackRotMove * deltaTime;
+		m_tireRotL -= trackMove * deltaTime;
 
 		auto& ownerAngle = m_owner.GetTransform().GetAngle();
 		for (int i = 0; i < 5; i++)
@@ -135,8 +173,8 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 			m_tireR[i].GetTransform().SetWorldMatrix(m_tireOffsetR[i] * ownerMatrix);
 			m_tireL[i].GetTransform().SetWorldMatrix(m_tireOffsetL[i] * ownerMatrix);
 
-			m_tireR[i].GetTransform().SetAngle(float3(tireRotR, ownerAngle.y, ownerAngle.z));
-			m_tireL[i].GetTransform().SetAngle(float3(tireRotL, ownerAngle.y + 180, ownerAngle.z));
+			m_tireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
+			m_tireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
 		}
 
 		// ミニタイヤ
@@ -145,8 +183,8 @@ void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 			m_miniTireR[i].GetTransform().SetWorldMatrix(m_miniTireOffsetR[i] * ownerMatrix);
 			m_miniTireL[i].GetTransform().SetWorldMatrix(m_miniTireOffsetL[i] * ownerMatrix);
 
-			m_miniTireR[i].GetTransform().SetAngle(float3(tireRotR, ownerAngle.y, ownerAngle.z));
-			m_miniTireL[i].GetTransform().SetAngle(float3(tireRotL, ownerAngle.y + 180, ownerAngle.z));
+			m_miniTireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
+			m_miniTireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
 		}
 	}
 }

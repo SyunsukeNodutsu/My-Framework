@@ -20,6 +20,10 @@ public:
 	// @brief 初期化
 	void Initialize();
 
+	// @brief jsonファイルの逆シリアル
+	// @param jsonObject 逆シリアルを行うjsonオブジェクト
+	void Deserialize(const json11::Json& jsonObject);
+
 	// @brief 更新
 	// @param deltaTime 前フレームからの経過時間
 	void Update(float deltaTime, float moveSpeed, float rotSpeed);
@@ -40,6 +44,7 @@ private:
 	Tank& m_owner;
 
 	// キャタピラ
+	float m_uvoffsetR, m_uvoffsetL;
 	Actor m_trackR; mfloat4x4 m_trackOffsetR;
 	Actor m_trackL; mfloat4x4 m_trackOffsetL;
 
@@ -48,6 +53,7 @@ private:
 	Actor m_mainGun; mfloat4x4 m_mainGunOffset;
 
 	// 車輪 左右5個ずつ
+	float m_tireRotR, m_tireRotL;
 	Actor m_tireR[5]; mfloat4x4 m_tireOffsetR[5];
 	Actor m_tireL[5]; mfloat4x4 m_tireOffsetL[5];
 
