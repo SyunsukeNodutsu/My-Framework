@@ -38,12 +38,12 @@ public:
 	void DrawSprite(float deltaTime) override;
 
 	//--------------------------------------------------
-	// 設定.取得
+	// 設定/取得
 	//--------------------------------------------------
 
-	// @brief カメラの回転ベクトルを返す
-	// @return カメラの回転ベクトル
-	float2 GetCameraAngle() const { return m_cameraAngle; }
+	// @brief カメラの回転ベクトル(Degree)を返す
+	// @return カメラの回転ベクトル(Degree)
+	const float2& GetCameraAngle() const { return m_cameraAngle; }
 
 private:
 

@@ -32,7 +32,7 @@ TankParts::TankParts(Tank& owner)
 //-----------------------------------------------------------------------------
 void TankParts::Initialize()
 {
-	float3 ownerOffset = m_owner.GetTransform().GetPosition();
+	const auto& ownerOffset = m_owner.GetTransform().GetPosition();
 
 	m_trackR.LoadModel("Resource/Model/T43/T43_Track.gltf");
 	m_trackR.g_isUVScroll = true;
@@ -45,8 +45,9 @@ void TankParts::Initialize()
 	m_turret.LoadModel("Resource/Model/T43/T43_Turret.gltf");
 	m_turretOffset = mfloat4x4::CreateTranslation(ownerOffset + float3(0.0f, 0.42f, 0.94f));
 
+	// 主砲はownerではなく砲塔の子としてOffsetを計算
 	m_mainGun.LoadModel("Resource/Model/T43/T43_MainGun.gltf");
-	m_mainGunOffset = mfloat4x4::CreateTranslation(ownerOffset + float3(0.0f, 0.8f, 1.8f));
+	m_mainGunOffset = mfloat4x4::CreateTranslation(ownerOffset + float3(0.0f, 0.4f, 0.82f));
 
 	// 左右5個づつのタイヤ
 	{
@@ -109,84 +110,15 @@ void TankParts::Deserialize(const json11::Json& jsonObject)
 //-----------------------------------------------------------------------------
 void TankParts::Update(float deltaTime, float moveSpeed, float rotSpeed)
 {
-	// 行列計算
-	auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
-
 	// キャタピラ
-	{
-		// 前後移動から
-		float trackMove = moveSpeed * 0.4f;
-		trackMove = std::clamp(trackMove, -1.6f, 1.6f);
-		// 左右回転から
-		float trackRotMove = rotSpeed * 0.06f;
-		trackRotMove = std::clamp(trackRotMove, -1.6f, 1.6f);
+	UpdateTrack(deltaTime, moveSpeed, rotSpeed);
 
-		m_uvoffsetR += trackRotMove * deltaTime;
-		m_uvoffsetR -= trackMove * deltaTime;
-		m_trackR.g_numUVOffset = float2(0, m_uvoffsetR);
-
-		m_uvoffsetL -= trackRotMove * deltaTime;
-		m_uvoffsetL -= trackMove * deltaTime;
-		m_trackL.g_numUVOffset = float2(0, m_uvoffsetL);
-
-		m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
-		m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);
-	}
-
-	// 砲塔.主砲
-	{
-		auto& ownerAngle = m_owner.GetTransform().GetAngle();
-		auto ownerCameraAngle = m_owner.GetCameraAngle();
-
-		m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
-		m_mainGun.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
-
-		// XZは車体の回転 Yはカメラの回転
-		m_turret.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngle.y, ownerAngle.z));
-		m_mainGun.GetTransform().SetAngle(float3(ownerAngle.x, ownerCameraAngle.y, ownerAngle.z));
-
-		auto pos = m_mainGun.GetTransform().GetPosition();
-		m_mainGun.GetTransform().SetPosition(
-			pos + float3(0, 0.4f, 0) +
-			(m_mainGun.GetTransform().GetWorldMatrix().Backward() * 0.8f)
-		);
-	}
+	// 砲塔/主砲
+	UpdateTurret(deltaTime);
+	UpdateMainGun(deltaTime);
 
 	// タイヤ
-	{
-		// 前後移動から
-		float trackMove = moveSpeed * 48.0f;
-		trackMove = std::clamp(trackMove, -280.0f, 280.0f);
-		// 左右回転から
-		float trackRotMove = rotSpeed * 10.0f;
-		trackRotMove = std::clamp(trackRotMove, -200.0f, 200.0f);
-
-		m_tireRotR -= trackRotMove * deltaTime;
-		m_tireRotR += trackMove * deltaTime;
-
-		m_tireRotL -= trackRotMove * deltaTime;
-		m_tireRotL -= trackMove * deltaTime;
-
-		auto& ownerAngle = m_owner.GetTransform().GetAngle();
-		for (int i = 0; i < 5; i++)
-		{
-			m_tireR[i].GetTransform().SetWorldMatrix(m_tireOffsetR[i] * ownerMatrix);
-			m_tireL[i].GetTransform().SetWorldMatrix(m_tireOffsetL[i] * ownerMatrix);
-
-			m_tireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
-			m_tireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
-		}
-
-		// ミニタイヤ
-		for (int i = 0; i < 2; i++)
-		{
-			m_miniTireR[i].GetTransform().SetWorldMatrix(m_miniTireOffsetR[i] * ownerMatrix);
-			m_miniTireL[i].GetTransform().SetWorldMatrix(m_miniTireOffsetL[i] * ownerMatrix);
-
-			m_miniTireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
-			m_miniTireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
-		}
-	}
+	UpdateTire(deltaTime, moveSpeed, rotSpeed);
 }
 
 //-----------------------------------------------------------------------------
@@ -208,5 +140,122 @@ void TankParts::Draw(float deltaTime)
 	for (int i = 0; i < 2; i++) {
 		m_miniTireR[i].Draw(deltaTime);
 		m_miniTireL[i].Draw(deltaTime);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// キャタピラ更新
+//-----------------------------------------------------------------------------
+void TankParts::UpdateTrack(float deltaTime, float moveSpeed, float rotSpeed)
+{
+	const auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
+
+	// 前後移動から
+	float trackMove = moveSpeed * 0.4f;
+	trackMove = std::clamp(trackMove, -1.6f, 1.6f);
+	// 左右回転から
+	float trackRotMove = rotSpeed * 0.06f;
+	trackRotMove = std::clamp(trackRotMove, -1.6f, 1.6f);
+
+	m_uvoffsetR += trackRotMove * deltaTime;
+	m_uvoffsetR -= trackMove * deltaTime;
+	m_trackR.g_numUVOffset = float2(0, m_uvoffsetR);
+
+	m_uvoffsetL -= trackRotMove * deltaTime;
+	m_uvoffsetL -= trackMove * deltaTime;
+	m_trackL.g_numUVOffset = float2(0, m_uvoffsetL);
+
+	m_trackR.GetTransform().SetWorldMatrix(m_trackOffsetR * ownerMatrix);
+	m_trackL.GetTransform().SetWorldMatrix(m_trackOffsetL * ownerMatrix);
+}
+
+//-----------------------------------------------------------------------------
+// 砲塔更新
+//-----------------------------------------------------------------------------
+void TankParts::UpdateTurret(float deltaTime)
+{
+	const auto& ownerMatrix  = m_owner.GetTransform().GetWorldMatrix();
+	const auto& cameraAngleY = m_owner.GetCameraAngle().y * ToRadians;
+
+	float3 nowDir = m_turret.GetTransform().GetWorldMatrix().Backward();
+	nowDir.Normalize();
+
+	float rotateRadian = cameraAngleY - atan2f(nowDir.x, nowDir.z);
+
+	if (rotateRadian > PI) rotateRadian -= 2 * PI;
+	else if (rotateRadian < -PI) rotateRadian += 2 * PI;
+
+	// 補正
+	constexpr float fixRotMax = 30.0f * ToRadians;
+	rotateRadian = std::clamp(rotateRadian, -fixRotMax, fixRotMax);
+
+	// 回転
+	// TODO: 回転量の最低値を設定
+	constexpr float rotSpeed = 10.0f;
+	m_turretOffset = mfloat4x4::CreateRotationY(rotateRadian * rotSpeed * deltaTime) * m_turretOffset;
+
+	m_turret.GetTransform().SetWorldMatrix(m_turretOffset * ownerMatrix);
+}
+
+//-----------------------------------------------------------------------------
+// 主砲更新
+//-----------------------------------------------------------------------------
+void TankParts::UpdateMainGun(float deltaTime)
+{
+	const auto& ownerMatrix  = m_owner.GetTransform().GetWorldMatrix();
+	const auto& cameraAngleX = m_owner.GetCameraAngle().x;
+	
+	const float mainGunAngleX = DirectX::XMVector3Dot(
+		m_mainGun.GetTransform().GetWorldMatrix().Backward(),
+		ownerMatrix.Up()).m128_f32[0] * -1 * ToDegrees;
+
+	float rotateRadian = (cameraAngleX - mainGunAngleX) * ToRadians;
+
+	// 回転
+	constexpr float rotSpeed = 10.0f;
+	m_mainGunOffset = mfloat4x4::CreateRotationX(rotateRadian * rotSpeed * deltaTime) * m_mainGunOffset;
+
+	m_mainGun.GetTransform().SetWorldMatrix(m_mainGunOffset * m_turret.GetTransform().GetWorldMatrix());
+}
+
+//-----------------------------------------------------------------------------
+// タイヤ更新
+//-----------------------------------------------------------------------------
+void TankParts::UpdateTire(float deltaTime, float moveSpeed, float rotSpeed)
+{
+	const auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
+	const auto& ownerAngle  = m_owner.GetTransform().GetAngle();
+
+	// 前後移動から
+	float trackMove = moveSpeed * 48.0f;
+	trackMove = std::clamp(trackMove, -280.0f, 280.0f);
+	// 左右回転から
+	float trackRotMove = rotSpeed * 10.0f;
+	trackRotMove = std::clamp(trackRotMove, -200.0f, 200.0f);
+
+	m_tireRotR -= trackRotMove * deltaTime;
+	m_tireRotR += trackMove * deltaTime;
+
+	m_tireRotL -= trackRotMove * deltaTime;
+	m_tireRotL -= trackMove * deltaTime;
+
+	// 通常タイヤ
+	for (int i = 0; i < 5; i++)
+	{
+		m_tireR[i].GetTransform().SetWorldMatrix(m_tireOffsetR[i] * ownerMatrix);
+		m_tireL[i].GetTransform().SetWorldMatrix(m_tireOffsetL[i] * ownerMatrix);
+
+		m_tireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
+		m_tireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
+	}
+
+	// ミニタイヤ
+	for (int i = 0; i < 2; i++)
+	{
+		m_miniTireR[i].GetTransform().SetWorldMatrix(m_miniTireOffsetR[i] * ownerMatrix);
+		m_miniTireL[i].GetTransform().SetWorldMatrix(m_miniTireOffsetL[i] * ownerMatrix);
+
+		m_miniTireR[i].GetTransform().SetAngle(float3(m_tireRotR, ownerAngle.y, ownerAngle.z));
+		m_miniTireL[i].GetTransform().SetAngle(float3(m_tireRotL, ownerAngle.y + 180, ownerAngle.z));
 	}
 }

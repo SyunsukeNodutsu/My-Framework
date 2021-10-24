@@ -97,6 +97,7 @@ void GameSystem::Update()
 		{
 			(*itr)->OnDestroy();
 			itr = m_spActorList.erase(itr);
+			continue;
 		}
 
 		++itr;
@@ -242,7 +243,7 @@ void GameSystem::AddDebugSphereLine(const float3& pos, const float radius, const
 {
 	EffectShader::Vertex ver = {};
 	ver.m_color = color;
-	ver.m_uv = float2::Zero;
+	ver.m_uv	= float2::Zero;
 
 	static constexpr int detail = 32;
 	for (UINT i = 0; i < detail + 1; ++i)

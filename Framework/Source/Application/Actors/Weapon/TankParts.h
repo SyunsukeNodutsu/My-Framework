@@ -25,6 +25,8 @@ public:
 
 	// @brief 更新
 	// @param deltaTime 前フレームからの経過時間
+	// @param moveSpeed オーナーの移動速度
+	// @param rotSpeed オーナーの回転速度
 	void Update(float deltaTime, float moveSpeed, float rotSpeed);
 
 	// @brief 描画
@@ -69,5 +71,26 @@ private:
 	// 端の小さい車輪 左右2つずつ
 	Actor m_miniTireR[2]; mfloat4x4 m_miniTireOffsetR[2];
 	Actor m_miniTireL[2]; mfloat4x4 m_miniTireOffsetL[2];
+
+private:
+
+	// @brief キャタピラ更新
+	// @param deltaTime 前フレームからの経過時間
+	// @param moveSpeed オーナーの移動速度
+	// @param rotSpeed オーナーの回転速度
+	void UpdateTrack(float deltaTime, float moveSpeed, float rotSpeed);
+
+	// @brief 砲塔更新
+	// @param deltaTime 前フレームからの経過時間
+	void UpdateTurret(float deltaTime);
+
+	// @brief 主砲更新
+	// @param deltaTime 前フレームからの経過時間
+	void UpdateMainGun(float deltaTime);
+
+	// @brief タイヤ更新
+	// @param moveSpeed オーナーの移動速度
+	// @param rotSpeed オーナーの回転速度
+	void UpdateTire(float deltaTime, float moveSpeed, float rotSpeed);
 
 };

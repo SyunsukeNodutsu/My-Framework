@@ -270,13 +270,8 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 		owner.m_spCamera3rd->SetCameraMatrix(trans);
 
 		// カメラ角度
-		auto& camera = owner.m_spCamera3rd->GetCameraMatrix();
-		owner.m_cameraAngle.x = atan2(camera.Backward().y, camera.Backward().z) * ToDegrees;
-		owner.m_cameraAngle.y = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
-
-		//APP.g_imGuiSystem->ClearLog();
-		//APP.g_imGuiSystem->AddLog(std::string(u8"角度X: " + std::to_string(owner.m_cameraAngle.x)).c_str());
-		//APP.g_imGuiSystem->AddLog(std::string(u8"角度Y: " + std::to_string(owner.m_cameraAngle.y)).c_str());
+		owner.m_cameraAngle.x = owner.m_spCamera3rd->GetRotationAngles().x;
+		owner.m_cameraAngle.y = owner.m_spCamera3rd->GetRotationAngles().y;
 	}
 
 	// 遷移
@@ -341,9 +336,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 		owner.m_spCamera1st->SetCameraMatrix(trans);
 
 		// カメラ角度
-		auto& camera = owner.m_spCamera1st->GetCameraMatrix();
-		owner.m_cameraAngle.x = atan2(camera.Backward().y, camera.Backward().z) * ToDegrees;
-		owner.m_cameraAngle.y = atan2(camera.Backward().x, camera.Backward().z) * ToDegrees;
+		owner.m_cameraAngle.x = owner.m_spCamera1st->GetRotationAngles().x;
+		owner.m_cameraAngle.y = owner.m_spCamera1st->GetRotationAngles().y;
 	}
 
 	// 遷移
@@ -388,5 +382,5 @@ void Tank::State1st::DrawSprite(Tank& owner, float deltaTime)
 
 	SHADER.GetSpriteShader().DrawTexture(texture.get(), float2::Zero);
 	SHADER.GetSpriteShader().DrawTexture(texture2.get(), float2::Zero);
-	SHADER.GetSpriteShader().DrawTexture(texture3.get(), float2(0, -100));
+	SHADER.GetSpriteShader().DrawTexture(texture3.get(), float2(0, -60));
 }

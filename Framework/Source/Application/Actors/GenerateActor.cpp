@@ -28,6 +28,7 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (name == "GameProcess")	result = std::make_shared<GameProcess>();
 	if (name == "TitleProcess") result = std::make_shared<TitleProcess>();
 
+	// TODO: nullActor作成
 	if (result)
 		result->Awake();
 

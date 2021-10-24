@@ -53,6 +53,7 @@
     <ClCompile Include="Source\Framework\Audio\Vender\WAVFileReader.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp" />
@@ -62,7 +63,6 @@
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp" />
-    <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Transform.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
     <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp" />
@@ -134,6 +134,7 @@
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h" />
     <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
     <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h" />
+    <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h" />
@@ -143,7 +144,6 @@
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\Actor.h" />
-    <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h" />
     <ClInclude Include="Source\Framework\HighLevel\Transform.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
     <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h" />

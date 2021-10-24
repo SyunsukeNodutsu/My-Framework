@@ -255,9 +255,6 @@
     <ClCompile Include="Source\Framework\Physics\Collision.cpp">
       <Filter>Source\Framework\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\HighLevel\GraphicsPipeline.cpp">
-      <Filter>Source\Framework\HighLevel</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader.cpp">
       <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClCompile>
@@ -308,6 +305,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\HighLevel\Transform.cpp">
       <Filter>Source\Framework\HighLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -503,9 +503,6 @@
     <ClInclude Include="Source\Framework\Physics\Collision.h">
       <Filter>Source\Framework\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\HighLevel\GraphicsPipeline.h">
-      <Filter>Source\Framework\HighLevel</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h">
       <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClInclude>
@@ -553,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\Transform.h">
       <Filter>Source\Framework\HighLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h">
+      <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
