@@ -44,8 +44,30 @@ HRESULT FindMediaFileCch(_Out_writes_(cchDest) WCHAR* strDestPath, _In_ int cchD
 
 // @brief プレハブ指定の場合 mergeを試みる
 // @param srcJson ソースとなるjsonデータ
-// @param prefab プレハブを行うjsonデータの文字列
+// @param prefab プレハブを行うjsonの文字列
 void MergePrefab(json11::Json& srcJson, const std::string& prefab = "Prefab");
+
+// @brief std::string版 sprintf
+// @param fmt
+// @param args
+// @return
+template <typename ... Args>
+std::string FormatBuffer(const std::string& fmt, Args ... args)
+{
+	size_t len = std::snprintf(nullptr, 0, fmt.c_str(), args ...);
+	std::vector<char> buf(len + 1);
+	std::snprintf(&buf[0], len + 1, fmt.c_str(), args ...);
+	return std::string(&buf[0], &buf[0] + len);
+}
+
+// @brief ファイルパスから 親ディレクトリまでのパスを取得
+// @param path
+// @return
+inline std::string GetDirFromPath(const std::string& path)
+{
+	const std::string::size_type pos = std::max<signed>(path.find_last_of('/'), path.find_last_of('\\'));
+	return (pos == std::string::npos) ? std::string() : path.substr(0, pos + 1);
+}
 
 //-----------------------------------------------------------------------------
 // プロセッサ

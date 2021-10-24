@@ -207,6 +207,18 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
 		ImGui::DragFloat3("Scale", &scale.x, 0.1f);
 
+		ImGui::CheckboxFlags("eUntagged", &wpActor.lock()->g_tag, ACTOR_TAG::eUntagged);
+		ImGui::CheckboxFlags("ePlayer", &wpActor.lock()->g_tag, ACTOR_TAG::ePlayer);
+		ImGui::CheckboxFlags("eEnemy", &wpActor.lock()->g_tag, ACTOR_TAG::eEnemy);
+		ImGui::CheckboxFlags("eWeapon", &wpActor.lock()->g_tag, ACTOR_TAG::eWeapon);
+		ImGui::CheckboxFlags("eGround", &wpActor.lock()->g_tag, ACTOR_TAG::eGround);
+
+		if (ImGui::Button("Copy Clipboard TAG"))
+		{
+			ImGui::SetClipboardText(FormatBuffer("\"Tag\" : %d", wpActor.lock()->g_tag).c_str());
+			AddLog(u8"TAGをクリップボードにコピーしました.");
+		}
+
 	}
 	else ImGui::Text("Select: none");
 

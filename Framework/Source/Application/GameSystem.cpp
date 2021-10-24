@@ -97,10 +97,8 @@ void GameSystem::Update()
 		{
 			(*itr)->OnDestroy();
 			itr = m_spActorList.erase(itr);
-			continue;
 		}
-
-		++itr;
+		else ++itr;
 	}
 
 	// 遷移予約確認

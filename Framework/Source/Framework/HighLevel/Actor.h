@@ -13,10 +13,10 @@
 enum ACTOR_TAG
 {
 	eUntagged	= 0,
-	ePlayer		= 0 << 1,
-	eEnemy		= 0 << 2,
-	eWeapon		= 0 << 3,
-	eBullet		= 0 << 4,
+	ePlayer		= 1,
+	eEnemy		= 1 << 1,
+	eWeapon		= 1 << 2,
+	eGround		= 1 << 3,
 };
 
 // アクタークラス
@@ -40,8 +40,8 @@ public:
 	// @param jsonArray
 	virtual void Serialize(json11::Json::array& jsonArray);
 
-	// @brief jsonファイルの逆シリアル
-	// @param jsonObject 逆シリアルを行うjsonオブジェクト
+	// @brief データを逆シリアル化
+	// @param jsonObject 逆シリアルの出力先 jsonオブジェクト
 	virtual void Deserialize(const json11::Json& jsonObject);
 
 	// @brief 終了
@@ -71,8 +71,9 @@ public:
 	// @param rayPos レイの座標
 	// @param rayDir レイの方向
 	// @param hitRange 判定を行う距離
+	// @param result レイ判定の結果
 	// @return 衝突...true
-	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange);
+	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange, RayResult& result);
 
 	// @brief モデル読み込み
 	// @param filepath 読み込むモデルのファイルパス
@@ -83,6 +84,7 @@ public:
 	//--------------------------------------------------
 
 	// @brief 破棄されたタイミングで呼ばれる
+	// @note 即座にeraseされます スレッド関連は動作を保証されません
 	virtual void OnDestroy() {}
 
 	//--------------------------------------------------
@@ -101,6 +103,8 @@ protected:
 
 	ModelWork	m_modelWork;	// モデル管理
 	Transform	m_transform;	// トランスフォーム
+
+	std::string m_modelFilepath;// モデルのファイルパス
 
 public:
 

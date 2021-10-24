@@ -161,6 +161,10 @@ void Tank::UpdateMove(float deltaTime)
 	axisZ.Normalize();
 	axisZ *= m_moveSpeed * deltaTime;
 
+	// 移動前の座標記憶
+	m_prevPosition = m_transform.GetPosition();
+
+	// 移動
 	float3 pos = m_transform.GetPosition() + axisZ;
 	m_transform.SetPosition(pos);
 }
@@ -243,6 +247,62 @@ void Tank::UpdateShot(bool state1st)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// 衝突判定更新
+//-----------------------------------------------------------------------------
+void Tank::UpdateCollision()
+{
+	float distanceFromGround = 100;
+	RayResult result = CheckGround(distanceFromGround, m_transform.GetPosition());
+	if (result.m_hit)
+	{
+		float3 pos = m_transform.GetPosition();
+		pos.y += 0.5f;
+
+		pos.y += 0.6f - distanceFromGround;
+		m_transform.SetPosition(pos);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// 地面との衝突判定
+//-----------------------------------------------------------------------------
+RayResult Tank::CheckGround(float& dstDistance, float3 rayPos)
+{
+	const float3& pos = m_transform.GetPosition();
+
+	// レイ情報設定
+	rayPos.y += 0.6f; // 段差を考慮
+	rayPos.y += m_prevPosition.y - pos.y; // 移動値を考慮
+
+	RayResult finalRayResult = {};
+	for (auto& actor : APP.g_gameSystem->GetActorList())
+	{
+		// 対象は地面
+		if (actor.get() == this) continue;
+		if (!(actor->g_tag & ACTOR_TAG::eGround)) continue;
+		
+		RayResult tmpResult = {};
+		if (actor->CheckCollision(pos, float3::Down, 10.0f, tmpResult))
+		{
+			if (tmpResult.m_distance < finalRayResult.m_distance)
+				finalRayResult = tmpResult;
+		}
+	}
+
+	float distanceFromGround = FLT_MAX;
+	if (finalRayResult.m_hit)
+	{
+		// 地面との距離を算出(補正値も考慮)
+		distanceFromGround = finalRayResult.m_distance - (m_prevPosition.y - pos.y);
+	}
+
+	// 地面との距離を格納
+	dstDistance = distanceFromGround;
+
+	return finalRayResult;
+}
+
 
 
 //=============================================================================
@@ -262,6 +322,8 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 	owner.UpdateRunSound(false);
 
 	owner.UpdateShot(false);
+
+	owner.UpdateCollision();
 
 	if (owner.m_spCamera3rd) {
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());
@@ -326,6 +388,8 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 	owner.UpdateRunSound(true);
 
 	owner.UpdateShot(true);
+
+	owner.UpdateCollision();
 
 	if (owner.m_spCamera1st) {
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());

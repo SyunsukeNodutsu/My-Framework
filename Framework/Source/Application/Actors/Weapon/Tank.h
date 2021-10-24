@@ -59,6 +59,8 @@ private:
 
 	float2 m_cameraAngle;// カメラの回転角度
 
+	float3 m_prevPosition;// 前フレームの座標
+
 private:
 
 	// @brief 移動更新
@@ -76,6 +78,15 @@ private:
 	// @brief 射撃更新
 	// @param state1st 一人称かどうか ※射撃音のフィルターに使用
 	void UpdateShot(bool state1st);
+
+	// @brief 衝突判定更新
+	void UpdateCollision();
+
+	// @brief 地面との衝突判定
+	// @param
+	// @param
+	// @return
+	RayResult CheckGround(float& dstDistance, float3 rayPos);
 
 private:
 

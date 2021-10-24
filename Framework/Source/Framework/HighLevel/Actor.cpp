@@ -6,6 +6,7 @@
 Actor::Actor()
 	: m_modelWork()
 	, m_transform()
+	, m_modelFilepath()
 	, g_tag(ACTOR_TAG::eUntagged)
 	, g_name("empty")
 	, g_activ(true)
@@ -25,7 +26,7 @@ void Actor::Serialize(json11::Json::array& jsonArray)
 
 	object["class_name"] = g_name;
 	object["tag"] = static_cast<int>(g_tag);
-	//object["model_filepath"] = m_modelFilepath;
+	object["model_filepath"] = m_modelFilepath;
 
 	// 座標
 	json11::Json::array position(3);
@@ -64,7 +65,8 @@ void Actor::Deserialize(const json11::Json& jsonObject)
 		g_tag = jsonObject["tag"].int_value();
 	}
 	if (!jsonObject["model_filepath"].is_null()) {
-		LoadModel(jsonObject["model_filepath"].string_value());
+		m_modelFilepath = jsonObject["model_filepath"].string_value();
+		LoadModel(m_modelFilepath);
 	}
 
 	// 座標
@@ -87,7 +89,7 @@ void Actor::Deserialize(const json11::Json& jsonObject)
 	}
 	// 拡縮
 	const std::vector<json11::Json>& scaling = jsonObject["scaling"].array_items();
-	if (position.size() == 3) {
+	if (scaling.size() == 3) {
 		m_transform.SetScale(float3(
 			(float)scaling[0].number_value(),
 			(float)scaling[1].number_value(),
@@ -147,10 +149,8 @@ void Actor::DrawShadowMap(float deltaTime)
 //-----------------------------------------------------------------------------
 // レイとメッシュの当たり判定
 //-----------------------------------------------------------------------------
-bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange)
+bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange, RayResult& result)
 {
-	RayResult result = {};
-
 	const auto& data = m_modelWork.GetData();
 	if (data == nullptr) return false;
 

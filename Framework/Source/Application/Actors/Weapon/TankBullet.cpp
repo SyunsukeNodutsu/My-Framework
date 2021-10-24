@@ -17,8 +17,6 @@ TankBullet::TankBullet(Tank owner, float3 position, float3 axis)
 	m_axisZ.Normalize();
 
 	g_name = "TankBullet";
-
-	g_tag = ACTOR_TAG::eWeapon | ACTOR_TAG::eBullet;
 }
 
 //-----------------------------------------------------------------------------
@@ -30,12 +28,12 @@ void TankBullet::Update(float deltaTime)
 
 	float3 position = m_prevPos = m_transform.GetPosition();
 
+	// 重力の影響
+	constexpr float gravity = 0.16f;
+	m_axisZ.y -= gravity * deltaTime;
 	// Z軸(射出方向)に移動
 	position += m_axisZ * m_speed * deltaTime;
-
-	// 重力による落下
-	//position.y += Physics::g_gravity * deltaTime;
-	position.y -= 0.8f * deltaTime;
+	
 	m_transform.SetPosition(position);
 
 	// 座標更新後 衝突判定
@@ -75,7 +73,8 @@ void TankBullet::UpdateCollision()
 		float3 dir = m_prevPos - m_transform.GetPosition();
 		dir.Normalize();
 
-		if (actor->CheckCollision(m_prevPos - (dir * 0.2f), dir, range))
+		RayResult result = {};
+		if (actor->CheckCollision(m_prevPos - (dir * 0.2f), dir, range, result))
 			Explosion();
 	}
 }

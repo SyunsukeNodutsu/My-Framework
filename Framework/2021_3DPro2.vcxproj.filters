@@ -103,6 +103,9 @@
     <Filter Include="Source\Application\Actors\Environment">
       <UniqueIdentifier>{87022db2-72c0-4d73-a998-180bfc09bb77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Application\Actors\Player">
+      <UniqueIdentifier>{a328354a-0b27-403b-8c85-82025caca865}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -308,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Player\PlayerTank.cpp">
+      <Filter>Source\Application\Actors\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -553,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h">
       <Filter>Source\Framework\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Player\PlayerTank.h">
+      <Filter>Source\Application\Actors\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

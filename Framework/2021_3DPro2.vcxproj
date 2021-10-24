@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp" />
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
     <ClCompile Include="Source\Application\Actors\Human.cpp" />
+    <ClCompile Include="Source\Application\Actors\Player\PlayerTank.cpp" />
     <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp" />
     <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp" />
     <ClCompile Include="Source\Application\Actors\Weapon\Tank.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Source\Application\Actors\Environment\StageMap.h" />
     <ClInclude Include="Source\Application\Actors\Environment\Tree.h" />
     <ClInclude Include="Source\Application\Actors\Human.h" />
+    <ClInclude Include="Source\Application\Actors\Player\PlayerTank.h" />
     <ClInclude Include="Source\Application\Actors\Process\GameProcess.h" />
     <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h" />
     <ClInclude Include="Source\Application\Actors\Weapon\Tank.h" />
