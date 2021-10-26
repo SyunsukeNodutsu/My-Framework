@@ -121,7 +121,7 @@ bool Collision::RayToMesh(const XMVECTOR& rRayPos, const XMVECTOR& rRayDir, floa
 		pResult->m_hit = ret;
 		pResult->m_distance = closestDist;
 
-		pResult->m_HitPos = rRayPos + rRayDir * closestDist;
+		pResult->m_hitPos = rRayPos + rRayDir * closestDist;
 	}
 
 	return ret;

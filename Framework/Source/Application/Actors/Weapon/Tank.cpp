@@ -3,6 +3,16 @@
 
 #include "TankBullet.h"
 
+// 車体の4隅を算出し返す
+static float3 GetLaunchPoint(const float dgree, const float distance)
+{
+	// check launch point
+	float axis_x = cosf(dgree * ToRadians) * distance;
+	float axis_y = sinf(dgree * ToRadians) * distance;
+	
+	return float3(axis_x, 0.0f, axis_y);
+}
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -59,6 +69,7 @@ void Tank::Awake()
 	if (m_spCamera1st)
 	{
 		m_spCamera1st->SetClampAngleX(-15.0f, 15.0f);
+		m_spCamera1st->SetFovAngleY(40.0f * ToRadians);
 
 		m_spCamera1st->g_name = "TankFPS";
 		m_spCamera1st->g_priority = 0.0f;
@@ -252,16 +263,35 @@ void Tank::UpdateShot(bool state1st)
 //-----------------------------------------------------------------------------
 void Tank::UpdateCollision()
 {
+	float3 pos = m_transform.GetPosition();
+
+	// 下方向との判定
+
 	float distanceFromGround = 100;
 	RayResult result = CheckGround(distanceFromGround, m_transform.GetPosition());
 	if (result.m_hit)
 	{
-		float3 pos = m_transform.GetPosition();
 		pos.y += 0.5f;
 
 		pos.y += 0.6f - distanceFromGround;
 		m_transform.SetPosition(pos);
 	}
+
+	// 車体の傾き
+
+	std::array<float3, 4> rayPosArray = {};
+	rayPosArray.fill(pos + float3(0.0f, -0.6f, 0.0f));
+	const float bodyAngleY = m_transform.GetAngle().y * -1;
+
+	rayPosArray[0] += GetLaunchPoint(  60.0f + (bodyAngleY), 2.5f);
+	rayPosArray[1] += GetLaunchPoint( 120.0f + (bodyAngleY), 2.5f);
+	rayPosArray[2] += GetLaunchPoint( -60.0f + (bodyAngleY), 2.5f);
+	rayPosArray[3] += GetLaunchPoint(-120.0f + (bodyAngleY), 2.5f);
+
+	for (auto& rayPos : rayPosArray)
+		APP.g_gameSystem->AddDebugSphereLine(rayPos, 0.2f, cfloat4x4::Red);
+
+	TiltBody(distanceFromGround, rayPosArray);
 }
 
 //-----------------------------------------------------------------------------
@@ -301,6 +331,68 @@ RayResult Tank::CheckGround(float& dstDistance, float3 rayPos)
 	dstDistance = distanceFromGround;
 
 	return finalRayResult;
+}
+
+//-----------------------------------------------------------------------------
+// 車体の傾き
+//-----------------------------------------------------------------------------
+void Tank::TiltBody(float& dstDistance, std::array<float3, 4>& rayPosArray)
+{
+	//--------------------------------------------------
+	// 法線を算出
+	//--------------------------------------------------
+
+	// 4点の判定
+	for (auto& raypos : rayPosArray)
+	{
+		RayResult result = CheckGround(dstDistance, raypos);
+		if (result.m_hit)
+			raypos = result.m_hitPos;
+	}
+
+	// 4端をつなぐ線
+	float3 upLine	 = rayPosArray[1] - rayPosArray[0];
+	float3 leftLine  = rayPosArray[1] - rayPosArray[3];
+	float3 downLine  = rayPosArray[2] - rayPosArray[0];
+	float3 rightLine = rayPosArray[2] - rayPosArray[3];
+
+	// 外積算出
+	float3 ulCross = DirectX::XMVector3Cross(upLine, leftLine);
+	float3 rdCross = DirectX::XMVector3Cross(rightLine, downLine);
+
+	float3 crossVec = ulCross + rdCross;
+	crossVec.Normalize();
+
+	//--------------------------------------------------
+	// なす角分回転させる
+	//--------------------------------------------------
+
+	// 車体のY軸
+	float3 bodyUp = m_transform.GetWorldMatrix().Up();
+	bodyUp.Normalize();
+
+	// この軸で回転させる
+	float3 rotAxis = DirectX::XMVector3Cross(bodyUp, crossVec);
+	if (rotAxis.LengthSquared() == 0) return;
+
+	// 内積を算出
+	float dot = DirectX::XMVector3Dot(bodyUp, crossVec).m128_f32[0];
+	constexpr float dot_max = 1.0f;
+	dot = std::clamp(dot, -dot_max, dot_max);// 範囲内に補正
+
+	// なす角算出
+	float radian = acos(dot);
+
+	// 1.0fの角度制限を設定 ※急にガクッてなるのを防ぐ
+	constexpr float rotate_max = 1.0f * ToRadians;
+	if (radian > rotate_max)
+		radian = rotate_max;
+
+	// 指定の軸(Y)でなす角分回転させる
+	mfloat4x4 rotMatrix = mfloat4x4::CreateFromAxisAngle(rotAxis, radian);
+	mfloat4x4 mWorld = m_transform.GetWorldMatrix();
+	mWorld *= rotMatrix;
+	m_transform.SetWorldMatrix(mWorld);
 }
 
 

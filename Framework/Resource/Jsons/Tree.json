@@ -1,0 +1,8 @@
+{
+  "class_name": "Tree",
+  "model_filepath": "Resource/Model/Tree/02/Tree02.gltf",
+  "name": "Tree",
+  "position": [ 0, 0, 0 ],
+  "rotation": [ 0, 0, 0 ],
+  "scaling": [ 0.5, 0.5, 0.5 ]
+}

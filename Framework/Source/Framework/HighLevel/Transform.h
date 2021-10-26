@@ -27,15 +27,15 @@ public:
 
 	// @brief 座標を返す
 	// @return ワールド行列を構成する座標ベクトル
-	const float3 GetPosition() const { return m_worldPosition; }
+	float3 GetPosition() const { return m_worldPosition; }
 
 	// @brief 回転を返す
 	// @return ワールド行列を構成する回転ベクトル
-	const float3 GetAngle() const { return m_worldAngle; }
+	float3 GetAngle() const { return m_worldAngle; }
 
 	// @brief拡縮を返す
 	// @return ワールド行列を構成する拡縮ベクトル
-	const float3 GetScale() const { return m_worldScale; }
+	float3 GetScale() const { return m_worldScale; }
 
 	//--------------------------------------------------
 	// 設定

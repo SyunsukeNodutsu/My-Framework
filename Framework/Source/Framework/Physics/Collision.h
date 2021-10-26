@@ -17,7 +17,7 @@ struct SphereResult
 struct RayResult
 {
 	float	m_distance	= FLT_MAX;		// レイの座標からヒットした位置までの距離
-	float3	m_HitPos	= float3::Zero;	// 衝突座標
+	float3	m_hitPos	= float3::Zero;	// 衝突座標
 	bool	m_hit		= false;		// ヒットしたかどうか
 };
 
@@ -40,13 +40,5 @@ namespace Collision
 	// @brief 点 vs 三角形との最近接点を求める
 	// @return 衝突...true
 	void PointToTriangle(const DirectX::XMVECTOR& p, const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b, const DirectX::XMVECTOR& c, DirectX::XMVECTOR& outPt);
-
-}
-
-// ゲーム物理 TODO: 移動 or 物理エンジン
-namespace Physics
-{
-	// 発生する重力 ※地球の場合 Y軸に-9.81 m/s^2
-	constexpr float g_gravity = -9.81f;
 
 }

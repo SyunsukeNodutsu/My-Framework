@@ -166,6 +166,45 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 	// シーンのパス表示
 	ImGui::Text(std::string("Scene: " + APP.g_gameSystem->g_sceneFilepath).c_str());
 
+	// Actor 作成
+	
+	// Jsonパス格納
+	static char jsonPath[128] = "";
+	// Jsonパス格納 : エクスプローラから選択ver
+	static std::string string = "Resource/Jsons/";
+
+	ImGui::InputText("Jsonpath", jsonPath, IM_ARRAYSIZE(jsonPath));
+
+	if (ImGui::Button("Create"))
+	{
+		const auto& json = RES_FAC.GetJsonData(jsonPath);
+		if (json.is_null()) {
+			AddLog(u8"Actor生成失敗.");
+			return;
+		}
+
+		const auto& actor = GenerateActor(json["class_name"].string_value());
+		if (actor) {
+			actor->Deserialize(json);
+			actor->Initialize();
+
+			APP.g_gameSystem->AddActor(actor);
+
+			AddLog(std::string(u8"Actor生成: " + json["class_name"].string_value()).c_str());
+		}
+	}
+
+	if (ImGui::Button(u8"Jsonパス所得"))
+	{
+		if (APP.g_window->OpenFileDialog(string, u8"Select path.", "json"))
+		{
+			// 選択したjsonのパスをコピー
+			strcpy_s(jsonPath, string.c_str());
+
+			AddLog(u8"読み込み成功");
+		}
+	}
+
 	ImGui::Separator();
 
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
@@ -197,15 +236,23 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 
 	if (wpActor.lock())
 	{
-		auto transform = wpActor.lock()->GetTransform();
-		auto pos = transform.GetPosition();
-		auto angle = transform.GetAngle();
-		auto scale = transform.GetScale();
+		auto& transform = wpActor.lock()->GetTransform();
+		float3 pos = transform.GetPosition();
+		float3 angle = transform.GetAngle();
+		float3 scale = transform.GetScale();
 
 		ImGui::Text(std::string("Select: " + wpActor.lock()->g_name).c_str());
-		ImGui::DragFloat3("Position", &pos.x, 0.1f);
-		ImGui::DragFloat3("Angle", &angle.x, 0.1f);
-		ImGui::DragFloat3("Scale", &scale.x, 0.1f);
+
+		bool selected = false;
+		selected |= ImGui::DragFloat3("Position", &pos.x, 0.1f);
+		selected |= ImGui::DragFloat3("Angle", &angle.x, 0.1f);
+		selected |= ImGui::DragFloat3("Scale", &scale.x, 0.1f);
+
+		if (selected) {
+			transform.SetPosition(pos);
+			transform.SetAngle(angle);
+			transform.SetScale(scale);
+		}
 
 		ImGui::CheckboxFlags("eUntagged", &wpActor.lock()->g_tag, ACTOR_TAG::eUntagged);
 		ImGui::CheckboxFlags("ePlayer", &wpActor.lock()->g_tag, ACTOR_TAG::ePlayer);

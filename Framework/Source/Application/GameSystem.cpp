@@ -47,7 +47,6 @@ void GameSystem::Finalize()
 //-----------------------------------------------------------------------------
 void GameSystem::Serialize(const std::string& filepath)
 {
-	// 保存したい値を集約
 	json11::Json::object serial = {};
 	json11::Json::array objectArray = {};
 
@@ -57,14 +56,13 @@ void GameSystem::Serialize(const std::string& filepath)
 
 	serial["actor_list"] = objectArray;
 
-	// jsonファイル取得(初回は作成)
+	// jsonファイル取得 ※初回は作成
 	std::ofstream ofs(filepath);
 	if (!ofs) return;
 
-	// オブジェクトをjsonへ変換
-	json11::Json json = serial;
-	// jsonのフォーマットにあった書式に変換しながら文字列に変換
-	std::string strJson = json.dumpDebug();
+	// json objectをjsonに変換 -> シリアライズ
+	constexpr bool debug = false;
+	std::string strJson = json11::Json(serial).dump(debug);
 
 	// 指定されたjsonファイルへ文字列を書き込み
 	ofs.write(strJson.c_str(), strJson.size());

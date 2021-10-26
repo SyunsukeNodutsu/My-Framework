@@ -83,10 +83,15 @@ private:
 	void UpdateCollision();
 
 	// @brief 地面との衝突判定
-	// @param
-	// @param
-	// @return
+	// @param dstDistance 地面との距離
+	// @param rayPos レイの発射座標
+	// @return レイ判定の結果
 	RayResult CheckGround(float& dstDistance, float3 rayPos);
+
+	// @brief 車体の傾き
+	// @param dstDistance 地面との距離
+	// @param rayPosArray 4隅からなるレイの発射座標配列
+	void TiltBody(float& dstDistance, std::array<float3, 4>& rayPosArray);
 
 private:
 
