@@ -77,10 +77,6 @@ public:
 	// シーンのjsonファイルパス
 	std::string g_sceneFilepath;
 
-	// 空間分割テスト
-	CLiner8TreeManager<Actor> m_actorOctreeManager;
-	std::shared_ptr<ObjectForTree<Actor>> m_spActorList_Tree;
-
 private:
 
 	// 登場Actorリスト

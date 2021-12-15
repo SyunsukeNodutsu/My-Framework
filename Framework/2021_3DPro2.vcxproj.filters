@@ -106,6 +106,9 @@
     <Filter Include="Source\Application\Actors\Player">
       <UniqueIdentifier>{a328354a-0b27-403b-8c85-82025caca865}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\HighLevel\Component">
+      <UniqueIdentifier>{7c70ed8a-ad09-46ee-b631-c6e1663adb6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -249,9 +252,6 @@
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
       <Filter>Source\Application\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Utility\ResourceFactory.cpp">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp">
       <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClCompile>
@@ -314,6 +314,15 @@
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Player\PlayerTank.cpp">
       <Filter>Source\Application\Actors\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\ResourceFactory.cpp">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\Component\SoundComponent.cpp">
+      <Filter>Source\Framework\HighLevel\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Sample.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -500,9 +509,6 @@
     <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h">
       <Filter>Library\imGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\ResourceFactory.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h">
       <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClInclude>
@@ -562,6 +568,15 @@
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Player\PlayerTank.h">
       <Filter>Source\Application\Actors\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\ResourceFactory.h">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\Component\Component.h">
+      <Filter>Source\Framework\HighLevel\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\Component\SoundComponent.h">
+      <Filter>Source\Framework\HighLevel\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

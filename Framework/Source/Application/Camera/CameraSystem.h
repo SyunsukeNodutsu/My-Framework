@@ -30,8 +30,8 @@ public:
 	// @brief カメラ情報をGPUに転送
 	void SetToDevice();
 
-	// @brief カメラ一覧をクリア
-	void ResetCameraList() { m_cameraList.clear(); }
+	// @brief 編集カメラ以外のカメラ一覧をクリア
+	void ResetCameraList();
 
 	//--------------------------------------------------
 	// 取得/設定
@@ -49,7 +49,10 @@ public:
 
 	// @brief 現在使用しているカメラを返す
 	// @return 使用カメラ ※最も優先度の高いカメラ(遷移中を除く)
-	const std::shared_ptr<Camera>& GetCamera() const { return m_spCamera; }
+	const std::shared_ptr<Camera>& GetCamera() const {
+		//if (m_editorMode) return m_spEditorCamera;
+		return m_spCamera;
+	}
 
 	// @brief カメラを名前検索で返す
 	// @return 発見...カメラ 見つからない...nullptr

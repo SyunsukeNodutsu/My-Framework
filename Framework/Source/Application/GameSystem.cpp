@@ -20,12 +20,6 @@ void GameSystem::Initialize()
 {
 	// シーン読み込み ※ActorList初期化
 	LoadScene("Resource/Jsons/TitleProcess.json");
-
-	// 8分木マネージャ初期化
-	int level = 6;
-	float3 min = float3(-300);// TODO: 適当な空間定義
-	float3 max = float3(300);
-	m_actorOctreeManager.Initialize(level, min, max);
 }
 
 //-----------------------------------------------------------------------------
@@ -73,7 +67,6 @@ void GameSystem::Serialize(const std::string& filepath)
 //-----------------------------------------------------------------------------
 void GameSystem::Update()
 {
-	// 前フレームからの経過時間を計算/取得
 	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 	const float& totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
@@ -99,11 +92,10 @@ void GameSystem::Update()
 		else ++itr;
 	}
 
-	// 遷移予約確認
+	// 遷移予約の確認 -> 予約ありの場合 シーン遷移
 	if (m_isRequestChangeScene)
 		ExecChangeScene();
 
-	// カメラシステム更新
 	g_cameraSystem.Update(deltaTime);
 }
 
@@ -128,7 +120,9 @@ void GameSystem::Draw()
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();
 
+	//--------------------------------------------------
 	// シャドウマップ描画
+	//--------------------------------------------------
 	for (int i = 0; i < 3; i++)
 	{
 		SHADER.GetShadowMapShader().Begin(i);
@@ -138,7 +132,9 @@ void GameSystem::Draw()
 	}
 	SHADER.GetShadowMapShader().End();
 	
+	//--------------------------------------------------
 	// 通常3D描画
+	//--------------------------------------------------
 	{
 		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(0).get(), 10);
 		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(1).get(), 11);
@@ -162,7 +158,9 @@ void GameSystem::Draw2D()
 {
 	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
+	//--------------------------------------------------
 	// Effect描画
+	//--------------------------------------------------
 	{
 		SHADER.GetEffectShader().Begin();
 
@@ -185,7 +183,9 @@ void GameSystem::Draw2D()
 		RENDERER.SetDepthStencil(true, true);
 	}
 
+	//--------------------------------------------------
 	// Sprite描画
+	//--------------------------------------------------
 	{
 		SHADER.GetSpriteShader().Begin(true, true);
 

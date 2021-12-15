@@ -30,16 +30,19 @@ void FPSCamera::Update()
 {
 	if (!g_enable) return;
 
-	float2 nowPos = APP.g_rawInputDevice->g_spMouse->GetMousePos();
+	const auto& mouse = APP.g_rawInputDevice->g_spMouse;
 
-	float2 mouseMove;
+	const auto& nowPos = mouse->GetMousePos();
+	const auto& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+
+	float2 mouseMove = float2::Zero;
 	mouseMove.x = nowPos.x - s_fixMousePos.x;
 	mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-	APP.g_rawInputDevice->g_spMouse->SetAt(s_fixMousePos, APP.g_window->GetWndHandle());
+	mouse->SetAt(s_fixMousePos, APP.g_window->GetWndHandle());
 
 	// カメラを回転
-	m_degAngle.x += mouseMove.y * 0.1f;
+	m_degAngle.x += mouseMove.y * 0.08f;
 	m_degAngle.y += mouseMove.x * 0.1f;
 
 	// 回転制御

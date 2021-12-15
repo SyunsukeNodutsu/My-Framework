@@ -4,7 +4,6 @@
 // 編集カメラ マウスで視点を操作
 //-----------------------------------------------------------------------------
 #pragma once
-#include "../../Framework/Graphics/Camera/Camera.h"
 
 class Transform;
 

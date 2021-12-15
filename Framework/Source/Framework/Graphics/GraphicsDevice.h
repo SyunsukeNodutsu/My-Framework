@@ -80,6 +80,9 @@ public:
 	// @return マルチサンプリングパラメータ
 	const DXGI_SAMPLE_DESC& GetSampleDesc() const { return m_sampleDesc; }
 
+	//
+	const ComPtr<IDXGISwapChain> GetSwapChain() const { return m_cpGISwapChain; }
+
 public:
 
 	// レンダリング インターフェース

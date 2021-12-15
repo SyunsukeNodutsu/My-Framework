@@ -39,8 +39,10 @@ void FpsTimer::Tick()
 
 	// 何らかの理由で前回から時間が立ちすぎているときはm_maxDeltaをdelta_timeにする
 	// そのまま使うと時間が大きすぎてゲームの処理が破綻するのを防ぐ
-	if (deltaTime > m_maxDelta)
+	if (deltaTime > m_maxDelta) {
 		deltaTime = m_maxDelta;
+		DebugLog("許容範囲を超えた.\n");
+	}
 
 	// 時間として扱えるように計算
 	deltaTime = deltaTime * TicksPerSecond / m_frequency.QuadPart;

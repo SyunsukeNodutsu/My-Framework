@@ -51,20 +51,31 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// アダプター設定
-	ComPtr<IDXGIAdapter1> adapter;
-	for (UINT adapterIndex = 0; S_OK == factory->EnumAdapters1(adapterIndex, adapter.GetAddressOf()); ++adapterIndex)
+	std::vector <IDXGIAdapter*> adapters;
+	IDXGIAdapter* tmpAdapter = nullptr;
+	for (int i = 0; factory->EnumAdapters(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
+		adapters.push_back(tmpAdapter);
+
+	// TODO: 調査.11/02
+	// 直近のwin10のアップデートでGPUアダプタの確認がバグったので
+	// "NVIDIA"の文字列からGPUアダプタを取得
+	for (auto adpt : adapters)
 	{
-		DXGI_ADAPTER_DESC1 desc;
-		adapter->GetDesc1(&desc);
-		// GPUアダプタ？
-		if (desc.Flags ^= DXGI_ADAPTER_FLAG_SOFTWARE) {
-			m_adapterName = wide_to_sjis(desc.Description);
+		DXGI_ADAPTER_DESC adesc = {};
+		adpt->GetDesc(&adesc);
+		std::wstring strDesc = adesc.Description;
+		if (strDesc.find(L"NVIDIA") != std::string::npos)
+		{
+			DebugLog(std::string("ビデオメモリ：" + std::to_string(adesc.DedicatedVideoMemory) + "\n").c_str());
+
+			tmpAdapter = adpt;
+			m_adapterName = wide_to_sjis(strDesc);
 			break;
 		}
 	}
 
 	// デバイスとデバイスコンテキスト作成
-	if (FAILED(D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
+	if (FAILED(D3D11CreateDevice(tmpAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
 		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &featureLevel, &g_cpContext))) {
 		DebugLog("Direct3D11デバイス作成失敗.\n");
 		return false;
@@ -135,7 +146,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// ALT+Enterでフルスクリーン不可にする
-	{
+	/*{
 		IDXGIDevice* pDXGIDevice;
 		g_cpDevice->QueryInterface<IDXGIDevice>(&pDXGIDevice);
 
@@ -150,7 +161,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		SafeRelease(pDXGIDevice);
 		SafeRelease(pDXGIAdapter);
 		SafeRelease(pIDXGIFactory);
-	}
+	}*/
 
 	//--------------------------------------------------
 	// レンダーターゲット/ビューポート作成
@@ -181,6 +192,10 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+
+	auto ret = m_cpGISwapChain->SetFullscreenState(TRUE, 0);
+	if (ret == S_OK) DebugLog("ret = ok");
+	else DebugLog("ret = no");
 
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成

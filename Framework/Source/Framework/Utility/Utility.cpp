@@ -83,7 +83,7 @@ HRESULT FindMediaFileCch(WCHAR* strDestPath, int cchDest, LPCWSTR strFilename)
 void MergePrefab(json11::Json& srcJson, const std::string& prefab)
 {
 	// プレハブ指定ありの場合は、プレハブ側のものをベースにこのJSONをミックスする
-	std::string prefabFilename = srcJson["Prefab"].string_value();
+	std::string prefabFilename = srcJson["prefab_filepath"].string_value();
 	if (prefabFilename.size() <= 0) return;
 
 	json11::Json prefJson = RES_FAC.GetJsonData(prefabFilename);

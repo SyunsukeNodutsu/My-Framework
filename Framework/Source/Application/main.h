@@ -61,6 +61,7 @@ public:
 
 	// ウィンドウ
 	static Window* g_window;
+	// static inline Window* g_window; 「static inline」でメモリ確保できる
 
 	// 各種デバイス
 	

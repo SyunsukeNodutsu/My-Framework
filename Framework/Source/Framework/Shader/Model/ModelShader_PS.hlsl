@@ -2,6 +2,7 @@
 // File: ModelShader_PS.hlsl
 //
 // Model描画用 ピクセルシェーダー
+// 材質の取得 -> ライティング -> 大気の影響
 //-----------------------------------------------------------------------------
 #include "../ConstantBuffer.hlsli"
 #include "ModelShader.hlsli"
@@ -233,13 +234,24 @@ float4 main( VertexOutput In ) : SV_TARGET
         //------------------------------------------
         // 環境光
         //------------------------------------------
-        // TODO: 環境光の強さをShadowによって変更
         diffuseColor += 0.8f * albedo.rgb * albedo.a;
         
         //------------------------------------------
 		// エミッシブ
 		//------------------------------------------
         diffuseColor += g_emissiveTexture.Sample(g_samplerState, In.uv).rgb * g_material.m_emissive;
+        
+        //------------------------------------------
+        // リムライト
+        //------------------------------------------
+        
+        float powerA = 1.0f - max(0.0f, dot(g_directional_light_dir, normal));
+        float powerB = 1.0f - max(0.0f, normal.z * -1.0f);
+        
+        float limPower = powerA * powerB;
+        limPower = pow(limPower, 1.3f);
+        
+        //diffuseColor *= limPower;
     }
     else
     {

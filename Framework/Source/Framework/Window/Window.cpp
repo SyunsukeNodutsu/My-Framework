@@ -303,22 +303,11 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 
 	switch (message)
 	{
-		// 生入力情報取得
+	// 生入力情報取得
 	case WM_INPUT:
 	{
 		if (m_windowInfo.dwWindowStatus == WS_ACTIVECAPTION)
 			APP.g_rawInputDevice->ParseMessage((void*)lparam);
-	}
-	break;
-
-	// In windowProc
-	case WM_SYSCOMMAND:
-	{
-		// ALT+いずれかのキーが押された時のビープ音を削除
-		if (wparam == SC_KEYMENU)
-			return 0;
-		else
-			return DefWindowProc(hwnd, message, wparam, lparam);
 	}
 	break;
 
@@ -344,6 +333,17 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	{
 		RemoveProp(hwnd, L"GameWindowInstance");
 		PostQuitMessage(0);
+	}
+	break;
+
+	// In windowProc
+	case WM_SYSCOMMAND:
+	{
+		// ALT+いずれかのキーが押された時のビープ音を削除
+		if (wparam == SC_KEYMENU)
+			return 0;
+		else
+			return DefWindowProc(hwnd, message, wparam, lparam);
 	}
 	break;
 
