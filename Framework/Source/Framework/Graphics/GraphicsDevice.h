@@ -42,7 +42,7 @@ public:
 
 	// @brief 描画開始とバッファクリア
 	// @param clearColor クリア色(nullで白クリア)
-	void Begin(const float* clearColor = nullptr);
+	void Begin(ID3D11DeviceContext* pd3dContext, const float* clearColor = nullptr);
 
 	// @brief 描画終了と画面更新
 	// @param syncInterval フレームの表示を垂直ブランクと同期する方法
@@ -50,11 +50,12 @@ public:
 	void End(UINT syncInterval = 0, UINT flags = 0);
 
 	// @brief 頂点を描画する簡易的な関数
+	// @param pd3dContext 描画コンテキスト
 	// @param topology 頂点をどのような形状で描画するか
 	// @param vertexCount 頂点数
 	// @param pVertexStream 頂点配列の先頭アドレス
 	// @param stride 1頂点のバイトサイズ
-	void DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
+	void DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
 
 	//--------------------------------------------------
 	// 取得
@@ -88,6 +89,10 @@ public:
 	// レンダリング インターフェース
 	ComPtr<ID3D11Device>			g_cpDevice;
 	ComPtr<ID3D11DeviceContext>		g_cpContext; // 即時コンテキスト
+	ComPtr<ID3D11DeviceContext>		g_cpContextDeferred;// 遅延コンテキスト
+	ComPtr<ID3D11CommandList>		g_cpCommandList;//コマンドリスト
+
+	D3D11_VIEWPORT g_viewport;
 
 private:
 

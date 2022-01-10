@@ -181,21 +181,16 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// ビューポート変換行列の登録
-	D3D11_VIEWPORT vp = {};
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width	= static_cast<float>(desc.m_width);
-	vp.Height	= static_cast<float>(desc.m_height);
-	vp.MinDepth = D3D11_MIN_DEPTH;
-	vp.MaxDepth = D3D11_MAX_DEPTH;
-	g_cpContext->RSSetViewports(1, &vp);
+	g_viewport.TopLeftX = 0;
+	g_viewport.TopLeftY = 0;
+	g_viewport.Width	= static_cast<float>(desc.m_width);
+	g_viewport.Height	= static_cast<float>(desc.m_height);
+	g_viewport.MinDepth = D3D11_MIN_DEPTH;
+	g_viewport.MaxDepth = D3D11_MAX_DEPTH;
+	g_cpContext->RSSetViewports(1, &g_viewport);
 
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-
-	auto ret = m_cpGISwapChain->SetFullscreenState(TRUE, 0);
-	if (ret == S_OK) DebugLog("ret = ok");
-	else DebugLog("ret = no");
 
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成
@@ -237,6 +232,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	m_tempVertexBuffer = std::make_shared<Buffer>();
 
+	//遅延コンテキスト作成
+	//g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
+
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	return true;
@@ -254,11 +252,17 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 開始
 //-----------------------------------------------------------------------------
-void GraphicsDevice::Begin(const float* clearColor)
+void GraphicsDevice::Begin(ID3D11DeviceContext* pd3dContext, const float* clearColor)
 {
+	//g_cpContextDeferred->ClearState();
+
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	pd3dContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	pd3dContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	pd3dContext->RSSetViewports(1, &g_viewport);
+
+	pd3dContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 }
 
 //-----------------------------------------------------------------------------
@@ -266,6 +270,8 @@ void GraphicsDevice::Begin(const float* clearColor)
 //-----------------------------------------------------------------------------
 void GraphicsDevice::End(UINT syncInterval, UINT flags)
 {
+	//g_cpContext->ExecuteCommandList(g_cpCommandList.Get(), false);
+
 	// TODO: なぜか全画面だと垂直同期が切れる
 	HRESULT hr = m_cpGISwapChain->Present(syncInterval, flags);
 	if (FAILED(hr))
@@ -277,7 +283,7 @@ void GraphicsDevice::End(UINT syncInterval, UINT flags)
 //-----------------------------------------------------------------------------
 // 頂点を描画する簡易的な関数
 //-----------------------------------------------------------------------------
-void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
+void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
 {
 	// 全頂点の総バイトサイズ
 	UINT totalSize = vertexCount * stride;
@@ -302,15 +308,15 @@ void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCou
 	}
 
 	// 単純なDISCARDでの書き込み TODO: 修正
-	buffer->WriteData(pVertexStream, totalSize);
+	buffer->WriteData(pd3dContext, pVertexStream, totalSize);
 
 	// バインド
 	{
-		g_cpContext->IASetPrimitiveTopology(topology);
+		pd3dContext->IASetPrimitiveTopology(topology);
 
 		UINT offset = 0;
-		g_cpContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+		pd3dContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
 	}
 
-	g_cpContext->Draw(vertexCount, 0);
+	pd3dContext->Draw(vertexCount, 0);
 }

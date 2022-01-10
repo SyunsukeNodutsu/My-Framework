@@ -175,7 +175,7 @@ void GameSystem::Draw2D()
 		// DebugLines
 		if (m_debugLines.size() >= 1)
 		{
-			APP.g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
+			APP.g_graphicsDevice->DrawVertices(APP.g_graphicsDevice->g_cpContext.Get(), D3D_PRIMITIVE_TOPOLOGY_LINELIST, m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
 			m_debugLines.clear();
 		}
 
@@ -187,12 +187,12 @@ void GameSystem::Draw2D()
 	// Sprite描画
 	//--------------------------------------------------
 	{
-		SHADER.GetSpriteShader().Begin(true, true);
+		SHADER.GetSpriteShader().Begin(APP.g_graphicsDevice->g_cpContext.Get(), true, true);
 
 		for (auto& object : m_spActorList)
 			object->DrawSprite(deltaTime);
 
-		SHADER.GetSpriteShader().End();
+		SHADER.GetSpriteShader().End(APP.g_graphicsDevice->g_cpContext.Get());
 	}
 }
 
@@ -298,7 +298,12 @@ void GameSystem::Reset()
 //-----------------------------------------------------------------------------
 void GameSystem::ExecChangeScene()
 {
-	LoadScene(g_sceneFilepath);
+	APP.m_loading = true;
+
+	std::thread([=] {
+		LoadScene(g_sceneFilepath);
+	}).detach();
+
 	m_isRequestChangeScene = false;
 }
 
@@ -341,5 +346,17 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
+	APP.m_loading = false;
+
 	return true;
+}
+
+unsigned __stdcall GameSystem::ThreadLoad(void* vpArguments)
+{
+	//LoadScene("");
+
+	//スレッド終了
+	_endthread();
+
+	return 0;
 }

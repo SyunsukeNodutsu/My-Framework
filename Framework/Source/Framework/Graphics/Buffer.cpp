@@ -59,31 +59,31 @@ bool Buffer::Create(UINT bindFlags, UINT bufferSize, D3D11_USAGE bufferUsage, co
 //-----------------------------------------------------------------------------
 // 書き込み
 //-----------------------------------------------------------------------------
-void Buffer::WriteData(const void* srcData, UINT size)
+void Buffer::WriteData(ID3D11DeviceContext* pd3dContext, const void* srcData, UINT size)
 {
 	// 動的バッファの場合
 	if (m_usage == D3D11_USAGE_DYNAMIC)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(g_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		if (SUCCEEDED(pd3dContext->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			g_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
+			pd3dContext->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 	// 静的バッファの場合
 	else if (m_usage == D3D11_USAGE_DEFAULT)
 	{
-		g_graphicsDevice->g_cpContext.Get()->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
+		pd3dContext->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
 	}
 	// ステージングバッファの場合(読み書き両方)
 	else if (m_usage == D3D11_USAGE_STAGING)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(g_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
+		if (SUCCEEDED(pd3dContext->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			g_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
+			pd3dContext->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 }

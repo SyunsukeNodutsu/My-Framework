@@ -101,4 +101,6 @@ private:
 	// @return 成功...true
 	bool LoadScene(const std::string& filepath);
 
+	static unsigned __stdcall ThreadLoad(void* vpArguments);
+
 };

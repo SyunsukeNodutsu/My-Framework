@@ -28,7 +28,7 @@ public:
 	// @brief バッファへ指定データを書き込み
 	// @param pSrcData 書き込みたいデータの先頭アドレス
 	// @param size 書き込むサイズ(byte)
-	void WriteData(const void* srcData, UINT size);
+	void WriteData(ID3D11DeviceContext* pd3dContext, const void* srcData, UINT size);
 
 	// @brief GPU上でバッファのコピーを実行する
 	// @param srcBuffer コピー元バッファ
@@ -96,11 +96,14 @@ public:
 
 	// @brief 定数バッファへ書き込む
 	// @note m_isDirtyがtrueの時のみ、バッファに書き込まれる
-	void Write()
+	void Write(ID3D11DeviceContext* pd3dContext = nullptr)
 	{
 		if (!m_isDirty) return;
 
-		m_buffer.WriteData(&m_work, m_buffer.GetSize());
+		if (pd3dContext == nullptr)
+			m_buffer.WriteData(g_graphicsDevice->g_cpContext.Get(), &m_work, m_buffer.GetSize());
+		else
+			m_buffer.WriteData(pd3dContext, &m_work, m_buffer.GetSize());
 		m_isDirty = false;
 	}
 

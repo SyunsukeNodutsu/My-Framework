@@ -73,28 +73,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	//アプリケーション実行
+	APP.Execute();
 
-	hMutex = CreateMutex(NULL, FALSE, NULL);//ミューテックス生成
+	if (false)
+	{
+		hMutex = CreateMutex(NULL, FALSE, NULL);//ミューテックス生成
 
-	UINT nThreadId_Main = 1;
-	UINT nThreadId_Sub = 0;
+		UINT nThreadId_Main = 1;
+		UINT nThreadId_Sub = 0;
 
-	//スレッド開始
-	HANDLE hThreadMain = (HANDLE)::_beginthreadex(NULL, 0, &ThreadMain, (void*)0, 0, &nThreadId_Main);
-	HANDLE hThreadSub = (HANDLE)::_beginthreadex(NULL, 0, &ThreadSub, (void*)0, 0, &nThreadId_Sub);
-	
-	ResumeThread(hThreadMain);
-	ResumeThread(hThreadSub);
+		//スレッド開始
+		HANDLE hThreadMain = (HANDLE)::_beginthreadex(NULL, 0, &ThreadMain, (void*)0, 0, &nThreadId_Main);
+		HANDLE hThreadSub = (HANDLE)::_beginthreadex(NULL, 0, &ThreadSub, (void*)0, 0, &nThreadId_Sub);
 
-	//スレッドの終了待ち
-	WaitForSingleObject(hThreadMain, INFINITE);
-	WaitForSingleObject(hThreadSub, INFINITE);
+		ResumeThread(hThreadMain);
+		ResumeThread(hThreadSub);
 
-	//終了
+		//スレッドの終了待ち
+		WaitForSingleObject(hThreadMain, INFINITE);
+		WaitForSingleObject(hThreadSub, INFINITE);
 
-	//スレッドハンドルの解放
-	CloseHandle(hThreadMain);
-	CloseHandle(hThreadSub);
+		//終了
+
+		//スレッドハンドルの解放
+		CloseHandle(hThreadMain);
+		CloseHandle(hThreadSub);
+	}
 	
 	//COM解放
 	CoUninitialize();
@@ -150,8 +154,6 @@ bool Application::Initialize(int width, int height)
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
 
-	g_graphicsDevice->GetSwapChain()->SetFullscreenState(TRUE, 0);
-
 	// エフェクトデバイス
 	g_effectDevice->Initialize();
 
@@ -173,6 +175,9 @@ bool Application::Initialize(int width, int height)
 	// シェーダー
 	SHADER.Initialize();
 	
+	m_spTexture = std::make_shared<Texture>();
+	m_spTexture->Create("Resource/Texture/PauseBackGround.png");
+
 	//--------------------------------------------------
 	// アプリケーション
 	//--------------------------------------------------
@@ -248,6 +253,31 @@ void Application::Execute()
 		if (!g_window->IsCreated())
 			break;
 
+		//ロード中
+		if (m_loading)
+		{
+			auto& context = APP.g_graphicsDevice->g_cpContext;
+			auto& commandList = APP.g_graphicsDevice->g_cpCommandList;
+
+			g_graphicsDevice->Begin(context.Get());
+			{
+				float deltaTime = static_cast<float>(g_fpsTimer->GetDeltaTime());
+
+				static float rot = 0.0f;
+				rot += 2.0f;
+				mfloat4x4 matrix = mfloat4x4::CreateRotationZ(rot * deltaTime);
+
+				SHADER.GetSpriteShader().Begin(context.Get());
+				SHADER.GetSpriteShader().DrawTexture(m_spTexture.get(), context.Get(), matrix);
+				SHADER.GetSpriteShader().End(context.Get());
+
+				//context->FinishCommandList(false, commandList.GetAddressOf());
+			}
+			g_graphicsDevice->End(1);
+
+			continue;
+		}
+
 		//----------------------------------------
 		// ゲームサウンド処理
 		//----------------------------------------
@@ -265,7 +295,7 @@ void Application::Execute()
 		g_gameSystem->Update();
 
 		// 描画
-		g_graphicsDevice->Begin();
+		g_graphicsDevice->Begin(APP.g_graphicsDevice->g_cpContext.Get());
 		{
 			// 3D想定
 			g_gameSystem->Draw();
