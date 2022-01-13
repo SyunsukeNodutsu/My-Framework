@@ -91,11 +91,6 @@ private:
 	// ゲーム終了フラグ
 	bool m_endFlag = false;
 
-public:
-	bool m_loading = false;
-	std::shared_ptr<Texture> m_spTexture;
-	std::mutex m_mutex;
-
 private:
 
 	// @brief アプリケーション初期化

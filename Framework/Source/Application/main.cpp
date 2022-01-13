@@ -174,9 +174,6 @@ bool Application::Initialize(int width, int height)
 
 	// シェーダー
 	SHADER.Initialize();
-	
-	m_spTexture = std::make_shared<Texture>();
-	m_spTexture->Create("Resource/Texture/PauseBackGround.png");
 
 	//--------------------------------------------------
 	// アプリケーション
@@ -252,31 +249,6 @@ void Application::Execute()
 		// ウィンドウが破棄されてるならループ終了
 		if (!g_window->IsCreated())
 			break;
-
-		//ロード中
-		if (m_loading)
-		{
-			auto& context = APP.g_graphicsDevice->g_cpContext;
-			auto& commandList = APP.g_graphicsDevice->g_cpCommandList;
-
-			g_graphicsDevice->Begin(context.Get());
-			{
-				float deltaTime = static_cast<float>(g_fpsTimer->GetDeltaTime());
-
-				static float rot = 0.0f;
-				rot += 2.0f;
-				mfloat4x4 matrix = mfloat4x4::CreateRotationZ(rot * deltaTime);
-
-				SHADER.GetSpriteShader().Begin(context.Get());
-				SHADER.GetSpriteShader().DrawTexture(m_spTexture.get(), context.Get(), matrix);
-				SHADER.GetSpriteShader().End(context.Get());
-
-				//context->FinishCommandList(false, commandList.GetAddressOf());
-			}
-			g_graphicsDevice->End(1);
-
-			continue;
-		}
 
 		//----------------------------------------
 		// ゲームサウンド処理

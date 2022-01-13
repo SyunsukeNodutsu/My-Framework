@@ -298,12 +298,7 @@ void GameSystem::Reset()
 //-----------------------------------------------------------------------------
 void GameSystem::ExecChangeScene()
 {
-	APP.m_loading = true;
-
-	std::thread([=] {
-		LoadScene(g_sceneFilepath);
-	}).detach();
-
+	LoadScene(g_sceneFilepath);
 	m_isRequestChangeScene = false;
 }
 
@@ -346,17 +341,5 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
-	APP.m_loading = false;
-
 	return true;
-}
-
-unsigned __stdcall GameSystem::ThreadLoad(void* vpArguments)
-{
-	//LoadScene("");
-
-	//スレッド終了
-	_endthread();
-
-	return 0;
 }
