@@ -51,20 +51,31 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// アダプター設定
-	ComPtr<IDXGIAdapter1> adapter;
-	for (UINT adapterIndex = 0; S_OK == factory->EnumAdapters1(adapterIndex, adapter.GetAddressOf()); ++adapterIndex)
+	std::vector <IDXGIAdapter*> adapters;
+	IDXGIAdapter* tmpAdapter = nullptr;
+	for (int i = 0; factory->EnumAdapters(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
+		adapters.push_back(tmpAdapter);
+
+	// TODO: 調査.11/02
+	// 直近のwin10のアップデートでGPUアダプタの確認がバグったので
+	// "NVIDIA"の文字列からGPUアダプタを取得
+	for (auto adpt : adapters)
 	{
-		DXGI_ADAPTER_DESC1 desc;
-		adapter->GetDesc1(&desc);
-		// GPUアダプタ？
-		if (desc.Flags ^= DXGI_ADAPTER_FLAG_SOFTWARE) {
-			m_adapterName = wide_to_sjis(desc.Description);
+		DXGI_ADAPTER_DESC adesc = {};
+		adpt->GetDesc(&adesc);
+		std::wstring strDesc = adesc.Description;
+		if (strDesc.find(L"NVIDIA") != std::string::npos)
+		{
+			DebugLog(std::string("ビデオメモリ：" + std::to_string(adesc.DedicatedVideoMemory) + "\n").c_str());
+
+			tmpAdapter = adpt;
+			m_adapterName = wide_to_sjis(strDesc);
 			break;
 		}
 	}
 
 	// デバイスとデバイスコンテキスト作成
-	if (FAILED(D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
+	if (FAILED(D3D11CreateDevice(tmpAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, featureLevels,
 		_countof(featureLevels), D3D11_SDK_VERSION, &g_cpDevice, &featureLevel, &g_cpContext))) {
 		DebugLog("Direct3D11デバイス作成失敗.\n");
 		return false;
@@ -135,7 +146,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// ALT+Enterでフルスクリーン不可にする
-	{
+	/*{
 		IDXGIDevice* pDXGIDevice;
 		g_cpDevice->QueryInterface<IDXGIDevice>(&pDXGIDevice);
 
@@ -150,7 +161,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		SafeRelease(pDXGIDevice);
 		SafeRelease(pDXGIAdapter);
 		SafeRelease(pIDXGIFactory);
-	}
+	}*/
 
 	//--------------------------------------------------
 	// レンダーターゲット/ビューポート作成
@@ -170,14 +181,13 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	}
 
 	// ビューポート変換行列の登録
-	D3D11_VIEWPORT vp = {};
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width	= static_cast<float>(desc.m_width);
-	vp.Height	= static_cast<float>(desc.m_height);
-	vp.MinDepth = D3D11_MIN_DEPTH;
-	vp.MaxDepth = D3D11_MAX_DEPTH;
-	g_cpContext->RSSetViewports(1, &vp);
+	g_viewport.TopLeftX = 0;
+	g_viewport.TopLeftY = 0;
+	g_viewport.Width	= static_cast<float>(desc.m_width);
+	g_viewport.Height	= static_cast<float>(desc.m_height);
+	g_viewport.MinDepth = D3D11_MIN_DEPTH;
+	g_viewport.MaxDepth = D3D11_MAX_DEPTH;
+	g_cpContext->RSSetViewports(1, &g_viewport);
 
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
@@ -222,6 +232,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	m_tempVertexBuffer = std::make_shared<Buffer>();
 
+	//遅延コンテキスト作成
+	//g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
+
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	return true;
@@ -239,11 +252,17 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 開始
 //-----------------------------------------------------------------------------
-void GraphicsDevice::Begin(const float* clearColor)
+void GraphicsDevice::Begin(ID3D11DeviceContext* pd3dContext, const float* clearColor)
 {
+	//g_cpContextDeferred->ClearState();
+
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	pd3dContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	pd3dContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	pd3dContext->RSSetViewports(1, &g_viewport);
+
+	pd3dContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 }
 
 //-----------------------------------------------------------------------------
@@ -251,6 +270,8 @@ void GraphicsDevice::Begin(const float* clearColor)
 //-----------------------------------------------------------------------------
 void GraphicsDevice::End(UINT syncInterval, UINT flags)
 {
+	//g_cpContext->ExecuteCommandList(g_cpCommandList.Get(), false);
+
 	// TODO: なぜか全画面だと垂直同期が切れる
 	HRESULT hr = m_cpGISwapChain->Present(syncInterval, flags);
 	if (FAILED(hr))
@@ -262,7 +283,7 @@ void GraphicsDevice::End(UINT syncInterval, UINT flags)
 //-----------------------------------------------------------------------------
 // 頂点を描画する簡易的な関数
 //-----------------------------------------------------------------------------
-void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
+void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
 {
 	// 全頂点の総バイトサイズ
 	UINT totalSize = vertexCount * stride;
@@ -287,15 +308,15 @@ void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCou
 	}
 
 	// 単純なDISCARDでの書き込み TODO: 修正
-	buffer->WriteData(pVertexStream, totalSize);
+	buffer->WriteData(pd3dContext, pVertexStream, totalSize);
 
 	// バインド
 	{
-		g_cpContext->IASetPrimitiveTopology(topology);
+		pd3dContext->IASetPrimitiveTopology(topology);
 
 		UINT offset = 0;
-		g_cpContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+		pd3dContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
 	}
 
-	g_cpContext->Draw(vertexCount, 0);
+	pd3dContext->Draw(vertexCount, 0);
 }

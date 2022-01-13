@@ -35,7 +35,7 @@ bool SoundData::Load(const std::string& filepath, bool loop, bool useFilter)
     }
 
     // 波形ファイルの読み込み
-    // TODO: .wavにシーク設定やループ設定があると下記の方法だと対応できない ... ま、ええか^^
+    // TODO: .wavにシーク設定やループ設定があると下記の方法だと対応できない
     const uint8_t* sampleData;
     uint32_t waveSize;
     if (FAILED(DirectX::LoadWAVAudioFromFile(strFilePath, m_pWaveData, &m_pWaveFormat, &sampleData, &waveSize))) {

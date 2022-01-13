@@ -60,7 +60,7 @@ cbuffer cdObject : register(b11)
 cbuffer cdObject : register(b12)
 {
     float g_total_time; // 総経過時間
-    float g_delta_time; // デルタティック
+    float g_delta_time; // 1フレーム前からの経過時間
 }
 
 // 大気

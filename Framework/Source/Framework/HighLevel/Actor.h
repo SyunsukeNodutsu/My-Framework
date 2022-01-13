@@ -111,6 +111,7 @@ protected:
 	Transform	m_transform;	// トランスフォーム
 
 	std::string m_modelFilepath;// モデルのファイルパス
+	std::string m_prefabFilepath;// プレハブのファイルパス
 
 public:
 

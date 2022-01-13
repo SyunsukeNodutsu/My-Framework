@@ -55,9 +55,10 @@ void Tank::Awake()
 		m_spCamera3rd->Initialize();
 
 		m_spCamera3rd->SetClampAngleX(-15.0f, 15.0f);
+		m_spCamera3rd->SetFovAngleY(60 * ToRadians);
 
 		m_spCamera3rd->SetLocalPos(float3(0.0f, 0.0f, -10));
-		m_spCamera3rd->SetLocalGazePosition(float3(0.0f, 2.4f, 0.0f));
+		m_spCamera3rd->SetLocalGazePosition(float3(0.0f, 2.8f, 0.0f));
 
 		m_spCamera3rd->g_name = "TankTPS";
 		m_spCamera3rd->g_priority = 1.0f;
@@ -415,7 +416,7 @@ void Tank::State3rd::Update(Tank& owner, float deltaTime)
 
 	owner.UpdateShot(false);
 
-	owner.UpdateCollision();
+	//owner.UpdateCollision();
 
 	if (owner.m_spCamera3rd) {
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());
@@ -481,7 +482,7 @@ void Tank::State1st::Update(Tank& owner, float deltaTime)
 
 	owner.UpdateShot(true);
 
-	owner.UpdateCollision();
+	//owner.UpdateCollision();
 
 	if (owner.m_spCamera1st) {
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(owner.m_spTankParts->GetTurretMatrix().Translation());

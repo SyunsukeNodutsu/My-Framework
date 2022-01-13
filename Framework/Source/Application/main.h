@@ -61,6 +61,7 @@ public:
 
 	// ウィンドウ
 	static Window* g_window;
+	// static inline Window* g_window; 「static inline」でメモリ確保できる
 
 	// 各種デバイス
 	
@@ -89,6 +90,11 @@ private:
 
 	// ゲーム終了フラグ
 	bool m_endFlag = false;
+
+public:
+	bool m_loading = false;
+	std::shared_ptr<Texture> m_spTexture;
+	std::mutex m_mutex;
 
 private:
 

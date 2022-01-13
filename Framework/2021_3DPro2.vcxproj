@@ -28,6 +28,7 @@
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imGui\imgui_widgets.cpp" />
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp" />
+    <ClCompile Include="Sample.cpp" />
     <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp" />
     <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp" />
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp" />
@@ -64,6 +65,8 @@
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp" />
+    <ClCompile Include="Source\Framework\HighLevel\Component\SoundComponent.cpp" />
+    <ClCompile Include="Source\Framework\HighLevel\ResourceFactory.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Transform.cpp" />
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp" />
     <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp" />
@@ -84,7 +87,6 @@
     <ClCompile Include="Source\Framework\Shader\Sprite\SpriteShader.cpp" />
     <ClCompile Include="Source\Framework\Utility\Easing.cpp" />
     <ClCompile Include="Source\Framework\Utility\FpsTimer.cpp" />
-    <ClCompile Include="Source\Framework\Utility\ResourceFactory.cpp" />
     <ClCompile Include="Source\Framework\Utility\Utility.cpp" />
     <ClCompile Include="Source\Framework\Window\Window.cpp" />
     <ClCompile Include="Source\Pch.cpp">
@@ -146,6 +148,9 @@
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\Actor.h" />
+    <ClInclude Include="Source\Framework\HighLevel\Component\Component.h" />
+    <ClInclude Include="Source\Framework\HighLevel\Component\SoundComponent.h" />
+    <ClInclude Include="Source\Framework\HighLevel\ResourceFactory.h" />
     <ClInclude Include="Source\Framework\HighLevel\Transform.h" />
     <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h" />
     <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h" />
@@ -171,7 +176,6 @@
     <ClInclude Include="Source\Framework\Utility\EasingType.h" />
     <ClInclude Include="Source\Framework\Utility\Enums.h" />
     <ClInclude Include="Source\Framework\Utility\FpsTimer.h" />
-    <ClInclude Include="Source\Framework\Utility\ResourceFactory.h" />
     <ClInclude Include="Source\Framework\Utility\Timer.h" />
     <ClInclude Include="Source\Framework\Utility\Types.h" />
     <ClInclude Include="Source\Framework\Utility\Utility.h" />

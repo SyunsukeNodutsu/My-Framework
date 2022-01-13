@@ -12,6 +12,7 @@ CameraSystem::CameraSystem()
 	, m_editorMode(false)
 {
 	m_spEditorCamera = std::make_shared<EditorCamera>();
+	m_spEditorCamera->g_priority = FLT_MIN;
 	m_spEditorCamera->g_enable = false;
 	m_spEditorCamera->g_name = "EditorCamera";
 	m_cameraList.push_back(m_spEditorCamera);
@@ -34,6 +35,8 @@ void CameraSystem::Update(float deltaTime)
 		// 通常モードに移行
 		if (keyboard->IsPressed(KeyCode::Escape))
 		{
+			m_spEditorCamera->g_priority = FLT_MIN;
+
 			m_editorMode = false;
 			AllSetEnable(true);
 			mouse->SetCursorShow(false);
@@ -46,6 +49,8 @@ void CameraSystem::Update(float deltaTime)
 		// 編集モードに移行
 		if (keyboard->IsPressed(KeyCode::Escape))
 		{
+			m_spEditorCamera->g_priority = FLT_MAX;
+
 			m_editorMode = true;
 			AllSetEnable(false);
 			mouse->SetCursorShow(true);
@@ -66,6 +71,15 @@ void CameraSystem::SetToDevice()
 	{
 		m_spCamera->SetToShader();
 	}
+}
+
+//-----------------------------------------------------------------------------
+// 編集カメラ以外のカメラ一覧をクリア
+//-----------------------------------------------------------------------------
+void CameraSystem::ResetCameraList()
+{
+	m_cameraList.clear();
+	m_cameraList.push_back(m_spEditorCamera);// 編集カメラは常に存在
 }
 
 //-----------------------------------------------------------------------------

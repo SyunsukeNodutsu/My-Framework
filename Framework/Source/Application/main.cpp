@@ -11,50 +11,96 @@ FpsTimer* Application::g_fpsTimer = 0;
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
 std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
 
+HANDLE	hMutex;//ミューテックスのハンドル
+
+unsigned __stdcall ThreadMain(void* vpArguments)
+{
+	APP.Execute();
+
+	//スレッド終了
+	_endthread();
+
+	return 0;
+}
+
+unsigned __stdcall ThreadSub(void* vpArguments)
+{
+	for (;;)
+	{
+		//DBWinMutexを使用して確認が必要？
+		//OutputDebugStringA("aaa.\n");
+
+		if (GetAsyncKeyState(VK_SPACE))
+			break;
+	}
+
+	//スレッド終了
+	_endthread();
+
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	//--------------------------------------------------
-	// アプリケーション実行前の初期化
-	//--------------------------------------------------
-
-	// 不使用な引数をコンパイラに伝えてWarningを抑制
+	//アプリケーション実行前の初期化
+	
+	//不使用な引数をコンパイラに伝えてWarningを抑制
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 #if _DEBUG
-	// メモリリークの検出
+	//メモリリークの検出
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	// Windows10 CreatorsUpdateで入ったモニタ単位でDPIが違う環境への対応
+	//Windows10 CreatorsUpdateで入ったモニタ単位でDPIが違う環境への対応
 	SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
-	// COMの初期化
+	//COMの初期化
 	Microsoft::WRL::Wrappers::RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
 	if (FAILED(initialize)) {
 		MessageBoxA(nullptr, "COM initialization failed.", "Failed", MB_OK);
 		return -1;
 	}
 
-	// DirectXMathの計算に対応しているCPUか確認
+	//DirectXMathの計算に対応しているCPUか確認
 	if (!DirectX::XMVerifyCPUSupport()) {
 		MessageBoxA(nullptr, "DirectXMath is not supported.", "Failed", MB_OK);
 		return -1;
 	}
 
-	//--------------------------------------------------
-	// アプリケーション実行
-	//--------------------------------------------------
+	//アプリケーション実行
 	APP.Execute();
 
-	//--------------------------------------------------
-	// 終了
-	//--------------------------------------------------
+	if (false)
+	{
+		hMutex = CreateMutex(NULL, FALSE, NULL);//ミューテックス生成
 
-	// COM解放
+		UINT nThreadId_Main = 1;
+		UINT nThreadId_Sub = 0;
+
+		//スレッド開始
+		HANDLE hThreadMain = (HANDLE)::_beginthreadex(NULL, 0, &ThreadMain, (void*)0, 0, &nThreadId_Main);
+		HANDLE hThreadSub = (HANDLE)::_beginthreadex(NULL, 0, &ThreadSub, (void*)0, 0, &nThreadId_Sub);
+
+		ResumeThread(hThreadMain);
+		ResumeThread(hThreadSub);
+
+		//スレッドの終了待ち
+		WaitForSingleObject(hThreadMain, INFINITE);
+		WaitForSingleObject(hThreadSub, INFINITE);
+
+		//終了
+
+		//スレッドハンドルの解放
+		CloseHandle(hThreadMain);
+		CloseHandle(hThreadSub);
+	}
+	
+	//COM解放
 	CoUninitialize();
 
 	return 0;
@@ -129,6 +175,9 @@ bool Application::Initialize(int width, int height)
 	// シェーダー
 	SHADER.Initialize();
 	
+	m_spTexture = std::make_shared<Texture>();
+	m_spTexture->Create("Resource/Texture/PauseBackGround.png");
+
 	//--------------------------------------------------
 	// アプリケーション
 	//--------------------------------------------------
@@ -204,6 +253,31 @@ void Application::Execute()
 		if (!g_window->IsCreated())
 			break;
 
+		//ロード中
+		if (m_loading)
+		{
+			auto& context = APP.g_graphicsDevice->g_cpContext;
+			auto& commandList = APP.g_graphicsDevice->g_cpCommandList;
+
+			g_graphicsDevice->Begin(context.Get());
+			{
+				float deltaTime = static_cast<float>(g_fpsTimer->GetDeltaTime());
+
+				static float rot = 0.0f;
+				rot += 2.0f;
+				mfloat4x4 matrix = mfloat4x4::CreateRotationZ(rot * deltaTime);
+
+				SHADER.GetSpriteShader().Begin(context.Get());
+				SHADER.GetSpriteShader().DrawTexture(m_spTexture.get(), context.Get(), matrix);
+				SHADER.GetSpriteShader().End(context.Get());
+
+				//context->FinishCommandList(false, commandList.GetAddressOf());
+			}
+			g_graphicsDevice->End(1);
+
+			continue;
+		}
+
 		//----------------------------------------
 		// ゲームサウンド処理
 		//----------------------------------------
@@ -221,7 +295,7 @@ void Application::Execute()
 		g_gameSystem->Update();
 
 		// 描画
-		g_graphicsDevice->Begin();
+		g_graphicsDevice->Begin(APP.g_graphicsDevice->g_cpContext.Get());
 		{
 			// 3D想定
 			g_gameSystem->Draw();
@@ -237,7 +311,7 @@ void Application::Execute()
 			g_imGuiSystem->DrawImGui();
 			g_imGuiSystem->End();
 		}
-		g_graphicsDevice->End();
+		g_graphicsDevice->End(1);
 
 		// 描画後更新
 		g_gameSystem->LateUpdate();

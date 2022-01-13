@@ -7,6 +7,7 @@ Actor::Actor()
 	: m_modelWork()
 	, m_transform()
 	, m_modelFilepath()
+	, m_prefabFilepath()
 	, g_tag(ACTOR_TAG::eUntagged)
 	, g_name("empty")
 	, g_activ(true)
@@ -27,6 +28,7 @@ void Actor::Serialize(json11::Json::array& jsonArray)
 	object["class_name"] = g_name;
 	object["tag"] = static_cast<int>(g_tag);
 	object["model_filepath"] = m_modelFilepath;
+	object["prefab_filepath"] = m_prefabFilepath;
 
 	// 座標
 	json11::Json::array position(3);
@@ -67,6 +69,9 @@ void Actor::Deserialize(const json11::Json& jsonObject)
 	if (!jsonObject["model_filepath"].is_null()) {
 		m_modelFilepath = jsonObject["model_filepath"].string_value();
 		LoadModel(m_modelFilepath);
+	}
+	if (!jsonObject["prefab_filepath"].is_null()) {
+		m_prefabFilepath = jsonObject["prefab_filepath"].string_value();
 	}
 
 	// 座標

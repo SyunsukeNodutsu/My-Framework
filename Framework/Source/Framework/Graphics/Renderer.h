@@ -219,6 +219,9 @@ private:
 
 };
 
+//--------------------------------------------------
+// #defines: インスタンスの取得
+//--------------------------------------------------
 #define RENDERER Renderer::GetInstance()
 
 #pragma region enums

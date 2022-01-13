@@ -8,7 +8,7 @@
 #include "../GraphicsDeviceChild.h"
 
 // カメラクラス
-class Camera : private GraphicsDeviceChild
+class Camera : public GraphicsDeviceChild
 {
 public:
 

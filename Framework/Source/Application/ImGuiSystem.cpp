@@ -161,6 +161,20 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 		return;
 	}
 
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Save")) {
+			APP.g_gameSystem->Serialize("");
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Load")) {
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
 	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
 
 	// シーンのパス表示
