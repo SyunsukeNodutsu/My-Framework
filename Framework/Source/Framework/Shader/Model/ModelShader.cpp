@@ -43,6 +43,36 @@ bool ModelShader::Initialize()
 	}
 
 	//--------------------------------------------------
+	// スキンメッシュ用 頂点シェーダ
+	//--------------------------------------------------
+	{
+		#include "ModelShader_VS_Skin.shaderinc"
+
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVSSkin.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "エラー：頂点シェーダ作成失敗.");
+			return false;
+		}
+
+		//D3D11_APPEND_ALIGNED_ELEMENTのがいいと思うんだ...
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",		0, DXGI_FORMAT_R8G8B8A8_UNORM,		0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SKININDEX",	0, DXGI_FORMAT_R16G16B16A16_SINT,	0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SKINWEIGHT",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateInputLayout(&layout[0], (UINT)layout.size(), compiledBuffer, sizeof(compiledBuffer), m_cpLayoutSkin.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "エラー：頂点入力レイアウト作成失敗.");
+			return false;
+		}
+	}
+
+	//--------------------------------------------------
 	// ピクセルシェーダ
 	//--------------------------------------------------
 	{
@@ -57,6 +87,9 @@ bool ModelShader::Initialize()
 
 	m_cd11Material.Create();
 	m_cd11Material.SetToDevice(Renderer::use_slot_material);
+
+	m_cd6Bone.Create();
+	m_cd6Bone.SetToDevice(use_slot_bones);
 
 	return true;
 }
@@ -118,6 +151,19 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 void ModelShader::DrawMesh(const Mesh* mesh, const std::vector<Material>& materials)
 {
 	if (mesh == nullptr) return;
+
+	if (mesh->IsSkinMesh())
+	{
+		g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpLayoutSkin.Get());
+		g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVSSkin.Get(), 0, 0);
+
+		m_cd6Bone.Write();
+	}
+	else
+	{
+		g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
+		g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+	}
 
 	// メッシュ情報を転送
 	mesh->SetToDevice();

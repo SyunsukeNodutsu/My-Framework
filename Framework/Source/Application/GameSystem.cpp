@@ -123,31 +123,31 @@ void GameSystem::Draw()
 	//--------------------------------------------------
 	// シャドウマップ描画
 	//--------------------------------------------------
-	for (int i = 0; i < 3; i++)
+	/*for (int i = 0; i < 3; i++)
 	{
 		SHADER.GetShadowMapShader().Begin(i);
 
 		for (auto& object : m_spActorList)
 			object->DrawShadowMap(deltaTime);
 	}
-	SHADER.GetShadowMapShader().End();
+	SHADER.GetShadowMapShader().End();*/
 	
 	//--------------------------------------------------
 	// 通常3D描画
 	//--------------------------------------------------
 	{
-		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(0).get(), 10);
-		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(1).get(), 11);
-		RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(2).get(), 12);
+		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(0).get(), 10);
+		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(1).get(), 11);
+		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(2).get(), 12);
 
 		SHADER.GetModelShader().Begin();
 
 		for (auto& object : m_spActorList)
 			object->Draw(deltaTime);
 
-		RENDERER.SetNullResources(10);
-		RENDERER.SetNullResources(11);
-		RENDERER.SetNullResources(12);
+		//RENDERER.SetNullResources(10);
+		//RENDERER.SetNullResources(11);
+		//RENDERER.SetNullResources(12);
 	}
 }
 

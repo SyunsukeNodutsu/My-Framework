@@ -101,6 +101,8 @@ void Actor::Deserialize(const json11::Json& jsonObject)
 			(float)scaling[2].number_value()
 		));
 	}
+
+	m_modelWork.CalcNodeMatrices();
 }
 
 //-----------------------------------------------------------------------------

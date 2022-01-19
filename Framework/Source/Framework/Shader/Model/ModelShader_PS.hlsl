@@ -169,35 +169,35 @@ float4 main( VertexOutput In ) : SV_TARGET
         // シャドウイング
         //------------------------------------------
         
-        for (int i = 0; i < 3; i++)
-        {
-            // ライトビュースクリーン空間でのZ値を計算する
-            float zInLVP = In.posInLVP[i].z / In.posInLVP[i].w;
-            if (zInLVP >= 0.0f && zInLVP <= 1.0f)
-            {
-                // Zの値を見て、このピクセルがこのシャドウマップに含まれているか判定
-                float2 shadowMapUV = In.posInLVP[i].xy / In.posInLVP[i].w;
-                shadowMapUV *= float2(0.5f, -0.5f);
-                shadowMapUV += 0.5f;
+        //for (int i = 0; i < 3; i++)
+        //{
+        //    // ライトビュースクリーン空間でのZ値を計算する
+        //    float zInLVP = In.posInLVP[i].z / In.posInLVP[i].w;
+        //    if (zInLVP >= 0.0f && zInLVP <= 1.0f)
+        //    {
+        //        // Zの値を見て、このピクセルがこのシャドウマップに含まれているか判定
+        //        float2 shadowMapUV = In.posInLVP[i].xy / In.posInLVP[i].w;
+        //        shadowMapUV *= float2(0.5f, -0.5f);
+        //        shadowMapUV += 0.5f;
 
-                // シャドウマップUVが範囲内か判定
-                if (shadowMapUV.x >= 0.0f && shadowMapUV.x <= 1.0f &&
-                    shadowMapUV.y >= 0.0f && shadowMapUV.y <= 1.0f)
-                {
-                    // シャドウマップから値をサンプリング
-                    float2 shadowValue = shadowMapArray[i].Sample(g_samplerState, shadowMapUV).xy;
+        //        // シャドウマップUVが範囲内か判定
+        //        if (shadowMapUV.x >= 0.0f && shadowMapUV.x <= 1.0f &&
+        //            shadowMapUV.y >= 0.0f && shadowMapUV.y <= 1.0f)
+        //        {
+        //            // シャドウマップから値をサンプリング
+        //            float2 shadowValue = shadowMapArray[i].Sample(g_samplerState, shadowMapUV).xy;
 
-                    // まずこのピクセルが遮蔽されているか調べる
-                    if (zInLVP >= shadowValue.r)
-                    {
-                        albedo.xyz *= 0.5f;
+        //            // まずこのピクセルが遮蔽されているか調べる
+        //            if (zInLVP >= shadowValue.r)
+        //            {
+        //                albedo.xyz *= 0.5f;
 
-                        // 影を落とせたので終了
-                        break;
-                    }
-                }
-            }
-        }
+        //                // 影を落とせたので終了
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
         
         //------------------------------------------
         // 平行光

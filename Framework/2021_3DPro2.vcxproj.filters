@@ -324,6 +324,9 @@
     <ClCompile Include="Sample.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application\Actors\CesiumMan.cpp">
+      <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -578,6 +581,9 @@
     <ClInclude Include="Source\Framework\HighLevel\Component\SoundComponent.h">
       <Filter>Source\Framework\HighLevel\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application\Actors\CesiumMan.h">
+      <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
@@ -629,6 +635,9 @@
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_VS.hlsl">
       <Filter>Source\Framework\Shader\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Model\ModelShader_VS_Skin.hlsl">
+      <Filter>Source\Framework\Shader\Model</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

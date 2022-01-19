@@ -1,29 +1,29 @@
-﻿//-----------------------------------------------------------------------------
-// File: Animation.h
-//
-// データ   ... AnimationData
-// ロジック ... Animator
-//-----------------------------------------------------------------------------
-#pragma once
-#include "../Utility/Timer.h"
+﻿#pragma once
 
 // アニメーションキー(クォータニオン
 struct AnimKeyQuaternion
 {
-	float		m_time = 0;		// 時間
-	qfloat4x4	m_numRot;		// クォータニオンデータ
+	float				m_time = 0;		// 時間
+	qfloat4x4	m_numRot;			// クォータニオンデータ
 };
 
 // アニメーションキー(ベクトル
 struct AnimKeyVector3
 {
-	float		m_time = 0;		// 時間
-	float3		m_numVec;		// 数ベクトルデータ
+	float				m_time = 0;		// 時間
+	float3		m_numVec;			// 3Dベクトルデータ
 };
 
-// アニメーション データ
+//============================
+// アニメーションデータ
+//============================
 struct AnimationData
 {
+	// アニメーション名
+	std::string		m_name;
+	// アニメの長さ
+	float			m_maxLength = 0;
+
 	// １ノードのアニメーションデータ
 	struct Node
 	{
@@ -40,86 +40,39 @@ struct AnimationData
 		bool InterpolateScales(float3& result, float time);
 	};
 
-	std::vector<Node>	m_nodes;		// 全ノード用アニメーションデータ
-	std::string			m_name;			// アニメーション名
-	float				m_maxLength = 0;// アニメの長さ
-
+	// 全ノード用アニメーションデータ
+	std::vector<Node>	m_nodes;
 };
 
-// アニメーション 操作.ロジック
 class Animator
 {
 public:
 
-	// @brief コンストラクタ
-	Animator();
-
-	// @brief デストラクタ
-	~Animator() = default;
-
-	// @brief アニメーションの設定
-	// @param data アニメーションデータ
-	// @param loop ループ再生？
-	inline void SetAnimation(const std::shared_ptr<AnimationData>& data, bool loop = true)
+	inline void SetAnimation(const std::shared_ptr<AnimationData>& rData, bool isLoop = true)
 	{
-		m_spAnimation = data;
-		m_isLoop = loop;
-		m_time = 0.0f;// 再生offset
+		m_spAnimation = rData;
+		m_isLoop = isLoop;
+
+		m_time = 0.0f;
 	}
 
-	// @brief アニメーション再生が終了かどうかを返す
-	// @return 終了...true
-	bool IsAnimationEnd() const {
-		if (m_spAnimation == nullptr || m_time >= m_spAnimation->m_maxLength)
-			return true;
+	// アニメーションが終了してる？
+	bool IsAnimationEnd() const
+	{
+		if (m_spAnimation == nullptr) { return true; }
+		if (m_time >= m_spAnimation->m_maxLength) { return true; }
+
 		return false;
 	}
 
-	// @brief アニメーションの更新
-	// @param nodes モデルノード
-	// @param speed 再生速度
-	// @param brendWeight ブレンド重み
-	void AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed = 1.0f, float brendWeight = 1.0f);
+	// アニメーションの更新
+	void AdvanceTime(std::vector<ModelWork::Node>& rNodes, float speed = 1.0f);
 
 private:
 
-	std::shared_ptr<AnimationData>	m_spAnimation;		// アニメーションデータ
-	float							m_time;
-	bool							m_isLoop;
+	std::shared_ptr<AnimationData>	m_spAnimation = nullptr;	// 再生するアニメーションデータ
 
-};
+	float m_time = 0.0f;
 
-// ブレンドアニメーター
-class BlendAnimator
-{
-public:
-
-	// @brief コンストラクタ
-	BlendAnimator();
-
-	// @brief アニメーション更新
-	// @param nodes モデルノード
-	// @param speed 速度
-	void AdvanceTime(std::vector<ModelWork::Node>& nodes, float speed = 1.0f);
-
-	// @brief アニメーション登録
-	// @param data 設定するアニメーションデータ
-	// @param changeSec 切り替えのtick秒
-	// @param loop ループ再生？
-	void SetAnimation(std::shared_ptr<AnimationData>& data, float changeTick = 0.5f, bool loop = true);
-
-	// @brief 終了しているかを返す
-	// @return 終了...true
-	bool IsAnimationEnd() const {
-		if (m_pNowAnimator && !m_pNextAnimator->IsAnimationEnd())
-			return false;
-		return true;
-	}
-
-private:
-
-	std::unique_ptr<Animator>	m_pNowAnimator;		// 現在再生中のアニメーション
-	std::unique_ptr<Animator>	m_pNextAnimator;	// 次に遷移するアニメーション
-	CommonTimer					m_timer;			// 時間計測
-	float						m_changeTick;		// 遷移に要するTick秒
+	bool m_isLoop = false;
 };

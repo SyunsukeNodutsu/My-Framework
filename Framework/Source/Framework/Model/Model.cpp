@@ -286,7 +286,7 @@ void ModelWork::CalcNodeMatrices()
 
 	for (auto&& nodeIdx : m_spModel->GetBoneNodeIndices())
 	{
-		if (nodeIdx >= /*StandardShader::maxBoneBufferSize*/200) {
+		if (nodeIdx >= ModelShader::MAX_BONES) {
 			assert(0 && "転送できるボーンの上限数を超えました");
 			return;
 		}
@@ -298,7 +298,7 @@ void ModelWork::CalcNodeMatrices()
 		work.m_worldTransform._41 += 0.01f;
 
 		// ボーン情報からGPUに渡す行列の計算
-		//SHADER->m_standardShader.BoneCB().Work().mBones[data.m_boneIndex] = data.m_boneInverseWorldMatrix * work.m_worldTransform;
+		SHADER.GetModelShader().m_cd6Bone.Work().m_boneMatrix[data.m_boneIndex] = data.m_boneInverseWorldMatrix * work.m_worldTransform;
 	}
 }
 

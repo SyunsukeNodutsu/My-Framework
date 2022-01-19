@@ -34,7 +34,13 @@ public:
 	// @param materials 使用する材質配列
 	void DrawMesh(const Mesh* mesh, const std::vector<Material>& materials);
 
+	static const int MAX_BONES = 300;
+	static const int use_slot_bones = 6;
+
 private:
+
+	ComPtr<ID3D11VertexShader> m_cpVSSkin = nullptr;
+	ComPtr<ID3D11InputLayout> m_cpLayoutSkin = nullptr;
 
 	// マテリアル
 	struct cdMaterial
@@ -46,6 +52,15 @@ private:
 		float	tmp[3];
 	};
 	ConstantBuffer<cdMaterial> m_cd11Material;
+
+	struct cbBone
+	{
+		mfloat4x4 m_boneMatrix[MAX_BONES];
+	};
+	
+
+public:
+	ConstantBuffer<cbBone> m_cd6Bone;
 
 private:
 

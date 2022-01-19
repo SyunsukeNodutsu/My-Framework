@@ -21,10 +21,18 @@
       "scaling": [ 3000, 3000, 3000 ]
     },
     {
-      "class_name": "Tank",
-      "model_filepath": "Resource/Model/T43/T43_Body.gltf",
-      "name": "T43_Player",
-      "position": [ 0, 1.2, 0 ],
+      "class_name": "Human",
+      "model_filepath": "Resource/Model/Robot/Robot.gltf",
+      "name": "Robot",
+      "position": [ 0, 0, 0 ],
+      "rotation": [ 0, 0, 0 ],
+      "scaling": [ 1, 1, 1 ]
+    },
+    {
+      "class_name": "CesiumMan",
+      "model_filepath": "Resource/Model/CesiumMan/CesiumMan3.gltf",
+      "name": "CesiumMan3",
+      "position": [ 2, 0, 0 ],
       "rotation": [ 0, 0, 0 ],
       "scaling": [ 1, 1, 1 ]
     },
