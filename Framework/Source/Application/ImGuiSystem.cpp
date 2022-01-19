@@ -17,7 +17,7 @@ ImGuiSystem::ImGuiSystem()
 	, m_enable(true)
 	, m_addLog(false)
 	, m_createInifile(true)
-	, m_showEachMonitor(true)
+	, m_showEachMonitor(false)
 	, m_showDemoMonitor(false)
 {
 }

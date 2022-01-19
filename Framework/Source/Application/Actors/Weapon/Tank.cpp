@@ -171,7 +171,7 @@ void Tank::UpdateMove(float deltaTime)
 	// Z軸に移動
 	float3 axisZ = m_transform.GetWorldMatrix().Backward();
 	axisZ.Normalize();
-	axisZ *= m_moveSpeed * deltaTime;
+	axisZ *= (m_moveSpeed * 0.03f);
 
 	// 移動前の座標記憶
 	m_prevPosition = m_transform.GetPosition();
@@ -186,10 +186,10 @@ void Tank::UpdateMove(float deltaTime)
 //-----------------------------------------------------------------------------
 void Tank::UpdateRotate(float deltaTime)
 {
-	constexpr float rotSpeed = 20.0f;// 回転速度
-	constexpr float decelerateSpeed = 28.0f;// 減速速度(操作無しの時)
+	constexpr float rotSpeed = 30.0f;// 回転速度
+	constexpr float decelerateSpeed = 34.0f;// 減速速度(操作無しの時)
 
-	constexpr float ROTATE_SPEED_MAX = 20.0f;// 最大回転速度
+	constexpr float ROTATE_SPEED_MAX = 30.0f;// 最大回転速度
 
 	// 左回転
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) {
@@ -212,7 +212,7 @@ void Tank::UpdateRotate(float deltaTime)
 	}
 
 	auto angle = m_transform.GetAngle();
-	angle.y += m_rotateSpeed * deltaTime;
+	angle.y += (m_rotateSpeed * 0.03f);
 	m_transform.SetAngle(angle);
 }
 

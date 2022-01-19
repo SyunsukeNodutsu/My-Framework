@@ -151,11 +151,11 @@ void TankParts::UpdateTrack(float deltaTime, float moveSpeed, float rotSpeed)
 	const auto& ownerMatrix = m_owner.GetTransform().GetWorldMatrix();
 
 	// 前後移動から
-	float trackMove = moveSpeed * 0.4f;
-	trackMove = std::clamp(trackMove, -1.6f, 1.6f);
+	float trackMove = moveSpeed * 0.8f;
+	//trackMove = std::clamp(trackMove, -1.6f, 1.6f);
 	// 左右回転から
-	float trackRotMove = rotSpeed * 0.06f;
-	trackRotMove = std::clamp(trackRotMove, -1.6f, 1.6f);
+	float trackRotMove = 0;// rotSpeed * 0.1f;
+	//trackRotMove = std::clamp(trackRotMove, -2.0f, 2.0f);
 
 	m_uvoffsetR += trackRotMove * deltaTime;
 	m_uvoffsetR -= trackMove * deltaTime;
@@ -227,11 +227,11 @@ void TankParts::UpdateTire(float deltaTime, float moveSpeed, float rotSpeed)
 	const auto& ownerAngle  = m_owner.GetTransform().GetAngle();
 
 	// 前後移動から
-	float trackMove = moveSpeed * 48.0f;
-	trackMove = std::clamp(trackMove, -280.0f, 280.0f);
+	float trackMove = moveSpeed * 100.0f;
+	//trackMove = std::clamp(trackMove, -280.0f, 280.0f);
 	// 左右回転から
-	float trackRotMove = rotSpeed * 10.0f;
-	trackRotMove = std::clamp(trackRotMove, -200.0f, 200.0f);
+	float trackRotMove = rotSpeed * 20.0f;
+	//trackRotMove = std::clamp(trackRotMove, -200.0f, 200.0f);
 
 	m_tireRotR -= trackRotMove * deltaTime;
 	m_tireRotR += trackMove * deltaTime;

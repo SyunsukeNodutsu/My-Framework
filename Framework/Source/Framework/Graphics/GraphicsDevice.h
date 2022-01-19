@@ -57,6 +57,10 @@ public:
 	// @param stride 1頂点のバイトサイズ
 	void DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
 
+	//
+	void DrawFrameBuff();
+	const std::shared_ptr<Texture>& GetFramebuffer() const { return m_rtScreen; }
+
 	//--------------------------------------------------
 	// 取得
 	//--------------------------------------------------
@@ -102,6 +106,10 @@ private:
 	// バックバッファ
 	std::shared_ptr<Texture>		m_spBackbuffer;
 	std::shared_ptr<Texture>		m_spDefaultZbuffer;
+
+	//フレームバッファ
+	std::shared_ptr<Texture>		m_rtScreen;
+	std::shared_ptr<Texture>		m_zScreen;
 
 	// アダプタ名
 	std::string						m_adapterName;

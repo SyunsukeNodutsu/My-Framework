@@ -57,6 +57,7 @@
 #include "Graphics/Texture.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/CubeMapGenerator.h"
+#include "Graphics/RenderTarget.h"
 
 #include "Graphics/Effect/EffekseerDevice.h"
 #include "Graphics/Effect/EffekseerDeviceChild.h"

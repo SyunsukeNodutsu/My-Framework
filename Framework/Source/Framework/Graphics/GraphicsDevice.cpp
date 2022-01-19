@@ -320,3 +320,27 @@ void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIV
 
 	pd3dContext->Draw(vertexCount, 0);
 }
+
+void GraphicsDevice::DrawFrameBuff()
+{
+	if (m_rtScreen == nullptr)
+	{
+		m_rtScreen = std::make_shared<Texture>();
+		m_zScreen = std::make_shared<Texture>();
+
+		m_rtScreen->CreateRenderTarget(900, 1600);
+		m_zScreen->CreateDepthStencil(900, 1600);
+	}
+
+	RestoreRenderTarget undo;
+
+	//クリア
+	//g_cpContext->OMSetRenderTargets(1, m_rtScreen->RTVAddress(), m_zScreen->DSV());
+	//g_cpContext->ClearRenderTargetView(m_rtScreen->RTV(), cfloat4x4(1, 0, 0, 1));
+	//g_cpContext->ClearDepthStencilView(m_zScreen->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	g_cpContext->ClearRenderTargetView(m_rtScreen->RTV(), zeroClear);
+	g_cpContext->ClearDepthStencilView(m_zScreen->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	g_cpContext->OMSetRenderTargets(1, m_rtScreen->RTVAddress(), m_zScreen->DSV());
+}
