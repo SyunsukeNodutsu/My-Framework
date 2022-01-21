@@ -28,8 +28,11 @@ public:
 	//--------------------------------------------------
 
 	// @brief 前フレームからのデルタタイムを秒単位で返す
+	// @param modeRaw スケーリングを無視するかどうか
 	// @return 乗算するとフレームに関係なく正確に動かせる値
-	double GetDeltaTime() const { return TicksToSeconds(m_deltaTicks) * m_scaling; }
+	double GetDeltaTime(bool modeRaw = false) const {
+		return TicksToSeconds(m_deltaTicks) * (modeRaw ? 1 : m_scaling);
+	}
 
 	// @brief このタイマの総経過時間を秒単位で返す
 	// @return 経過秒数

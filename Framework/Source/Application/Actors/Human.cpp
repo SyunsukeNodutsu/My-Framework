@@ -61,10 +61,16 @@ void Human::Update(float deltaTime)
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 
-	//
-	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space))
+	//エフェクトテスト
+	static float timecount = 0.0f;
+	timecount += deltaTime;
+	if (timecount >= 3.0f)
 	{
-		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", m_transform.GetPosition());
+		const auto& pos = float3(0, 3, 0);
+		//APP.g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos);
+		APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
+
+		timecount = 0.0f;
 	}
 
 	// TPS視点カメラ
@@ -74,7 +80,7 @@ void Human::Update(float deltaTime)
 
 		auto delta = APP.g_rawInputDevice->g_spMouse->GetMouseWheelDelta() * -1;
 
-		m_zoom += delta * deltaTime * 0.2f;
+		m_zoom += delta * deltaTime * 0.8f;
 
 		m_spCamera->SetLocalPos(float3(1.0f, 0.0f, -m_zoom));
 		m_spCamera->Update();

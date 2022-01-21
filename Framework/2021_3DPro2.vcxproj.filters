@@ -581,6 +581,9 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Framework\FrameworkDevice.h">
+      <Filter>Source\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
