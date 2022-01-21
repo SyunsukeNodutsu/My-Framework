@@ -44,6 +44,11 @@ private:
 	// @param deltaTime デルタタイム
 	void UpdateRotate(float deltaTime);
 
+	// @brief 衝突判定更新
+	// @param
+	void UpdateCollision();
+
+	//ステートマシン------------------------------------------------------------------
 	class StateBase {
 	public:
 		virtual void Update(float deltaTime, Human& owner) = 0;

@@ -61,9 +61,6 @@
     <Filter Include="Library\Effekseer">
       <UniqueIdentifier>{ba4c3405-194c-4b43-ae7e-5cdb1914a309}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Graphics\Effect">
-      <UniqueIdentifier>{d9d01096-9c8e-446c-acb1-502026d24ddb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\Input\BasicInput">
       <UniqueIdentifier>{6a0a131c-f2f3-48d7-9f19-3638bb4d2a7f}</UniqueIdentifier>
     </Filter>
@@ -108,6 +105,9 @@
     </Filter>
     <Filter Include="Source\Framework\HighLevel\Component">
       <UniqueIdentifier>{7c70ed8a-ad09-46ee-b631-c6e1663adb6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Graphics\Effect">
+      <UniqueIdentifier>{61bc7f2d-61b5-4a04-a4a6-c91a2c03e625}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -240,15 +240,6 @@
     <ClCompile Include="Source\Application\Actors\Human.cpp">
       <Filter>Source\Application\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
       <Filter>Source\Application\Camera</Filter>
     </ClCompile>
@@ -321,11 +312,17 @@
     <ClCompile Include="Source\Framework\HighLevel\Component\SoundComponent.cpp">
       <Filter>Source\Framework\HighLevel\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Sample.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Application\Actors\CesiumMan.cpp">
       <Filter>Source\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,15 +485,6 @@
     <ClInclude Include="Source\Application\Application.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h">
-      <Filter>Source\Framework\Graphics\Effect</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
       <Filter>Library\Effekseer</Filter>
     </ClInclude>
@@ -583,6 +571,15 @@
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\CesiumMan.h">
       <Filter>Source\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h">
+      <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

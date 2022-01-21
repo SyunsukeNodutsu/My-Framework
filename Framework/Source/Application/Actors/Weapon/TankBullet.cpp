@@ -47,8 +47,6 @@ void TankBullet::Explosion()
 {
 	auto pos = m_transform.GetPosition();
 
-	// Sound and Effect
-	APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
 	SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
 
 	g_enable = false;

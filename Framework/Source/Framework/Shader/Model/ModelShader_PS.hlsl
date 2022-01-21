@@ -240,18 +240,6 @@ float4 main( VertexOutput In ) : SV_TARGET
 		// エミッシブ
 		//------------------------------------------
         diffuseColor += g_emissiveTexture.Sample(g_samplerState, In.uv).rgb * g_material.m_emissive;
-        
-        //------------------------------------------
-        // リムライト
-        //------------------------------------------
-        
-        float powerA = 1.0f - max(0.0f, dot(g_directional_light_dir, normal));
-        float powerB = 1.0f - max(0.0f, normal.z * -1.0f);
-        
-        float limPower = powerA * powerB;
-        limPower = pow(limPower, 1.3f);
-        
-        //diffuseColor *= limPower;
     }
     else
     {

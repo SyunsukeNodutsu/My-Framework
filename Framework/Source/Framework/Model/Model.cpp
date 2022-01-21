@@ -262,7 +262,7 @@ ModelWork::Node* ModelWork::FindWorkNode(std::string name)
 void ModelWork::SetModel(const std::shared_ptr<ModelData>& rModel)
 {
 	m_spModel = rModel;
-	UINT nodeSize = rModel->GetOriginalNodes().size();
+	UINT nodeSize = (UINT)rModel->GetOriginalNodes().size();
 
 	// ノードのコピーを生成
 	m_coppiedNodes.resize(nodeSize);

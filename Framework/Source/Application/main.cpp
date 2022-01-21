@@ -11,35 +11,6 @@ FpsTimer* Application::g_fpsTimer = 0;
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
 std::shared_ptr<ImGuiSystem> Application::g_imGuiSystem = 0;
 
-HANDLE	hMutex;//ミューテックスのハンドル
-
-unsigned __stdcall ThreadMain(void* vpArguments)
-{
-	APP.Execute();
-
-	//スレッド終了
-	_endthread();
-
-	return 0;
-}
-
-unsigned __stdcall ThreadSub(void* vpArguments)
-{
-	for (;;)
-	{
-		//DBWinMutexを使用して確認が必要？
-		//OutputDebugStringA("aaa.\n");
-
-		if (GetAsyncKeyState(VK_SPACE))
-			break;
-	}
-
-	//スレッド終了
-	_endthread();
-
-	return 0;
-}
-
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
@@ -74,31 +45,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	//アプリケーション実行
 	APP.Execute();
-
-	if (false)
-	{
-		hMutex = CreateMutex(NULL, FALSE, NULL);//ミューテックス生成
-
-		UINT nThreadId_Main = 1;
-		UINT nThreadId_Sub = 0;
-
-		//スレッド開始
-		HANDLE hThreadMain = (HANDLE)::_beginthreadex(NULL, 0, &ThreadMain, (void*)0, 0, &nThreadId_Main);
-		HANDLE hThreadSub = (HANDLE)::_beginthreadex(NULL, 0, &ThreadSub, (void*)0, 0, &nThreadId_Sub);
-
-		ResumeThread(hThreadMain);
-		ResumeThread(hThreadSub);
-
-		//スレッドの終了待ち
-		WaitForSingleObject(hThreadMain, INFINITE);
-		WaitForSingleObject(hThreadSub, INFINITE);
-
-		//終了
-
-		//スレッドハンドルの解放
-		CloseHandle(hThreadMain);
-		CloseHandle(hThreadSub);
-	}
 	
 	//COM解放
 	CoUninitialize();
@@ -115,7 +61,7 @@ bool Application::Initialize(int width, int height)
 	// ウィンドウ初期化
 	//--------------------------------------------------
 
-	// ウィンドウ作成
+	//ウィンドウ作成
 	g_window = new Window();
 	if (!g_window->Create(width, height, "My framework", "Window")) {
 		MessageBoxA(nullptr, "Create window failed.", "Failed", MB_OK);
@@ -123,9 +69,10 @@ bool Application::Initialize(int width, int height)
 	}
 
 	//--------------------------------------------------
-	// 各種デバイス
+	// フレームワーク・デバイス初期化
 	//--------------------------------------------------
 
+	//各種デバイス生成
 	g_graphicsDevice	= new GraphicsDevice();
 	g_effectDevice		= new EffekseerDevice();
 	g_audioDevice		= new AudioDevice();
@@ -136,12 +83,12 @@ bool Application::Initialize(int width, int height)
 	g_gameSystem	= std::make_shared<GameSystem>();
 	g_imGuiSystem	= std::make_shared<ImGuiSystem>();
 
-	// デバイスセット
+	//デバイスセット
 	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice);
 	EffekseerDeviceChild::SetEffekseerDevice(g_effectDevice);
 	AudioDeviceChild::SetAudioDevice(g_audioDevice);
 
-	// 描画デバイス Direct3D
+	//描画デバイス Direct3D
 	MY_DIRECT3D_DESC desc = {};
 	desc.m_bufferCount	= 2;
 	desc.m_width		= width;// 1280-1920-2560
@@ -154,14 +101,14 @@ bool Application::Initialize(int width, int height)
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
 
-	// エフェクトデバイス
+	//
 	g_effectDevice->Initialize();
 
-	// オーディオデバイス
+	//オーディオデバイス
 	g_audioDevice->Initialize();
 	g_audioDevice->SetMasterVolume(0.2f);
 	
-	// 入力デバイス
+	//入力デバイス
 	g_rawInputDevice->Initialize();
 	g_directInputDevice->Initialize(g_window->GetWndHandle());
 
@@ -265,6 +212,7 @@ void Application::Execute()
 		
 		// 更新
 		g_gameSystem->Update();
+		g_effectDevice->Update();
 
 		// 描画
 		g_graphicsDevice->Begin(APP.g_graphicsDevice->g_cpContext.Get());
@@ -272,8 +220,8 @@ void Application::Execute()
 			// 3D想定
 			g_gameSystem->Draw();
 
-			// エフェクト描画
-			g_effectDevice->Update(static_cast<float>(g_fpsTimer->GetDeltaTime()));
+			//
+			g_effectDevice->Draw();
 
 			// 2D想定 描画は最も最後
 			g_gameSystem->Draw2D();
@@ -283,16 +231,10 @@ void Application::Execute()
 			g_imGuiSystem->DrawImGui();
 			g_imGuiSystem->End();
 		}
-		g_graphicsDevice->End(1);
+		g_graphicsDevice->End();
 
 		// 描画後更新
 		g_gameSystem->LateUpdate();
-
-		//----------------------------------------
-		// FPS制御
-		//----------------------------------------
-
-		// TODO: どうしても最大画面時のPresentの不具合が治らなければここで
 	}
 
 	//==================================================

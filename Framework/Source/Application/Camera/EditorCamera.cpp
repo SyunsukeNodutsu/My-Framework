@@ -28,7 +28,7 @@ void EditorCamera::Update(float deltaTime)
 
 	// 回転
 	{
-		float raito = 120.0f;
+		float raito = 12.0f;
 		if (mouse->IsDown(MouseButton::Right))
 		{
 			float deltaX = m_mousePosNow.x - m_mousePosOld.x;

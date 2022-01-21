@@ -1,105 +1,48 @@
 ﻿#include "EffekseerEffect.h"
 
-//=============================================================================
-//
-// EffectData
-//
-//=============================================================================
-
 //-----------------------------------------------------------------------------
-// コンストラクタ
+//コンストラクタ
 //-----------------------------------------------------------------------------
-EffectData::EffectData()
-	: m_pEffect(nullptr)
+EffekseerEffect::EffekseerEffect()
+	: m_effect()
+	, m_handle()
 {
 }
 
 //-----------------------------------------------------------------------------
-// 読み込み
+//初期化
 //-----------------------------------------------------------------------------
-bool EffectData::Load(const std::u16string& filepath)
+void EffekseerEffect::Initialize(const std::u16string& filepath)
 {
-	if (!g_effectDevice) return false;
-	if (!g_effectDevice->g_manager) return false;
-	
-	m_pEffect = Effekseer::Effect::Create(g_effectDevice->g_manager, filepath.c_str());
-	if (m_pEffect == nullptr) {
-		assert(0 && "Effekseerファイルのパスが間違っています");
-		return false;
-	}
-	return true;
-}
-
-
-
-//=============================================================================
-//
-// EffectWork
-//
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-// コンストラクタ
-//-----------------------------------------------------------------------------
-EffectWork::EffectWork()
-	: m_handle()
-	, m_effectData(nullptr)
-{
+	if (g_effectDevice == nullptr) return;
+	m_effect = Effekseer::Effect::Create(g_effectDevice->g_manager, filepath.c_str());
 }
 
 //-----------------------------------------------------------------------------
-// 初期化(データセット)
+//再生
 //-----------------------------------------------------------------------------
-void EffectWork::Initialize(const std::shared_ptr<EffectData>& effectData)
+void EffekseerEffect::Play(const float3& position, float speed)
 {
-	if (!effectData) return;
-
-	m_effectData = effectData;
+	if (g_effectDevice == nullptr) return;
+	m_handle = g_effectDevice->g_manager->Play(m_effect, position.x, position.y, position.z);
+	g_effectDevice->g_manager->SetSpeed(m_handle, speed);
+	g_effectDevice->g_manager->Flip();
 }
 
 //-----------------------------------------------------------------------------
-// 再生
+//停止
 //-----------------------------------------------------------------------------
-void EffectWork::Play(const float3& position)
+void EffekseerEffect::Stop()
 {
-	if (!g_effectDevice) return;
-	if (!g_effectDevice->g_manager) return;
-
-	if (!m_effectData) return;
-
-	m_handle = g_effectDevice->g_manager->Play(m_effectData->Get(), position.x, position.y, position.z);
-}
-
-//-----------------------------------------------------------------------------
-// 再生中のEffectを移動
-//-----------------------------------------------------------------------------
-void EffectWork::Move(float3& addPosition)
-{
-	if (!g_effectDevice) return;
-	if (!g_effectDevice->g_manager) return;
-
-	g_effectDevice->g_manager->AddLocation(m_handle, ToE3D(addPosition));
-}
-
-//-----------------------------------------------------------------------------
-// 再生停止
-//-----------------------------------------------------------------------------
-void EffectWork::Stop()
-{
-	if (!g_effectDevice) return;
-	if (!g_effectDevice->g_manager) return;
-
+	if (g_effectDevice == nullptr) return;
 	g_effectDevice->g_manager->StopEffect(m_handle);
 }
 
 //-----------------------------------------------------------------------------
-// 更新
+//再生中のEffectを移動
 //-----------------------------------------------------------------------------
-void EffectWork::Update(float deltaTime)
+void EffekseerEffect::AddLocation(const float3& addPosition)
 {
-	if (!g_effectDevice) return;
-	if (!g_effectDevice->g_manager) return;
-
-	g_effectDevice->g_manager->SetSpeed(m_handle, deltaTime);
-	g_effectDevice->g_manager->Flip();
+	if (g_effectDevice == nullptr) return;
+	g_effectDevice->g_manager->AddLocation(m_handle, ToE3D(addPosition));
 }

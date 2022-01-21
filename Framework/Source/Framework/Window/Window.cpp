@@ -311,6 +311,15 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	}
 	break;
 
+	// マウスホイール
+	case WM_MOUSEWHEEL:
+	{
+		int delta = GET_WHEEL_DELTA_WPARAM(wparam);
+		if (delta != 0)
+			APP.g_rawInputDevice->g_spMouse->SetMouseWheelDelta(delta);
+	}
+	break;
+
 	// システムがウィンドウを描画するように要求
 	case WM_PAINT:
 	{

@@ -59,7 +59,7 @@ bool Mesh::Create(const std::vector<MeshVertex>& vertices, const std::vector<Mes
 		initData.SysMemSlicePitch = 0;
 
 		// 頂点バッファ作成
-		if (!m_vertexBuffer.Create(D3D11_BIND_VERTEX_BUFFER, sizeof(MeshVertex) * vertices.size(), D3D11_USAGE_DEFAULT, &initData)) {
+		if (!m_vertexBuffer.Create(D3D11_BIND_VERTEX_BUFFER, sizeof(MeshVertex) * (UINT)vertices.size(), D3D11_USAGE_DEFAULT, &initData)) {
 			Release();
 			return false;
 		}
@@ -89,7 +89,7 @@ bool Mesh::Create(const std::vector<MeshVertex>& vertices, const std::vector<Mes
 		initData.SysMemSlicePitch	= 0;
 
 		// バッファ作成
-		if (!m_indexBuffer.Create(D3D11_BIND_INDEX_BUFFER, faces.size() * sizeof(MeshFace), D3D11_USAGE_DEFAULT, &initData)) {
+		if (!m_indexBuffer.Create(D3D11_BIND_INDEX_BUFFER, sizeof(MeshFace) * (UINT)faces.size(), D3D11_USAGE_DEFAULT, &initData)) {
 			Release();
 			return false;
 		}

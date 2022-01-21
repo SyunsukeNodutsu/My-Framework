@@ -49,6 +49,10 @@ public:
     // @param hwnd アプリケーションのウィンドウハンドル
     void ParseMouseData(RAWMOUSE mouse, HWND hwnd);
 
+    // @brief マウスホイールの変化量を設定する
+    // @param delta 変化量
+    void SetMouseWheelDelta(int delta) { m_mouseWheelDelta = delta; }
+
     // @brief カーソルの表示切り替え
     // @param onoff 表示するか
     void SetCursorShow(const bool onoff) {
@@ -82,6 +86,10 @@ public:
     // @param haste 解析を待たず、即座に取得？
     // @return マウス座標(全体)
     float2 GetMousePos(bool haste = false);
+
+    // @brief マウスホイールの変化量を返す
+    // @return マウスホイールの変化量
+    int GetMouseWheelDelta() { return m_mouseWheelDelta; }
 
 private:
 
@@ -128,6 +136,9 @@ private:
 
     // マウス座標
     float2 m_mousePos;
+
+    // マウスホイールの変化量
+    int m_mouseWheelDelta = 0;
 
     HWND m_owner;
 

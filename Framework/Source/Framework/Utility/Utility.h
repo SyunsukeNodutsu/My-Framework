@@ -65,7 +65,7 @@ std::string FormatBuffer(const std::string& fmt, Args ... args)
 // @return
 inline std::string GetDirFromPath(const std::string& path)
 {
-	const std::string::size_type pos = std::max<signed>(path.find_last_of('/'), path.find_last_of('\\'));
+	const std::string::size_type pos = std::max<signed>((const signed int)path.find_last_of('/'), (const signed int)path.find_last_of('\\'));
 	return (pos == std::string::npos) ? std::string() : path.substr(0, pos + 1);
 }
 

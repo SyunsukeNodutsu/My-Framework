@@ -248,8 +248,6 @@ void Tank::UpdateShot(bool state1st)
 		const auto& cannon = std::make_shared<TankBullet>(*this, pos + axisZ, axisZ);
 		APP.g_gameSystem->AddActor(cannon);
 
-		// Effect
-		APP.g_effectDevice->Play(u"Resource/Effect/TankFire.efk", pos);
 		// Sound
 		m_shotSound3D = SOUND_DIRECTOR.CreateSoundWork3D("Resource/Audio/SE/TankShot01.wav", false, true);
 		m_shotSound3D->SetVolume(state1st ? 4.0f : 2.0f);

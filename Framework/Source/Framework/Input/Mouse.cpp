@@ -55,6 +55,8 @@ void Mouse::Refresh()
     UPDATE_BUTTON_STATE(mX2Button);
 
     m_lastState = m_state;
+
+    SetMouseWheelDelta(0);
 }
 
 //-----------------------------------------------------------------------------

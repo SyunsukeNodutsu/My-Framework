@@ -6,68 +6,52 @@
 #pragma once
 #include "../GraphicsDeviceChild.h"
 
-class EffectWork;
+class EffekseerEffect;
 
-// エフェクシア管理クラス
+//エフェクシア管理クラス
 class EffekseerDevice : public GraphicsDeviceChild
 {
 public:
 
-	// @brief コンストラクタ
+	//@brief コンストラクタ
 	EffekseerDevice();
 
-	// @brief 初期化
-	// @return 成功...true
+	//@brief 初期化
+	//@return 成功...true
 	bool Initialize();
 
-	// @brief 終了
+	//@brief 終了
 	void Finalize();
 
-	// @brief 更新
-	// @param deltaTime 前フレームからの経過時間
-	void Update(float deltaTime);
+	//@brief 更新
+	void Update();
 
-	// @brief 再生
-	// @param filepath 読み込むeffectファイルのパス
-	// @param position 発生座標
-	// @retrun 成功...true
-	bool Play(const std::u16string& filepath, float3& position);
+	//@brief 描画
+	void Draw();
 
-	// @brief エフェクト読み込み
-	// @param filepath 読み込むeffectファイルのパス
-	// @retrun
-	std::shared_ptr<EffectWork> LoadEffect(const std::u16string& filepath);
+	//@brief 再生
+	//@param filepath 読み込むeffectファイルのパス
+	//@param position 発生座標
+	//@retrun 成功...true
+	bool Play(const std::u16string& filepath, const float3& position);
 
-	// @brief エフェクト検索
-	// @param filepath 検索するeffectファイルのパス
-	// @retrun
-	std::shared_ptr<EffectWork> FindEffect(const std::u16string& filepath);
-
-	// @brief 全体の再生を止める
+	//@brief 全体の再生を止める
 	void StopAll();
 
 	//--------------------------------------------------
-	// static
+	//static
 	//--------------------------------------------------
 
-	// 最大描画(スプライト)数
+	//最大描画(スプライト)数
 	static constexpr int MAX_EFFECT = 8000;
 
 public:
-
-	// Direct11用Renderer
-	EffekseerRendererDX11::Renderer* g_renderer;
-
-	// マネージャー
-	Effekseer::Manager* g_manager;
+	EffekseerRendererDX11::RendererRef g_renderer;//レンダラー
+	Effekseer::ManagerRef g_manager;//マネージャー
 
 private:
-
-	// 各エフェクトのインスタンス管理
-	std::map< std::u16string, std::shared_ptr<EffectWork> > m_instanceMap;
-
-	// エフェクト再生速度
-	float m_speed;
+	std::map< std::u16string, std::shared_ptr<EffekseerEffect> > m_instanceMap;//各エフェクトのインスタンス管理
+	float m_speed;//エフェクト再生速度
 
 };
 

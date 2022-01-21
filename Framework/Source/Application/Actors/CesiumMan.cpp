@@ -9,8 +9,10 @@ void CesiumMan::Initialize()
 
 	LoadModel("Resource/Model/CesiumMan/CesiumMan3.gltf");
 
+	m_transform.SetScale(10);
+
 	//アニメーション設定
-	auto data = m_modelWork.GetAnimation(0);
+	auto data = m_modelWork.GetAnimation(1);
 	m_animator.SetAnimation(data);
 }
 

@@ -79,7 +79,7 @@ bool Collision::RayToMesh(const XMVECTOR& rRayPos, const XMVECTOR& rRayDir, floa
 
 	// DEBUGビルドでも速度を維持するため、別変数に拾っておく
 	const MeshFace* pFaces = &rMesh.GetFaces()[0];
-	UINT faceNum = rMesh.GetFaces().size();
+	UINT faceNum = (UINT)rMesh.GetFaces().size();
 
 	// 全ての面(三角形)
 	for (UINT faceIdx = 0; faceIdx < faceNum; ++faceIdx)
@@ -156,7 +156,7 @@ bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh&
 
 	// DEBUGビルドでも速度を維持するため、別変数に拾っておく
 	const auto* pFaces = &mesh.GetFaces()[0];
-	UINT faceNum = mesh.GetFaces().size();
+	UINT faceNum = (UINT)mesh.GetFaces().size();
 	const float3* vertices = &mesh.GetVertexPositions()[0];
 
 	// メッシュの逆行列で、球の中心座標を変換(メッシュの座標系へ変換される)

@@ -61,10 +61,20 @@ void Human::Update(float deltaTime)
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 
+	//
+	if (APP.g_rawInputDevice->g_spKeyboard->IsPressed(KeyCode::Space))
+	{
+		APP.g_effectDevice->Play(u"Resource/Effect/Explosion.efk", m_transform.GetPosition());
+	}
+
 	// TPS視点カメラ
 	if (m_spCamera)
 	{
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
+
+		auto delta = APP.g_rawInputDevice->g_spMouse->GetMouseWheelDelta() * -1;
+
+		m_zoom += delta * deltaTime * 0.2f;
 
 		m_spCamera->SetLocalPos(float3(1.0f, 0.0f, -m_zoom));
 		m_spCamera->Update();
@@ -143,6 +153,14 @@ void Human::UpdateRotate(float deltaTime)
 	constexpr float rotPow = 400.0f;
 	m_rotation.y += rotateRadian * rotPow * deltaTime;
 	m_transform.SetAngle(m_rotation);
+}
+
+//-----------------------------------------------------------------------------
+// 衝突判定更新
+//-----------------------------------------------------------------------------
+void Human::UpdateCollision()
+{
+
 }
 
 

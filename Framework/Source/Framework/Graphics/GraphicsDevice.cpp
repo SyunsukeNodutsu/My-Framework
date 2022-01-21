@@ -237,6 +237,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
+	auto renderer = ::EffekseerRendererDX11::Renderer::Create(g_cpDevice.Get(), g_cpContext.Get(), 8000);
+	renderer.Reset();
+
 	return true;
 }
 
@@ -331,13 +334,6 @@ void GraphicsDevice::DrawFrameBuff()
 		m_rtScreen->CreateRenderTarget(900, 1600);
 		m_zScreen->CreateDepthStencil(900, 1600);
 	}
-
-	RestoreRenderTarget undo;
-
-	//クリア
-	//g_cpContext->OMSetRenderTargets(1, m_rtScreen->RTVAddress(), m_zScreen->DSV());
-	//g_cpContext->ClearRenderTargetView(m_rtScreen->RTV(), cfloat4x4(1, 0, 0, 1));
-	//g_cpContext->ClearDepthStencilView(m_zScreen->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	g_cpContext->ClearRenderTargetView(m_rtScreen->RTV(), zeroClear);

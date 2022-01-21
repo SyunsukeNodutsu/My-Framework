@@ -690,14 +690,14 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 
 			// 頂点バッファ合成
 			if (prim->Vertices.size() >= 1) {
-				UINT st = destNode->m_mesh.m_vertices.size();
+				UINT st = (UINT)destNode->m_mesh.m_vertices.size();
 				destNode->m_mesh.m_vertices.resize(destNode->m_mesh.m_vertices.size() + prim->Vertices.size());
 				memcpy(&destNode->m_mesh.m_vertices[st], &prim->Vertices[0], prim->Vertices.size() * sizeof(MeshVertex));
 			}
 
 			// インデックス合成
 			if (prim->Faces.size() >= 1) {
-				UINT st = destNode->m_mesh.m_faces.size();
+				UINT st = (UINT)destNode->m_mesh.m_faces.size();
 				destNode->m_mesh.m_faces.resize(destNode->m_mesh.m_faces.size() + prim->Faces.size());
 				// 反転するため 0, 2, 1の順番にする(通常は0, 1, 2の順番)
 				for (UINT fi = 0; fi < prim->Faces.size(); fi++) {
@@ -708,11 +708,11 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 			}
 
 			// Subset
-			destNode->m_mesh.m_subsets[pi].m_faceCount += prim->Faces.size();	// 面数を加算
+			destNode->m_mesh.m_subsets[pi].m_faceCount += (UINT)prim->Faces.size();	// 面数を加算
 
 			//
-			currentVertexIdx += prim->Vertices.size();
-			currentFaceIdx += prim->Faces.size();
+			currentVertexIdx += (UINT)prim->Vertices.size();
+			currentFaceIdx += (UINT)prim->Faces.size();
 
 		}
 		tempPrimitives.clear();

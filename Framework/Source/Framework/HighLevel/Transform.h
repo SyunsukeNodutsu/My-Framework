@@ -65,6 +65,10 @@ public:
 		m_worldScale = scale;
 		m_needUpdateMatrix = true;
 	}
+	void SetScale(const float scale) {
+		m_worldScale = float3(scale, scale, scale);
+		m_needUpdateMatrix = true;
+	}
 
 private:
 

@@ -28,7 +28,6 @@
     <ClCompile Include="..\Library\imGui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imGui\imgui_widgets.cpp" />
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp" />
-    <ClCompile Include="Sample.cpp" />
     <ClCompile Include="Source\Application\Actors\CesiumMan.cpp" />
     <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp" />
     <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp" />
@@ -57,9 +56,9 @@
     <ClCompile Include="Source\Framework\Graphics\Buffer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp" />
-    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
@@ -141,9 +140,9 @@
     <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
     <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h" />
     <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h" />
-    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
@@ -468,14 +467,14 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include;../Library/json;../Library/imGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);../Library/Effekseer/Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -490,7 +489,7 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include;../Library/json;../Library/imGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -499,7 +498,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);../Library/Effekseer/Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -512,14 +511,14 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>;../Library/Effekseer/Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -534,8 +533,8 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/Effekseer/include</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -543,7 +542,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>;../Library/Effekseer/Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
