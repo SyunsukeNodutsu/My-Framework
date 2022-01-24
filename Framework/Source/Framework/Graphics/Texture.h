@@ -100,4 +100,8 @@ private:
 	// @brief DSVの作成
 	// @return 成功...true 失敗...false
 	bool CreateDSV(bool useMSAA = false);
+
+	//
+	bool KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV);
+
 };
