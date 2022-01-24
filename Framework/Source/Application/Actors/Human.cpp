@@ -1,5 +1,6 @@
 ﻿#include "Human.h"
 #include "../main.h"
+#include "../../Framework/Audio/SoundDirector.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -52,7 +53,8 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
-	m_spState->Update(deltaTime, *this);
+	if (!APP.g_gameSystem->g_cameraSystem.IsEditorMode())
+		m_spState->Update(deltaTime, *this);
 
 	// アニメーション
 	float animationSpeed = 60.0f;
@@ -67,8 +69,9 @@ void Human::Update(float deltaTime)
 	if (timecount >= 3.0f)
 	{
 		const auto& pos = float3(0, 3, 0);
-		//APP.g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos);
-		APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
+		APP.g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos);
+		SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
+		//APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
 
 		timecount = 0.0f;
 	}
@@ -158,6 +161,10 @@ void Human::UpdateRotate(float deltaTime)
 
 	constexpr float rotPow = 400.0f;
 	m_rotation.y += rotateRadian * rotPow * deltaTime;
+
+	if (m_rotation.y > 360) m_rotation.y -= 360.0f;
+	if (m_rotation.y < 0) m_rotation.y += 360.0f;
+
 	m_transform.SetAngle(m_rotation);
 }
 
@@ -166,7 +173,34 @@ void Human::UpdateRotate(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateCollision()
 {
+	CheckBump();
+}
 
+//-----------------------------------------------------------------------------
+// ぶつかり判定
+//-----------------------------------------------------------------------------
+void Human::CheckBump()
+{
+	//球の設定
+	float3 center = m_transform.GetPosition();
+	center.y += 0.8f;//少し持ち上げる
+	float radius = 0.4f;//半径いいかんじに設定
+
+	APP.g_gameSystem->AddDebugSphereLine(center, radius);
+
+	float3 push = float3::Zero;
+
+	for (auto& actor : APP.g_gameSystem->GetActorList())
+	{
+		if (actor.get() == this) continue;
+
+		//地面と判定
+		if (actor->g_tag & 8)
+		{
+			if (actor->CheckCollision(center, radius, push))
+				m_transform.SetPosition(m_transform.GetPosition() + push);
+		}
+	}
 }
 
 
@@ -182,6 +216,9 @@ void Human::UpdateCollision()
 //-----------------------------------------------------------------------------
 void Human::StateWait::Update(float deltaTime, Human& owner)
 {
+	owner.UpdateCollision();
+
+	//TODO: 修正
 	float3 moveVec = float3::Zero;
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
@@ -189,6 +226,7 @@ void Human::StateWait::Update(float deltaTime, Human& owner)
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
+	//遷移 移動ステート
 	if (moveVec.LengthSquared() >= 0.01f)
 	{
 		owner.m_spState = nullptr;
@@ -206,8 +244,9 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 {
 	owner.UpdateMove(deltaTime);
 	owner.UpdateRotate(deltaTime);
+	owner.UpdateCollision();
 
-	// TODO: fix
+	//TODO: fix
 	float3 moveVec = float3::Zero;
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
@@ -215,6 +254,7 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
+	//遷移 待機ステート
 	if (moveVec.LengthSquared() == 0)
 	{
 		owner.m_spState = nullptr;

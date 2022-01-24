@@ -36,6 +36,11 @@
 
 #pragma comment(lib, "DirectXTK.lib")
 
+// DirectXTex
+#include <DirectXTex.h>
+
+#pragma comment(lib,"DirectXTex.lib")
+
 //--------------------------------------------------
 // 自作Framework
 //--------------------------------------------------
@@ -46,6 +51,8 @@
 #include "Utility/Utility.h"
 
 #include "Utility/FpsTimer.h"
+
+#include "Utility/CoroutineGeneration.h"
 
 #include "Window/Window.h"
 

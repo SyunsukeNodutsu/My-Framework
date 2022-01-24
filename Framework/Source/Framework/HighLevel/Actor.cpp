@@ -178,6 +178,33 @@ bool Actor::CheckCollision(const float3& rayPos, const float3& rayDir, float hit
 }
 
 //-----------------------------------------------------------------------------
+// 球とメッシュの当たり判定
+//-----------------------------------------------------------------------------
+bool Actor::CheckCollision(const float3& centerPos, const float radius, float3& resultPos)
+{
+	const auto& data = m_modelWork.GetData();
+	if (data == nullptr) return false;
+
+	bool hit = false;
+	float3 pushedFromNodesPos = centerPos;
+
+	for (const auto& index : data->GetMeshNodeIndices())
+	{
+		const auto& mesh = m_modelWork.GetMesh(index);
+		const auto& node = m_modelWork.GetNodes()[index];
+
+		hit = Collision::SphereToMesh(pushedFromNodesPos, radius, *(mesh.get()), node.m_localTransform * m_transform.GetWorldMatrix(), pushedFromNodesPos);
+	}
+
+	if (hit)
+	{
+		resultPos = pushedFromNodesPos - centerPos;
+	}
+
+	return hit;
+}
+
+//-----------------------------------------------------------------------------
 // モデル読み込み
 //-----------------------------------------------------------------------------
 void Actor::LoadModel(const std::string& filepath)

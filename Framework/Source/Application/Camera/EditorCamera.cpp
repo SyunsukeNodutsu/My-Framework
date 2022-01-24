@@ -24,7 +24,7 @@ void EditorCamera::Update(float deltaTime)
 	auto& mouse = APP.g_rawInputDevice->g_spMouse;
 	auto& keyboard = APP.g_rawInputDevice->g_spKeyboard;
 
-	const auto& rawDeltaTime = APP.g_fpsTimer->GetDeltaTime(true);
+	const auto& rawDeltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime(true));
 
 	m_mousePosNow = mouse->GetMousePos(true);
 

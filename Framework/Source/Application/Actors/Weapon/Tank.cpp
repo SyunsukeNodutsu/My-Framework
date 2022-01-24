@@ -1,7 +1,8 @@
 ﻿#include "Tank.h"
 #include "TankParts.h"
-
 #include "TankBullet.h"
+
+#include "../../../Framework/Audio/SoundDirector.h"
 
 // 車体の4隅を算出し返す
 static float3 GetLaunchPoint(const float dgree, const float distance)

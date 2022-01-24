@@ -24,11 +24,13 @@
 //			 ┗------------------Renderer
 // 
 // ■使用ライブラリ
+// 外部 ---
 // DirectXTK
 // Dear imGui
-// Effekseer
-// nlohmann - json
-// gltfLoader(KD)
+// Effekseer(1.62a)
+// 学内配布 ---
+// json
+// gltfLoader
 //-----------------------------------------------------------------------------
 #pragma once
 #include "GameSystem.h"

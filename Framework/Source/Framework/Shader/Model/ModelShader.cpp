@@ -115,29 +115,32 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 	auto& data = model.GetData();
 	if (data == nullptr) return;
 
-	auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera();
-	//const auto& camera = APP.g_gameSystem->g_cameraSystem.SearchCamera("TankTPS");
+	//使用カメラ取得
+	const auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera();
 
-	// 全メッシュノードを描画
+	//全メッシュノード
 	for (auto& index : data->GetMeshNodeIndices())
 	{
 		auto& node = model.GetNodes()[index];
 		auto& mesh = model.GetMesh(index);
 
-		// 視錐台カリング
-		if(camera->g_isFrustumCull)
+		//視錐台カリング
+		if (camera != nullptr)
 		{
-			// AABB -> OBB作成
-			DirectX::BoundingOrientedBox obb = {};
-			DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->GetBoundingBox());
-			obb.Transform(obb, (node.m_localTransform * worldMatrix));
+			if (camera->g_isFrustumCull)
+			{
+				//AABB -> OBB作成
+				DirectX::BoundingOrientedBox obb = {};
+				DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->GetBoundingBox());
+				obb.Transform(obb, (node.m_localTransform * worldMatrix));
 
-			if (!camera->GetFrustum().Intersects(obb)) continue;
+				if (!camera->GetFrustum().Intersects(obb)) continue;
 
-			//DrawOBB(obb);
+				//DrawOBB(obb);
+			}
 		}
 
-		// ワールド行列 設定
+		//ワールド行列 設定
 		RENDERER.Getcb8().Work().m_world_matrix = node.m_worldTransform * worldMatrix;
 		RENDERER.Getcb8().Write();
 

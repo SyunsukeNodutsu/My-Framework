@@ -48,6 +48,8 @@ private:
 	// @param
 	void UpdateCollision();
 
+	void CheckBump();
+
 	//ステートマシン------------------------------------------------------------------
 	class StateBase {
 	public:

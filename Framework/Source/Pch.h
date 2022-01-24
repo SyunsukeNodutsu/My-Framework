@@ -51,6 +51,9 @@
 #include <thread>
 #include <mutex>
 
+//task
+#include <ppltasks.h>
+
 //Numerical processing
 #include <random>
 

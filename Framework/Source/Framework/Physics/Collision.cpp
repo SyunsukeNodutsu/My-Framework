@@ -5,7 +5,7 @@ using namespace DirectX;
 //-----------------------------------------------------------------------------
 // 球 vs 球判定
 //-----------------------------------------------------------------------------
-bool Collision::SphereToSphere(const DirectX::XMVECTOR& rPos1, const DirectX::XMVECTOR& rPos2, float radius1, float radius2, SphereResult* pResult)
+bool Collision::SphereToSphere(const float3& rPos1, const float3& rPos2, float radius1, float radius2, SphereResult* pResult)
 {
 	// 球同士の半径を加算して、衝突判定距離を求める
 	float collisionRange = radius1 + radius2;
@@ -29,7 +29,7 @@ bool Collision::SphereToSphere(const DirectX::XMVECTOR& rPos1, const DirectX::XM
 //-----------------------------------------------------------------------------
 // レイ vs メッシュ判定
 //-----------------------------------------------------------------------------
-bool Collision::RayToMesh(const XMVECTOR& rRayPos, const XMVECTOR& rRayDir, float maxDistance, const Mesh& rMesh, const XMMATRIX& rMatrix, RayResult* pResult)
+bool Collision::RayToMesh(const float3& rRayPos, const float3& rRayDir, float maxDistance, const Mesh& rMesh, const XMMATRIX& rMatrix, RayResult* pResult)
 {
 	//--------------------------------------------------------
 	// レイの逆行列化
@@ -39,10 +39,10 @@ bool Collision::RayToMesh(const XMVECTOR& rRayPos, const XMVECTOR& rRayDir, floa
 	XMMATRIX invMat = XMMatrixInverse(0, rMatrix);
 
 	// レイの判定開始位置を逆変換
-	XMVECTOR rayPos = XMVector3TransformCoord(rRayPos, invMat);
+	float3 rayPos = XMVector3TransformCoord(rRayPos, invMat);
 
 	// レイの方向を逆変換
-	XMVECTOR rayDir = XMVector3TransformNormal(rRayDir, invMat);
+	float3 rayDir = XMVector3TransformNormal(rRayDir, invMat);
 
 	// レイの方向ベクトルの長さで判定用の最大距離を補正
 	// ※逆行列に拡縮が入っていると、レイの長さが変わるため
@@ -130,7 +130,7 @@ bool Collision::RayToMesh(const XMVECTOR& rRayPos, const XMVECTOR& rRayDir, floa
 //-----------------------------------------------------------------------------
 // 球 vs メッシュ判定
 //-----------------------------------------------------------------------------
-bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh& mesh, const DirectX::XMMATRIX& matrix, float3& rPushedPos)
+bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh& mesh, const XMMATRIX& matrix, float3& rPushedPos)
 {
 	//------------------------------------------
 	// ブロードフェイズ
@@ -161,7 +161,7 @@ bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh&
 
 	// メッシュの逆行列で、球の中心座標を変換(メッシュの座標系へ変換される)
 	XMMATRIX invM = XMMatrixInverse(0, matrix);
-	XMVECTOR QPos = rSpherePos;
+	float3 QPos = rSpherePos;
 	QPos = XMVector3TransformCoord(QPos, invM);
 
 	// 半径の二乗(高速判定用)
@@ -175,8 +175,8 @@ bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh&
 	scale.m128_f32[3] = 0;
 
 	// その他、作業用変数
-	XMVECTOR nearPt;
-	XMVECTOR vToCenter;
+	float3 nearPt;
+	float3 vToCenter;
 
 	// 全ての面と判定
 	// ※判定はメッシュのローカル空間で行われる
@@ -227,12 +227,12 @@ bool Collision::SphereToMesh(const float3& rSpherePos, float radius, const Mesh&
 //-----------------------------------------------------------------------------
 // 点 vs 三角形との最近接点を求める
 //-----------------------------------------------------------------------------
-void Collision::PointToTriangle(const XMVECTOR& p, const XMVECTOR& a, const XMVECTOR& b, const XMVECTOR& c, DirectX::XMVECTOR& outPt)
+void Collision::PointToTriangle(const float3& p, const float3& a, const float3& b, const float3& c, float3& outPt)
 {
 	// pがaの外側の頂点領域の中にあるかどうかチェック
-	XMVECTOR ab = b - a;
-	XMVECTOR ac = c - a;
-	XMVECTOR ap = p - a;
+	float3 ab = b - a;
+	float3 ac = c - a;
+	float3 ap = p - a;
 
 	float d1 = XMVector3Dot(ab, ap).m128_f32[0];//ab.Dot(ap);
 	float d2 = XMVector3Dot(ac, ap).m128_f32[0];//ac.Dot(ap);

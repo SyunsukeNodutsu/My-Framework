@@ -49,10 +49,7 @@ public:
 
 	// @brief 現在使用しているカメラを返す
 	// @return 使用カメラ ※最も優先度の高いカメラ(遷移中を除く)
-	const std::shared_ptr<Camera>& GetCamera() const {
-		//if (m_editorMode) return m_spEditorCamera;
-		return m_spCamera;
-	}
+	const std::shared_ptr<Camera>& GetCamera() const;
 
 	// @brief カメラを名前検索で返す
 	// @return 発見...カメラ 見つからない...nullptr

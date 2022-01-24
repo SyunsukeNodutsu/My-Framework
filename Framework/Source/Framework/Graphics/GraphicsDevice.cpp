@@ -81,6 +81,9 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		return false;
 	}
 
+	//遅延コンテキスト作成
+	g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
+
 	//--------------------------------------------------
 	// 現環境で使用できるMSAAをチェック
 	//--------------------------------------------------
@@ -192,6 +195,10 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
+	//遅延コンテキストも同様
+	g_cpContextDeferred->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	g_cpContextDeferred->RSSetViewports(1, &g_viewport);
+
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成
 	//--------------------------------------------------
@@ -232,9 +239,6 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	m_tempVertexBuffer = std::make_shared<Buffer>();
 
-	//遅延コンテキスト作成
-	//g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
-
 	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	auto renderer = ::EffekseerRendererDX11::Renderer::Create(g_cpDevice.Get(), g_cpContext.Get(), 8000);
@@ -266,6 +270,10 @@ void GraphicsDevice::Begin(ID3D11DeviceContext* pd3dContext, const float* clearC
 	pd3dContext->RSSetViewports(1, &g_viewport);
 
 	pd3dContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+
+	//
+	g_cpContextDeferred->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	g_cpContextDeferred->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -273,7 +281,9 @@ void GraphicsDevice::Begin(ID3D11DeviceContext* pd3dContext, const float* clearC
 //-----------------------------------------------------------------------------
 void GraphicsDevice::End(UINT syncInterval, UINT flags)
 {
-	//g_cpContext->ExecuteCommandList(g_cpCommandList.Get(), false);
+	/*g_cpContextDeferred->FinishCommandList(false, g_cpCommandList.GetAddressOf());
+	g_cpContext->ExecuteCommandList(g_cpCommandList.Get(), false);
+	g_cpCommandList->Release();*/
 
 	// TODO: なぜか全画面だと垂直同期が切れる
 	HRESULT hr = m_cpGISwapChain->Present(syncInterval, flags);

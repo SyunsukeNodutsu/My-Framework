@@ -138,7 +138,6 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
     }
 
     // ボイスコピー
-    // TODO: インターフェースのDeepCopy方法の調査 今のままだとShallowCopy
     m_pSourceVoice = m_soundData.GetRawSourceVoice();
 
     return true;

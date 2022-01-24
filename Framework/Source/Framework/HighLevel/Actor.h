@@ -75,6 +75,13 @@ public:
 	// @return 衝突...true
 	bool CheckCollision(const float3& rayPos, const float3& rayDir, float hitRange, RayResult& result);
 
+	// @brief 球とメッシュの当たり判定
+	// @param centerPos 中心座標
+	// @param radius 球の半径
+	// @param resultPos 移動した球の座標
+	// @return 衝突...true
+	bool CheckCollision(const float3& centerPos, const float radius, float3& resultPos);
+
 	// @brief モデル読み込み
 	// @param filepath 読み込むモデルのファイルパス
 	void LoadModel(const std::string& filepath);

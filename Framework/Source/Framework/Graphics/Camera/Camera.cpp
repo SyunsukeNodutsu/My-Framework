@@ -30,6 +30,7 @@ Camera::Camera()
 {
 	// 射影行列の初期設定
 	m_projMatrix = XMMatrixPerspectiveFovLH(m_fovAngleY, m_aspectRatio, m_nearZ, m_farZ);
+	SetCameraMatrix(mfloat4x4::Identity);
 }
 
 //-----------------------------------------------------------------------------

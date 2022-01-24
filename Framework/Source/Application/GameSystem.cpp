@@ -308,7 +308,7 @@ void GameSystem::ExecChangeScene()
 bool GameSystem::LoadScene(const std::string& filepath)
 {
 	Reset();
-
+	
 	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
 	if (jsonObject.is_null()) {
 		APP.g_imGuiSystem->AddLog(

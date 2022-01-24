@@ -122,7 +122,6 @@
     <ClInclude Include="Source\Application\Actors\Weapon\Tank.h" />
     <ClInclude Include="Source\Application\Actors\Weapon\TankBullet.h" />
     <ClInclude Include="Source\Application\Actors\Weapon\TankParts.h" />
-    <ClInclude Include="Source\Application\Application.h" />
     <ClInclude Include="Source\Application\Camera\CameraSystem.h" />
     <ClInclude Include="Source\Application\Camera\EditorCamera.h" />
     <ClInclude Include="Source\Application\Camera\FPSCamera.h" />
@@ -173,6 +172,7 @@
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h" />
     <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h" />
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h" />
+    <ClInclude Include="Source\Framework\Utility\CoroutineGeneration.h" />
     <ClInclude Include="Source\Framework\Utility\Cpuid.h" />
     <ClInclude Include="Source\Framework\Utility\Easing.h" />
     <ClInclude Include="Source\Framework\Utility\EasingType.h" />
@@ -468,14 +468,15 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/DirectXTex;../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib;../Library/DirectXTex/Bin/Desktop_2019_Win10/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -490,8 +491,9 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/DirectXTex;../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -499,7 +501,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib;../Library/DirectXTex/Bin/Desktop_2019_Win10/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -512,14 +514,15 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/DirectXTex;../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib;../Library/DirectXTex/Bin/Desktop_2019_Win10/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -534,8 +537,9 @@
       <PrecompiledHeaderFile>Pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>Pch.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Library/DirectXTex;../Library/ImGui;../Library/Effekseer/$(Platform)/include;../Library/StringConverter</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -543,7 +547,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../Library/Effekseer/$(Platform)/lib;../Library/DirectXTex/Bin/Desktop_2019_Win10/$(Platform)/$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

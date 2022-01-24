@@ -44,8 +44,6 @@ void CameraSystem::Update(float deltaTime)
 	}
 	else
 	{
-		CheckPriority();
-
 		// 編集モードに移行
 		if (keyboard->IsPressed(KeyCode::Escape))
 		{
@@ -56,6 +54,8 @@ void CameraSystem::Update(float deltaTime)
 			mouse->SetCursorShow(true);
 		}
 	}
+
+	CheckPriority();
 }
 
 //-----------------------------------------------------------------------------
@@ -90,6 +90,14 @@ void CameraSystem::AddCameraList(std::shared_ptr<Camera> camera)
 	if (!camera) return;
 	m_cameraList.push_back(camera);
 	CheckPriority();
+}
+
+//-----------------------------------------------------------------------------
+// 現在使用中の(最も優先度が高い)カメラを返す
+//-----------------------------------------------------------------------------
+const std::shared_ptr<Camera>& CameraSystem::GetCamera() const
+{
+	return m_spCamera;
 }
 
 //-----------------------------------------------------------------------------

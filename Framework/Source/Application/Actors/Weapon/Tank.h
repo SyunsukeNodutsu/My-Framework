@@ -6,9 +6,13 @@
 // TODO: Bodyも部品として扱う
 //-----------------------------------------------------------------------------
 #pragma once
-#include "../../Application.h"
+#include "../../main.h"
+#include "../../Camera/FPSCamera.h"
+#include "../../Camera/TPSCamera.h"
 
 class TankParts;
+class TPSCamera;
+class FPSCamera;
 
 // 戦車クラス
 class Tank : public Actor

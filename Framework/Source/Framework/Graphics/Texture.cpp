@@ -34,6 +34,9 @@ bool Texture::Create( const std::string& filepath )
 {
 	if (filepath.empty()) return false;
 
+	DirectX::TexMetadata meta;
+	DirectX::ScratchImage image;
+
 	// マルチバイト -> ワイドバイト
 	std::wstring wfilepath = sjis_to_wide(filepath.c_str());
 
@@ -47,6 +50,8 @@ bool Texture::Create( const std::string& filepath )
 		DebugLog("WARNING: テクスチャ読み込み失敗.\n");
 		return false;
 	}
+
+	
 
 	return true;
 }

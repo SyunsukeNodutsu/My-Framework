@@ -51,6 +51,10 @@ public:
 		m_worldPosition = position;
 		m_needUpdateMatrix = true;
 	}
+	void SetPosition(const float x, const float y, const float z) {
+		m_worldPosition = float3(x, y, z);
+		m_needUpdateMatrix = true;
+	}
 
 	// @brief 回転の設定
 	// @param angle 設定するDegree度

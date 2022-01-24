@@ -482,9 +482,6 @@
     <ClInclude Include="Source\Application\Actors\Human.h">
       <Filter>Source\Application\Actors</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\Application.h">
-      <Filter>Source\Application</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
       <Filter>Library\Effekseer</Filter>
     </ClInclude>
@@ -583,6 +580,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\FrameworkDevice.h">
       <Filter>Source\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Utility\CoroutineGeneration.h">
+      <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
