@@ -42,7 +42,7 @@ public:
 
 	// @brief 描画開始とバッファクリア
 	// @param clearColor クリア色(nullで白クリア)
-	void Begin(ID3D11DeviceContext* pd3dContext, const float* clearColor = nullptr);
+	void Begin(const float* clearColor = nullptr);
 
 	// @brief 描画終了と画面更新
 	// @param syncInterval フレームの表示を垂直ブランクと同期する方法

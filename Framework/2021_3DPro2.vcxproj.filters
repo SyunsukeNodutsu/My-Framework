@@ -610,6 +610,9 @@
     <None Include="Resource\Jsons\Tree.json">
       <Filter>Jsons</Filter>
     </None>
+    <None Include="Resource\Jsons\Serialize.json">
+      <Filter>Jsons</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">

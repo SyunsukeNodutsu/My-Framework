@@ -18,8 +18,18 @@ GameSystem::GameSystem()
 //-----------------------------------------------------------------------------
 void GameSystem::Initialize()
 {
-	// シーン読み込み ※ActorList初期化
-	LoadScene("Resource/Jsons/TitleProcess.json");
+	m_spLoadingTex[0] = std::make_shared<Texture>();
+	m_spLoadingTex[1] = std::make_shared<Texture>();
+	m_spLoadingTex[2] = std::make_shared<Texture>();
+
+	m_spLoadingTex[0]->Create("Resource/Texture/Load01.png");
+	m_spLoadingTex[1]->Create("Resource/Texture/Load02.png");
+	m_spLoadingTex[2]->Create("Resource/Texture/Load03.png");
+
+	//非同期読み込みテスト
+	std::thread asyncLoad([=] { LoadScene("Resource/Jsons/TitleProcess.json"); });
+	//std::thread asyncLoad([=] { LoadScene("Resource/Jsons/GameProcess.json"); });
+	asyncLoad.detach();
 }
 
 //-----------------------------------------------------------------------------
@@ -27,6 +37,8 @@ void GameSystem::Initialize()
 //-----------------------------------------------------------------------------
 void GameSystem::Finalize()
 {
+	Serialize("Resource/Jsons/Serialize.json");
+
 	for (auto& object : m_spActorList)
 		object->Finalize();
 
@@ -67,6 +79,8 @@ void GameSystem::Serialize(const std::string& filepath)
 //-----------------------------------------------------------------------------
 void GameSystem::Update()
 {
+	if (!GetLockFlag()) return;
+
 	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 	const float& totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
 
@@ -104,6 +118,8 @@ void GameSystem::Update()
 //-----------------------------------------------------------------------------
 void GameSystem::LateUpdate()
 {
+	if (!GetLockFlag()) return;
+
 	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
 
 	for (auto& object : m_spActorList)
@@ -119,6 +135,8 @@ void GameSystem::Draw()
 
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();
+
+	if (!GetLockFlag()) return;
 
 	//--------------------------------------------------
 	// シャドウマップ描画
@@ -161,6 +179,7 @@ void GameSystem::Draw2D()
 	//--------------------------------------------------
 	// Effect描画
 	//--------------------------------------------------
+	if (GetLockFlag())
 	{
 		SHADER.GetEffectShader().Begin();
 
@@ -189,8 +208,27 @@ void GameSystem::Draw2D()
 	{
 		SHADER.GetSpriteShader().Begin(APP.g_graphicsDevice->g_cpContext.Get(), true, true);
 
-		for (auto& object : m_spActorList)
-			object->DrawSprite(deltaTime);
+		if (!GetLockFlag())
+		{
+			static int index = 0;
+
+			static float numTime = 0;
+			numTime += APP.g_fpsTimer->GetDeltaTime();
+
+			if (numTime >= 0.5f)
+			{
+				numTime = 0.0f;
+				index++;
+				if (index >= 3) index = 0;
+			}
+
+			SHADER.GetSpriteShader().DrawTexture(m_spLoadingTex[index].get(), float2(0, 0));
+		}
+		else
+		{
+			for (auto& object : m_spActorList)
+				object->DrawSprite(deltaTime);
+		}
 
 		SHADER.GetSpriteShader().End(APP.g_graphicsDevice->g_cpContext.Get());
 	}
@@ -298,7 +336,13 @@ void GameSystem::Reset()
 //-----------------------------------------------------------------------------
 void GameSystem::ExecChangeScene()
 {
-	LoadScene(g_sceneFilepath);
+	SetLockFlag(false);
+	std::thread([=]
+		{
+			LoadScene(g_sceneFilepath);
+			//LoadScene("Resource/Jsons/GameProcess.json");
+		}
+	).detach();
 	m_isRequestChangeScene = false;
 }
 
@@ -340,6 +384,11 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	// 生成を終えた後に一括で初期化
 	for (auto& object : m_spActorList)
 		object->Initialize();
+
+	auto sleepTime = std::chrono::seconds(2);
+	std::this_thread::sleep_for(sleepTime);
+
+	SetLockFlag(true);
 
 	return true;
 }

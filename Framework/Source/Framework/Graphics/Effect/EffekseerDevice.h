@@ -33,7 +33,7 @@ public:
 	//@param filepath 読み込むeffectファイルのパス
 	//@param position 発生座標
 	//@retrun 成功...true
-	bool Play(const std::u16string& filepath, const float3& position);
+	bool Play(const std::u16string& filepath, const float3& position, const float magnification = 1.0f);
 
 	//@brief 全体の再生を止める
 	void StopAll();
@@ -77,5 +77,18 @@ static Effekseer::Matrix44 ToE4x4(mfloat4x4 matrix)
 		for (int width = 0; width < 4; width++)
 			result.Values[height][width] = matrix.m[height][width];
 	}
+	return result;
+}
+
+// @brief mfloat4x4をEffekseer::Matrix44に変換して返す
+// @param matrix 変換するmfloat4x4
+// @return 変換後のEffekseer::Matrix44
+static Effekseer::Matrix43 ToE4x3(mfloat4x4 matrix)
+{
+	Effekseer::Matrix43 result = {};
+	for (int height = 0; height < 4; height++)
+		for (int width = 0; width < 3; width++)
+			result.Value[height][width] = matrix.m[height][width];
+
 	return result;
 }

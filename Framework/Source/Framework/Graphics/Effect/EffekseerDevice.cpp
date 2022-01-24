@@ -109,14 +109,14 @@ void EffekseerDevice::Draw()
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-bool EffekseerDevice::Play(const std::u16string& filepath, const float3& position)
+bool EffekseerDevice::Play(const std::u16string& filepath, const float3& position, const float magnification)
 {
 	//エフェクト生成
 	const auto& instance = std::make_shared<EffekseerEffect>();
 	if (instance)
 	{
 		//初期化/MAPに追加
-		instance->Initialize(filepath);
+		instance->Initialize(filepath, magnification);
 		m_instanceMap.emplace(filepath, instance);
 	}
 

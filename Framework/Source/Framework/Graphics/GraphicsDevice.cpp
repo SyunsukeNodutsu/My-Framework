@@ -259,21 +259,20 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 開始
 //-----------------------------------------------------------------------------
-void GraphicsDevice::Begin(ID3D11DeviceContext* pd3dContext, const float* clearColor)
+void GraphicsDevice::Begin(const float* clearColor)
 {
 	//g_cpContextDeferred->ClearState();
 
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	pd3dContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	pd3dContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
-	pd3dContext->RSSetViewports(1, &g_viewport);
+	g_cpContext->RSSetViewports(1, &g_viewport);
 
-	pd3dContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
+	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
 
-	//
-	g_cpContextDeferred->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	g_cpContextDeferred->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	//g_cpContextDeferred->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	//g_cpContextDeferred->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 //-----------------------------------------------------------------------------

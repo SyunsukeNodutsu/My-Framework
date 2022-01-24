@@ -12,10 +12,10 @@ EffekseerEffect::EffekseerEffect()
 //-----------------------------------------------------------------------------
 //初期化
 //-----------------------------------------------------------------------------
-void EffekseerEffect::Initialize(const std::u16string& filepath)
+void EffekseerEffect::Initialize(const std::u16string& filepath, const float magnification)
 {
 	if (g_effectDevice == nullptr) return;
-	m_effect = Effekseer::Effect::Create(g_effectDevice->g_manager, filepath.c_str());
+	m_effect = Effekseer::Effect::Create(g_effectDevice->g_manager, filepath.c_str(), magnification);
 }
 
 //-----------------------------------------------------------------------------

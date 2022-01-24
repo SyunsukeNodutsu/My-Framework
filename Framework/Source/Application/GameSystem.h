@@ -70,23 +70,25 @@ public:
 	void AddDebugSphereLine(const float3& pos, const float radius, const cfloat4x4 color = cfloat4x4::White);
 
 public:
-
-	// カメラ管理システム
-	CameraSystem g_cameraSystem;
-
-	// シーンのjsonファイルパス
-	std::string g_sceneFilepath;
+	CameraSystem g_cameraSystem;//カメラ管理システム
+	std::string g_sceneFilepath;//シーンのjsonファイルパス
 
 private:
+	std::list<std::shared_ptr<Actor>> m_spActorList;//登場Actorリスト
+	std::vector<EffectShader::Vertex> m_debugLines;//デバッグライン用の頂点情報
+	bool m_isRequestChangeScene;//シーン遷移のリクエストの有無
 
-	// 登場Actorリスト
-	std::list<std::shared_ptr<Actor>> m_spActorList;
+	//非同期読み込み用 =============================================
+	bool isLoaded = false;
+	std::mutex isLoadedMutex;
+	std::shared_ptr<Texture> m_spLoadingTex[3];
 
-	// デバッグライン用の頂点情報
-	std::vector<EffectShader::Vertex> m_debugLines;
-
-	// シーン遷移のリクエストの有無
-	bool m_isRequestChangeScene;
+	void SetLockFlag(bool load) {
+		std::lock_guard<std::mutex> lock(isLoadedMutex); isLoaded = load;
+	}
+	bool GetLockFlag() {
+		std::lock_guard<std::mutex> lock(isLoadedMutex); return isLoaded;
+	}
 
 private:
 

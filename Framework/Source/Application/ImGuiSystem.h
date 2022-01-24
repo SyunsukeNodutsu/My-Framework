@@ -46,7 +46,7 @@ public:
 		string += "\n";
 		m_logBuffer.append(string.c_str(), args...);
 		m_addLog = true;
-		DebugLog(string.c_str());
+		//DebugLog(string.c_str());
 	}
 
 	// @brief LogMonitorのクリア

@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Jsons\GameProcess.json" />
+    <None Include="Resource\Jsons\Serialize.json" />
     <None Include="Resource\Jsons\TitleProcess.json" />
     <None Include="Resource\Jsons\Tree.json" />
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli" />

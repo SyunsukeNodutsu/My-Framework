@@ -63,14 +63,8 @@ void CameraSystem::Update(float deltaTime)
 //-----------------------------------------------------------------------------
 void CameraSystem::SetToDevice()
 {
-	if (m_editorMode)
-	{
-		m_spEditorCamera->SetToShader();
-	}
-	else
-	{
-		m_spCamera->SetToShader();
-	}
+	if (m_spCamera == nullptr) return;
+	m_spCamera->SetToShader();
 }
 
 //-----------------------------------------------------------------------------

@@ -16,7 +16,8 @@ public:
 
 	//@brief 初期化
 	//@param filepath 読み込むエフェクトのファイルパス
-	void Initialize(const std::u16string& filepath);
+	//@param magnification 読み込み時の拡大率
+	void Initialize(const std::u16string& filepath, const float magnification = 1.0f);
 
 	//@brief 再生
 	//@param position 再生座標

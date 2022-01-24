@@ -202,9 +202,9 @@ void Application::Execute()
 		//----------------------------------------
 
 		// カメラ行列の取得
-		const auto& cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+		//const auto& cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
 		// サウンド更新
-		g_audioDevice->Update(cameraMatrix);
+		//g_audioDevice->Update(cameraMatrix);
 
 		//----------------------------------------
 		// ゲーム処理
@@ -215,7 +215,7 @@ void Application::Execute()
 		g_effectDevice->Update();
 
 		// 描画
-		g_graphicsDevice->Begin(APP.g_graphicsDevice->g_cpContext.Get());
+		g_graphicsDevice->Begin();
 		{
 			// 3D想定
 			g_gameSystem->Draw();
