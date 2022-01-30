@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------
 #pragma once
 #include "Transform.h"
+#include "ApplicationChilled.h"
 
 // Actor の分別
 enum ACTOR_TAG
@@ -20,7 +21,7 @@ enum ACTOR_TAG
 };
 
 // アクタークラス
-class Actor
+class Actor : public ApplicationChilled
 {
 public:
 
@@ -114,28 +115,26 @@ public:
 
 protected:
 
-	ModelWork	m_modelWork;	// モデル管理
-	Transform	m_transform;	// トランスフォーム
-
-	std::string m_modelFilepath;// モデルのファイルパス
-	std::string m_prefabFilepath;// プレハブのファイルパス
+	ModelWork m_modelWork;				//モデル管理
+	Transform m_transform;				//トランスフォーム
+	std::string m_modelFilepath;		//モデルのファイルパス
+	std::string m_prefabFilepath;		//プレハブのファイルパス
 
 public:
 
-	UINT		g_tag;			// TAG
-	std::string g_name;			// オブジェクトの名前
+	UINT g_tag;							//判別用TAG
+	std::string g_name;					//オブジェクトの名前
+	bool g_activ;						//動作するかどうか
+	bool g_enable;						//有効かどうか ※falseになると消滅
+	bool g_shadowCaster;				//影を落とすかどうか
 
-	bool		g_activ;		// 動作？
-	bool		g_enable;		// 有効？ ※falseになると消滅します
-	bool		g_shadowCaster;	// 影を落とす？
-
-	// UVスクロール
-	float2		g_numUVOffset;
-	bool		g_isUVScroll;
+	//UVスクロール ※TODO:ファイル移動
+	float2 g_numUVOffset;
+	bool g_isUVScroll;
 
 };
 
-// @brief Actor生成
-// @param name 生成したいActorのクラス名
-// @return 生成したActor
+//@brief Actor生成
+//@param name 生成したいActorのクラス名
+//@return 生成したActor
 std::shared_ptr<Actor> GenerateActor(const std::string& name);

@@ -26,6 +26,15 @@ void GameSystem::Initialize()
 	m_spLoadingTex[1]->Create("Resource/Texture/Load02.png");
 	m_spLoadingTex[2]->Create("Resource/Texture/Load03.png");
 
+	//m_testThread = (HANDLE)_beginthreadex(
+	//	nullptr,
+	//	0,
+	//	BeginTimeCountThread,// thread関数
+	//	nullptr,// thread関数への引数
+	//	CREATE_SUSPENDED,
+	//	nullptr
+	//);
+
 	//非同期読み込みテスト
 	std::thread asyncLoad([=] { LoadScene("Resource/Jsons/TitleProcess.json"); });
 	//std::thread asyncLoad([=] { LoadScene("Resource/Jsons/GameProcess.json"); });
@@ -46,6 +55,8 @@ void GameSystem::Finalize()
 	m_debugLines.clear();
 
 	g_sceneFilepath.clear();
+
+	//CloseHandle(m_testThread);
 }
 
 //-----------------------------------------------------------------------------
@@ -81,8 +92,8 @@ void GameSystem::Update()
 {
 	if (!GetLockFlag()) return;
 
-	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
-	const float& totalTime = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
+	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
+	const float& totalTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetTotalTime());
 
 	// 時間系を設定/送信
 	RENDERER.Getcb12().Work().m_deltaTime = deltaTime;
@@ -120,7 +131,7 @@ void GameSystem::LateUpdate()
 {
 	if (!GetLockFlag()) return;
 
-	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 	for (auto& object : m_spActorList)
 		object->LateUpdate(deltaTime);
@@ -131,7 +142,7 @@ void GameSystem::LateUpdate()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw()
 {
-	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();
@@ -174,7 +185,7 @@ void GameSystem::Draw()
 //-----------------------------------------------------------------------------
 void GameSystem::Draw2D()
 {
-	const float& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 	//--------------------------------------------------
 	// Effect描画
@@ -186,7 +197,7 @@ void GameSystem::Draw2D()
 		// TODO: ここで3DモデルのEffect描画
 
 		// RENDERERの詳細パラメータを設定
-		RENDERER.SetResources(APP.g_graphicsDevice->GetWhiteTex().get());
+		RENDERER.SetResources(ApplicationChilled::GetApplication()->g_graphicsDevice->GetWhiteTex().get());
 		RENDERER.SetDepthStencil(false, false);
 		RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 		RENDERER.Getcb8().Write();
@@ -194,7 +205,9 @@ void GameSystem::Draw2D()
 		// DebugLines
 		if (m_debugLines.size() >= 1)
 		{
-			APP.g_graphicsDevice->DrawVertices(APP.g_graphicsDevice->g_cpContext.Get(), D3D_PRIMITIVE_TOPOLOGY_LINELIST, (UINT)m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
+			ApplicationChilled::GetApplication()->g_graphicsDevice->DrawVertices(
+				ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get(),
+				D3D_PRIMITIVE_TOPOLOGY_LINELIST, (UINT)m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
 			m_debugLines.clear();
 		}
 
@@ -206,14 +219,14 @@ void GameSystem::Draw2D()
 	// Sprite描画
 	//--------------------------------------------------
 	{
-		SHADER.GetSpriteShader().Begin(APP.g_graphicsDevice->g_cpContext.Get(), true, true);
+		SHADER.GetSpriteShader().Begin(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get(), true, true);
 
 		if (!GetLockFlag())
 		{
 			static int index = 0;
 
 			static float numTime = 0;
-			numTime += APP.g_fpsTimer->GetDeltaTime();
+			numTime += static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 			if (numTime >= 0.5f)
 			{
@@ -230,7 +243,7 @@ void GameSystem::Draw2D()
 				object->DrawSprite(deltaTime);
 		}
 
-		SHADER.GetSpriteShader().End(APP.g_graphicsDevice->g_cpContext.Get());
+		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());
 	}
 }
 
@@ -343,7 +356,6 @@ void GameSystem::ExecChangeScene()
 			//LoadScene("Resource/Jsons/GameProcess.json");
 		}
 	).detach();
-	m_isRequestChangeScene = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -354,16 +366,20 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	Reset();
 	
 	json11::Json jsonObject = RES_FAC.GetJsonData(filepath);
-	if (jsonObject.is_null()) {
-		APP.g_imGuiSystem->AddLog(
-			std::string("ERROR: Failed to load Json file. path: " + filepath).c_str()
-		);
+
+	//ログを投げる
+	if (jsonObject.is_null())
+	{
+		std::string post = "ERROR: Failed to load jsonfile. path: ";
+		post += filepath;
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog(post);
 		return false;
 	}
-	else {
-		APP.g_imGuiSystem->AddLog(
-			std::string("INFO: Load jsonfile. path: " + filepath).c_str()
-		);
+	else
+	{
+		std::string post = "INFO: Load jsonfile. path: ";
+		post += filepath;
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog(post);
 	}
 
 	auto& jsonObjectList = jsonObject["actor_list"].array_items();
@@ -385,10 +401,27 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
-	auto sleepTime = std::chrono::seconds(2);
-	std::this_thread::sleep_for(sleepTime);
+	//auto sleepTime = std::chrono::seconds(1);
+	//std::this_thread::sleep_for(sleepTime);
 
 	SetLockFlag(true);
 
+	m_isRequestChangeScene = false;
+
 	return true;
+}
+
+unsigned int __stdcall GameSystem::BeginTimeCountThread(void* usercontext)
+{
+	HRESULT hr = S_FALSE;
+
+	for (;;)
+	{
+		// ワークキューのエントリーを待つ
+		//WaitForSingleObject(m_testThread, INFINITE);
+
+		//ここで各更新
+	}
+
+	return 0;
 }

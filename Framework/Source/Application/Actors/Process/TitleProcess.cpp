@@ -22,7 +22,7 @@ void TitleProcess::Initialize()
 		m_spCamera->g_name = "Camera2D";
 		m_spCamera->g_priority = 1.0f;
 
-		APP.g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera);
+		g_application->g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera);
 	}
 }
 
@@ -31,11 +31,11 @@ void TitleProcess::Initialize()
 //-----------------------------------------------------------------------------
 void TitleProcess::Update(float deltaTime)
 {
-	if (APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Left) ||
-		APP.g_rawInputDevice->g_spMouse->IsPressed(MouseButton::Right))
+	if (g_application->g_inputDevice->IsMousePressed(MouseKode::Left) ||
+		g_application->g_inputDevice->IsMousePressed(MouseKode::Right))
 	{
 		SOUND_DIRECTOR.Play("Resource/Audio/SE/Select.wav");
-		APP.g_gameSystem->RequestChangeScene("Resource/Jsons/GameProcess.json");
+		g_application->g_gameSystem->RequestChangeScene("Resource/Jsons/GameProcess.json");
 	}
 }
 

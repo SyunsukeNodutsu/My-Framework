@@ -25,33 +25,30 @@ CameraSystem::CameraSystem()
 //-----------------------------------------------------------------------------
 void CameraSystem::Update(float deltaTime)
 {
-	auto& keyboard = APP.g_rawInputDevice->g_spKeyboard;
-	auto& mouse = APP.g_rawInputDevice->g_spMouse;
-
 	if (m_editorMode)
 	{
 		m_spEditorCamera->Update(deltaTime);
 
 		// 通常モードに移行
-		if (keyboard->IsPressed(KeyCode::Escape))
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyPressed(KeyCode::Escape))
 		{
 			m_spEditorCamera->g_priority = FLT_MIN;
 
 			m_editorMode = false;
 			AllSetEnable(true);
-			mouse->SetCursorShow(false);
+			ApplicationChilled::GetApplication()->g_inputDevice->SetCursorShow(false);
 		}
 	}
 	else
 	{
 		// 編集モードに移行
-		if (keyboard->IsPressed(KeyCode::Escape))
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyPressed(KeyCode::Escape))
 		{
 			m_spEditorCamera->g_priority = FLT_MAX;
 
 			m_editorMode = true;
 			AllSetEnable(false);
-			mouse->SetCursorShow(true);
+			ApplicationChilled::GetApplication()->g_inputDevice->SetCursorShow(true);
 		}
 	}
 
@@ -104,7 +101,7 @@ std::shared_ptr<Camera> CameraSystem::SearchCamera(std::string name) const
 		if (camera->g_name == name)
 			return camera;
 	}
-	APP.g_imGuiSystem->AddLog("ERROR: Camera not found. -CameraSystem.SearchCamera()");
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Camera not found. -CameraSystem.SearchCamera()");
 	return nullptr;
 }
 

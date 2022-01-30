@@ -29,5 +29,5 @@ void ShaderManager::Initialize()
 	m_spShadowMapShader = std::make_shared<ShadowMapShader>();
 	m_spShadowMapShader->Initialize();
 
-	APP.g_imGuiSystem->AddLog("INFO: ShaderManager initialized.");
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("INFO: ShaderManager initialized.");
 }

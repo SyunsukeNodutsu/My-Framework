@@ -88,13 +88,13 @@ bool SoundData::Create(bool loop, bool useFilter)
     // ソースボイスの作成
     if (FAILED(g_audioDevice->g_xAudio2->CreateSourceVoice(&m_pSourceVoice, m_pWaveFormat,
         useFilter ? XAUDIO2_VOICE_USEFILTER : 0, 2.0f, nullptr, &sendList))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create source voice.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create source voice.");
         return false;
     }
 
     // 音声キューに新しいオーディオバッファを追加
     if (FAILED(m_pSourceVoice->SubmitSourceBuffer(&m_buffer))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to submit source buffer.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to submit source buffer.");
         return false;
     }
 
@@ -133,7 +133,7 @@ bool SoundWork::Load(const std::string& filepath, bool loop, bool useFilter)
     m_filepath = filepath.substr(15);
 
     if (!m_soundData.Load(filepath, loop, useFilter)) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to load voice.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to load voice.");
         return false;
     }
 
@@ -257,7 +257,7 @@ bool SoundWork::SetPan(float pan)
     // 宛先(第一引数)はNULLではなくMasteringVoiceを指定
     if (FAILED(m_pSourceVoice->SetOutputMatrix(g_audioDevice->g_pMasteringVoice,
         INPUTCHANNELS, g_audioDevice->g_inputChannels, outputMatrix))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to pan voice. 多くの場合、モノラル音源じゃないのが理由です.\n");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to pan voice. 多くの場合、モノラル音源じゃないのが理由です.\n");
         return false;
     }
 
@@ -329,7 +329,7 @@ bool SoundWork::SetFilter(XAUDIO2_FILTER_TYPE type, float frequencym, float oneO
     FilterParams.Frequency  = frequencym;   // 0.0f(未満はx)～1.0f(XAUDIO2_MAX_FILTER_FREQUENCY)
     FilterParams.OneOverQ   = oneOverQ;     // 0.0f(以下はx)～1.5f(XAUDIO2_MAX_FILTER_ONEOVERQ)
     if (FAILED(m_pSourceVoice->SetFilterParameters(&FilterParams))) {
-        APP.g_imGuiSystem->AddLog("WORNING: Failed to set filters.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("WORNING: Failed to set filters.");
         return false;
     }
     return true;

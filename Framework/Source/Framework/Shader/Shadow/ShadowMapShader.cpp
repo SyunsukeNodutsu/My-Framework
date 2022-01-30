@@ -197,7 +197,7 @@ void ShadowMapShader::SettingLightCamera(int numShadow)
 		viewMatrix = transMatrix * viewMatrix;
 		viewMatrix.Invert();
 
-		APP.g_gameSystem->AddDebugSphereLine(viewMatrix.Translation(), 2.0f);
+		ApplicationChilled::GetApplication()->g_gameSystem->AddDebugSphereLine(viewMatrix.Translation(), 2.0f);
 
 		// ライトの射影行列を適当に作成　50mx50mの正射影行列
 		mfloat4x4 projMatrix = mfloat4x4::CreateOrthographic(50, 50, 0, 100);

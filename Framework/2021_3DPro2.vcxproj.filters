@@ -82,9 +82,6 @@
     <Filter Include="Source\Framework\Shader\Tree">
       <UniqueIdentifier>{2f648eca-21c6-4a06-be7a-4ce09a7520c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Input\DirectInput">
-      <UniqueIdentifier>{e4cf18b5-741c-499a-848b-dabc46554da0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Library\json11KdCustom">
       <UniqueIdentifier>{a657f693-16c6-4f55-b7dc-66be5f674b85}</UniqueIdentifier>
     </Filter>
@@ -94,14 +91,8 @@
     <Filter Include="Source\Application\Actors\Process">
       <UniqueIdentifier>{34d61980-356a-4fc8-9796-8f12fa744853}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Application\Actors\Weapon">
-      <UniqueIdentifier>{9f135ff9-28b7-4b0f-94d2-616985dfcc16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Application\Actors\Environment">
       <UniqueIdentifier>{87022db2-72c0-4d73-a998-180bfc09bb77}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Application\Actors\Player">
-      <UniqueIdentifier>{a328354a-0b27-403b-8c85-82025caca865}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Framework\HighLevel\Component">
       <UniqueIdentifier>{7c70ed8a-ad09-46ee-b631-c6e1663adb6b}</UniqueIdentifier>
@@ -113,9 +104,6 @@
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Input\RawInputDevice.cpp">
-      <Filter>Source\Framework\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Window\Window.cpp">
       <Filter>Source\Framework\Window</Filter>
@@ -146,18 +134,6 @@
     </ClCompile>
     <ClCompile Include="Source\Application\GameSystem.cpp">
       <Filter>Source\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Input\XInput.cpp">
-      <Filter>Source\Framework\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Utility\Easing.cpp">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Input\Mouse.cpp">
-      <Filter>Source\Framework\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Input\Keyboard.cpp">
-      <Filter>Source\Framework\Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
       <Filter>Source\Application\Camera</Filter>
@@ -243,7 +219,7 @@
     <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
       <Filter>Source\Application\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Input\BasicInput\BasicInput.cpp">
+    <ClCompile Include="Source\Framework\Input\BasicInput\BasicInputDevice.cpp">
       <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Physics\Collision.cpp">
@@ -261,9 +237,6 @@
     <ClCompile Include="Source\Framework\Utility\Utility.cpp">
       <Filter>Source\Framework\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\Input\DirectInput\DirectInputDevice.cpp">
-      <Filter>Source\Framework\Input\DirectInput</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Physics\SpatialPartitioning.cpp">
       <Filter>Source\Framework\Physics</Filter>
     </ClCompile>
@@ -275,15 +248,6 @@
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp">
       <Filter>Source\Application\Actors\Process</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Weapon\Tank.cpp">
-      <Filter>Source\Application\Actors\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Weapon\TankBullet.cpp">
-      <Filter>Source\Application\Actors\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Weapon\TankParts.cpp">
-      <Filter>Source\Application\Actors\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp">
       <Filter>Source\Application\Actors\Environment</Filter>
@@ -303,9 +267,6 @@
     <ClCompile Include="Source\Framework\Graphics\CubeMapGenerator.cpp">
       <Filter>Source\Framework\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Player\PlayerTank.cpp">
-      <Filter>Source\Application\Actors\Player</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\HighLevel\ResourceFactory.cpp">
       <Filter>Source\Framework\HighLevel</Filter>
     </ClCompile>
@@ -324,6 +285,24 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\ApplicationChilled.cpp">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\InputDevice.cpp">
+      <Filter>Source\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\RawInput\Keyboard.cpp">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\RawInput\Mouse.cpp">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\RawInput\RawInputDevice.cpp">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Input\XInput\XInputDevice.cpp">
+      <Filter>Source\Framework\Input\XInput</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -339,9 +318,6 @@
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Utility\FpsTimer.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\Enums.h">
       <Filter>Source\Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Timer.h">
@@ -374,29 +350,8 @@
     <ClInclude Include="Source\Application\GameSystem.h">
       <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Input\RawInputDevice.h">
-      <Filter>Source\Framework\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Input\KeyCode.h">
-      <Filter>Source\Framework\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Input\XInput.h">
-      <Filter>Source\Framework\Input</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Types.h">
       <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\Easing.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\EasingType.h">
-      <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Input\Mouse.h">
-      <Filter>Source\Framework\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\Input\Keyboard.h">
-      <Filter>Source\Framework\Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\FPSCamera.h">
       <Filter>Source\Application\Camera</Filter>
@@ -497,7 +452,7 @@
     <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h">
       <Filter>Library\imGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Input\BasicInput\BasicInput.h">
+    <ClInclude Include="Source\Framework\Input\BasicInput\BasicInputDevice.h">
       <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Physics\Collision.h">
@@ -512,9 +467,6 @@
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Input\DirectInput\DirectInputDevice.h">
-      <Filter>Source\Framework\Input\DirectInput</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Physics\SpatialPartitioning.h">
       <Filter>Source\Framework\Physics</Filter>
     </ClInclude>
@@ -526,15 +478,6 @@
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Process\GameProcess.h">
       <Filter>Source\Application\Actors\Process</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Weapon\Tank.h">
-      <Filter>Source\Application\Actors\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Weapon\TankBullet.h">
-      <Filter>Source\Application\Actors\Weapon</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Weapon\TankParts.h">
-      <Filter>Source\Application\Actors\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Environment\Sky.h">
       <Filter>Source\Application\Actors\Environment</Filter>
@@ -553,9 +496,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h">
       <Filter>Source\Framework\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Player\PlayerTank.h">
-      <Filter>Source\Application\Actors\Player</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\ResourceFactory.h">
       <Filter>Source\Framework\HighLevel</Filter>
@@ -581,8 +521,26 @@
     <ClInclude Include="Source\Framework\FrameworkDevice.h">
       <Filter>Source\Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Utility\CoroutineGeneration.h">
-      <Filter>Source\Framework\Utility</Filter>
+    <ClInclude Include="Source\Framework\HighLevel\ApplicationChilled.h">
+      <Filter>Source\Framework\HighLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\InputDevice.h">
+      <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\RawInput\Keyboard.h">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\RawInput\Mouse.h">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\RawInput\RawInputDevice.h">
+      <Filter>Source\Framework\Input\RawInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\XInput\XInputDevice.h">
+      <Filter>Source\Framework\Input\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Input\KeyCode.h">
+      <Filter>Source\Framework\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

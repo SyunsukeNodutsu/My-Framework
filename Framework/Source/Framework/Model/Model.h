@@ -96,6 +96,9 @@ public:
 	// @return ノードのIndex配列
 	const std::vector<int>& GetMeshNodeIndices() const { return m_meshNodeIndices; }
 
+	//
+	const std::vector<int>& GetNodeIndices() const { return m_nodeIndices; }
+
 private:
 
 	// ノード
@@ -103,6 +106,8 @@ private:
 	std::vector<int>	m_rootNodeIndices;	// 全ノード中 RootノードのみのIndex配列
 	std::vector<int>	m_boneNodeIndices;	// 全ノード中 ボーンノードのみのIndex配列
 	std::vector<int>	m_meshNodeIndices;	// 全ノード中 メッシュが存在するノードのみのIndexn配列
+
+	std::vector<int>	m_nodeIndices;	// 全ノードIndexn配列
 
 	//マテリアル配列
 	std::vector<Material> m_materials;

@@ -127,8 +127,13 @@ struct KdGLTFModel
 	std::vector<std::shared_ptr<KdGLTFAnimationData>>	m_animations;
 };
 
+//
+class GLTFLoader : public ApplicationChilled
+{
+public:
 
-// @brief GLTF形式の3Dモデルを読み込む
-// @note LoaderはTinygltf: https://github.com/syoyo/tinygltf
-// @param path .glflファイルのパス
-std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path);
+	// @brief GLTF形式の3Dモデルを読み込む
+	// @note LoaderはTinygltf: https://github.com/syoyo/tinygltf
+	// @param path .glflファイルのパス
+	static std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path);
+};

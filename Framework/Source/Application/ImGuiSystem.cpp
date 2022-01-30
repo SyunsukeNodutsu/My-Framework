@@ -9,6 +9,8 @@
 
 static void HelpMarker(const char* desc);
 
+
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -35,7 +37,7 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	// ImGuiの外観設定
 	ImGui::StyleColorsClassic();
 
-	ImGui_ImplWin32_Init(APP.g_window->GetWndHandle());
+	ImGui_ImplWin32_Init(ApplicationChilled::GetApplication()->g_window->GetWndHandle());
 	ImGui_ImplDX11_Init(device, context);
 
 	ImFontConfig config;
@@ -53,8 +55,7 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	style.ScrollbarSize = 10;
 
 	AddLog("INFO: Dear imGui Initialized.");
-	AddLog(u8"u8を付けるとUTF-8に対応.");
-
+	AddLog(u8"u8を付けるとUTF-8に対応.");//TODO: C++20以降だとu8が使用不可能
 	Cpuid::Research();
 	AddLog("INFO: CPUID Researched.");
 }
@@ -152,6 +153,59 @@ void ImGuiSystem::DrawImGui()
 }
 
 //-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void ImGuiSystem::AddLog(std::string_view log)
+{
+	auto time = std::to_string(ApplicationChilled::GetApplication()->g_fpsTimer->GetTotalTime());
+
+	std::string buff;
+	buff += log.substr();
+	//buff += "[Time: " + time + "]";
+	buff += "\n";
+
+	//
+	m_logBuffer.append(buff.c_str());
+	m_addLog = true;
+
+	//DebugLog(string.c_str());
+}
+/*void ImGuiSystem::AddLog(std::string_view log, std::source_location sinfo)
+{
+	auto time = std::to_string(ApplicationChilled::GetApplication()->g_fpsTimer->GetTotalTime());
+
+	std::string buff;
+	buff += log.substr();
+	//buff += "[Time: " + time + "]";
+
+	//ソースの情報
+	const auto& file_name = sinfo.file_name();
+	const auto& function_name = sinfo.function_name();
+	const auto& line = sinfo.line();
+	const auto& column = sinfo.column();
+
+	//
+	int nn = 60 - log.size();
+	for (int i = 0; i < nn; i++) buff += " ";
+
+	//buff += file_name;
+	buff += "/Function: ";
+	buff += function_name;
+	buff += "/Line: ";
+	buff += std::to_string(line);
+	buff += "/Column: ";
+	buff += std::to_string(column);
+
+	buff += "\n";
+
+	//
+	m_logBuffer.append(buff.c_str());
+	m_addLog = true;
+
+	//DebugLog(string.c_str());
+}*/
+
+//-----------------------------------------------------------------------------
 // ゲームのシーン
 //-----------------------------------------------------------------------------
 void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
@@ -164,7 +218,7 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("Save")) {
-			APP.g_gameSystem->Serialize("");
+			ApplicationChilled::GetApplication()->g_gameSystem->Serialize("");
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Load")) {
@@ -178,7 +232,7 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
 
 	// シーンのパス表示
-	ImGui::Text(std::string("Scene: " + APP.g_gameSystem->g_sceneFilepath).c_str());
+	ImGui::Text(std::string("Scene: " + ApplicationChilled::GetApplication()->g_gameSystem->g_sceneFilepath).c_str());
 
 	// Actor 作成
 	
@@ -202,7 +256,7 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 			actor->Deserialize(json);
 			actor->Initialize();
 
-			APP.g_gameSystem->AddActor(actor);
+			ApplicationChilled::GetApplication()->g_gameSystem->AddActor(actor);
 
 			AddLog(std::string(u8"Actor生成: " + json["class_name"].string_value()).c_str());
 		}
@@ -210,12 +264,12 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 
 	if (ImGui::Button(u8"Jsonパス所得"))
 	{
-		if (APP.g_window->OpenFileDialog(string, u8"Select path.", "json"))
+		if (ApplicationChilled::GetApplication()->g_window->OpenFileDialog(string, "Select path.", "json"))
 		{
 			// 選択したjsonのパスをコピー
 			strcpy_s(jsonPath, string.c_str());
 
-			AddLog(u8"読み込み成功");
+			AddLog("読み込み成功");
 		}
 	}
 
@@ -229,7 +283,7 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 	ImGui::BeginChild("##wav list", ImVec2(0, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NavFlattened);
 
 	static std::weak_ptr<Actor> wpActor;
-	for (auto&& actor : APP.g_gameSystem->GetActorList())
+	for (auto&& actor : ApplicationChilled::GetApplication()->g_gameSystem->GetActorList())
 	{
 		ImGui::PushID(actor.get());
 
@@ -290,7 +344,7 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	// カメラ一覧
-	for (auto&& camera : APP.g_gameSystem->g_cameraSystem.GetCameraList())
+	for (auto&& camera : ApplicationChilled::GetApplication()->g_gameSystem->g_cameraSystem.GetCameraList())
 	{
 		ImGui::PushID(camera.get());
 		ImGui::Text(camera->g_name.c_str());
@@ -393,9 +447,9 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Volume");
 	ImGui::PopStyleColor();
 
-	static float volume = APP.g_audioDevice->GetMasterVolume();
+	static float volume = ApplicationChilled::GetApplication()->g_audioDevice->GetMasterVolume();
 	if (ImGui::SliderFloat("Main", &volume, 0.0f, 2.0f, "%.2f"))
-		APP.g_audioDevice->SetMasterVolume(volume);
+		ApplicationChilled::GetApplication()->g_audioDevice->SetMasterVolume(volume);
 
 	ImGui::Separator();
 
@@ -469,10 +523,10 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Checkbox("Show Meter", &showMeter);
 	if (showMeter)
 	{
-		PlotLinesEx("PeakLevels R", APP.g_audioDevice->g_peakLevels[0]);
-		PlotLinesEx("PeakLevels L", APP.g_audioDevice->g_peakLevels[1]);
-		PlotLinesEx("RMSLevels R", APP.g_audioDevice->g_RMSLevels[0]);
-		PlotLinesEx("RMSLevels L", APP.g_audioDevice->g_RMSLevels[1]);
+		PlotLinesEx("PeakLevels R", ApplicationChilled::GetApplication()->g_audioDevice->g_peakLevels[0]);
+		PlotLinesEx("PeakLevels L", ApplicationChilled::GetApplication()->g_audioDevice->g_peakLevels[1]);
+		PlotLinesEx("RMSLevels R", ApplicationChilled::GetApplication()->g_audioDevice->g_RMSLevels[0]);
+		PlotLinesEx("RMSLevels L", ApplicationChilled::GetApplication()->g_audioDevice->g_RMSLevels[1]);
 	}
 
 	ImGui::End();
@@ -492,7 +546,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::PopStyleColor();
 
 	ImGui::Text(Cpuid::m_brand.c_str());
-	ImGui::Text(APP.g_graphicsDevice->GetAdapterName().c_str());
+	ImGui::Text(ApplicationChilled::GetApplication()->g_graphicsDevice->GetAdapterName().c_str());
 
 	ImGui::Separator();
 
@@ -500,7 +554,7 @@ void ImGuiSystem::ProfilerMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Time");
 	ImGui::PopStyleColor();
 
-	auto& fpsTimer = APP.g_fpsTimer;
+	auto& fpsTimer = ApplicationChilled::GetApplication()->g_fpsTimer;
 	ImGui::Text(std::string("Fps: " + std::to_string(fpsTimer->GetFPS())).c_str());
 	ImGui::Text(std::string("DeltaTime: " + std::to_string(fpsTimer->GetDeltaTime())).c_str());
 	ImGui::Text(std::string("TotalTime: " + std::to_string(fpsTimer->GetTotalTime())).c_str());

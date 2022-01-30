@@ -4,8 +4,6 @@
 #include "Environment/StageMap.h"
 #include "Environment/Tree.h"
 
-#include "Weapon/Tank.h"
-
 #include "Process/GameProcess.h"
 #include "Process/TitleProcess.h"
 
@@ -23,22 +21,19 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	if (name == "Human")		result = std::make_shared<Human>();
 	if (name == "Sky")			result = std::make_shared<Sky>();
 	if (name == "StageMap")		result = std::make_shared<StageMap>();
-	if (name == "Tank")			result = std::make_shared<Tank>();
 	if (name == "Tree")			result = std::make_shared<Tree>();
 	if (name == "CesiumMan")	result = std::make_shared<CesiumMan>();
 
 	if (name == "GameProcess")	result = std::make_shared<GameProcess>();
 	if (name == "TitleProcess") result = std::make_shared<TitleProcess>();
 
-	if (result) {
-		// null actorでもいいかも
-		result->Awake();
-	}
+	// null actorでもいいかも
+	if (result) result->Awake();
 
-	APP.g_imGuiSystem->AddLog(
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog(
 		result
-		? std::string("INFO: Generate actor. name: " + name).c_str()
-		: std::string("WARNING: Failed to generate actor. name: " + name).c_str()
+		? "INFO: Generate actor. name: " + name
+		: "WARNING: Failed to generate actor. name: " + name
 	);
 
 	return result;

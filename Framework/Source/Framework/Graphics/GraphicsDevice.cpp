@@ -105,10 +105,10 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		// MSAAをOFFにします
 		m_sampleDesc.Quality = 0;
 		desc.m_useMSAA = false;
-		APP.g_imGuiSystem->AddLog("MSAA is not supported.");
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("MSAA is not supported.");
 	}
 
-	APP.g_imGuiSystem->AddLog(
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog(
 		std::string("INFO: SampleDesc Count: " + std::to_string(m_sampleDesc.Count) + " Quality: " + std::to_string(m_sampleDesc.Quality)).c_str()
 	);
 
@@ -239,7 +239,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	m_tempVertexBuffer = std::make_shared<Buffer>();
 
-	APP.g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("INFO: GraphicsDevice Initialized.");
 
 	auto renderer = ::EffekseerRendererDX11::Renderer::Create(g_cpDevice.Get(), g_cpContext.Get(), 8000);
 	renderer.Reset();

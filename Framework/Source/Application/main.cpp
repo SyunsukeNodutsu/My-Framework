@@ -4,8 +4,7 @@ Window* Application::g_window = 0;
 GraphicsDevice* Application::g_graphicsDevice = 0;
 EffekseerDevice* Application::g_effectDevice = 0;
 AudioDevice* Application::g_audioDevice = 0;
-RawInputDevice* Application::g_rawInputDevice = 0;
-DirectInputDevice* Application::g_directInputDevice = 0;
+InputDevice* Application::g_inputDevice = 0;
 FpsTimer* Application::g_fpsTimer = 0;
 
 std::shared_ptr<GameSystem> Application::g_gameSystem = 0;
@@ -44,7 +43,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	//アプリケーション実行
-	APP.Execute();
+	Application* application = new Application();
+	ApplicationChilled::SetApplication(application);
+
+	application->Execute();
+
+	delete application;
 	
 	//COM解放
 	CoUninitialize();
@@ -76,8 +80,7 @@ bool Application::Initialize(int width, int height)
 	g_graphicsDevice	= new GraphicsDevice();
 	g_effectDevice		= new EffekseerDevice();
 	g_audioDevice		= new AudioDevice();
-	g_rawInputDevice	= new RawInputDevice();
-	g_directInputDevice = new DirectInputDevice();
+	g_inputDevice		= new InputDevice();
 	g_fpsTimer			= new FpsTimer();
 
 	g_gameSystem	= std::make_shared<GameSystem>();
@@ -101,35 +104,30 @@ bool Application::Initialize(int width, int height)
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
 
-	//
+	//エフェクトデバイス
 	g_effectDevice->Initialize();
 
 	//オーディオデバイス
 	g_audioDevice->Initialize();
-	g_audioDevice->SetMasterVolume(0.2f);
+	g_audioDevice->SetMasterVolume(0.08f);
 	
 	//入力デバイス
-	g_rawInputDevice->Initialize();
-	g_directInputDevice->Initialize(g_window->GetWndHandle());
+	g_inputDevice->Initialize(g_window->GetWndHandle());
 
-	//--------------------------------------------------
-	// その他
-	//--------------------------------------------------
+	//その他
 
-	// レンダラー(定数バッファとか)
+	//レンダラー(定数バッファとか)
 	RENDERER.Initialize();
 
-	// シェーダー
+	//シェーダー
 	SHADER.Initialize();
 
-	//--------------------------------------------------
-	// アプリケーション
-	//--------------------------------------------------
+	//アプリケーション
 
-	// ゲーム
+	//ゲーム
 	g_gameSystem->Initialize();
 
-	// imGui(プロファイル)
+	//imGui(プロファイラー)
 	g_imGuiSystem->Initialize(g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get());
 
 	return true;
@@ -140,27 +138,25 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	// アプリケーション
+	//アプリケーション
 	g_imGuiSystem->Finalize();
 	g_gameSystem->Finalize();
 
-	// デバイス
-	g_directInputDevice->Finalize();
-	g_rawInputDevice->Finalize();
+	//デバイス
+	g_inputDevice->Finalize();
 	g_audioDevice->Finalize();
 	g_effectDevice->Finalize();
 	g_graphicsDevice->Finalize();
 
-	// ウィンドウ
+	//ウィンドウ
 	g_window->Release();
 
+	//解放
 	delete g_graphicsDevice;
 	delete g_effectDevice;
 	delete g_audioDevice;
-	delete g_directInputDevice;
-	delete g_rawInputDevice;
+	delete g_inputDevice;
 	delete g_fpsTimer;
-
 	delete g_window;
 }
 
@@ -170,8 +166,7 @@ void Application::Release()
 void Application::Execute()
 {
 	// 初期設定(ウィンドウ作成、Direct3D初期化など)
-	if (Initialize(1600, 900) == false)
-		return;
+	if (Initialize(1600, 900) == false) return;
 
 	//==================================================
 	// 
@@ -201,10 +196,10 @@ void Application::Execute()
 		// ゲームサウンド処理
 		//----------------------------------------
 
-		// カメラ行列の取得
-		//const auto& cameraMatrix = g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
-		// サウンド更新
-		//g_audioDevice->Update(cameraMatrix);
+		//カメラ行列の取得
+		const auto& cameraMatrix = mfloat4x4::Identity;// g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+		//サウンド更新
+		g_audioDevice->Update(cameraMatrix);
 
 		//----------------------------------------
 		// ゲーム処理

@@ -99,7 +99,7 @@ void Window::Release()
 bool Window::ProcessMessage()
 {
 	// 入力系 リフレッシュ
-	APP.g_rawInputDevice->Refresh();
+	ApplicationChilled::GetApplication()->g_inputDevice->Refresh();
 
 	// メッセージ取得
 	MSG msg = {};
@@ -238,8 +238,7 @@ void Window::SetClientSize(int width, int height)
 //-----------------------------------------------------------------------------
 bool Window::SetDesktopCenterWindow(HWND hWnd) const
 {
-	if (hWnd == nullptr)
-		return false;
+	if (hWnd == nullptr) return false;
 
 	// デスクトップ サイズ取得
 	RECT desktopRect = {};
@@ -307,7 +306,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	case WM_INPUT:
 	{
 		if (m_windowInfo.dwWindowStatus == WS_ACTIVECAPTION)
-			APP.g_rawInputDevice->ParseMessage((void*)lparam);
+			ApplicationChilled::GetApplication()->g_inputDevice->ParseMessage((void*)lparam);
 	}
 	break;
 
@@ -316,7 +315,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
 	{
 		int delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		if (delta != 0)
-			APP.g_rawInputDevice->g_spMouse->SetMouseWheelDelta(delta);
+			ApplicationChilled::GetApplication()->g_inputDevice->SetMouseWheelDelta(delta);
 	}
 	break;
 

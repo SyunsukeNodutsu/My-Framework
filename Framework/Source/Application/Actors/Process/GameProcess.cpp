@@ -34,7 +34,7 @@ void GameProcess::Initialize()
 //-----------------------------------------------------------------------------
 void GameProcess::Update(float deltaTime)
 {
-	m_pause = APP.g_gameSystem->g_cameraSystem.IsEditorMode();
+	m_pause = ApplicationChilled::GetApplication()->g_gameSystem->g_cameraSystem.IsEditorMode();
 }
 
 //-----------------------------------------------------------------------------

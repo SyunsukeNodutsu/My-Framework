@@ -21,17 +21,14 @@ EditorCamera::EditorCamera()
 //-----------------------------------------------------------------------------
 void EditorCamera::Update(float deltaTime)
 {
-	auto& mouse = APP.g_rawInputDevice->g_spMouse;
-	auto& keyboard = APP.g_rawInputDevice->g_spKeyboard;
+	const auto& rawDeltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime(true));
 
-	const auto& rawDeltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime(true));
-
-	m_mousePosNow = mouse->GetMousePos(true);
+	m_mousePosNow = ApplicationChilled::GetApplication()->g_inputDevice->GetMousePos();
 
 	// 回転
 	{
 		float raito = 12.0f;
-		if (mouse->IsDown(MouseButton::Right))
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsMouseDown(MouseButton::Right))
 		{
 			float deltaX = m_mousePosNow.x - m_mousePosOld.x;
 			float deltaY = m_mousePosNow.y - m_mousePosOld.y;
@@ -49,16 +46,16 @@ void EditorCamera::Update(float deltaTime)
 		float3 axisZ = m_transform->GetWorldMatrix().Backward(); axisZ.Normalize();
 		float3 axisX = m_transform->GetWorldMatrix().Right(); axisX.Normalize();
 
-		if (keyboard->IsDown(KeyCode::Shift)) raito = 20.0f;
-		if (keyboard->IsDown(KeyCode::Control)) raito = 2.0f;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::Shift)) raito = 20.0f;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::Control)) raito = 2.0f;
 
-		if (keyboard->IsDown(KeyCode::W)) m_position += axisZ * raito * rawDeltaTime;
-		if (keyboard->IsDown(KeyCode::S)) m_position -= axisZ * raito * rawDeltaTime;
-		if (keyboard->IsDown(KeyCode::A)) m_position -= axisX * raito * rawDeltaTime;
-		if (keyboard->IsDown(KeyCode::D)) m_position += axisX * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::W)) m_position += axisZ * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::S)) m_position -= axisZ * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::A)) m_position -= axisX * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::D)) m_position += axisX * raito * rawDeltaTime;
 
-		if (keyboard->IsDown(KeyCode::C)) m_position -= float3(0, 1, 0) * raito * rawDeltaTime;
-		if (keyboard->IsDown(KeyCode::V)) m_position += float3(0, 1, 0) * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::C)) m_position -= float3(0, 1, 0) * raito * rawDeltaTime;
+		if (ApplicationChilled::GetApplication()->g_inputDevice->IsKeyDown(KeyCode::V)) m_position += float3(0, 1, 0) * raito * rawDeltaTime;
 		m_transform->SetPosition(m_position);
 	}
 

@@ -1,4 +1,5 @@
 ﻿#include "Actor.h"
+#include "../../Application/main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
@@ -193,12 +194,14 @@ bool Actor::CheckCollision(const float3& centerPos, const float radius, float3& 
 		const auto& mesh = m_modelWork.GetMesh(index);
 		const auto& node = m_modelWork.GetNodes()[index];
 
+		if (mesh == nullptr) continue;
 		hit = Collision::SphereToMesh(pushedFromNodesPos, radius, *(mesh.get()), node.m_localTransform * m_transform.GetWorldMatrix(), pushedFromNodesPos);
 	}
 
 	if (hit)
 	{
 		resultPos = pushedFromNodesPos - centerPos;
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("Hit. CheckCollision");
 	}
 
 	return hit;

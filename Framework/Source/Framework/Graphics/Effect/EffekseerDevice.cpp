@@ -53,7 +53,7 @@ bool EffekseerDevice::Initialize()
 	//初期カメラ行列を設定
 	g_renderer->SetCameraMatrix(Effekseer::Matrix44().LookAtLH(Effekseer::Vector3D(0.0f, 0.0f, 0.0f), Effekseer::Vector3D(0.0f, 0.0f, 1.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 
-	APP.g_imGuiSystem->AddLog("INFO: EffekseerDevice Initialized.");
+	ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("INFO: EffekseerDevice Initialized.");
 
 	return true;
 }
@@ -75,8 +75,8 @@ void EffekseerDevice::Update()
 	if (g_manager == nullptr) return;
 	if (g_renderer == nullptr) return;
 
-	auto time = static_cast<float>(APP.g_fpsTimer->GetTotalTime());
-	auto dtime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	auto time = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetTotalTime());
+	auto dtime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 	//カメラ行列を設定
 	auto& camera = RENDERER.Getcb9().Get().m_view_matrix;

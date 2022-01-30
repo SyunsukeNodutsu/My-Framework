@@ -151,7 +151,7 @@ static void MatrixMirrorZ(mfloat4x4& mat)
 // 　・クォータニオン：xとyに-1を乗算
 // 　・座標：zに-1を乗算
 //===================================================
-std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
+std::shared_ptr<KdGLTFModel> GLTFLoader::KdLoadGLTFModel(const std::string& path)
 {
 #ifdef GLTF_DEBUG
 	// コンソールウィンドウ表示
@@ -534,11 +534,12 @@ std::shared_ptr<KdGLTFModel> KdLoadGLTFModel(const std::string& path)
 				}
 				else
 				{
-					auto& nName = destNode->m_name;
-					APP.g_imGuiSystem->AddLog(std::string(
-						"WARNING: Could not obtain tangent line. model path: "
-						+ path + " node name: " + nName + " -KdGLTFLoader.KdLoadGLTFModel()").c_str()
-					);
+					std::string postlog = "WARNING: Could not obtain tangent line. model path: ";
+					postlog += path;
+					postlog += " node name: ";
+					postlog += destNode->m_name;
+					postlog += " [KdGLTFLoader.KdLoadGLTFModel()]";
+					g_application->g_imGuiSystem->AddLog(postlog.c_str());
 				}
 
 				// UV

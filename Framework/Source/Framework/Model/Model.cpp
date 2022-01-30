@@ -30,9 +30,9 @@ bool ModelData::Load(const std::string& filepath)
 	Release();
 	m_filepath = filepath;// パス保存
 
-	std::shared_ptr<KdGLTFModel> model = KdLoadGLTFModel(filepath);
+	std::shared_ptr<KdGLTFModel> model = GLTFLoader::KdLoadGLTFModel(filepath);
 	if (model == nullptr) {
-		APP.g_imGuiSystem->AddLog(std::string("ERROR: Failed load model. path: " + filepath).c_str());
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog(std::string("ERROR: Failed load model. path: " + filepath).c_str());
 		return false;
 	}
 
@@ -101,6 +101,8 @@ void ModelData::CreateNodes(std::shared_ptr<KdGLTFModel>& spGltfModel)
 			// メッシュノードリストにインデックス登録
 			m_meshNodeIndices.push_back(i);
 		}
+
+		m_nodeIndices.push_back(i);
 	}
 
 	for (UINT i = 0; i < spGltfModel->m_nodes.size(); i++)
@@ -277,7 +279,7 @@ void ModelWork::SetModel(const std::shared_ptr<ModelData>& rModel)
 void ModelWork::CalcNodeMatrices()
 {
 	if (m_spModel == nullptr) {
-		APP.g_imGuiSystem->AddLog("WORNING: Matrix computation without a model.");
+		ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("WORNING: Matrix computation without a model.");
 		return;
 	}
 

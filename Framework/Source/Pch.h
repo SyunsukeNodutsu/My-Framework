@@ -66,6 +66,8 @@
 #include <string>
 #include <algorithm>
 
+#include <source_location>
+
 //--------------------------------------------------
 //
 //外部Library

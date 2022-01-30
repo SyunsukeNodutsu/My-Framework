@@ -20,7 +20,7 @@ FPSCamera::FPSCamera()
 void FPSCamera::Initialize()
 {
 	// マウス表示OFF
-	APP.g_rawInputDevice->g_spMouse->SetCursorShow(false);
+	ApplicationChilled::GetApplication()->g_inputDevice->SetCursorShow(false);
 }
 
 //-----------------------------------------------------------------------------
@@ -30,16 +30,14 @@ void FPSCamera::Update()
 {
 	if (!g_enable) return;
 
-	const auto& mouse = APP.g_rawInputDevice->g_spMouse;
-
-	const auto& nowPos = mouse->GetMousePos();
-	const auto& deltaTime = static_cast<float>(APP.g_fpsTimer->GetDeltaTime());
+	const auto& nowPos = ApplicationChilled::GetApplication()->g_inputDevice->GetMousePos();
+	const auto& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
 	float2 mouseMove = float2::Zero;
 	mouseMove.x = nowPos.x - s_fixMousePos.x;
 	mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-	mouse->SetAt(s_fixMousePos, APP.g_window->GetWndHandle());
+	ApplicationChilled::GetApplication()->g_inputDevice->SetMousePos(s_fixMousePos, ApplicationChilled::GetApplication()->g_window->GetWndHandle());
 
 	// カメラを回転
 	m_degAngle.x += mouseMove.y * 0.08f;

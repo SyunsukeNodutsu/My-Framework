@@ -32,20 +32,20 @@ bool AudioDevice::Initialize()
     UINT32 flags = 0;
     HRESULT hr = XAudio2Create(&g_xAudio2, flags);
     if (!g_xAudio2) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to inialize audio device.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to inialize audio device.");
         return false;
     }
 
     // IXAudio2MasteringVoice作成
     hr = g_xAudio2->CreateMasteringVoice(&g_pMasteringVoice);
     if (!g_pMasteringVoice) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create mastering voice.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create mastering voice.");
         return false;
     }
 
     // スピーカー構成の確認
     if (FAILED(g_pMasteringVoice->GetChannelMask(&g_channelMask))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to get speaker configuration.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to get speaker configuration.");
         return false;
     }
 
@@ -56,7 +56,7 @@ bool AudioDevice::Initialize()
     g_inputChannels = details.InputChannels;
 
     if (details.InputChannels > OUTPUTCHANNELS) {
-        APP.g_imGuiSystem->AddLog("ERROR: We have exceeded the number of channels we support.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: We have exceeded the number of channels we support.");
         return false;
     }
 
@@ -66,7 +66,7 @@ bool AudioDevice::Initialize()
     // ボリュームメータAPO作成
     InitializeVolumeMeterAPO();
 
-    APP.g_imGuiSystem->AddLog("INFO: AudioDevice Initialized.");
+    ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("INFO: AudioDevice Initialized.");
 
     return done = true;
 }
@@ -78,7 +78,7 @@ bool AudioDevice::Initialize3D()
 {
     // ReverbEffectの作成
     if (FAILED(XAudio2CreateReverb(&g_pReverbEffect))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create reverb.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create reverb.");
         return false;
     }
 
@@ -88,14 +88,14 @@ bool AudioDevice::Initialize3D()
 
     if (FAILED(g_xAudio2->CreateSubmixVoice(&g_pSubmixVoice,
         g_inputChannels, g_inputSampleRate, 0, 0, nullptr, &effectChain))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create submix voice.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create submix voice.");
         return false;
     }
 
     // デフォルトのFXパラメータ設定
     XAUDIO2FX_REVERB_I3DL2_PARAMETERS param = XAUDIO2FX_I3DL2_PRESET_GENERIC;
     if (!SetReverb(param)) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to set effect parameters.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to set effect parameters.");
         return false;
     }
 
@@ -237,7 +237,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     // VolumeMeter(APO)作成
     IUnknown* pVolumeMeterAPO = nullptr;
     if (FAILED(XAudio2CreateVolumeMeter(&pVolumeMeterAPO))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create VolumeMeter(APO).");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create VolumeMeter(APO).");
         return false;
     }
 
@@ -252,7 +252,7 @@ bool AudioDevice::InitializeVolumeMeterAPO()
     chain.EffectCount           = 1;
     chain.pEffectDescriptors    = &descriptor;
     if (FAILED(g_pMasteringVoice->SetEffectChain(&chain))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to create EFFECT_CHAIN.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to create EFFECT_CHAIN.");
         return false;
     }
 
@@ -280,6 +280,6 @@ void AudioDevice::UpdateVolumeMeter()
 
     // パラメータ受信
     if (FAILED(g_pMasteringVoice->GetEffectParameters(0, &Levels, sizeof(Levels)))) {
-        APP.g_imGuiSystem->AddLog("ERROR: Failed to set EffectParameters.");
+        ApplicationChilled::GetApplication()->g_imGuiSystem->AddLog("ERROR: Failed to set EffectParameters.");
     }
 }

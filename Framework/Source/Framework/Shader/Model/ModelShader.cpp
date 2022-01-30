@@ -116,7 +116,7 @@ void ModelShader::DrawModel(const ModelWork& model, const mfloat4x4& worldMatrix
 	if (data == nullptr) return;
 
 	//使用カメラ取得
-	const auto& camera = APP.g_gameSystem->g_cameraSystem.GetCamera();
+	const auto& camera = ApplicationChilled::GetApplication()->g_gameSystem->g_cameraSystem.GetCamera();
 
 	//全メッシュノード
 	for (auto& index : data->GetMeshNodeIndices())
@@ -202,7 +202,7 @@ void ModelShader::DrawOBB(const DirectX::BoundingOrientedBox& obb)
 	float3 obbCorners[obb.CORNER_COUNT];
 	obb.GetCorners(obbCorners);
 
-	auto& gameSystem = APP.g_gameSystem;// TODO: APP側で管理すべきではない
+	auto& gameSystem = ApplicationChilled::GetApplication()->g_gameSystem;// TODO: APP側で管理すべきではない
 
 	gameSystem->AddDebugLine(obbCorners[0], obbCorners[1]);
 	gameSystem->AddDebugLine(obbCorners[1], obbCorners[2]);

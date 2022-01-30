@@ -90,6 +90,8 @@ private:
 		std::lock_guard<std::mutex> lock(isLoadedMutex); return isLoaded;
 	}
 
+	inline static HANDLE m_testThread = 0;
+
 private:
 
 	// @brief シーンの切り替え前にリセット
@@ -102,5 +104,8 @@ private:
 	// @param filepath 読み込むjsonファイルのパス
 	// @return 成功...true
 	bool LoadScene(const std::string& filepath);
+
+	//
+	static unsigned int WINAPI BeginTimeCountThread(void* usercontext);
 
 };

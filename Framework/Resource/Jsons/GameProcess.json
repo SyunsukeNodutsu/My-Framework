@@ -6,7 +6,7 @@
     },
     {
       "class_name": "StageMap",
-      "model_filepath": "Resource/Model/StageMap/StageMap.gltf",
+      "model_filepath": "Resource/Model/Stage_01/StageMap.gltf",
       "name": "StageMap_01",
       "position": [ 0, 0, 0 ],
       "rotation": [ 0, 0, 0 ],

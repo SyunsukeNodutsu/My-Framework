@@ -9,7 +9,7 @@
 //		  |  |                |        |
 //		  |  ┗-----┓  SoundDirector Sound
 //		  |         |                  |
-//	RawInputDevice  |                Sound3D
+//	 InputDevice    |                Sound3D
 //	  |       |     |
 // Keyboard   Mouse |
 //					|
@@ -26,6 +26,7 @@
 // ■使用ライブラリ
 // 外部 ---
 // DirectXTK
+// DirectXTex
 // Dear imGui
 // Effekseer(1.62a)
 // 学内配布 ---
@@ -36,76 +37,55 @@
 #include "GameSystem.h"
 #include "ImGuiSystem.h"
 
-// アプリケーションクラス
+//アプリケーションクラス
 class Application
 {
 public:
 
-	// @brief アプリケーション実行
+	//@brief アプリケーション実行
 	void Execute();
 
-	//--------------------------------------------------
-	// 取得・設定
-	//--------------------------------------------------
-
-	// @brief インスタンスを返す
-	// @return 単一シングルトン・インスタンス
-	static Application& GetInstance() {
-		static Application instance; return instance;
-	}
-
-	// @brief アプリケーションを終了させる
+	//@brief アプリケーションを終了させる
 	void End() { m_endFlag = true; }
 
-	//--------------------------------------------------
-	// グローバルデータ
-	//--------------------------------------------------
+public:
 
-	// ウィンドウ
+	//ウィンドウ ※"static inline"でメモリ確保できる
 	static Window* g_window;
-	// static inline Window* g_window; 「static inline」でメモリ確保できる
 
-	// 各種デバイス
+	//各種デバイス
 	
-	// 描画デバイス
+	//描画デバイス
 	static GraphicsDevice* g_graphicsDevice;
-	//
+	//エフェクトデバイス
 	static EffekseerDevice* g_effectDevice;
-	// オーディオデバイス
+	//オーディオデバイス
 	static AudioDevice* g_audioDevice;
-	// 入力デバイス
-	static RawInputDevice* g_rawInputDevice;
+	//入力デバイス
+	static InputDevice* g_inputDevice;
 
-	static DirectInputDevice* g_directInputDevice;
-
-	// fps計測
+	//fps計測
 	static FpsTimer* g_fpsTimer;
 
-	// ゲーム
-
-	// ゲーム管理
+	//ゲーム管理
 	static std::shared_ptr<GameSystem> g_gameSystem;
-	// プロファイラ デバッグ
+	//プロファイラ デバッグ
 	static std::shared_ptr<ImGuiSystem> g_imGuiSystem;
 
 private:
 
-	// ゲーム終了フラグ
+	//ゲーム終了フラグ
 	bool m_endFlag = false;
 
 private:
 
-	// @brief アプリケーション初期化
-	// @param width ウィンドウ ビューポート幅
-	// @param height ウィンドウ ビューポート高さ
-	// @return 成功...true 失敗...false
+	//@brief アプリケーション初期化
+	//@param width ウィンドウ ビューポート幅
+	//@param height ウィンドウ ビューポート高さ
+	//@return 成功...true 失敗...false
 	bool Initialize(int width, int height);
 
-	// @brief アプリケーション解放
+	//@brief アプリケーション解放
 	void Release();
-};
 
-//--------------------------------------------------
-// #defines: インスタンスの取得
-//--------------------------------------------------
-#define APP Application::GetInstance()
+};

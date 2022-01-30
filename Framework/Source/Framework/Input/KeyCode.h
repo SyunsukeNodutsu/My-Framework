@@ -81,3 +81,23 @@ namespace KeyCode
         F12 = 0x7b,
     };
 }
+
+namespace MouseKode
+{
+    enum : unsigned char
+    {
+        Left,
+        Right,
+        Middle,
+        X1,
+        X2,
+
+        Count,
+
+        Mask = 7,
+
+        AxisX = 8,
+        AxisY = 16,
+        AxisXY = AxisX | AxisY
+    };
+}

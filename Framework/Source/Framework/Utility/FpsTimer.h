@@ -79,6 +79,10 @@ public:
 		return static_cast<std::uint64_t>(seconds * TicksPerSecond);
 	}
 
+public:
+
+	static std::uint64_t DeltaTime;
+
 private:
 
 	LARGE_INTEGER	m_frequency;		// 高解像度タイマの周波数

@@ -31,7 +31,7 @@ void Human::Initialize()
 
 		m_spCamera->g_priority = 1.0f;
 		m_spCamera->g_name = "HumanTPS";
-		APP.g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera);
+		g_application->g_gameSystem->g_cameraSystem.AddCameraList(m_spCamera);
 	}
 
 	m_spState = std::make_shared<StateWait>();
@@ -53,16 +53,16 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
-	if (!APP.g_gameSystem->g_cameraSystem.IsEditorMode())
+	if (!g_application->g_gameSystem->g_cameraSystem.IsEditorMode())
 	{
-		if (m_spState != nullptr)
+		if(m_spState != nullptr)
 			m_spState->Update(deltaTime, *this);
 	}
 
 	// アニメーション
 	float animationSpeed = 60.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Shift)) animationSpeed *= 1.6f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Alt)) animationSpeed *= 0.6f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Shift)) animationSpeed *= 1.6f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Alt)) animationSpeed *= 0.6f;
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 
@@ -72,7 +72,7 @@ void Human::Update(float deltaTime)
 	if (timecount >= 3.0f)
 	{
 		const auto& pos = float3(0, 4, 0);
-		APP.g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
+		g_application->g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
 		//APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
 
 		//SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
@@ -85,7 +85,7 @@ void Human::Update(float deltaTime)
 	{
 		mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
 
-		auto delta = APP.g_rawInputDevice->g_spMouse->GetMouseWheelDelta() * -1;
+		auto delta = g_application->g_inputDevice->GetMouseWheelDelta() * -1;
 
 		m_zoom += delta * deltaTime * 0.8f;
 
@@ -114,9 +114,9 @@ void Human::UpdateMove(float deltaTime)
 
 	// ダッシュ or スニーク？
 	float moveSpd = 10;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Shift))
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Shift))
 		speed *= 2;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::Alt))
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Alt))
 		speed *= 0.4f;
 
 	auto axisZ = m_transform.GetWorldMatrix().Backward();
@@ -135,10 +135,10 @@ void Human::UpdateRotate(float deltaTime)
 {
 	// 入力ベクトル取得
 	float3 moveVec;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	// カメラを加味
@@ -190,11 +190,11 @@ void Human::CheckBump()
 	center.y += 0.8f;//少し持ち上げる
 	float radius = 0.4f;//半径いいかんじに設定
 
-	APP.g_gameSystem->AddDebugSphereLine(center, radius);
+	g_application->g_gameSystem->AddDebugSphereLine(center, radius);
 
 	float3 push = float3::Zero;
 
-	for (auto& actor : APP.g_gameSystem->GetActorList())
+	for (auto& actor : g_application->g_gameSystem->GetActorList())
 	{
 		if (actor.get() == this) continue;
 
@@ -224,10 +224,10 @@ void Human::StateWait::Update(float deltaTime, Human& owner)
 
 	//TODO: 修正
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	//遷移 移動ステート
@@ -252,10 +252,10 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 
 	//TODO: fix
 	float3 moveVec = float3::Zero;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (APP.g_rawInputDevice->g_spKeyboard->IsDown(KeyCode::D)) moveVec.x += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
+	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
 	moveVec.Normalize();
 
 	//遷移 待機ステート

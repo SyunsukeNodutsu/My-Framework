@@ -35,6 +35,12 @@ void SafeRelease(T*& p) { if (p) { p->Release(); p = nullptr; } }
 template<class T>
 void SafeDelete(T*& p) { if (p) { delete p; p = nullptr; } }
 
+//
+constexpr float operator"" _deg(long double deg) { return static_cast<float>(deg) * (PI / 180.0f); }
+
+//
+constexpr float operator"" _rad(long double rad) { return static_cast<float>(rad) * (180.0f / PI); }
+
 // @brief メディアファイルの位置を確認するためのヘルパー関数
 // @param strDestPath
 // @param cchDest
