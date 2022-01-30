@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
-// キーコード ※仮想キーコードと同じ値
+//キーコード ※仮想キーコードと同じ値
 namespace KeyCode
 {
     enum : unsigned char
@@ -82,6 +82,7 @@ namespace KeyCode
     };
 }
 
+//マウスのコード これを基準にして各入力デバイスに設定します
 namespace MouseKode
 {
     enum : unsigned char

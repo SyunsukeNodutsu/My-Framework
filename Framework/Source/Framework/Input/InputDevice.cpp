@@ -21,8 +21,9 @@ InputDevice::~InputDevice()
 //-----------------------------------------------------------------------------
 //初期化
 //-----------------------------------------------------------------------------
-void InputDevice::Initialize(HWND hend, InputMode mode)
+void InputDevice::Initialize(HWND hwnd, InputMode mode)
 {
+	m_hwnd = hwnd;
 	m_inputMode = mode;
 
 	m_rawInputDevice.Initialize();
@@ -57,7 +58,7 @@ void InputDevice::ParseMessage(void* lparam)
 //-----------------------------------------------------------------------------
 void InputDevice::SetMouseWheelDelta(int delta)
 {
-
+	m_rawInputDevice.g_spMouse->SetMouseWheelDelta(delta);
 }
 
 //-----------------------------------------------------------------------------
@@ -65,18 +66,46 @@ void InputDevice::SetMouseWheelDelta(int delta)
 //-----------------------------------------------------------------------------
 bool InputDevice::IsKeyDown(int keyCode) const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spKeyboard->IsDown(keyCode); break;
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return false;
 }
 bool InputDevice::IsKeyPressed(int keyCode) const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spKeyboard->IsPressed(keyCode); break;
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return false;
 }
 bool InputDevice::IsKeyReleased(int keyCode) const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spKeyboard->IsReleased(keyCode); break;
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return false;
 }
-double InputDevice::GetKeyDownTime(int keyCode) const
+double InputDevice::GetKeyPushTime(int keyCode) const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spKeyboard->GetPushTime(keyCode); break;
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return 0.0;
 }
 
@@ -118,14 +147,34 @@ bool InputDevice::IsMouseReleased(int mouseKode) const
 }
 float2 InputDevice::GetMousePos() const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spMouse->GetMousePos();
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return float2();
 }
 int InputDevice::GetMouseWheelDelta() const
 {
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: return m_rawInputDevice.g_spMouse->GetMouseWheelDelta();
+	case InputMode::eXInput: break;
+	default: break;
+	}
 	return 0;
 }
 
 void InputDevice::SetMousePos(float2 position, bool abs)
 {
-	m_rawInputDevice.g_spMouse->SetAt(position, m_hwnd);
+	switch (m_inputMode)
+	{
+	case InputMode::eBasicInput: break;
+	case InputMode::eRawInput: m_rawInputDevice.g_spMouse->SetAt(position, m_hwnd, abs); break;
+	case InputMode::eXInput: break;
+	default: break;
+	}
 }

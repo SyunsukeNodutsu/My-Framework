@@ -28,9 +28,9 @@ public:
 	~InputDevice();
 
 	//@brief 初期化
-	//@param hend ウィンドウハンドル
+	//@param hwnd ウィンドウハンドル
 	//@param mode 入力モード
-	void Initialize(HWND hend, InputMode mode = InputMode::eBasicInput);
+	void Initialize(HWND hwnd, InputMode mode = InputMode::eBasicInput);
 
 	//@brief 終了
 	void Finalize();
@@ -68,7 +68,7 @@ public:
 	//@brief キーが押されている間の秒数を返す
 	//@param keyCode 判定したいキーコード
 	//@return キーが押されている間の秒数
-	double GetKeyDownTime(int keyCode) const;
+	double GetKeyPushTime(int keyCode) const;
 
 	//--------------------------------------------------
 	//マウス入力取得

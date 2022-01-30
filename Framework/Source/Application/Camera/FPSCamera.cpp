@@ -37,7 +37,7 @@ void FPSCamera::Update()
 	mouseMove.x = nowPos.x - s_fixMousePos.x;
 	mouseMove.y = nowPos.y - s_fixMousePos.y;
 
-	ApplicationChilled::GetApplication()->g_inputDevice->SetMousePos(s_fixMousePos, ApplicationChilled::GetApplication()->g_window->GetWndHandle());
+	ApplicationChilled::GetApplication()->g_inputDevice->SetMousePos(s_fixMousePos);
 
 	// カメラを回転
 	m_degAngle.x += mouseMove.y * 0.08f;
