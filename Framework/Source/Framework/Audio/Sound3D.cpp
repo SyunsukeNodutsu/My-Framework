@@ -1,8 +1,6 @@
 ﻿#include "Sound3D.h"
 #include "Vender/WAVFileReader.h"
 
-#include "../../Application/ImGuiSystem.h"
-
 // LFEレベルの距離曲線
 static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_LFE_CurvePoints[3] = { 0.0f, 1.0f, 0.25f, 0.0f, 1.0f, 0.0f };
 static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_LFE_CurvePoints[0], 3 };

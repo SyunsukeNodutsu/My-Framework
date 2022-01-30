@@ -5,8 +5,7 @@
 // 優先度から使用カメラを遷移させたり
 //-----------------------------------------------------------------------------
 #pragma once
-
-class EditorCamera;
+#include "../Editor/EditorCamera.h"
 
 // カメラの遷移モード
 enum class ChangeMode

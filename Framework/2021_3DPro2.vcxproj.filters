@@ -4,9 +4,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{c3580e6c-5cf6-426c-af0b-6d703c65680d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Application">
-      <UniqueIdentifier>{1dfe108a-c4da-4609-88c8-e4595f9ba8c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework">
       <UniqueIdentifier>{d73aca6d-b67e-473a-9cdb-9dfa921e9285}</UniqueIdentifier>
     </Filter>
@@ -37,9 +34,6 @@
     <Filter Include="Source\Framework\Audio">
       <UniqueIdentifier>{b880aba7-4fbc-47fd-8800-d9b6d48ea948}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Application\Camera">
-      <UniqueIdentifier>{6fae8896-2072-4bdc-98e9-b8fb9d715e94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\Shader\Effect">
       <UniqueIdentifier>{827afbf7-612d-4155-af7c-19670b547315}</UniqueIdentifier>
     </Filter>
@@ -54,9 +48,6 @@
     </Filter>
     <Filter Include="Source\Framework\Graphics\Camera">
       <UniqueIdentifier>{ebeed093-4dc8-45c4-811f-0d92c625cb23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Application\Actors">
-      <UniqueIdentifier>{ac513adc-a8e3-4897-8407-420f75fc3ab2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Library\Effekseer">
       <UniqueIdentifier>{ba4c3405-194c-4b43-ae7e-5cdb1914a309}</UniqueIdentifier>
@@ -88,17 +79,32 @@
     <Filter Include="Jsons">
       <UniqueIdentifier>{7c6839b1-88b2-48e2-ab01-0c530018280f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Application\Actors\Process">
-      <UniqueIdentifier>{34d61980-356a-4fc8-9796-8f12fa744853}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Application\Actors\Environment">
-      <UniqueIdentifier>{87022db2-72c0-4d73-a998-180bfc09bb77}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Framework\HighLevel\Component">
       <UniqueIdentifier>{7c70ed8a-ad09-46ee-b631-c6e1663adb6b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Framework\Graphics\Effect">
       <UniqueIdentifier>{61bc7f2d-61b5-4a04-a4a6-c91a2c03e625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\HighLevel\System">
+      <UniqueIdentifier>{fa206283-bd47-463e-b661-0464736d518a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\HighLevel\Editor">
+      <UniqueIdentifier>{e2f95494-108c-4012-9149-9eedd6aa4746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Application">
+      <UniqueIdentifier>{717a9cf5-612c-4d3e-a98a-8e809aa0344b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Application\Actors">
+      <UniqueIdentifier>{df21579f-8ddc-45a6-a1ef-d2870d83614a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Application\Camera">
+      <UniqueIdentifier>{fe9de6c0-92d3-41f0-9864-43a74246457e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Application\Actors\Process">
+      <UniqueIdentifier>{b0eee823-e311-4954-93cb-9821b9be2af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Application\Actors\Environment">
+      <UniqueIdentifier>{1c85e74f-f8d1-4d22-889e-efaf96343511}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,18 +135,6 @@
     <ClCompile Include="Source\Framework\Shader\ShaderManager.cpp">
       <Filter>Source\Framework\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Application\main.cpp">
-      <Filter>Source\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\GameSystem.cpp">
-      <Filter>Source\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
-      <Filter>Source\Application\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Camera\TPSCamera.cpp">
-      <Filter>Source\Application\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Model\Mesh.cpp">
       <Filter>Source\Framework\Model</Filter>
     </ClCompile>
@@ -170,9 +164,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Shader.cpp">
       <Filter>Source\Framework\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\ImGuiSystem.cpp">
-      <Filter>Source\Application</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Audio\Vender\WaveBankReader.cpp">
       <Filter>Source\Framework\Audio\Vender</Filter>
@@ -213,12 +204,6 @@
     <ClCompile Include="Source\Framework\Graphics\Camera\Camera.cpp">
       <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Human.cpp">
-      <Filter>Source\Application\Actors</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Camera\CameraSystem.cpp">
-      <Filter>Source\Application\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\Input\BasicInput\BasicInputDevice.cpp">
       <Filter>Source\Framework\Input\BasicInput</Filter>
     </ClCompile>
@@ -227,9 +212,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader.cpp">
       <Filter>Source\Framework\Shader\Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Camera\EditorCamera.cpp">
-      <Filter>Source\Application\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
       <Filter>Source\Framework\Graphics</Filter>
@@ -243,23 +225,8 @@
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp">
       <Filter>Library\json11KdCustom</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp">
-      <Filter>Source\Application\Actors\Process</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp">
-      <Filter>Source\Application\Actors\Process</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp">
-      <Filter>Source\Application\Actors\Environment</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp">
-      <Filter>Source\Application\Actors\Environment</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp">
       <Filter>Source\Framework\HighLevel</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\GenerateActor.cpp">
-      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\HighLevel\Transform.cpp">
       <Filter>Source\Framework\HighLevel</Filter>
@@ -272,9 +239,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\HighLevel\Component\SoundComponent.cpp">
       <Filter>Source\Framework\HighLevel\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Application\Actors\CesiumMan.cpp">
-      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerDevice.cpp">
       <Filter>Source\Framework\Graphics\Effect</Filter>
@@ -302,6 +266,48 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Input\XInput\XInputDevice.cpp">
       <Filter>Source\Framework\Input\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\System\ImGuiSystem.cpp">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\System\GameSystem.cpp">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\System\CameraSystem.cpp">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\HighLevel\Editor\EditorCamera.cpp">
+      <Filter>Source\Framework\HighLevel\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\main.cpp">
+      <Filter>Source\Framework\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
+      <Filter>Source\Framework\Application\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Camera\TPSCamera.cpp">
+      <Filter>Source\Framework\Application\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\CesiumMan.cpp">
+      <Filter>Source\Framework\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\GenerateActor.cpp">
+      <Filter>Source\Framework\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Human.cpp">
+      <Filter>Source\Framework\Application\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp">
+      <Filter>Source\Framework\Application\Actors\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp">
+      <Filter>Source\Framework\Application\Actors\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp">
+      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp">
+      <Filter>Source\Framework\Application\Actors\Environment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,20 +350,8 @@
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h">
       <Filter>Source\Framework\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\main.h">
-      <Filter>Source\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\GameSystem.h">
-      <Filter>Source\Application</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Utility\Types.h">
       <Filter>Source\Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Camera\FPSCamera.h">
-      <Filter>Source\Application\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Camera\TPSCamera.h">
-      <Filter>Source\Application\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Model\Mesh.h">
       <Filter>Source\Framework\Model</Filter>
@@ -391,9 +385,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\Shader.h">
       <Filter>Source\Framework\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\ImGuiSystem.h">
-      <Filter>Source\Application</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h">
       <Filter>Source\Framework\Audio\Vender</Filter>
@@ -434,9 +425,6 @@
     <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h">
       <Filter>Source\Framework\Graphics\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Human.h">
-      <Filter>Source\Application\Actors</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\Effekseer.h">
       <Filter>Library\Effekseer</Filter>
     </ClInclude>
@@ -445,9 +433,6 @@
     </ClInclude>
     <ClInclude Include="..\Library\Effekseer\include\EffekseerRendererDX11.h">
       <Filter>Library\Effekseer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Camera\CameraSystem.h">
-      <Filter>Source\Application\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Library\imGui\imgui_glyph_ranges_jp.h">
       <Filter>Library\imGui</Filter>
@@ -461,9 +446,6 @@
     <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h">
       <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application\Camera\EditorCamera.h">
-      <Filter>Source\Application\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
@@ -472,21 +454,6 @@
     </ClInclude>
     <ClInclude Include="..\Library\json11KdCustom\json11.hpp">
       <Filter>Library\json11KdCustom</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h">
-      <Filter>Source\Application\Actors\Process</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Process\GameProcess.h">
-      <Filter>Source\Application\Actors\Process</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Environment\Sky.h">
-      <Filter>Source\Application\Actors\Environment</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Environment\StageMap.h">
-      <Filter>Source\Application\Actors\Environment</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\Environment\Tree.h">
-      <Filter>Source\Application\Actors\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\Actor.h">
       <Filter>Source\Framework\HighLevel</Filter>
@@ -505,9 +472,6 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\Component\SoundComponent.h">
       <Filter>Source\Framework\HighLevel\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Application\Actors\CesiumMan.h">
-      <Filter>Source\Application\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerDevice.h">
       <Filter>Source\Framework\Graphics\Effect</Filter>
@@ -541,6 +505,48 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Input\KeyCode.h">
       <Filter>Source\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\System\ImGuiSystem.h">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\System\GameSystem.h">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\System\CameraSystem.h">
+      <Filter>Source\Framework\HighLevel\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\HighLevel\Editor\EditorCamera.h">
+      <Filter>Source\Framework\HighLevel\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\main.h">
+      <Filter>Source\Framework\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Camera\FPSCamera.h">
+      <Filter>Source\Framework\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Camera\TPSCamera.h">
+      <Filter>Source\Framework\Application\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\CesiumMan.h">
+      <Filter>Source\Framework\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Human.h">
+      <Filter>Source\Framework\Application\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h">
+      <Filter>Source\Framework\Application\Actors\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Process\GameProcess.h">
+      <Filter>Source\Framework\Application\Actors\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Environment\Tree.h">
+      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Environment\Sky.h">
+      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application\Actors\Environment\StageMap.h">
+      <Filter>Source\Framework\Application\Actors\Environment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

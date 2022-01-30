@@ -18,7 +18,7 @@ ImGuiSystem* Application::g_imGuiSystem = 0;
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
 	//アプリケーション実行前の初期化
-	
+
 	//不使用な引数をコンパイラに伝えてWarningを抑制
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -51,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	application->Execute();
 
 	delete application;
-	
+
 	//COM解放
 	CoUninitialize();
 
@@ -79,14 +79,14 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 
 	//各種デバイス生成
-	g_graphicsDevice	= new GraphicsDevice();
-	g_effectDevice		= new EffekseerDevice();
-	g_audioDevice		= new AudioDevice();
-	g_inputDevice		= new InputDevice();
-	g_fpsTimer			= new FpsTimer();
+	g_graphicsDevice = new GraphicsDevice();
+	g_effectDevice = new EffekseerDevice();
+	g_audioDevice = new AudioDevice();
+	g_inputDevice = new InputDevice();
+	g_fpsTimer = new FpsTimer();
 	//メインシステム生成
-	g_gameSystem		= new GameSystem();
-	g_imGuiSystem		= new ImGuiSystem();
+	g_gameSystem = new GameSystem();
+	g_imGuiSystem = new ImGuiSystem();
 
 	//デバイスセット
 	GraphicsDeviceChild::SetGraphicsDevice(g_graphicsDevice);
@@ -95,15 +95,15 @@ bool Application::Initialize(int width, int height)
 
 	//描画デバイス Direct3D
 	MY_DIRECT3D_DESC desc = {};
-	desc.m_bufferCount	= 2;
-	desc.m_width		= width;// 1280-1920-2560
-	desc.m_height		= height; //  720-1080-1440
-	desc.m_refreshRate	= 0;
-	desc.m_windowed		= true;
-	desc.m_useHDR		= false;
-	desc.m_useMSAA		= true;
-	desc.m_debugMode	= false;
-	desc.m_hwnd			= g_window->GetWndHandle();
+	desc.m_bufferCount = 2;
+	desc.m_width = width;// 1280-1920-2560
+	desc.m_height = height; //  720-1080-1440
+	desc.m_refreshRate = 0;
+	desc.m_windowed = true;
+	desc.m_useHDR = false;
+	desc.m_useMSAA = true;
+	desc.m_debugMode = false;
+	desc.m_hwnd = g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
 
 	//エフェクトデバイス
@@ -112,7 +112,7 @@ bool Application::Initialize(int width, int height)
 	//オーディオデバイス
 	g_audioDevice->Initialize();
 	g_audioDevice->SetMasterVolume(0.08f);
-	
+
 	//入力デバイス
 	g_inputDevice->Initialize(g_window->GetWndHandle(), InputMode::eRawInput);
 
@@ -209,7 +209,7 @@ void Application::Execute()
 		//----------------------------------------
 		// ゲーム処理
 		//----------------------------------------
-		
+
 		// 更新
 		g_gameSystem->Update();
 		g_effectDevice->Update();

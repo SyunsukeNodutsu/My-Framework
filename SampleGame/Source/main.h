@@ -1,37 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 // File: main.h
 // 
-// ■フレームワーク全体像(2021/09/24)
-// 
-// Application(main.h)------AudioDevice
-//   |    |  |                   |
-// Window |  |             AudioDeviceChild
-//		  |  |                |        |
-//		  |  ┗-----┓  SoundDirector Sound
-//		  |         |                  |
-//	 InputDevice    |                Sound3D
-//	  |       |     |
-// Keyboard   Mouse |
-//					|
-//			  GraphicsDevice            Model---Animation
-//					|                   |   |
-//			GraphicsDeviceChild--------Mesh |
-//			 |      |       |  ┗--┓       |
-//		   Buffer Texture Shader   |      Material
-//			 |              |      |
-//	   ConstantBuffer -- 各Shader  |
-//			 |                     |
-//			 ┗------------------Renderer
-// 
-// ■使用ライブラリ
-// 外部 ---
-// DirectXTK
-// DirectXTex
-// Dear imGui
-// Effekseer(1.62a)
-// 学内配布 ---
-// json
-// gltfLoader
+// 別プロジェクトに移動中
 //-----------------------------------------------------------------------------
 #pragma once
 

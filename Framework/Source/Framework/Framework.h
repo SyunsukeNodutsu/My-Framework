@@ -80,6 +80,11 @@
 #include "Audio/Sound.h"
 #include "Audio/Sound3D.h"
 
+//高レベル
 #include "HighLevel/ResourceFactory.h"
 #include "HighLevel/Actor.h"
 #include "HighLevel/ApplicationChilled.h"
+
+#include "HighLevel/System/CameraSystem.h"
+#include "HighLevel/System/GameSystem.h"
+#include "HighLevel/System/ImguiSystem.h"

@@ -1,15 +1,10 @@
-﻿#include "ImGuiSystem.h"
-#include "GameSystem.h"
-#include "main.h"
-#include "../Framework/Utility/Cpuid.h"
-#include "../Framework/Audio/SoundDirector.h"
+﻿#include "../../Utility/Cpuid.h"
+#include "../../Audio/SoundDirector.h"
 
 // stlに頼らないimGuiさんまじカッケー
 #define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
 
 static void HelpMarker(const char* desc);
-
-
 
 //-----------------------------------------------------------------------------
 // コンストラクタ

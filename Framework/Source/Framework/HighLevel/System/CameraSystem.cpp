@@ -1,6 +1,4 @@
 ﻿#include "CameraSystem.h"
-#include "EditorCamera.h"
-#include "../main.h"
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
