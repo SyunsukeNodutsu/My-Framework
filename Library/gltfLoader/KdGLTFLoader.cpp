@@ -1,5 +1,4 @@
 ﻿#include "KdGLTFLoader.h"
-#include "../../Framework/Source/Application/main.h"
 
 // TinyGLTF
 #define TINYGLTF_IMPLEMENTATION

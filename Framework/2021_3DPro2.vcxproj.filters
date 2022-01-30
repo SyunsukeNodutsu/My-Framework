@@ -91,20 +91,20 @@
     <Filter Include="Source\Framework\HighLevel\Editor">
       <UniqueIdentifier>{e2f95494-108c-4012-9149-9eedd6aa4746}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Application">
+    <Filter Include="Source\Application">
       <UniqueIdentifier>{717a9cf5-612c-4d3e-a98a-8e809aa0344b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Application\Actors">
+    <Filter Include="Source\Application\Actors">
       <UniqueIdentifier>{df21579f-8ddc-45a6-a1ef-d2870d83614a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Application\Camera">
-      <UniqueIdentifier>{fe9de6c0-92d3-41f0-9864-43a74246457e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Framework\Application\Actors\Process">
+    <Filter Include="Source\Application\Actors\Process">
       <UniqueIdentifier>{b0eee823-e311-4954-93cb-9821b9be2af4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Application\Actors\Environment">
+    <Filter Include="Source\Application\Actors\Environment">
       <UniqueIdentifier>{1c85e74f-f8d1-4d22-889e-efaf96343511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application\Camera">
+      <UniqueIdentifier>{fe9de6c0-92d3-41f0-9864-43a74246457e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -280,34 +280,34 @@
       <Filter>Source\Framework\HighLevel\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\main.cpp">
-      <Filter>Source\Framework\Application</Filter>
+      <Filter>Source\Application</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Camera\FPSCamera.cpp">
-      <Filter>Source\Framework\Application\Camera</Filter>
+      <Filter>Source\Application\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Camera\TPSCamera.cpp">
-      <Filter>Source\Framework\Application\Camera</Filter>
+      <Filter>Source\Application\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\CesiumMan.cpp">
-      <Filter>Source\Framework\Application\Actors</Filter>
+      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\GenerateActor.cpp">
-      <Filter>Source\Framework\Application\Actors</Filter>
+      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Human.cpp">
-      <Filter>Source\Framework\Application\Actors</Filter>
+      <Filter>Source\Application\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Process\GameProcess.cpp">
-      <Filter>Source\Framework\Application\Actors\Process</Filter>
+      <Filter>Source\Application\Actors\Process</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Process\TitleProcess.cpp">
-      <Filter>Source\Framework\Application\Actors\Process</Filter>
+      <Filter>Source\Application\Actors\Process</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Environment\Sky.cpp">
-      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+      <Filter>Source\Application\Actors\Environment</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp">
-      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+      <Filter>Source\Application\Actors\Environment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -519,34 +519,34 @@
       <Filter>Source\Framework\HighLevel\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\main.h">
-      <Filter>Source\Framework\Application</Filter>
+      <Filter>Source\Application</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\FPSCamera.h">
-      <Filter>Source\Framework\Application\Camera</Filter>
+      <Filter>Source\Application\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Camera\TPSCamera.h">
-      <Filter>Source\Framework\Application\Camera</Filter>
+      <Filter>Source\Application\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\CesiumMan.h">
-      <Filter>Source\Framework\Application\Actors</Filter>
+      <Filter>Source\Application\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Human.h">
-      <Filter>Source\Framework\Application\Actors</Filter>
+      <Filter>Source\Application\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Process\TitleProcess.h">
-      <Filter>Source\Framework\Application\Actors\Process</Filter>
+      <Filter>Source\Application\Actors\Process</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Process\GameProcess.h">
-      <Filter>Source\Framework\Application\Actors\Process</Filter>
+      <Filter>Source\Application\Actors\Process</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Environment\Tree.h">
-      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+      <Filter>Source\Application\Actors\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Environment\Sky.h">
-      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+      <Filter>Source\Application\Actors\Environment</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application\Actors\Environment\StageMap.h">
-      <Filter>Source\Framework\Application\Actors\Environment</Filter>
+      <Filter>Source\Application\Actors\Environment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
