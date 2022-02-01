@@ -482,9 +482,6 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h">
       <Filter>Source\Framework\Graphics\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\FrameworkDevice.h">
-      <Filter>Source\Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\HighLevel\ApplicationChilled.h">
       <Filter>Source\Framework\HighLevel</Filter>
     </ClInclude>

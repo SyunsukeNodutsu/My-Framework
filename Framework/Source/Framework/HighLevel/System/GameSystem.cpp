@@ -89,7 +89,7 @@ void GameSystem::Serialize(const std::string& filepath)
 //-----------------------------------------------------------------------------
 void GameSystem::Update()
 {
-	if (!GetLockFlag()) return;
+	if (!IsLoadingDone()) return;
 
 	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 	const float& totalTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetTotalTime());
@@ -128,7 +128,7 @@ void GameSystem::Update()
 //-----------------------------------------------------------------------------
 void GameSystem::LateUpdate()
 {
-	if (!GetLockFlag()) return;
+	if (!IsLoadingDone()) return;
 
 	const float& deltaTime = static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 
@@ -146,7 +146,7 @@ void GameSystem::Draw()
 	// カメラ情報をGPUに転送
 	g_cameraSystem.SetToDevice();
 
-	if (!GetLockFlag()) return;
+	if (!IsLoadingDone()) return;
 
 	//--------------------------------------------------
 	// シャドウマップ描画
@@ -189,7 +189,7 @@ void GameSystem::Draw2D()
 	//--------------------------------------------------
 	// Effect描画
 	//--------------------------------------------------
-	if (GetLockFlag())
+	if (IsLoadingDone())
 	{
 		SHADER.GetEffectShader().Begin();
 
@@ -220,7 +220,7 @@ void GameSystem::Draw2D()
 	{
 		SHADER.GetSpriteShader().Begin(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get(), true, true);
 
-		if (!GetLockFlag())
+		if (!IsLoadingDone())
 		{
 			static int index = 0;
 

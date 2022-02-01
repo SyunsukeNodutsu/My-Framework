@@ -28,10 +28,14 @@ public:
 	// @return 成功...true 失敗...false
 	bool Create(const std::string& filepath);
 
+	//@brief 通常テクスチャとして作成
+	bool Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData);
+
 	// @brief DESC情報から作成
 	// @param desc DESC情報
+	// @param fillData バッファに書き込むデータ ※nullptrだと書き込みなし
 	// @return 成功...true 失敗...false
-	bool Create(const D3D11_TEXTURE2D_DESC& desc);
+	bool Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData = nullptr);
 
 	// @brief レンダーターゲットテクスチャとして作成
 	// @note テクスチャリソースを作成し、ShaderResourceViewのみを作成します

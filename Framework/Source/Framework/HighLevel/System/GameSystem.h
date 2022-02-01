@@ -48,6 +48,11 @@ public:
 		return m_spActorList;
 	}
 
+	//
+	bool IsLoadingDone() {
+		std::lock_guard<std::mutex> lock(isLoadedMutex); return isLoaded;
+	}
+
 	// @brief シーンの遷移を予約
 	// @param filepath
 	void RequestChangeScene(const std::string& filepath);
@@ -84,9 +89,6 @@ private:
 
 	void SetLockFlag(bool load) {
 		std::lock_guard<std::mutex> lock(isLoadedMutex); isLoaded = load;
-	}
-	bool GetLockFlag() {
-		std::lock_guard<std::mutex> lock(isLoadedMutex); return isLoaded;
 	}
 
 	inline static HANDLE m_testThread = 0;

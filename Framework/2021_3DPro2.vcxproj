@@ -124,7 +124,6 @@
     <ClInclude Include="Source\Framework\Audio\SoundDirector.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WaveBankReader.h" />
     <ClInclude Include="Source\Framework\Audio\Vender\WAVFileReader.h" />
-    <ClInclude Include="Source\Framework\FrameworkDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\Buffer.h" />
     <ClInclude Include="Source\Framework\Graphics\Camera\Camera.h" />
     <ClInclude Include="Source\Framework\Graphics\CubeMapGenerator.h" />

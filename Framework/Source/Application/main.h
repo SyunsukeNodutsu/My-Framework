@@ -56,18 +56,27 @@ public:
 
 	//各種デバイス
 	static GraphicsDevice* g_graphicsDevice;//描画デバイス
-	static EffekseerDevice* g_effectDevice;//エフェクトデバイス
-	static AudioDevice* g_audioDevice;//オーディオデバイス
-	static InputDevice* g_inputDevice;//入力デバイス
+	static EffekseerDevice* g_effectDevice;	//エフェクトデバイス
+	static AudioDevice* g_audioDevice;		//オーディオデバイス
+	static InputDevice* g_inputDevice;		//入力デバイス
 
 	//TODO: ウィンドウが持った方がいいかも
-	static FpsTimer* g_fpsTimer;//fps計測
+	static FpsTimer* g_fpsTimer;			//fps計測
 
 	//メインシステム
-	static GameSystem* g_gameSystem;//ゲーム管理
-	static ImGuiSystem* g_imGuiSystem;//プロファイラ デバッグ
+	static GameSystem* g_gameSystem;		//ゲーム管理
+	static ImGuiSystem* g_imGuiSystem;		//プロファイラ デバッグ
 
 private:
+
+	//スレッドごとの値(static)
+	static const int m_numPerSceneRenderThreads = 4;//レンダリングスレッド数
+	static HANDLE m_hPerSceneRenderDeferredThread[m_numPerSceneRenderThreads];//スレッドハンドル
+	static HANDLE m_hBeginPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads];//Beginイベント
+	static HANDLE m_hEndPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads];//Endイベント
+	static int m_perSceneThreadInstanceData[m_numPerSceneRenderThreads];//
+	static ID3D11DeviceContext* m_contextDeferred[m_numPerSceneRenderThreads];
+	static ID3D11CommandList* m_commandList[m_numPerSceneRenderThreads];
 
 	//ゲーム終了フラグ
 	bool m_endFlag = false;
@@ -82,5 +91,8 @@ private:
 
 	//@brief アプリケーション解放
 	void Release();
+
+	//
+	static inline unsigned int WINAPI PerSceneRenderDeferredProc(LPVOID lparam);
 
 };

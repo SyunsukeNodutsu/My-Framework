@@ -211,7 +211,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		srdata.SysMemSlicePitch = 0;
 
 		m_texWhite = std::make_shared<Texture>();
-		m_texWhite->Create("Resource/Texture/White1x1.bmp");
+		m_texWhite->Create(1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, 1, &srdata);
 	}
 
 	//--------------------------------------------------
@@ -225,7 +225,7 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		srdata.SysMemSlicePitch = 0;
 
 		m_texNormal = std::make_shared<Texture>();
-		m_texNormal->Create("Resource/Texture/Blue1x1.bmp");// todo: fix
+		m_texWhite->Create(1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, 1, &srdata);
 	}
 
 	// DrawVertices用頂点バッファを作成

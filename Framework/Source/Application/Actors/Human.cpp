@@ -75,7 +75,7 @@ void Human::Update(float deltaTime)
 		g_application->g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
 		//APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
 
-		//SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion02.wav", m_transform.GetPosition(), 0, 1.0f);
+		//SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion.wav", pos, 1, 1.0f);
 
 		timecount = 0.0f;
 	}

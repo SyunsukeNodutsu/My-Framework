@@ -1,6 +1,6 @@
 {
     "asset" : {
-        "generator" : "Khronos glTF Blender I/O v0.9.36",
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
         "version" : "2.0"
     },
     "scene" : 0,
@@ -17,49 +17,44 @@
             "mesh" : 0,
             "name" : "StageMap.001",
             "rotation" : [
-                0,
-                0.7071067690849304,
-                0,
-                0.7071068286895752
+                0.5,
+                0.5000000596046448,
+                -0.5,
+                0.4999999403953552
             ],
             "translation" : [
                 -30,
-                0,
-                60
+                -8.061531843850389e-06,
+                60.00000762939453
             ]
         }
     ],
     "materials" : [
         {
             "doubleSided" : true,
-            "name" : "Material.008",
+            "name" : "Material.008_COLOR_0",
             "normalTexture" : {
-                "index" : 0,
-                "texCoord" : 0
+                "index" : 0
             },
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 1,
-                    "texCoord" : 0
+                    "index" : 1
                 },
                 "metallicFactor" : 0,
-                "roughnessFactor" : 1
+                "roughnessFactor" : 0
             }
         },
         {
             "doubleSided" : true,
-            "name" : "Material.009",
+            "name" : "Material.009_COLOR_0",
             "normalTexture" : {
-                "index" : 2,
-                "texCoord" : 0
+                "index" : 2
             },
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 3,
-                    "texCoord" : 0
+                    "index" : 3
                 },
-                "metallicFactor" : 0,
-                "roughnessFactor" : 1
+                "metallicFactor" : 0
             }
         }
     ],
@@ -71,20 +66,22 @@
                     "attributes" : {
                         "POSITION" : 0,
                         "NORMAL" : 1,
-                        "TEXCOORD_0" : 2,
-                        "COLOR_0" : 3
+                        "TANGENT" : 2,
+                        "TEXCOORD_0" : 3,
+                        "COLOR_0" : 4
                     },
-                    "indices" : 4,
+                    "indices" : 5,
                     "material" : 0
                 },
                 {
                     "attributes" : {
-                        "POSITION" : 5,
-                        "NORMAL" : 6,
-                        "TEXCOORD_0" : 7,
-                        "COLOR_0" : 8
+                        "POSITION" : 6,
+                        "NORMAL" : 7,
+                        "TANGENT" : 8,
+                        "TEXCOORD_0" : 9,
+                        "COLOR_0" : 10
                     },
-                    "indices" : 9,
+                    "indices" : 11,
                     "material" : 1
                 }
             ]
@@ -92,15 +89,19 @@
     ],
     "textures" : [
         {
+            "sampler" : 0,
             "source" : 0
         },
         {
+            "sampler" : 0,
             "source" : 1
         },
         {
+            "sampler" : 0,
             "source" : 2
         },
         {
+            "sampler" : 0,
             "source" : 3
         }
     ],
@@ -130,79 +131,93 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 39336,
+            "count" : 41007,
             "max" : [
                 120.00001525878906,
-                12.057140350341797,
-                90
+                90,
+                0.28823161125183105
             ],
             "min" : [
                 0,
-                -0.28823161125183105,
-                -30.00000762939453
+                -30.00000762939453,
+                -12.057140350341797
             ],
             "type" : "VEC3"
         },
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 39336,
+            "count" : 41007,
             "type" : "VEC3"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 39336,
-            "type" : "VEC2"
+            "count" : 41007,
+            "type" : "VEC4"
         },
         {
             "bufferView" : 3,
             "componentType" : 5126,
-            "count" : 39336,
-            "type" : "VEC4"
+            "count" : 41007,
+            "type" : "VEC2"
         },
         {
             "bufferView" : 4,
+            "componentType" : 5123,
+            "count" : 41007,
+            "normalized" : true,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 5,
             "componentType" : 5123,
             "count" : 59004,
             "type" : "SCALAR"
         },
         {
-            "bufferView" : 5,
+            "bufferView" : 6,
             "componentType" : 5126,
-            "count" : 664,
+            "count" : 868,
             "max" : [
                 88.79997253417969,
-                3.495972156524658,
-                58.79996871948242
+                58.79996871948242,
+                2.384185791015625e-06
             ],
             "min" : [
                 21.599979400634766,
-                -2.384185791015625e-06,
-                10.799989700317383
+                10.799989700317383,
+                -3.495972156524658
             ],
-            "type" : "VEC3"
-        },
-        {
-            "bufferView" : 6,
-            "componentType" : 5126,
-            "count" : 664,
             "type" : "VEC3"
         },
         {
             "bufferView" : 7,
             "componentType" : 5126,
-            "count" : 664,
-            "type" : "VEC2"
+            "count" : 868,
+            "type" : "VEC3"
         },
         {
             "bufferView" : 8,
             "componentType" : 5126,
-            "count" : 664,
+            "count" : 868,
             "type" : "VEC4"
         },
         {
             "bufferView" : 9,
+            "componentType" : 5126,
+            "count" : 868,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 10,
+            "componentType" : 5123,
+            "count" : 868,
+            "normalized" : true,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 11,
             "componentType" : 5123,
             "count" : 996,
             "type" : "SCALAR"
@@ -211,58 +226,74 @@
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 472032,
+            "byteLength" : 492084,
             "byteOffset" : 0
         },
         {
             "buffer" : 0,
-            "byteLength" : 472032,
-            "byteOffset" : 472032
+            "byteLength" : 492084,
+            "byteOffset" : 492084
         },
         {
             "buffer" : 0,
-            "byteLength" : 314688,
-            "byteOffset" : 944064
+            "byteLength" : 656112,
+            "byteOffset" : 984168
         },
         {
             "buffer" : 0,
-            "byteLength" : 629376,
-            "byteOffset" : 1258752
+            "byteLength" : 328056,
+            "byteOffset" : 1640280
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 328056,
+            "byteOffset" : 1968336
         },
         {
             "buffer" : 0,
             "byteLength" : 118008,
-            "byteOffset" : 1888128
+            "byteOffset" : 2296392
         },
         {
             "buffer" : 0,
-            "byteLength" : 7968,
-            "byteOffset" : 2006136
+            "byteLength" : 10416,
+            "byteOffset" : 2414400
         },
         {
             "buffer" : 0,
-            "byteLength" : 7968,
-            "byteOffset" : 2014104
+            "byteLength" : 10416,
+            "byteOffset" : 2424816
         },
         {
             "buffer" : 0,
-            "byteLength" : 5312,
-            "byteOffset" : 2022072
+            "byteLength" : 13888,
+            "byteOffset" : 2435232
         },
         {
             "buffer" : 0,
-            "byteLength" : 10624,
-            "byteOffset" : 2027384
+            "byteLength" : 6944,
+            "byteOffset" : 2449120
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 6944,
+            "byteOffset" : 2456064
         },
         {
             "buffer" : 0,
             "byteLength" : 1992,
-            "byteOffset" : 2038008
+            "byteOffset" : 2463008
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9729,
+            "minFilter" : 9987
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 2040000,
+            "byteLength" : 2465000,
             "uri" : "StageMap.bin"
         }
     ]

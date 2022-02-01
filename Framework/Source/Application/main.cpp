@@ -12,6 +12,14 @@ FpsTimer* Application::g_fpsTimer = 0;
 GameSystem* Application::g_gameSystem = 0;
 ImGuiSystem* Application::g_imGuiSystem = 0;
 
+//スレッド
+HANDLE Application::m_hPerSceneRenderDeferredThread[m_numPerSceneRenderThreads] = { 0 };
+HANDLE Application::m_hBeginPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads] = { 0 };
+HANDLE Application::m_hEndPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads] = { 0 };
+int Application::m_perSceneThreadInstanceData[m_numPerSceneRenderThreads] = { 0 };
+ID3D11DeviceContext* Application::m_contextDeferred[m_numPerSceneRenderThreads] = { nullptr };
+ID3D11CommandList* Application::m_commandList[m_numPerSceneRenderThreads] = { nullptr };
+
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
@@ -64,7 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 bool Application::Initialize(int width, int height)
 {
 	//--------------------------------------------------
-	// ウィンドウ初期化
+	//ウィンドウ初期化
 	//--------------------------------------------------
 
 	//ウィンドウ作成
@@ -75,7 +83,7 @@ bool Application::Initialize(int width, int height)
 	}
 
 	//--------------------------------------------------
-	// フレームワーク・デバイス初期化
+	//フレームワーク・デバイス初期化
 	//--------------------------------------------------
 
 	//各種デバイス生成
@@ -132,6 +140,32 @@ bool Application::Initialize(int width, int height)
 	//imGui(プロファイラー)
 	g_imGuiSystem->Initialize(g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get());
 
+	//--------------------------------------------------
+	//スレッド
+	//--------------------------------------------------
+	for (int i = 0; i < m_numPerSceneRenderThreads; i++)
+	{
+		m_perSceneThreadInstanceData[i] = i;
+
+		m_hBeginPerSceneRenderDeferredEvent[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		m_hEndPerSceneRenderDeferredEvent[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+		//遅延コンテキスト作成
+		g_graphicsDevice->g_cpDevice->CreateDeferredContext(0, &m_contextDeferred[i]);
+
+		//作成
+		m_hPerSceneRenderDeferredThread[i] = (HANDLE)_beginthreadex(
+			nullptr,
+			0,
+			PerSceneRenderDeferredProc,// thread関数
+			&m_perSceneThreadInstanceData[i],// thread関数への引数
+			CREATE_SUSPENDED,// 作成option
+			nullptr// thread ID
+		);
+
+		ResumeThread(m_hPerSceneRenderDeferredThread[i]);
+	}
+
 	return true;
 }
 
@@ -140,6 +174,15 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
+	//スレッド
+	for (int i = 0; i < m_numPerSceneRenderThreads; i++)
+	{
+		CloseHandle(m_hPerSceneRenderDeferredThread[i]);
+		CloseHandle(m_hEndPerSceneRenderDeferredEvent[i]);
+		CloseHandle(m_hBeginPerSceneRenderDeferredEvent[i]);
+		SafeRelease(m_contextDeferred[i]);
+	}
+
 	//アプリケーション
 	g_imGuiSystem->Finalize();
 	g_gameSystem->Finalize();
@@ -163,6 +206,37 @@ void Application::Release()
 	delete g_inputDevice;
 	delete g_fpsTimer;
 	delete g_window;
+}
+
+//-----------------------------------------------------------------------------
+// スレッド関数
+//-----------------------------------------------------------------------------
+inline unsigned int __stdcall Application::PerSceneRenderDeferredProc(LPVOID lparam)
+{
+	//スレッドのローカルデータを取得
+	const int instance = *(int*)lparam;
+	ID3D11DeviceContext* pd3dDeferredContext = m_contextDeferred[instance];
+	ID3D11CommandList*& pd3dCommandList = m_commandList[instance];
+
+	for (;;)
+	{
+		//メインスレッドからの準備完了の合図を待機
+		WaitForSingleObject(m_hBeginPerSceneRenderDeferredEvent[instance], INFINITE);
+
+		if (/*g_bClearStateUponBeginCommandList*/1)
+			pd3dDeferredContext->ClearState();
+
+		//ここで描画
+		//例) RenderDirect(pd3dDeferredContext);
+
+		//
+		pd3dDeferredContext->FinishCommandList(0/*!g_bClearStateUponFinishCommandList*/, &pd3dCommandList);
+
+		//メインスレッドのコマンドリストが終了したことを送信
+		SetEvent(m_hEndPerSceneRenderDeferredEvent[instance]);
+	}
+
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -202,7 +276,7 @@ void Application::Execute()
 		//----------------------------------------
 
 		//カメラ行列の取得
-		const auto& cameraMatrix = mfloat4x4::Identity;// g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix();
+		const auto& cameraMatrix = g_gameSystem->IsLoadingDone() ? g_gameSystem->g_cameraSystem.GetCamera()->GetCameraMatrix() : mfloat4x4::Identity;
 		//サウンド更新
 		g_audioDevice->Update(cameraMatrix);
 
@@ -217,6 +291,32 @@ void Application::Execute()
 		// 描画
 		g_graphicsDevice->Begin();
 		{
+			//-------------------------------
+			// すべてのワーカースレッドにシグナルを送り 完了を待つ
+			for (int iInstance = 0; iInstance < m_numPerSceneRenderThreads; ++iInstance)
+			{
+				//シーンのキックオフに向けたシグナルの準備
+				SetEvent(m_hBeginPerSceneRenderDeferredEvent[iInstance]);
+			}
+
+			//完成を待機
+			WaitForMultipleObjects(
+				m_numPerSceneRenderThreads,
+				m_hEndPerSceneRenderDeferredEvent,
+				TRUE,
+				INFINITE
+			);
+
+			for (int iInstance = 0; iInstance < m_numPerSceneRenderThreads; ++iInstance)
+			{
+				g_graphicsDevice->g_cpContext->ExecuteCommandList(
+					m_commandList[iInstance],
+					0/*!g_bClearStateUponExecuteCommandList*/
+				);
+				SafeRelease(m_commandList[iInstance]);
+			}
+			//-------------------------------
+
 			// 3D想定
 			g_gameSystem->Draw();
 

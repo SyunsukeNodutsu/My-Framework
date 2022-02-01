@@ -203,26 +203,6 @@ bool Texture::Create( const std::string& filepath )
 {
 	if (filepath.empty()) return false;
 
-	//DirectX::TexMetadata meta;
-	//DirectX::ScratchImage image;
-
-	//// マルチバイト -> ワイドバイト
-	//std::wstring wfilepath = sjis_to_wide(filepath.c_str());
-
-	//// 読み込み ※MipMapを作成するにはContextが必要
-	//HRESULT hr = DirectX::CreateWICTextureFromFile(
-	//	g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get(), wfilepath.c_str(),
-	//	(ID3D11Resource**)m_cpBuffer.GetAddressOf(), m_cpSRV.GetAddressOf()
-	//);
-
-	//if (FAILED(hr)) {
-	//	DebugLog("WARNING: テクスチャ読み込み失敗.\n");
-	//	return false;
-	//}
-
-
-	//-------------------------------------
-
 	std::wstring wFilename = sjis_to_wide(filepath);
 
 	DirectX::TexMetadata meta;
@@ -230,44 +210,36 @@ bool Texture::Create( const std::string& filepath )
 
 	bool bLoaded = false;
 
-	// WIC画像読み込み
-	//  WIC_FLAGS_ALL_FRAMES … gifアニメなどの複数フレームを読み込んでくれる
+	//WIC画像読み込み
+	//WIC_FLAGS_ALL_FRAMES ... gifアニメなどの複数フレームを読み込んでくれる
 	if (SUCCEEDED(DirectX::LoadFromWICFile(wFilename.c_str(), DirectX::WIC_FLAGS_ALL_FRAMES, &meta, image)))
-	{
 		bLoaded = true;
-	}
 
-	// DDS画像読み込み
-	if (bLoaded == false) {
-		if (SUCCEEDED(DirectX::LoadFromDDSFile(wFilename.c_str(), DirectX::DDS_FLAGS_NONE, &meta, image)))
-		{
-			bLoaded = true;
-		}
-	}
-
-	// TGA画像読み込み
-	if (bLoaded == false) {
-		if (SUCCEEDED(DirectX::LoadFromTGAFile(wFilename.c_str(), &meta, image)))
-		{
-			bLoaded = true;
-		}
-	}
-
-	// HDR画像読み込み
-	if (bLoaded == false) {
-		if (SUCCEEDED(DirectX::LoadFromHDRFile(wFilename.c_str(), &meta, image)))
-		{
-			bLoaded = true;
-		}
-	}
-
-	// 読み込み失敗
+	//DDS画像読み込み
 	if (bLoaded == false)
 	{
-		return false;
+		if (SUCCEEDED(DirectX::LoadFromDDSFile(wFilename.c_str(), DirectX::DDS_FLAGS_NONE, &meta, image)))
+			bLoaded = true;
 	}
 
-	// ミップマップ生成
+	//TGA画像読み込み
+	if (bLoaded == false)
+	{
+		if (SUCCEEDED(DirectX::LoadFromTGAFile(wFilename.c_str(), &meta, image)))
+			bLoaded = true;
+	}
+
+	//HDR画像読み込み
+	if (bLoaded == false)
+	{
+		if (SUCCEEDED(DirectX::LoadFromHDRFile(wFilename.c_str(), &meta, image)))
+			bLoaded = true;
+	}
+
+	//読み込み失敗
+	if (bLoaded == false) return false;
+
+	//ミップマップ生成
 	if (meta.mipLevels == 1 && true)
 	{
 		DirectX::ScratchImage mipChain;
@@ -282,29 +254,28 @@ bool Texture::Create( const std::string& filepath )
 	// テクスチャリソース作成
 	//------------------------------------
 	ID3D11Texture2D* tex2D = nullptr;
-	if (FAILED(DirectX::CreateTextureEx(
-		g_graphicsDevice->g_cpDevice.Get(),						// Direct3D Device
+	HRESULT hr = DirectX::CreateTextureEx(
+		g_graphicsDevice->g_cpDevice.Get(),
 		image.GetImages(),
 		image.GetImageCount(),
 		image.GetMetadata(),
-		D3D11_USAGE_DEFAULT,								// Usage
-		D3D11_BIND_SHADER_RESOURCE,							// Bind Flags
-		0,									// CPU Access Flags
-		0,									// MiscFlags
-		false,								// ForceSRGB
-		(ID3D11Resource**)&tex2D)
-	)) {
+		D3D11_USAGE_DEFAULT,// Usage
+		D3D11_BIND_SHADER_RESOURCE,// Bind Flags
+		0,
+		0,
+		false,
+		(ID3D11Resource**)&tex2D
+	);
 
-		return false;
-	}
+	if (FAILED(hr)) return false;
+
+	//メンバにコピー
+	m_cpBuffer = tex2D;
 	
-	//------------------------------------
-	// テクスチャリソース(m_resource)から、各ビューを作成する
-	//------------------------------------
-	if (KdCreateViewsFromTexture2D(tex2D, m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf()) == false)
+	// テクスチャリソースから 各ビューを作成
+	if (KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf()) == false)
 	{
 		tex2D->Release();
-		//Release();
 		return false;
 	}
 
@@ -316,15 +287,41 @@ bool Texture::Create( const std::string& filepath )
 }
 
 //-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Texture::Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData)
+{
+	//作成する2Dテクスチャ設定
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Usage				= D3D11_USAGE_DEFAULT;
+	desc.Format				= format;
+	desc.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
+	desc.Width				= (UINT)w;
+	desc.Height				= (UINT)h;
+	desc.CPUAccessFlags		= 0;
+	desc.MipLevels			= 1;
+	desc.ArraySize			= arrayCnt;
+	desc.SampleDesc.Count	= 1;
+	desc.SampleDesc.Quality = 0;
+
+	if (Create(desc, fillData) == false)return false;
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // DESC情報から作成
 //-----------------------------------------------------------------------------
-bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc)
+bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData)
 {
-	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, nullptr, m_cpBuffer.GetAddressOf());
+	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, fillData, m_cpBuffer.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：テクスチャバッファ作成失敗.");
 		return false;
 	}
+
+	//
+	KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf());
 	
 	// DESC情報を取得
 	m_cpBuffer->GetDesc(&m_desc);
