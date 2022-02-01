@@ -78,6 +78,10 @@ private:
 	static ID3D11DeviceContext* m_contextDeferred[m_numPerSceneRenderThreads];
 	static ID3D11CommandList* m_commandList[m_numPerSceneRenderThreads];
 
+	static bool m_bClearStateUponBeginCommandList;
+	static bool m_bClearStateUponFinishCommandList;
+	static bool m_bClearStateUponExecuteCommandList;
+
 	//ゲーム終了フラグ
 	bool m_endFlag = false;
 

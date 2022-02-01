@@ -20,6 +20,10 @@ int Application::m_perSceneThreadInstanceData[m_numPerSceneRenderThreads] = { 0 
 ID3D11DeviceContext* Application::m_contextDeferred[m_numPerSceneRenderThreads] = { nullptr };
 ID3D11CommandList* Application::m_commandList[m_numPerSceneRenderThreads] = { nullptr };
 
+bool Application::m_bClearStateUponBeginCommandList = false;
+bool Application::m_bClearStateUponFinishCommandList = false;
+bool Application::m_bClearStateUponExecuteCommandList = false;
+
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
@@ -143,6 +147,27 @@ bool Application::Initialize(int width, int height)
 	//--------------------------------------------------
 	//スレッド
 	//--------------------------------------------------
+#ifdef DEBUG
+	// これらのチェックは、D3D状態の暗黙の前提であるキャリーオーバーを回避するために重要である。
+	// デバイスのコンテキストをまたいで  マルチスレッドレンダリングにおける非常に一般的なエラーの原因である
+	// あるコンテキストで何らかの状態を設定し、不注意にその状態に依存することです。
+	// 別のコンテキスト  これらのフラグをすべて true に設定することで、そのようなエラーをすべて明らかにすることができます。
+	// (自明ではないパフォーマンスコストで)。
+	//
+	// 名前にはもう少し意味があります。 フラグは、以下の場合に状態をクリアすることを強制する。
+	//
+	// 1) 問題のアクションを実際に実行した (例: FinishCommandList を呼び出した)。
+	// 2) フレーム内で、そのアクションが実行されたかもしれない任意の時点に到達したとき
+	// 例えば、DEVICECONTEXT_IMMEDIATEを使用しているが、そうでなければ
+	// FinishCommandList を呼び出したはずです)。
+	//
+	// この使い方は、様々な経路で一貫した動作を保証するものです。
+	//
+	m_bClearStateUponBeginCommandList = true;
+	m_bClearStateUponFinishCommandList = true;
+	m_bClearStateUponExecuteCommandList = true;
+#endif
+
 	for (int i = 0; i < m_numPerSceneRenderThreads; i++)
 	{
 		m_perSceneThreadInstanceData[i] = i;
@@ -223,14 +248,14 @@ inline unsigned int __stdcall Application::PerSceneRenderDeferredProc(LPVOID lpa
 		//メインスレッドからの準備完了の合図を待機
 		WaitForSingleObject(m_hBeginPerSceneRenderDeferredEvent[instance], INFINITE);
 
-		if (/*g_bClearStateUponBeginCommandList*/1)
+		if (m_bClearStateUponBeginCommandList)
 			pd3dDeferredContext->ClearState();
 
 		//ここで描画
 		//例) RenderDirect(pd3dDeferredContext);
 
-		//
-		pd3dDeferredContext->FinishCommandList(0/*!g_bClearStateUponFinishCommandList*/, &pd3dCommandList);
+		//グラフィックコマンドを記録
+		pd3dDeferredContext->FinishCommandList(!m_bClearStateUponFinishCommandList, &pd3dCommandList);
 
 		//メインスレッドのコマンドリストが終了したことを送信
 		SetEvent(m_hEndPerSceneRenderDeferredEvent[instance]);
@@ -311,22 +336,22 @@ void Application::Execute()
 			{
 				g_graphicsDevice->g_cpContext->ExecuteCommandList(
 					m_commandList[iInstance],
-					0/*!g_bClearStateUponExecuteCommandList*/
+					!m_bClearStateUponExecuteCommandList
 				);
 				SafeRelease(m_commandList[iInstance]);
 			}
 			//-------------------------------
 
-			// 3D想定
+			//3D想定
 			g_gameSystem->Draw();
 
-			//
+			//エフェクト
 			g_effectDevice->Draw();
 
-			// 2D想定 描画は最も最後
+			//2D想定
 			g_gameSystem->Draw2D();
 
-			// ImGui 描画
+			//ImGui 描画
 			g_imGuiSystem->Begin();
 			g_imGuiSystem->DrawImGui();
 			g_imGuiSystem->End();
