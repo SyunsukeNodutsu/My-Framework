@@ -14,7 +14,7 @@ ImGuiSystem::ImGuiSystem()
 	, m_enable(true)
 	, m_addLog(false)
 	, m_createInifile(true)
-	, m_showEachMonitor(false)
+	, m_showEachMonitor(true)
 	, m_showDemoMonitor(false)
 {
 }
@@ -41,6 +41,9 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
 	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msgothic.ttc", 13.0f, &config, glyphRangesJapanese);
+
+	// Enable docking(available in imgui `docking` branch at the moment)
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	// 初期スタイル
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -117,12 +120,12 @@ void ImGuiSystem::DrawImGui()
 		ProfilerMonitor(wflags);
 
 		//これで画像出せる
-		/*if (ImGui::Begin("test."))
+		if (ImGui::Begin("test."))
 		{
-			const auto& tsetimg = ApplicationChilled::GetApplication()->g_graphicsDevice->GetBackbuffer()->SRV();
+			const auto& tsetimg = ApplicationChilled::GetApplication()->g_gameSystem->m_renderTarget.SRV();
 			ImGui::Image((ImTextureID)tsetimg, ImVec2(1280, 720));
 		}
-		ImGui::End();*/
+		ImGui::End();
 	}
 }
 

@@ -254,8 +254,6 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 void GraphicsDevice::Begin(const float* clearColor)
 {
-	//g_cpContextDeferred->ClearState();
-
 	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
 	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -263,9 +261,6 @@ void GraphicsDevice::Begin(const float* clearColor)
 	g_cpContext->RSSetViewports(1, &g_viewport);
 
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-
-	//g_cpContextDeferred->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
-	//g_cpContextDeferred->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -273,10 +268,6 @@ void GraphicsDevice::Begin(const float* clearColor)
 //-----------------------------------------------------------------------------
 void GraphicsDevice::End(UINT syncInterval, UINT flags)
 {
-	/*g_cpContextDeferred->FinishCommandList(false, g_cpCommandList.GetAddressOf());
-	g_cpContext->ExecuteCommandList(g_cpCommandList.Get(), false);
-	g_cpCommandList->Release();*/
-
 	// TODO: なぜか全画面だと垂直同期が切れる
 	HRESULT hr = m_cpGISwapChain->Present(syncInterval, flags);
 	if (FAILED(hr))

@@ -1,174 +1,5 @@
 ﻿#include "Texture.h"
 
-// 2D画像(resource)リソースから、最適なビューを作成する
-bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA)
-{
-	// リソースが無い
-	if (resource == nullptr)return false;
-
-	// テクスチャ本体の情報取得
-	D3D11_TEXTURE2D_DESC desc;
-	resource->GetDesc(&desc);
-
-	//===========================================================
-	//
-	// RenderTargetViewを作成する
-	//
-	//===========================================================
-
-	// レンダーターゲットフラグがついてる時のみ
-	if (ppRTV && desc.BindFlags & D3D11_BIND_RENDER_TARGET)
-	{
-		// 作成するビューの設定
-		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = desc.Format;	// Format
-		// 単品のテクスチャ(通常テクスチャ)の場合
-		if (desc.ArraySize == 1) {
-			rtvDesc.ViewDimension = useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;;			// 単品テクスチャ
-		}
-		// テクスチャ配列の場合
-		else {
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;		// テクスチャ配列
-			rtvDesc.Texture2DArray.ArraySize = desc.ArraySize;			// 要素数
-			rtvDesc.Texture2DArray.FirstArraySlice = 0;
-			rtvDesc.Texture2DArray.MipSlice = 0;
-		}
-
-		// レンダーターゲットビュー作成
-		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateRenderTargetView(resource, &rtvDesc, ppRTV);
-		if (FAILED(hr))
-		{
-			assert(0 && "RenderTargetViewの作成に失敗");
-			return false;
-		}
-	}
-
-	//===========================================================
-	//
-	// ShaderResourceViewの情報を作成する
-	//
-	//===========================================================
-	// シェーダリソースビューフラグがついてる時のみ
-	if (ppSRV && desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
-	{
-		// 作成するビューの設定
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-
-		// テクスチャがZバッファの場合は、最適なフォーマットにする
-		if (desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
-		{
-			switch (desc.Format) {
-				// 16ビット
-			case DXGI_FORMAT_R16_TYPELESS:
-				srvDesc.Format = DXGI_FORMAT_R16_UNORM;
-				break;
-				// 32ビット
-			case DXGI_FORMAT_R32_TYPELESS:
-				srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-				break;
-				// 24ビット(Zバッファ) + 8ビット(ステンシルバッファ) 
-			case DXGI_FORMAT_R24G8_TYPELESS:
-				srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-				break;
-			default:
-				assert(0 && "[ShaderResource] 対応していないフォーマットです");
-				break;
-			}
-		}
-		// Zバッファでない場合は、そのまま同じフォーマットを使用
-		else
-		{
-			srvDesc.Format = desc.Format;
-		}
-
-		// 単品のテクスチャ(通常テクスチャ)の場合
-		if (desc.ArraySize == 1)
-		{
-			srvDesc.ViewDimension = useMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Texture2D.MostDetailedMip = 0;
-			srvDesc.Texture2D.MipLevels = desc.MipLevels;
-			if (srvDesc.Texture2D.MipLevels <= 0)srvDesc.Texture2D.MipLevels = -1;
-		}
-		// テクスチャ配列の場合
-		else {
-			// さらにキューブマップの場合
-			if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE) {
-				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-			}
-			// 通常テクスチャ配列
-			else {
-				srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-			}
-			srvDesc.Texture2DArray.MostDetailedMip = 0;
-			srvDesc.Texture2DArray.MipLevels = desc.MipLevels;
-			srvDesc.Texture2DArray.ArraySize = desc.ArraySize;	// 要素数
-			srvDesc.Texture2DArray.FirstArraySlice = 0;
-		}
-
-		// シェーダリソースビュー作成
-		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateShaderResourceView(resource, &srvDesc, ppSRV);
-		if (FAILED(hr))
-		{
-			assert(0 && "ShaderResourceViewの作成に失敗");
-			return false;
-		}
-	}
-
-	//===========================================================
-	//
-	// DepthStencilViewを作成する
-	//
-	//===========================================================
-	// Zバッファフラグがついてる時のみ
-	if (ppDSV && desc.BindFlags & D3D11_BIND_DEPTH_STENCIL) {
-		// 作成するビューの設定
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-
-		// テクスチャー作成時に指定したフォーマットと互換性があり、深度ステンシルビューとして指定できるフォーマットを指定する
-		switch (desc.Format) {
-			// 16ビット
-		case DXGI_FORMAT_R16_TYPELESS:
-			dsvDesc.Format = DXGI_FORMAT_D16_UNORM;
-			break;
-			// 32ビット
-		case DXGI_FORMAT_R32_TYPELESS:
-			dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			break;
-			// 24ビット(Zバッファ) + 8ビット(ステンシルバッファ) 
-		case DXGI_FORMAT_R24G8_TYPELESS:
-			dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-			break;
-		default:
-			assert(0 && "[DepthStencil] 対応していないフォーマットです");
-			break;
-		}
-
-		// 単品のテクスチャ(通常テクスチャ)の場合
-		if (desc.ArraySize == 1) {
-			dsvDesc.ViewDimension = useMSAA ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
-			dsvDesc.Texture2D.MipSlice = 0;
-		}
-		// テクスチャ配列の場合
-		else {
-			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-			dsvDesc.Texture2DArray.ArraySize = desc.ArraySize;
-			dsvDesc.Texture2DArray.MipSlice = 0;
-			dsvDesc.Texture2DArray.FirstArraySlice = 0;
-		}
-
-		//-------------------------------
-		// デプスステンシルビュー作成
-		//-------------------------------
-		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(resource, &dsvDesc, ppDSV);
-		if (FAILED(hr)) {
-			assert(0 && "DepthStencilViewの作成に失敗");
-			return false;
-		}
-	}
-
-	return true;
-}
-
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
@@ -499,34 +330,166 @@ bool Texture::CreateDSV(bool useMSAA)
 {
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 
-	// 互換性を確認し最適なフォーマットを指定
+	//互換性を確認し最適なフォーマットを指定
 	switch (m_desc.Format)
 	{
-		// 16bit
-	case DXGI_FORMAT_R16_TYPELESS:
-		desc.Format = DXGI_FORMAT_R16_UNORM;
-		break;
-
-		// 32bit
-	case DXGI_FORMAT_R32_TYPELESS:
-		desc.Format = DXGI_FORMAT_D32_FLOAT;
-		break;
-
-		// 24bit(Zバッファ) + 8bit(ステンシルバッファ)
-	case DXGI_FORMAT_R24G8_TYPELESS:
-		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		break;
+		//16bit
+	case DXGI_FORMAT_R16_TYPELESS: desc.Format = DXGI_FORMAT_R16_UNORM; break;
+		//32bit
+	case DXGI_FORMAT_R32_TYPELESS: desc.Format = DXGI_FORMAT_D32_FLOAT; break;
+		//24bit(Zバッファ) + 8bit(ステンシルバッファ)
+	case DXGI_FORMAT_R24G8_TYPELESS: desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; break;
+		//非対応フォーマット
+	default: assert(0 && "対応していないフォーマットです"); break;
 	}
 
-	// 単品の場合
+	//単品の場合
 	desc.ViewDimension = useMSAA ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
-	// 作成
+	//作成
 	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(m_cpBuffer.Get(), &desc, m_cpDSV.GetAddressOf());
 	if (FAILED(hr)) {
 		assert(0 && "エラー：DepthStencilView作成失敗.");
 		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// 2D画像(resource)リソースから、最適なビューを作成する
+//-----------------------------------------------------------------------------
+bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA)
+{
+	if (resource == nullptr) return false;
+
+	// テクスチャ本体の情報取得
+	D3D11_TEXTURE2D_DESC desc;
+	resource->GetDesc(&desc);
+
+	//RenderTargetViewを作成する ================================================
+	if (ppRTV && desc.BindFlags & D3D11_BIND_RENDER_TARGET)
+	{
+		//ビュー設定
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = desc.Format;
+
+		//単品のテクスチャ(通常テクスチャ)の場合
+		if (desc.ArraySize == 1)
+		{
+			rtvDesc.ViewDimension = useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;//単品テクスチャ
+		}
+		//テクスチャ配列の場合
+		else
+		{
+			rtvDesc.ViewDimension					= D3D11_RTV_DIMENSION_TEXTURE2DARRAY;	//テクスチャ配列
+			rtvDesc.Texture2DArray.ArraySize		= desc.ArraySize;						//要素数
+			rtvDesc.Texture2DArray.FirstArraySlice	= 0;
+			rtvDesc.Texture2DArray.MipSlice			= 0;
+		}
+
+		//レンダーターゲットビュー作成
+		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateRenderTargetView(resource, &rtvDesc, ppRTV);
+		if (FAILED(hr)) {
+			assert(0 && "RenderTargetViewの作成に失敗");
+			return false;
+		}
+	}
+
+	//ShaderResourceViewの情報を作成する ========================================
+	if (ppSRV && desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+
+		// テクスチャがZバッファの場合は、最適なフォーマットにする
+		if (desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+		{
+			switch (desc.Format)
+			{
+				//16ビット
+			case DXGI_FORMAT_R16_TYPELESS: srvDesc.Format = DXGI_FORMAT_R16_UNORM; break;
+				//32ビット
+			case DXGI_FORMAT_R32_TYPELESS: srvDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
+				//24ビット(Zバッファ) + 8ビット(ステンシルバッファ) 
+			case DXGI_FORMAT_R24G8_TYPELESS: srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
+				//非対応
+			default: assert(0 && "[ShaderResource] 対応していないフォーマットです"); break;
+			}
+		}
+		//Zバッファでない場合は そのまま同じフォーマットを使用
+		else
+		{
+			srvDesc.Format = desc.Format;
+		}
+
+		//単品のテクスチャ(通常テクスチャ)の場合
+		if (desc.ArraySize == 1)
+		{
+			srvDesc.ViewDimension				= useMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MostDetailedMip	= 0;
+			srvDesc.Texture2D.MipLevels			= desc.MipLevels;
+			if (srvDesc.Texture2D.MipLevels <= 0) srvDesc.Texture2D.MipLevels = -1;
+		}
+		//テクスチャ配列の場合
+		else
+		{
+			srvDesc.ViewDimension = (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+				? D3D11_SRV_DIMENSION_TEXTURECUBE//さらにキューブマップの場合
+				: D3D11_SRV_DIMENSION_TEXTURE2DARRAY;//通常テクスチャ配列
+			srvDesc.Texture2DArray.MostDetailedMip	= 0;
+			srvDesc.Texture2DArray.MipLevels		= desc.MipLevels;
+			srvDesc.Texture2DArray.ArraySize		= desc.ArraySize;
+			srvDesc.Texture2DArray.FirstArraySlice	= 0;
+		}
+
+		//シェーダリソースビュー作成
+		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateShaderResourceView(resource, &srvDesc, ppSRV);
+		if (FAILED(hr)) {
+			assert(0 && "ShaderResourceViewの作成に失敗");
+			return false;
+		}
+	}
+
+	//DepthStencilViewを作成する ================================================
+	if (ppDSV && desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+
+		//テクスチャー作成時に指定したフォーマットと互換性があり、深度ステンシルビューとして指定できるフォーマットを指定する
+		switch (desc.Format)
+		{
+			//16ビット
+		case DXGI_FORMAT_R16_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D16_UNORM; break;
+			//32ビット
+		case DXGI_FORMAT_R32_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D32_FLOAT; break;
+			//24ビット(Zバッファ) + 8ビット(ステンシルバッファ) 
+		case DXGI_FORMAT_R24G8_TYPELESS: dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; break;
+			//非対応
+		default: assert(0 && "[DepthStencil] 対応していないフォーマットです"); break;
+		}
+
+		//単品のテクスチャ(通常テクスチャ)の場合
+		if (desc.ArraySize == 1)
+		{
+			dsvDesc.ViewDimension		= useMSAA ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
+			dsvDesc.Texture2D.MipSlice	= 0;
+		}
+		//テクスチャ配列の場合
+		else
+		{
+			dsvDesc.ViewDimension					= D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			dsvDesc.Texture2DArray.ArraySize		= desc.ArraySize;
+			dsvDesc.Texture2DArray.MipSlice			= 0;
+			dsvDesc.Texture2DArray.FirstArraySlice	= 0;
+		}
+
+		//デプスステンシルビュー作成
+		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateDepthStencilView(resource, &dsvDesc, ppDSV);
+		if (FAILED(hr)) {
+			assert(0 && "DepthStencilViewの作成に失敗");
+			return false;
+		}
 	}
 
 	return true;

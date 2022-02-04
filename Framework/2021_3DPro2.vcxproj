@@ -54,7 +54,6 @@
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
-    <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\ApplicationChilled.cpp" />
@@ -132,7 +131,6 @@
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
-    <ClInclude Include="Source\Framework\Graphics\RenderTarget.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\Actor.h" />
     <ClInclude Include="Source\Framework\HighLevel\ApplicationChilled.h" />
@@ -159,6 +157,7 @@
     <ClInclude Include="Source\Framework\Physics\SpatialPartitioning.h" />
     <ClInclude Include="Source\Framework\Shader\Effect\EffectShader.h" />
     <ClInclude Include="Source\Framework\Shader\Model\ModelShader.h" />
+    <ClInclude Include="Source\Framework\Shader\PostProcess\PostProcessShader.h" />
     <ClInclude Include="Source\Framework\Shader\Shader.h" />
     <ClInclude Include="Source\Framework\Shader\ShaderManager.h" />
     <ClInclude Include="Source\Framework\Shader\Sprite\SpriteShader.h" />
@@ -310,6 +309,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\Model\TerrainShader_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

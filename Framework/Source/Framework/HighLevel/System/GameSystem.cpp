@@ -25,19 +25,14 @@ void GameSystem::Initialize()
 	m_spLoadingTex[1]->Create("Resource/Texture/Load02.png");
 	m_spLoadingTex[2]->Create("Resource/Texture/Load03.png");
 
-	//m_testThread = (HANDLE)_beginthreadex(
-	//	nullptr,
-	//	0,
-	//	BeginTimeCountThread,// thread関数
-	//	nullptr,// thread関数への引数
-	//	CREATE_SUSPENDED,
-	//	nullptr
-	//);
-
 	//非同期読み込みテスト
 	std::thread asyncLoad([=] { LoadScene("Resource/Jsons/TitleProcess.json"); });
 	//std::thread asyncLoad([=] { LoadScene("Resource/Jsons/GameProcess.json"); });
 	asyncLoad.detach();
+
+	//レンダーターゲット作成
+	m_renderTarget.CreateRenderTarget(900, 1600, false);
+	m_renderTargetZ.CreateDepthStencil(900, 1600, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -148,35 +143,24 @@ void GameSystem::Draw()
 
 	if (!IsLoadingDone()) return;
 
-	//--------------------------------------------------
-	// シャドウマップ描画
-	//--------------------------------------------------
-	/*for (int i = 0; i < 3; i++)
-	{
-		SHADER.GetShadowMapShader().Begin(i);
+	SHADER.GetModelShader().Begin();
 
-		for (auto& object : m_spActorList)
-			object->DrawShadowMap(deltaTime);
-	}
-	SHADER.GetShadowMapShader().End();*/
-	
-	//--------------------------------------------------
-	// 通常3D描画
-	//--------------------------------------------------
-	{
-		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(0).get(), 10);
-		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(1).get(), 11);
-		//RENDERER.SetResources(SHADER.GetShadowMapShader().GetShadowMap(2).get(), 12);
+	//TODO: ここで管理は草
+	const auto& d3d11context = ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext;
 
-		SHADER.GetModelShader().Begin();
+	d3d11context->ClearRenderTargetView(m_renderTarget.RTV(), cfloat4x4::Blue);
+	d3d11context->ClearDepthStencilView(m_renderTargetZ.DSV(), D3D11_CLEAR_DEPTH, 1, 0);
 
-		for (auto& object : m_spActorList)
-			object->Draw(deltaTime);
+	d3d11context->OMSetRenderTargets(1, m_renderTarget.RTVAddress(), m_renderTargetZ.DSV());
 
-		//RENDERER.SetNullResources(10);
-		//RENDERER.SetNullResources(11);
-		//RENDERER.SetNullResources(12);
-	}
+	for (auto& object : m_spActorList)
+		object->Draw(deltaTime);
+
+	//
+	ApplicationChilled::GetApplication()->g_graphicsDevice->Begin();
+
+	/*for (auto& object : m_spActorList)
+		object->Draw(deltaTime);*/
 }
 
 //-----------------------------------------------------------------------------
@@ -240,6 +224,8 @@ void GameSystem::Draw2D()
 		{
 			for (auto& object : m_spActorList)
 				object->DrawSprite(deltaTime);
+
+			//SHADER.GetSpriteShader().DrawTexture(&m_renderTarget, float2(0, 0));
 		}
 
 		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());

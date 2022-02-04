@@ -72,10 +72,8 @@ void Human::Update(float deltaTime)
 	if (timecount >= 3.0f)
 	{
 		const auto& pos = float3(0, 4, 0);
-		g_application->g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
-		//APP.g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
-
-		//SOUND_DIRECTOR.Play3D("Resource/Audio/SE/Explosion.wav", pos, 1, 1.0f);
+		//g_application->g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
+		g_application->g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
 
 		timecount = 0.0f;
 	}

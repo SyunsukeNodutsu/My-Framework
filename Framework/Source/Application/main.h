@@ -1,7 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 // File: main.h
 // 
-// ■フレームワーク全体像(2021/09/24)
+// ■フレームワーク全体像(2022/02/04)
 // 
 // Application(main.h)------AudioDevice
 //   |    |  |                   |
@@ -13,13 +13,13 @@
 //	  |       |     |
 // Keyboard   Mouse |
 //					|
-//			  GraphicsDevice            Model---Animation
-//					|                   |   |
-//			GraphicsDeviceChild--------Mesh |
-//			 |      |       |  ┗--┓       |
-//		   Buffer Texture Shader   |      Material
-//			 |              |      |
-//	   ConstantBuffer -- 各Shader  |
+//			  GraphicsDevice                         Model---Animation
+//					|                                |   |
+//			GraphicsDeviceChild---------------------Mesh |
+//			 |      |       |  ┗-------┓               |
+//		   Buffer Texture Shader   |  EffectDevice   Material
+//			 |              |      |         |
+//	   ConstantBuffer -- 各Shader  |   EffectDeviceChild
 //			 |                     |
 //			 ┗------------------Renderer
 // 
