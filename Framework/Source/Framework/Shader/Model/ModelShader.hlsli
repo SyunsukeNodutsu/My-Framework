@@ -15,6 +15,4 @@ struct VertexOutput
     
     float3 wTangent : TEXCOORD4;    // ワールド接線
     float3 wBinormal: TEXCOORD5;    // ワールド従法線
-    
-    float4 posInLVP[3] : TEXCOORD6; // ライトビュースクリーン空間でのピクセルの座標
 };

@@ -1,7 +1,7 @@
 ﻿#include "Texture.h"
 
 // 2D画像(resource)リソースから、最適なビューを作成する
-bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV)
+bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA)
 {
 	// リソースが無い
 	if (resource == nullptr)return false;
@@ -24,7 +24,7 @@ bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11Shader
 		rtvDesc.Format = desc.Format;	// Format
 		// 単品のテクスチャ(通常テクスチャ)の場合
 		if (desc.ArraySize == 1) {
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;			// 単品テクスチャ
+			rtvDesc.ViewDimension = useMSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;;			// 単品テクスチャ
 		}
 		// テクスチャ配列の場合
 		else {
@@ -84,7 +84,7 @@ bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11Shader
 		// 単品のテクスチャ(通常テクスチャ)の場合
 		if (desc.ArraySize == 1)
 		{
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.ViewDimension = useMSAA ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
 			srvDesc.Texture2D.MostDetailedMip = 0;
 			srvDesc.Texture2D.MipLevels = desc.MipLevels;
 			if (srvDesc.Texture2D.MipLevels <= 0)srvDesc.Texture2D.MipLevels = -1;
@@ -145,7 +145,7 @@ bool Texture::KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11Shader
 
 		// 単品のテクスチャ(通常テクスチャ)の場合
 		if (desc.ArraySize == 1) {
-			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			dsvDesc.ViewDimension = useMSAA ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 			dsvDesc.Texture2D.MipSlice = 0;
 		}
 		// テクスチャ配列の場合
@@ -199,7 +199,7 @@ bool Texture::Create( ID3D11Texture2D* pTexBuffer, bool useMSAA )
 //-----------------------------------------------------------------------------
 // ファイル名から作成
 //-----------------------------------------------------------------------------
-bool Texture::Create( const std::string& filepath )
+bool Texture::Create(const std::string& filepath, bool useMSAA)
 {
 	if (filepath.empty()) return false;
 
@@ -273,7 +273,7 @@ bool Texture::Create( const std::string& filepath )
 	m_cpBuffer = tex2D;
 	
 	// テクスチャリソースから 各ビューを作成
-	if (KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf()) == false)
+	if (KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf(), useMSAA) == false)
 	{
 		tex2D->Release();
 		return false;
@@ -289,7 +289,7 @@ bool Texture::Create( const std::string& filepath )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Texture::Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData)
+bool Texture::Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData, bool useMSAA)
 {
 	//作成する2Dテクスチャ設定
 	D3D11_TEXTURE2D_DESC desc = {};
@@ -304,7 +304,7 @@ bool Texture::Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D1
 	desc.SampleDesc.Count	= 1;
 	desc.SampleDesc.Quality = 0;
 
-	if (Create(desc, fillData) == false)return false;
+	if (Create(desc, fillData, useMSAA) == false) return false;
 
 	return true;
 }
@@ -312,7 +312,7 @@ bool Texture::Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D1
 //-----------------------------------------------------------------------------
 // DESC情報から作成
 //-----------------------------------------------------------------------------
-bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData)
+bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData, bool useMSAA)
 {
 	HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateTexture2D(&desc, fillData, m_cpBuffer.GetAddressOf());
 	if (FAILED(hr)) {
@@ -321,7 +321,7 @@ bool Texture::Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_D
 	}
 
 	//
-	KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf());
+	KdCreateViewsFromTexture2D(m_cpBuffer.Get(), m_cpSRV.GetAddressOf(), m_cpRTV.GetAddressOf(), m_cpDSV.GetAddressOf(), useMSAA);
 	
 	// DESC情報を取得
 	m_cpBuffer->GetDesc(&m_desc);
@@ -390,7 +390,7 @@ bool Texture::CreateDepthStencil(int height, int width, bool useMSAA, DXGI_FORMA
 	desc.SampleDesc.Count	= useMSAA ? smpleDesc.Count : 1;
 	desc.SampleDesc.Quality = useMSAA ? smpleDesc.Quality : 0;
 
-	if (!Create(desc))
+	if (!Create(desc, nullptr, useMSAA))
 		return false;
 
 	// Viewの作成
@@ -481,7 +481,7 @@ bool Texture::CreateRTV(bool useMSAA)
 		}
 
 		// シェーダリソースビュー作成
-		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateShaderResourceView(m_cpBuffer.Get(), &srvDesc, &m_cpSRV);
+		HRESULT hr = g_graphicsDevice->g_cpDevice.Get()->CreateShaderResourceView(m_cpBuffer.Get(), &srvDesc, m_cpSRV.GetAddressOf());
 		if (FAILED(hr))
 		{
 			assert(0 && "ShaderResourceViewの作成に失敗");

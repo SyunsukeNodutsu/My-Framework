@@ -59,8 +59,6 @@ private:
 	//各モニター ==========================================
 	//ゲームのシーン
 	void SceneMonitor(ImGuiWindowFlags wflags);
-	//Shaderデバッグ
-	void ShaderDebugMonitor(ImGuiWindowFlags wflags);
 	//デバッグログ
 	void LogMonitor(ImGuiWindowFlags wflags);
 	//ゲームオーディオ

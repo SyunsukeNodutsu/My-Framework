@@ -67,12 +67,6 @@
     <Filter Include="Source\Framework\Physics">
       <UniqueIdentifier>{784a3f1a-b024-482a-95ef-4000038da077}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Framework\Shader\Shadow">
-      <UniqueIdentifier>{656c1584-6c28-4319-a4ce-a99487144fee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Framework\Shader\Tree">
-      <UniqueIdentifier>{2f648eca-21c6-4a06-be7a-4ce09a7520c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Library\json11KdCustom">
       <UniqueIdentifier>{a657f693-16c6-4f55-b7dc-66be5f674b85}</UniqueIdentifier>
     </Filter>
@@ -209,9 +203,6 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Physics\Collision.cpp">
       <Filter>Source\Framework\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader.cpp">
-      <Filter>Source\Framework\Shader\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\Graphics\RenderTarget.cpp">
       <Filter>Source\Framework\Graphics</Filter>
@@ -443,9 +434,6 @@
     <ClInclude Include="Source\Framework\Physics\Collision.h">
       <Filter>Source\Framework\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\Shader\Shadow\ShadowMapShader.h">
-      <Filter>Source\Framework\Shader\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Framework\Graphics\RenderTarget.h">
       <Filter>Source\Framework\Graphics</Filter>
     </ClInclude>
@@ -559,9 +547,6 @@
     <None Include="Source\Framework\Shader\Effect\EffectShader.hlsli">
       <Filter>Source\Framework\Shader\Effect</Filter>
     </None>
-    <None Include="Source\Framework\Shader\Shadow\ShadowMapShader.hlsli">
-      <Filter>Source\Framework\Shader\Shadow</Filter>
-    </None>
     <None Include="Resource\Jsons\TitleProcess.json">
       <Filter>Jsons</Filter>
     </None>
@@ -593,12 +578,6 @@
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Effect\EffectShader_VS.hlsl">
       <Filter>Source\Framework\Shader\Effect</Filter>
-    </FxCompile>
-    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_PS.hlsl">
-      <Filter>Source\Framework\Shader\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="Source\Framework\Shader\Shadow\ShadowMapShader_VS.hlsl">
-      <Filter>Source\Framework\Shader\Shadow</Filter>
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Model\ModelShader_VS_Skin.hlsl">
       <Filter>Source\Framework\Shader\Model</Filter>

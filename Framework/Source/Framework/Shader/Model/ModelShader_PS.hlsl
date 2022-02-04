@@ -13,10 +13,6 @@ Texture2D g_emissiveTexture     : register(t1); // エミッシブテクスチャ
 Texture2D g_mrTexture           : register(t2); // メタリック/ラフネステクスチャ
 Texture2D g_normalTexture       : register(t3); // 法線マップ(テクスチャ)
 
-Texture2D<float4> g_shadowMap_0 : register(t10); // 近距離のシャドウマップ
-Texture2D<float4> g_shadowMap_1 : register(t11); // 中距離のシャドウマップ
-Texture2D<float4> g_shadowMap_2 : register(t12); // 遠距離のシャドウマップ
-
 // サンプラ
 SamplerState g_samplerState : register(s0);
 
@@ -95,14 +91,6 @@ float4 main( VertexOutput In ) : SV_TARGET
     }
     
     //------------------------------------------
-    // シャドウイング用テクスチャ配列
-    //------------------------------------------
-    Texture2D<float4> shadowMapArray[3];
-    shadowMapArray[0] = g_shadowMap_0;
-    shadowMapArray[1] = g_shadowMap_1;
-    shadowMapArray[2] = g_shadowMap_2;
-    
-    //------------------------------------------
     // カメラ情報
     //------------------------------------------
     
@@ -165,39 +153,7 @@ float4 main( VertexOutput In ) : SV_TARGET
     // ライト計算？
     if (g_light_enable)
     {
-        //------------------------------------------
-        // シャドウイング
-        //------------------------------------------
-        
-        //for (int i = 0; i < 3; i++)
-        //{
-        //    // ライトビュースクリーン空間でのZ値を計算する
-        //    float zInLVP = In.posInLVP[i].z / In.posInLVP[i].w;
-        //    if (zInLVP >= 0.0f && zInLVP <= 1.0f)
-        //    {
-        //        // Zの値を見て、このピクセルがこのシャドウマップに含まれているか判定
-        //        float2 shadowMapUV = In.posInLVP[i].xy / In.posInLVP[i].w;
-        //        shadowMapUV *= float2(0.5f, -0.5f);
-        //        shadowMapUV += 0.5f;
-
-        //        // シャドウマップUVが範囲内か判定
-        //        if (shadowMapUV.x >= 0.0f && shadowMapUV.x <= 1.0f &&
-        //            shadowMapUV.y >= 0.0f && shadowMapUV.y <= 1.0f)
-        //        {
-        //            // シャドウマップから値をサンプリング
-        //            float2 shadowValue = shadowMapArray[i].Sample(g_samplerState, shadowMapUV).xy;
-
-        //            // まずこのピクセルが遮蔽されているか調べる
-        //            if (zInLVP >= shadowValue.r)
-        //            {
-        //                albedo.xyz *= 0.5f;
-
-        //                // 影を落とせたので終了
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
+        //TODO: ここにシャドウイング追加
         
         //------------------------------------------
         // 平行光

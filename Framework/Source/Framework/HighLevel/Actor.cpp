@@ -151,7 +151,6 @@ void Actor::DrawShadowMap(float deltaTime)
 {
 	if (!g_shadowCaster) return;
 
-	SHADER.GetShadowMapShader().DrawModel(m_modelWork, m_transform.GetWorldMatrix());
 }
 
 //-----------------------------------------------------------------------------

@@ -112,43 +112,22 @@ void ImGuiSystem::DrawImGui()
 	// フラグで表示のON/OFF切り替え
 	if (m_showEachMonitor)
 	{
-		ShaderDebugMonitor(wflags);
 		LogMonitor(wflags);
 		AudioMonitor(wflags);
 		ProfilerMonitor(wflags);
 
-		// シャドウ
-		if (ImGui::Begin("Shadow 00"))
+		//これで画像出せる
+		/*if (ImGui::Begin("test."))
 		{
-			ImGui::Image(
-				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(0)->SRV(),
-				ImVec2(200, 200)
-			);
+			const auto& tsetimg = ApplicationChilled::GetApplication()->g_graphicsDevice->GetBackbuffer()->SRV();
+			ImGui::Image((ImTextureID)tsetimg, ImVec2(1280, 720));
 		}
-		ImGui::End();
-
-		if (ImGui::Begin("Shadow 01"))
-		{
-			ImGui::Image(
-				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(1)->SRV(),
-				ImVec2(200, 200)
-			);
-		}
-		ImGui::End();
-
-		if (ImGui::Begin("Shadow 02"))
-		{
-			ImGui::Image(
-				(ImTextureID)SHADER.GetShadowMapShader().GetShadowMap(2)->SRV(),
-				ImVec2(200, 200)
-			);
-		}
-		ImGui::End();
+		ImGui::End();*/
 	}
 }
 
 //-----------------------------------------------------------------------------
-// 
+// ログの追加
 //-----------------------------------------------------------------------------
 void ImGuiSystem::AddLog(std::string_view log)
 {
@@ -344,42 +323,6 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 		ImGui::PushID(camera.get());
 		ImGui::Text(camera->g_name.c_str());
 		ImGui::PopID();
-	}
-
-	ImGui::End();
-}
-
-//-----------------------------------------------------------------------------
-// シェーダーデバッグ 
-//-----------------------------------------------------------------------------
-void ImGuiSystem::ShaderDebugMonitor(ImGuiWindowFlags wflags)
-{
-	if (!ImGui::Begin("ShaderDebug Monitor", nullptr, wflags)) {
-		ImGui::End();
-		return;
-	}
-
-	static bool show_base_color = false;
-	static bool show_normal = false;
-	static bool show_emissive = false;
-	static bool show_metallic_rough = false;
-
-	if (ImGui::BeginTable("split", 2))
-	{
-		bool darty = false;
-		ImGui::TableNextColumn();
-		if (ImGui::Checkbox("Base Color", &show_base_color)) {
-			RENDERER.Getcb7().Work().g_show_base_color = show_base_color;
-			RENDERER.Getcb7().Work().g_show_normal = show_normal;
-			RENDERER.Getcb7().Write();
-		}// TODO: fix
-		ImGui::TableNextColumn();
-		if (ImGui::Checkbox("Normal", &show_normal)) {
-			RENDERER.Getcb7().Work().g_show_base_color = show_base_color;
-			RENDERER.Getcb7().Work().g_show_normal = show_normal;
-			RENDERER.Getcb7().Write();
-		}
-		ImGui::EndTable();
 	}
 
 	ImGui::End();

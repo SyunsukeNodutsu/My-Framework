@@ -93,8 +93,6 @@ public:
 	// レンダリング インターフェース
 	ComPtr<ID3D11Device>			g_cpDevice;
 	ComPtr<ID3D11DeviceContext>		g_cpContext; // 即時コンテキスト
-	ComPtr<ID3D11DeviceContext>		g_cpContextDeferred;// 遅延コンテキスト
-	ComPtr<ID3D11CommandList>		g_cpCommandList;//コマンドリスト
 
 	D3D11_VIEWPORT g_viewport;
 

@@ -81,9 +81,6 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 		return false;
 	}
 
-	//遅延コンテキスト作成
-	g_cpDevice->CreateDeferredContext(0, &g_cpContextDeferred);
-
 	//--------------------------------------------------
 	// 現環境で使用できるMSAAをチェック
 	//--------------------------------------------------
@@ -194,10 +191,6 @@ bool GraphicsDevice::Initialize(MY_DIRECT3D_DESC desc)
 
 	// レンダーターゲット設定
 	g_cpContext->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-
-	//遅延コンテキストも同様
-	g_cpContextDeferred->OMSetRenderTargets(1, m_spBackbuffer->RTVAddress(), m_spDefaultZbuffer->DSV());
-	g_cpContextDeferred->RSSetViewports(1, &g_viewport);
 
 	//--------------------------------------------------
 	// 1x1の白テクスチャ作成

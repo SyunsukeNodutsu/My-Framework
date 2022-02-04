@@ -8,12 +8,6 @@
 // 定数バッファ
 //--------------------------------------------------
 
-// シャドウ パラメータ
-cbuffer cdObject : register(b2)
-{
-    row_major float4x4 g_mLVPC[3]; // ライトビュープロジェクションクロップ行列
-}
-
 // キャラクターに付与予定
 cbuffer cdObject : register(b8)
 {
@@ -39,8 +33,6 @@ cbuffer cdObject : register(b10)
     float3  g_directional_light_dir;    // 方向
     float3  g_directional_light_color;  // 色
     float   g_ambient_power;            // 環境光の強さ
-    
-    row_major float4x4 g_directional_light_vp; // ライトカメラのビュー行列*射影行列
 }
 
 // マテリアル
@@ -94,7 +86,6 @@ cbuffer cdObject : register(b7)
 //ボーン情報
 cbuffer cdBones : register(b6)
 {
-
     row_major float4x4 g_bones[300];
 }
 

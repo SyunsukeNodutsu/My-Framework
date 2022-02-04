@@ -26,16 +26,16 @@ public:
 	// @brief ファイル名から作成
 	// @param filepath 作成元ファイルパス
 	// @return 成功...true 失敗...false
-	bool Create(const std::string& filepath);
+	bool Create(const std::string& filepath, bool useMSAA = false);
 
 	//@brief 通常テクスチャとして作成
-	bool Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData);
+	bool Create(int w, int h, DXGI_FORMAT format, UINT arrayCnt, const D3D11_SUBRESOURCE_DATA* fillData, bool useMSAA = false);
 
 	// @brief DESC情報から作成
 	// @param desc DESC情報
 	// @param fillData バッファに書き込むデータ ※nullptrだと書き込みなし
 	// @return 成功...true 失敗...false
-	bool Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData = nullptr);
+	bool Create(const D3D11_TEXTURE2D_DESC& desc, const D3D11_SUBRESOURCE_DATA* fillData = nullptr, bool useMSAA = false);
 
 	// @brief レンダーターゲットテクスチャとして作成
 	// @note テクスチャリソースを作成し、ShaderResourceViewのみを作成します
@@ -106,6 +106,6 @@ private:
 	bool CreateDSV(bool useMSAA = false);
 
 	//
-	bool KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV);
+	bool KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA);
 
 };
