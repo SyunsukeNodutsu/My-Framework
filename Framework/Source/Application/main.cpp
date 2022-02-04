@@ -144,52 +144,9 @@ bool Application::Initialize(int width, int height)
 	//imGui(プロファイラー)
 	g_imGuiSystem->Initialize(g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get());
 
-	//--------------------------------------------------
-	//スレッド
-	//--------------------------------------------------
-#ifdef DEBUG
-	// これらのチェックは、D3D状態の暗黙の前提であるキャリーオーバーを回避するために重要である。
-	// デバイスのコンテキストをまたいで  マルチスレッドレンダリングにおける非常に一般的なエラーの原因である
-	// あるコンテキストで何らかの状態を設定し、不注意にその状態に依存することです。
-	// 別のコンテキスト  これらのフラグをすべて true に設定することで、そのようなエラーをすべて明らかにすることができます。
-	// (自明ではないパフォーマンスコストで)。
-	//
-	// 名前にはもう少し意味があります。 フラグは、以下の場合に状態をクリアすることを強制する。
-	//
-	// 1) 問題のアクションを実際に実行した (例: FinishCommandList を呼び出した)。
-	// 2) フレーム内で、そのアクションが実行されたかもしれない任意の時点に到達したとき
-	// 例えば、DEVICECONTEXT_IMMEDIATEを使用しているが、そうでなければ
-	// FinishCommandList を呼び出したはずです)。
-	//
-	// この使い方は、様々な経路で一貫した動作を保証するものです。
-	//
-	m_bClearStateUponBeginCommandList = true;
-	m_bClearStateUponFinishCommandList = true;
-	m_bClearStateUponExecuteCommandList = true;
-#endif
-
-	for (int i = 0; i < m_numPerSceneRenderThreads; i++)
-	{
-		m_perSceneThreadInstanceData[i] = i;
-
-		m_hBeginPerSceneRenderDeferredEvent[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		m_hEndPerSceneRenderDeferredEvent[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-
-		//遅延コンテキスト作成
-		g_graphicsDevice->g_cpDevice->CreateDeferredContext(0, &m_contextDeferred[i]);
-
-		//作成
-		m_hPerSceneRenderDeferredThread[i] = (HANDLE)_beginthreadex(
-			nullptr,
-			0,
-			PerSceneRenderDeferredProc,// thread関数
-			&m_perSceneThreadInstanceData[i],// thread関数への引数
-			CREATE_SUSPENDED,// 作成option
-			nullptr// thread ID
-		);
-
-		ResumeThread(m_hPerSceneRenderDeferredThread[i]);
-	}
+	//レンダーターゲット作成
+	g_renderTarget.CreateRenderTarget(height, width, desc.m_useMSAA);
+	g_renderTargetZ.CreateDepthStencil(height, width, desc.m_useMSAA);
 
 	return true;
 }
@@ -314,33 +271,14 @@ void Application::Execute()
 		g_effectDevice->Update();
 
 		// 描画
-		g_graphicsDevice->Begin();
+		
 		{
-			//-------------------------------
-			// すべてのワーカースレッドにシグナルを送り 完了を待つ
-			for (int iInstance = 0; iInstance < m_numPerSceneRenderThreads; ++iInstance)
-			{
-				//シーンのキックオフに向けたシグナルの準備
-				SetEvent(m_hBeginPerSceneRenderDeferredEvent[iInstance]);
-			}
+			const auto& d3d11context = g_graphicsDevice->g_cpContext;
 
-			//完成を待機
-			WaitForMultipleObjects(
-				m_numPerSceneRenderThreads,
-				m_hEndPerSceneRenderDeferredEvent,
-				TRUE,
-				INFINITE
-			);
+			d3d11context->ClearRenderTargetView(g_renderTarget.RTV(), cfloat4x4::Blue);
+			d3d11context->ClearDepthStencilView(g_renderTargetZ.DSV(), D3D11_CLEAR_DEPTH, 1, 0);
 
-			for (int iInstance = 0; iInstance < m_numPerSceneRenderThreads; ++iInstance)
-			{
-				g_graphicsDevice->g_cpContext->ExecuteCommandList(
-					m_commandList[iInstance],
-					!m_bClearStateUponExecuteCommandList
-				);
-				SafeRelease(m_commandList[iInstance]);
-			}
-			//-------------------------------
+			d3d11context->OMSetRenderTargets(1, g_renderTarget.RTVAddress(), g_renderTargetZ.DSV());
 
 			//3D想定
 			g_gameSystem->Draw();
@@ -350,6 +288,8 @@ void Application::Execute()
 
 			//2D想定
 			g_gameSystem->Draw2D();
+
+			g_graphicsDevice->Begin();
 
 			//ImGui 描画
 			g_imGuiSystem->Begin();

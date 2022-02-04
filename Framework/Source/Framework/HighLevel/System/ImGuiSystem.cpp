@@ -48,7 +48,10 @@ void ImGuiSystem::Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
 	// 初期スタイル
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	style.ScrollbarSize = 10;
 
@@ -97,13 +100,16 @@ void ImGuiSystem::End()
 //-----------------------------------------------------------------------------
 void ImGuiSystem::DrawImGui()
 {
-	if (!m_enable)
-		return;
+	if (!m_enable) return;
 
 	// 共通のWindowフラグ
-	ImGuiWindowFlags wflags = 0;
-	/*ImGuiWindowFlags wflags = ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;*/
+	ImGuiWindowFlags wflags = ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+
+	//大本のモニター
+	if (ImGui::Begin("Main", nullptr, wflags)) {
+	}
+	ImGui::End();
 
 	// DemoWindow
 	if (m_showDemoMonitor)
@@ -120,10 +126,13 @@ void ImGuiSystem::DrawImGui()
 		ProfilerMonitor(wflags);
 
 		//これで画像出せる
-		if (ImGui::Begin("test."))
+		if (ImGui::Begin("Scene", nullptr, wflags))
 		{
-			const auto& tsetimg = ApplicationChilled::GetApplication()->g_gameSystem->m_renderTarget.SRV();
-			ImGui::Image((ImTextureID)tsetimg, ImVec2(1280, 720));
+			const auto& size = ImGui::GetWindowSize();
+
+			const auto& sceneRT = ApplicationChilled::GetApplication()->g_renderTarget;
+			//ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(sceneRT.GetDesc().Width, sceneRT.GetDesc().Height));
+			ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(size.x, size.y-10));
 		}
 		ImGui::End();
 	}

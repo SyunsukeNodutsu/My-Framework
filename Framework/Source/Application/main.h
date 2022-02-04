@@ -67,6 +67,10 @@ public:
 	static GameSystem* g_gameSystem;		//ゲーム管理
 	static ImGuiSystem* g_imGuiSystem;		//プロファイラ デバッグ
 
+	//
+	Texture g_renderTarget;
+	Texture g_renderTargetZ;
+
 private:
 
 	//スレッドごとの値(static)

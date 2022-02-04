@@ -29,10 +29,6 @@ void GameSystem::Initialize()
 	std::thread asyncLoad([=] { LoadScene("Resource/Jsons/TitleProcess.json"); });
 	//std::thread asyncLoad([=] { LoadScene("Resource/Jsons/GameProcess.json"); });
 	asyncLoad.detach();
-
-	//レンダーターゲット作成
-	m_renderTarget.CreateRenderTarget(900, 1600, false);
-	m_renderTargetZ.CreateDepthStencil(900, 1600, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -145,22 +141,8 @@ void GameSystem::Draw()
 
 	SHADER.GetModelShader().Begin();
 
-	//TODO: ここで管理は草
-	const auto& d3d11context = ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext;
-
-	d3d11context->ClearRenderTargetView(m_renderTarget.RTV(), cfloat4x4::Blue);
-	d3d11context->ClearDepthStencilView(m_renderTargetZ.DSV(), D3D11_CLEAR_DEPTH, 1, 0);
-
-	d3d11context->OMSetRenderTargets(1, m_renderTarget.RTVAddress(), m_renderTargetZ.DSV());
-
 	for (auto& object : m_spActorList)
 		object->Draw(deltaTime);
-
-	//
-	ApplicationChilled::GetApplication()->g_graphicsDevice->Begin();
-
-	/*for (auto& object : m_spActorList)
-		object->Draw(deltaTime);*/
 }
 
 //-----------------------------------------------------------------------------

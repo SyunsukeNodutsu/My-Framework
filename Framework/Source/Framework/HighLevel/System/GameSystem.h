@@ -77,9 +77,6 @@ public:
 	CameraSystem g_cameraSystem;//カメラ管理システム
 	std::string g_sceneFilepath;//シーンのjsonファイルパス
 
-	Texture m_renderTarget;
-	Texture m_renderTargetZ;
-
 private:
 	std::list<std::shared_ptr<Actor>> m_spActorList;//登場Actorリスト
 	std::vector<EffectShader::Vertex> m_debugLines;//デバッグライン用の頂点情報
