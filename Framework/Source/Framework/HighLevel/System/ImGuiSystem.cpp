@@ -103,11 +103,30 @@ void ImGuiSystem::DrawImGui()
 	if (!m_enable) return;
 
 	// 共通のWindowフラグ
-	ImGuiWindowFlags wflags = ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+	ImGuiWindowFlags wflags;
+	if (false) wflags = ImGuiWindowFlags_NoCollapse;
+	else wflags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
 
 	//大本のモニター
-	if (ImGui::Begin("Main", nullptr, wflags)) {
+	if (ImGui::Begin("Main", nullptr, wflags | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize)) {}
+	ImGui::End();
+
+	//ゲームモニター
+	if (ImGui::Begin("Scene", nullptr, wflags | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	{
+		const auto& sceneRT = ApplicationChilled::GetApplication()->g_renderTarget;
+
+		//サイズ調整
+		const auto& sizeWd = ImGui::GetWindowSize();
+		const auto& sizeRT = float2((float)sceneRT.GetDesc().Width, (float)sceneRT.GetDesc().Height);
+
+		float sizeBar = 36.0f;
+		float rate = (sizeWd.y - sizeBar) / sizeRT.y;
+
+		ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(sizeRT.x, sizeRT.y) * rate);
+
+		ClearLog();
+		AddLog("rate: " + std::to_string(rate));
 	}
 	ImGui::End();
 
@@ -124,17 +143,6 @@ void ImGuiSystem::DrawImGui()
 		LogMonitor(wflags);
 		AudioMonitor(wflags);
 		ProfilerMonitor(wflags);
-
-		//これで画像出せる
-		if (ImGui::Begin("Scene", nullptr, wflags))
-		{
-			const auto& size = ImGui::GetWindowSize();
-
-			const auto& sceneRT = ApplicationChilled::GetApplication()->g_renderTarget;
-			//ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(sceneRT.GetDesc().Width, sceneRT.GetDesc().Height));
-			ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(size.x, size.y-10));
-		}
-		ImGui::End();
 	}
 }
 
@@ -308,11 +316,11 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 			transform.SetScale(scale);
 		}
 
-		ImGui::CheckboxFlags("eUntagged", &wpActor.lock()->g_tag, ACTOR_TAG::eUntagged);
-		ImGui::CheckboxFlags("ePlayer", &wpActor.lock()->g_tag, ACTOR_TAG::ePlayer);
-		ImGui::CheckboxFlags("eEnemy", &wpActor.lock()->g_tag, ACTOR_TAG::eEnemy);
-		ImGui::CheckboxFlags("eWeapon", &wpActor.lock()->g_tag, ACTOR_TAG::eWeapon);
-		ImGui::CheckboxFlags("eGround", &wpActor.lock()->g_tag, ACTOR_TAG::eGround);
+		ImGui::CheckboxFlags("eUntagged", &wpActor.lock()->g_tag, ACTOR_TAG::UNTAGGED);
+		ImGui::CheckboxFlags("ePlayer", &wpActor.lock()->g_tag, ACTOR_TAG::PLAYER);
+		ImGui::CheckboxFlags("eEnemy", &wpActor.lock()->g_tag, ACTOR_TAG::ENEMY);
+		ImGui::CheckboxFlags("eWeapon", &wpActor.lock()->g_tag, ACTOR_TAG::WEPON);
+		ImGui::CheckboxFlags("eGround", &wpActor.lock()->g_tag, ACTOR_TAG::GROUND);
 
 		if (ImGui::Button("Copy Clipboard TAG"))
 		{

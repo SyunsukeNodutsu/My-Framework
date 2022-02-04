@@ -13,7 +13,7 @@ public:
 	// @brief 初期化
 	void Initialize() override
 	{
-		g_tag |= ACTOR_TAG::eGround;
+		g_tag |= ACTOR_TAG::GROUND;
 	}
 
 };

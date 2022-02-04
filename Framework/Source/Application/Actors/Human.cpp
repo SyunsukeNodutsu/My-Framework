@@ -7,7 +7,9 @@
 //-----------------------------------------------------------------------------
 Human::Human()
 	: m_spCamera(nullptr)
-	, m_zoom(2)
+	, m_animator()
+	, m_rotation(float3::Zero)
+	, m_zoom(2.0f)
 {
 }
 
@@ -53,44 +55,11 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
-	if (!g_application->g_gameSystem->g_cameraSystem.IsEditorMode())
-	{
-		if(m_spState != nullptr)
-			m_spState->Update(deltaTime, *this);
-	}
+	if (g_application->g_gameSystem->g_cameraSystem.IsEditorMode()) return;
 
-	// アニメーション
-	float animationSpeed = 60.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Shift)) animationSpeed *= 1.6f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Alt)) animationSpeed *= 0.6f;
-	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
-	m_modelWork.CalcNodeMatrices();
-
-	//エフェクトテスト
-	static float timecount = 0.0f;
-	timecount += deltaTime;
-	if (timecount >= 3.0f)
-	{
-		const auto& pos = float3(0, 4, 0);
-		//g_application->g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
-		g_application->g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
-
-		timecount = 0.0f;
-	}
-
-	// TPS視点カメラ
-	if (m_spCamera)
-	{
-		mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
-
-		auto delta = g_application->g_inputDevice->GetMouseWheelDelta() * -1;
-
-		m_zoom += delta * deltaTime * 0.8f;
-
-		m_spCamera->SetLocalPos(float3(1.0f, 0.0f, -m_zoom));
-		m_spCamera->Update();
-		m_spCamera->SetCameraMatrix(trans);
-	}
+	//現在のステート更新 各種更新を記述
+	if (m_spState)
+		m_spState->Update(deltaTime, *this);
 }
 
 //-----------------------------------------------------------------------------
@@ -108,14 +77,12 @@ void Human::Draw(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateMove(float deltaTime)
 {
-	float speed = 10.0f;
+	const auto& input = g_application->g_inputDevice;
 
 	// ダッシュ or スニーク？
-	float moveSpd = 10;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Shift))
-		speed *= 2;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::Alt))
-		speed *= 0.4f;
+	float speed = 10.0f;
+	if (input->IsKeyDown(KeyCode::Shift)) speed *= 2;
+	else if (input->IsKeyDown(KeyCode::Alt)) speed *= 0.4f;
 
 	auto axisZ = m_transform.GetWorldMatrix().Backward();
 	axisZ.Normalize();
@@ -131,35 +98,27 @@ void Human::UpdateMove(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateRotate(float deltaTime)
 {
-	// 入力ベクトル取得
-	float3 moveVec;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
-	moveVec.Normalize();
+	//入力ベクトル取得
+	const float& horizontal = g_application->g_inputDevice->GetHorizontal();
+	const float& vertical = g_application->g_inputDevice->GetVertical();
+	float3 moveVec = float3(horizontal, 0, vertical);
+	if (moveVec.LengthSquared() == 0.0f) return;
 
 	// カメラを加味
 	if (m_spCamera)
 		moveVec = moveVec.TransformNormal(moveVec, m_spCamera->GetRotationYMatrix());
 
-	//--------------------------------------------------
-
-	if (moveVec.LengthSquared() == 0.0f)
-		return;
-
 	// 現在の方向
-	float3 nowDir = m_transform.GetWorldMatrix().Backward();// なんかForwardだと逆になる
+	float3 nowDir = m_transform.GetWorldMatrix().Backward();
 	nowDir.Normalize();
 
-	float nowAngleY		= atan2(nowDir.x, nowDir.z);
-	float targetAngleY  = atan2(moveVec.x, moveVec.z);	// 移動方向への角度
-	float rotateRadian  = targetAngleY - nowAngleY;		// 差分を計算
+	float nowAngleY = atan2(nowDir.x, nowDir.z);
+	float targetAngleY = atan2(moveVec.x, moveVec.z);//移動方向への角度
+	float rotateRadian = targetAngleY - nowAngleY;//差分を計算
 
-	if (rotateRadian > PI)
-		rotateRadian -= 2 * float(PI);
-	else if (rotateRadian < -PI)
-		rotateRadian += 2 * float(PI);
+	//360度の切れ目
+	if (rotateRadian > PI) rotateRadian -= 2 * float(PI);
+	else if (rotateRadian < -PI) rotateRadian += 2 * float(PI);
 
 	constexpr float rotPow = 400.0f;
 	m_rotation.y += rotateRadian * rotPow * deltaTime;
@@ -175,7 +134,45 @@ void Human::UpdateRotate(float deltaTime)
 //-----------------------------------------------------------------------------
 void Human::UpdateCollision()
 {
+	float distanceFromGround = FLT_MAX;
+	if (CheckGround(distanceFromGround))
+	{
+
+	}
+	
 	CheckBump();
+}
+
+//-----------------------------------------------------------------------------
+// カメラ更新
+//-----------------------------------------------------------------------------
+void Human::UpdateCamera(float deltaTime)
+{
+	if (m_spCamera == nullptr) return;
+
+	mfloat4x4 trans = mfloat4x4::CreateTranslation(m_transform.GetPosition());
+
+	const auto& delta = g_application->g_inputDevice->GetMouseWheelDelta() * -1;
+	m_zoom += delta * deltaTime * 0.8f;
+
+	m_spCamera->SetLocalPos(float3(1.0f, 0.0f, -m_zoom));
+	m_spCamera->Update();
+	m_spCamera->SetCameraMatrix(trans);
+}
+
+//-----------------------------------------------------------------------------
+// アニメーション更新
+//-----------------------------------------------------------------------------
+void Human::UpdateAnimation(float deltaTime)
+{
+	const auto& input = g_application->g_inputDevice;
+	
+	float animationSpeed = 60.0f;
+	if (input->IsKeyDown(KeyCode::Shift)) animationSpeed *= 1.6f;
+	else if (input->IsKeyDown(KeyCode::Alt)) animationSpeed *= 0.6f;
+
+	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
+	m_modelWork.CalcNodeMatrices();
 }
 
 //-----------------------------------------------------------------------------
@@ -194,15 +191,23 @@ void Human::CheckBump()
 
 	for (auto& actor : g_application->g_gameSystem->GetActorList())
 	{
+		//対象は地面
 		if (actor.get() == this) continue;
+		if (!(actor->g_tag & ACTOR_TAG::GROUND)) continue;
 
-		//地面と判定
-		if (actor->g_tag & 8)
-		{
-			if (actor->CheckCollision(center, radius, push))
-				m_transform.SetPosition(m_transform.GetPosition() + push);
-		}
+		if (actor->CheckCollision(center, radius, push))
+			m_transform.SetPosition(m_transform.GetPosition() + push);
 	}
+}
+
+//-----------------------------------------------------------------------------
+// 地面との判定
+//-----------------------------------------------------------------------------
+bool Human::CheckGround(float& dstDistance)
+{
+
+
+	return false;
 }
 
 
@@ -218,15 +223,14 @@ void Human::CheckBump()
 //-----------------------------------------------------------------------------
 void Human::StateWait::Update(float deltaTime, Human& owner)
 {
-	owner.UpdateCollision();
+	//ステートで行う更新
+	owner.UpdateCamera(deltaTime);
+	owner.UpdateAnimation(deltaTime);
 
-	//TODO: 修正
-	float3 moveVec = float3::Zero;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
-	moveVec.Normalize();
+	//入力ベクトル取得
+	const float& horizontal = g_application->g_inputDevice->GetHorizontal();
+	const float& vertical = g_application->g_inputDevice->GetVertical();
+	float3 moveVec = float3(horizontal, 0, vertical);
 
 	//遷移 移動ステート
 	if (moveVec.LengthSquared() >= 0.01f)
@@ -244,17 +248,17 @@ void Human::StateWait::Update(float deltaTime, Human& owner)
 //-----------------------------------------------------------------------------
 void Human::StateMove::Update(float deltaTime, Human& owner)
 {
+	//ステートで行う更新
 	owner.UpdateMove(deltaTime);
 	owner.UpdateRotate(deltaTime);
 	owner.UpdateCollision();
+	owner.UpdateCamera(deltaTime);
+	owner.UpdateAnimation(deltaTime);
 
-	//TODO: fix
-	float3 moveVec = float3::Zero;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::W)) moveVec.z += 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::S)) moveVec.z -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::A)) moveVec.x -= 1.0f;
-	if (g_application->g_inputDevice->IsKeyDown(KeyCode::D)) moveVec.x += 1.0f;
-	moveVec.Normalize();
+	//入力ベクトル取得
+	const float& horizontal = g_application->g_inputDevice->GetHorizontal();
+	const float& vertical = g_application->g_inputDevice->GetVertical();
+	float3 moveVec = float3(horizontal, 0, vertical);
 
 	//遷移 待機ステート
 	if (moveVec.LengthSquared() == 0)

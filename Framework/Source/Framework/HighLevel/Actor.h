@@ -13,11 +13,11 @@
 // Actor の分別
 enum ACTOR_TAG
 {
-	eUntagged	= 0,
-	ePlayer		= 1,
-	eEnemy		= 1 << 1,
-	eWeapon		= 1 << 2,
-	eGround		= 1 << 3,
+	UNTAGGED	= 0,
+	PLAYER		= 1,
+	ENEMY		= 1 << 1,
+	WEPON		= 1 << 2,
+	GROUND		= 1 << 3,
 };
 
 // アクタークラス

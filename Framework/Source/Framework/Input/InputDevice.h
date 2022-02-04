@@ -112,6 +112,12 @@ public:
 	//コントローラー入力取得
 	//--------------------------------------------------
 
+	//
+	float GetHorizontal() const;
+
+	//
+	float GetVertical() const;
+
 	//TODO: ここにコントローラーの入力関連追加
 
 private:

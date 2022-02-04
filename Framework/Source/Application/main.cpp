@@ -271,7 +271,6 @@ void Application::Execute()
 		g_effectDevice->Update();
 
 		// 描画
-		
 		{
 			const auto& d3d11context = g_graphicsDevice->g_cpContext;
 
@@ -283,12 +282,28 @@ void Application::Execute()
 			//3D想定
 			g_gameSystem->Draw();
 
+			//エフェクトテスト
+			{
+				static float timecount = 0.0f;
+				timecount += g_fpsTimer->GetDeltaTime();
+				if (timecount >= 3.0f)
+				{
+					const auto& pos = float3(0, 4, 0);
+					//g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
+					g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
+
+					timecount = 0.0f;
+				}
+			}
+
 			//エフェクト
 			g_effectDevice->Draw();
 
 			//2D想定
 			g_gameSystem->Draw2D();
 
+			//ここでレンダーターゲット復帰
+			//TODO: リストア
 			g_graphicsDevice->Begin();
 
 			//ImGui 描画

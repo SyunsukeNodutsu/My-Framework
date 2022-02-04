@@ -183,7 +183,7 @@ bool Texture::CreateRenderTarget(int height, int width, bool useMSAA, DXGI_FORMA
 	desc.SampleDesc.Count	= useMSAA ? smpleDesc.Count : 1;
 	desc.SampleDesc.Quality = useMSAA ? smpleDesc.Quality : 0;
 	
-	if (!Create(desc))
+	if (!Create(desc, nullptr, useMSAA))
 		return false;
 
 	// Viewの作成

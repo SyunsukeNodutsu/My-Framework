@@ -168,6 +168,9 @@ int InputDevice::GetMouseWheelDelta() const
 	return 0;
 }
 
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
 void InputDevice::SetMousePos(float2 position, bool abs)
 {
 	switch (m_inputMode)
@@ -177,4 +180,30 @@ void InputDevice::SetMousePos(float2 position, bool abs)
 	case InputMode::eXInput: break;
 	default: break;
 	}
+}
+
+//-----------------------------------------------------------------------------
+// 水平入力を返す
+//-----------------------------------------------------------------------------
+float InputDevice::GetHorizontal() const
+{
+	float2 result;
+	if (IsKeyDown(KeyCode::A)) result.x -= 1.0f;
+	if (IsKeyDown(KeyCode::D)) result.x += 1.0f;
+	result.Normalize();
+
+	return result.x;
+}
+
+//-----------------------------------------------------------------------------
+// 垂直入力を返す
+//-----------------------------------------------------------------------------
+float InputDevice::GetVertical() const
+{
+	float2 result;
+	if (IsKeyDown(KeyCode::W)) result.x += 1.0f;
+	if (IsKeyDown(KeyCode::S)) result.x -= 1.0f;
+	result.Normalize();
+
+	return result.x;
 }

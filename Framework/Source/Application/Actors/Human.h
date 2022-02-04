@@ -29,26 +29,28 @@ public:
 private:
 
 	std::shared_ptr<TPSCamera> m_spCamera;
-	Animator	m_animator;
-	float		m_zoom;
-	float3		m_rotation;
-	float		m_operationStopTick;
+	Animator m_animator;
+	float3 m_rotation;
+	float m_zoom;//カメラの距離
 
 private:
 
 	// @brief 移動更新
-	// @param deltaTime デルタタイム
 	void UpdateMove(float deltaTime);
-
 	// @brief 回転更新
-	// @param deltaTime デルタタイム
 	void UpdateRotate(float deltaTime);
-
 	// @brief 衝突判定更新
-	// @param
 	void UpdateCollision();
+	// @brief カメラ更新
+	void UpdateCamera(float deltaTime);
+	// @rief アニメーション更新
+	void UpdateAnimation(float deltaTime);
 
+	// @brief ぶつかり判定
 	void CheckBump();
+	// @brief 地面との判定
+	// @param dstDistance
+	bool CheckGround(float& dstDistance);
 
 	//ステートマシン------------------------------------------------------------------
 	class StateBase {
