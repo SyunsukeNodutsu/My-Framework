@@ -183,6 +183,23 @@ void InputDevice::SetMousePos(float2 position, bool abs)
 }
 
 //-----------------------------------------------------------------------------
+// マウスがウィンドウのクライアント領域上に存在
+//-----------------------------------------------------------------------------
+bool InputDevice::MouseInTheClient(float2 mpos, WINDOWINFO* pwinfo) const
+{
+	if (pwinfo == nullptr)
+	{
+		auto winfo = ApplicationChilled::GetApplication()->g_window->GetWinInfo();
+		pwinfo = &winfo;
+	}
+
+	if (mpos.x < 0 || mpos.x > pwinfo->rcClient.right - pwinfo->rcClient.left) return false;
+	if (mpos.y < 0 || mpos.y > pwinfo->rcClient.bottom - pwinfo->rcClient.top) return false;
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // 水平入力を返す
 //-----------------------------------------------------------------------------
 float InputDevice::GetHorizontal() const

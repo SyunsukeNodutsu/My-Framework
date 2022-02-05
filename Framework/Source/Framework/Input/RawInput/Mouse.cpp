@@ -109,6 +109,7 @@ void Mouse::SetAt(float2 position, HWND hwnd, bool abs)
 //-----------------------------------------------------------------------------
 bool Mouse::IsDown(MouseButton mkey)
 {
+    if (!ApplicationChilled::GetApplication()->g_inputDevice->MouseInTheClient(m_mousePos)) return false;
     return _mStates.KeyState(mkey) == ButtonState::HELD;
 }
 
@@ -117,6 +118,7 @@ bool Mouse::IsDown(MouseButton mkey)
 //-----------------------------------------------------------------------------
 bool Mouse::IsPressed(MouseButton mkey)
 {
+    if (!ApplicationChilled::GetApplication()->g_inputDevice->MouseInTheClient(m_mousePos)) return false;
     return _mStates.KeyState(mkey) == ButtonState::PRESSED;
 }
 
@@ -125,6 +127,7 @@ bool Mouse::IsPressed(MouseButton mkey)
 //-----------------------------------------------------------------------------
 bool Mouse::IsReleased(MouseButton mkey)
 {
+    if (!ApplicationChilled::GetApplication()->g_inputDevice->MouseInTheClient(m_mousePos)) return false;
     return _mStates.KeyState(mkey) == ButtonState::RELEASED;
 }
 

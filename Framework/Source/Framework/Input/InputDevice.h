@@ -108,6 +108,12 @@ public:
 	// マウス座標を設定
 	void SetMousePos(float2 position, bool abs = false);
 
+	// @brief マウスがウィンドウのクライアント領域上に存在するかどうかを返す
+	// @param mpos マウスの座標
+	// @param winfo 判定するウィンドウ情報(nullptrで自動取得)
+	// @return 領域上に存在 ... true
+	bool MouseInTheClient(float2 mpos, WINDOWINFO* pwinfo = nullptr) const;
+
 	//--------------------------------------------------
 	//コントローラー入力取得
 	//--------------------------------------------------

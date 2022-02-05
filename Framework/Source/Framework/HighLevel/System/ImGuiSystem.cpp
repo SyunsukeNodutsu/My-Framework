@@ -120,13 +120,11 @@ void ImGuiSystem::DrawImGui()
 		const auto& sizeWd = ImGui::GetWindowSize();
 		const auto& sizeRT = float2((float)sceneRT.GetDesc().Width, (float)sceneRT.GetDesc().Height);
 
+		//TODO: バーのサイズがどうなってるか調査
 		float sizeBar = 36.0f;
 		float rate = (sizeWd.y - sizeBar) / sizeRT.y;
 
 		ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(sizeRT.x, sizeRT.y) * rate);
-
-		ClearLog();
-		AddLog("rate: " + std::to_string(rate));
 	}
 	ImGui::End();
 
@@ -223,7 +221,12 @@ void ImGuiSystem::SceneMonitor(ImGuiWindowFlags wflags)
 		ImGui::EndMenuBar();
 	}
 
-	ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
+	//ImGui::Checkbox("ShowEachMonitor", &m_showEachMonitor);
+#ifdef _DEBUG
+	ImGui::Text(std::string("Debug").c_str());
+#else
+	ImGui::Text(std::string("Release").c_str());
+#endif
 
 	// シーンのパス表示
 	ImGui::Text(std::string("Scene: " + ApplicationChilled::GetApplication()->g_gameSystem->g_sceneFilepath).c_str());
@@ -463,7 +466,7 @@ void ImGuiSystem::AudioMonitor(ImGuiWindowFlags wflags)
 	ImGui::Text("Listener");
 	ImGui::PopStyleColor();
 
-	auto& cameraMatrix = RENDERER.Getcb9().Get().m_camera_matrix;// APP.g_gameSystem->GetCamera()->GetCameraMatrix();
+	auto& cameraMatrix = RENDERER.Getcb9().Get().m_camera_matrix;
 	float3 pos = cameraMatrix.Translation();
 	float3 dir = cameraMatrix.Backward();
 

@@ -46,10 +46,8 @@ void RawInputDevice::Refresh()
 //-----------------------------------------------------------------------------
 void RawInputDevice::ParseMessage(void* lparam)
 {
-    if (lparam == nullptr)
-        return;
+    if (lparam == nullptr) return;
 
-    // TODO: castちょっとよくない
     auto hRawInput = reinterpret_cast<HRAWINPUT>(lparam);
 
     // バッファサイズを取得
@@ -72,7 +70,7 @@ void RawInputDevice::ParseMessage(void* lparam)
     // マウス/キーボードの入力情報を取得
     //--------------------------------------------------
 
-    // 入力データ 参照
+    // 入力データ
     auto lprawinput = reinterpret_cast<RAWINPUT*>(lpbyData);
 
     // キーボードの場合

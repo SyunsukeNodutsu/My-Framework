@@ -45,8 +45,6 @@ void GameSystem::Finalize()
 	m_debugLines.clear();
 
 	g_sceneFilepath.clear();
-
-	//CloseHandle(m_testThread);
 }
 
 //-----------------------------------------------------------------------------
@@ -206,8 +204,6 @@ void GameSystem::Draw2D()
 		{
 			for (auto& object : m_spActorList)
 				object->DrawSprite(deltaTime);
-
-			//SHADER.GetSpriteShader().DrawTexture(&m_renderTarget, float2(0, 0));
 		}
 
 		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());
@@ -368,27 +364,13 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	for (auto& object : m_spActorList)
 		object->Initialize();
 
-	//auto sleepTime = std::chrono::seconds(1);
-	//std::this_thread::sleep_for(sleepTime);
+	//TODO: 課題提出の際 わかりやすくするため意図的にsleep
+	auto sleepTime = std::chrono::seconds(1);
+	std::this_thread::sleep_for(sleepTime);
 
 	SetLockFlag(true);
 
 	m_isRequestChangeScene = false;
 
 	return true;
-}
-
-unsigned int __stdcall GameSystem::BeginTimeCountThread(void* usercontext)
-{
-	HRESULT hr = S_FALSE;
-
-	for (;;)
-	{
-		// ワークキューのエントリーを待つ
-		//WaitForSingleObject(m_testThread, INFINITE);
-
-		//ここで各更新
-	}
-
-	return 0;
 }

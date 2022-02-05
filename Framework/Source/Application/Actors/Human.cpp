@@ -251,7 +251,7 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 	//ステートで行う更新
 	owner.UpdateMove(deltaTime);
 	owner.UpdateRotate(deltaTime);
-	owner.UpdateCollision();
+	//owner.UpdateCollision();
 	owner.UpdateCamera(deltaTime);
 	owner.UpdateAnimation(deltaTime);
 
@@ -259,6 +259,9 @@ void Human::StateMove::Update(float deltaTime, Human& owner)
 	const float& horizontal = g_application->g_inputDevice->GetHorizontal();
 	const float& vertical = g_application->g_inputDevice->GetVertical();
 	float3 moveVec = float3(horizontal, 0, vertical);
+
+	//こっちのがいいかも
+	//const float& horizontal = Input::GetAxis("Horizontal");
 
 	//遷移 待機ステート
 	if (moveVec.LengthSquared() == 0)

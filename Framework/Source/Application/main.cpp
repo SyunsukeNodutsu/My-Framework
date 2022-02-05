@@ -285,7 +285,7 @@ void Application::Execute()
 			//エフェクトテスト
 			{
 				static float timecount = 0.0f;
-				timecount += g_fpsTimer->GetDeltaTime();
+				timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
 				if (timecount >= 3.0f)
 				{
 					const auto& pos = float3(0, 4, 0);

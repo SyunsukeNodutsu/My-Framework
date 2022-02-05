@@ -25,3 +25,15 @@ void CesiumMan::Update(float deltaTime)
 	m_animator.AdvanceTime(m_modelWork.WorkNodes(), animationSpeed * deltaTime);
 	m_modelWork.CalcNodeMatrices();
 }
+
+//-----------------------------------------------------------------------------
+//描画
+//-----------------------------------------------------------------------------
+void CesiumMan::Draw(float deltaTime)
+{
+	RENDERER.Getcb8().Work().m_dither_enable = true;
+	RENDERER.Getcb8().Write();
+	Actor::Draw(deltaTime);
+	RENDERER.Getcb8().Work().m_dither_enable = false;
+	RENDERER.Getcb8().Write();
+}

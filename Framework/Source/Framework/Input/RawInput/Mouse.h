@@ -137,12 +137,12 @@ private:
 
 private:
 
-    // @brief
-    // @param wparam
-    // @param isDown
+    // @brief 状態の設定 (save bit)
+    // @param wparam wparamメッセージ
+    // @param isDown 押されているかどうか
     void SetState(WPARAM wparam, bool isDown);
 
-    // @brief
+    // @brief 状態の設定 (mouse button state)
     // @param flags RAWMOUSEのbuttonData
     void SetState(ULONG flags);
 
