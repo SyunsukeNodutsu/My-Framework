@@ -18,6 +18,8 @@ std::shared_ptr<Actor> GenerateActor(const std::string& name)
 	std::shared_ptr<Actor> result = nullptr;
 
 	// 名前から作成
+	if (name == "Actor")		result = std::make_shared<Actor>();
+
 	if (name == "Human")		result = std::make_shared<Human>();
 	if (name == "Sky")			result = std::make_shared<Sky>();
 	if (name == "StageMap")		result = std::make_shared<StageMap>();

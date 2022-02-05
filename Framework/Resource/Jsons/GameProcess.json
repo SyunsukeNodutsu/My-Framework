@@ -21,6 +21,14 @@
       "scaling": [ 3000, 3000, 3000 ]
     },
     {
+      "class_name": "Actor",
+      "model_filepath": "Resource/Model/T43/T43_Full.gltf",
+      "name": "T43_01",
+      "position": [ 13.8, 0, 9.7 ],
+      "rotation": [ 0, -138, 0 ],
+      "scaling": [ 2, 2, 2 ]
+    },
+    {
       "class_name": "Human",
       "model_filepath": "Resource/Model/Robot/Robot.gltf",
       "name": "Robot",
@@ -42,6 +50,14 @@
       "name": "Tree_01",
       "position": [ 0, -0.08, 10 ],
       "rotation": [ 0, 0, 0 ],
+      "scaling": [ 0.5, 0.5, 0.5 ]
+    },
+    {
+      "class_name": "Tree",
+      "model_filepath": "Resource/Model/Tree/02/Tree02.gltf",
+      "name": "Tree_02",
+      "position": [ -11, -0.08, 0 ],
+      "rotation": [ 0, 20, 0 ],
       "scaling": [ 0.5, 0.5, 0.5 ]
     }
   ]

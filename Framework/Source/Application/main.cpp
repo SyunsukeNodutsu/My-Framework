@@ -289,8 +289,7 @@ void Application::Execute()
 				if (timecount >= 3.0f)
 				{
 					const auto& pos = float3(0, 4, 0);
-					//g_effectDevice->Play(u"Resource/Effect/003_snowstorm_effect/snowstorm11.efk", pos, 0.2f);
-					g_effectDevice->Play(u"Resource/Effect/AndrewFM01/electric_dust.efk", pos);
+					g_effectDevice->Play(u"Resource/Effect/electric_dust.efk", pos);
 
 					timecount = 0.0f;
 				}

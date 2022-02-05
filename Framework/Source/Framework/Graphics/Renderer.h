@@ -70,8 +70,6 @@ public:
 	// static
 	//--------------------------------------------------
 
-	// Shaderデバッグが使用するバッファのスロット番号
-	static const int use_slot_shader_debug		=  7;
 	// ワールド変換行列が使用するバッファのスロット番号
 	static const int use_slot_world_matrix		=  8;
 	// カメラが使用するバッファのスロット番号
@@ -144,14 +142,6 @@ private:
 		float m_mie_streuung_factor_coefficient;// Mie散乱因子係数(-0.75 ～ -0.999)
 		float tmp[2];
 	};
-
-	// シェーダーデバッグ
-	struct cbShaderDebug
-	{
-		float g_show_base_color;    // PSの出力をそのままの色に(ライト無効)
-		float g_show_normal;        // PSの出力を法線に
-		float tmp[2];
-	};
 #pragma endregion
 
 	// ステート記憶/復元用
@@ -173,7 +163,6 @@ private:
 	ComPtr<ID3D11BlendState>						m_blendStates[3];		// ブレンドステート
 	SaveState										m_saveState;			// ステート 保存/復元用
 
-	ConstantBuffer<cbShaderDebug>					m_cb7ShaderDebug;		// Shaderデバッグ
 	ConstantBuffer<cdWorldMatrix>					m_cb8WorldMatrix;		// ワールド変換行列
 	ConstantBuffer<cdCamera>						m_cb9Camera;			// カメラ
 	ConstantBuffer<cdLight>							m_cb10Light;			// ライト
@@ -182,7 +171,6 @@ private:
 
 public:
 
-	ConstantBuffer<cbShaderDebug>& Getcb7() { return m_cb7ShaderDebug; }
 	ConstantBuffer<cdWorldMatrix>& Getcb8() { return m_cb8WorldMatrix; }
 	ConstantBuffer<cdCamera>& Getcb9() { return m_cb9Camera; }
 	ConstantBuffer<cdLight>& Getcb10() { return m_cb10Light; }

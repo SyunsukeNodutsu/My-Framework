@@ -8,6 +8,12 @@
 // 定数バッファ
 //--------------------------------------------------
 
+//ボーン情報
+cbuffer cdBones : register(b6)
+{
+    row_major float4x4 g_bones[300];
+}
+
 // キャラクターに付与予定
 cbuffer cdObject : register(b8)
 {
@@ -74,19 +80,6 @@ cbuffer cdObject : register(b13)
     
     // Rayleigh散乱
     
-}
-
-// Shaderデバッグ
-cbuffer cdObject : register(b7)
-{
-    float g_show_base_color;    // PSの出力をそのままの色に(ライト無効)
-    float g_show_normal;        // PSの出力を法線に
-}
-
-//ボーン情報
-cbuffer cdBones : register(b6)
-{
-    row_major float4x4 g_bones[300];
 }
 
 //--------------------------------------------------

@@ -118,17 +118,12 @@ float4 main( VertexOutput In ) : SV_TARGET
     normal = normalize(mul(normal, mTBN));
     normal = normalize(normal);
     
-    if (g_show_normal)
-        return float4(normal, 1);
-    
     //------------------------------------------
     // 材質色
     //------------------------------------------
     
     // 材質色
     float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
-    if (g_show_base_color)
-        return float4(albedo.rgb, 1);
     
     // メタリック/ラフネス テクスチャ
     float4 colorMR   = g_mrTexture.Sample(g_samplerState, In.uv);
