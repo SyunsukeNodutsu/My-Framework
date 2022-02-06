@@ -39,5 +39,6 @@ private:
 	static const int PARTICLE_COUNT = 100;
 	ConstantBuffer<cbParticle> m_cb7Particle;
 	std::shared_ptr<Buffer> m_vertexBuffer;
+	ComPtr<ID3D11ComputeShader> m_cpCS;
 
 };

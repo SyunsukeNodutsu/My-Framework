@@ -47,6 +47,17 @@ bool GPUParticleShader::Initialize()
 		}
 	}
 
+	//ピクセルシェーダ
+	{
+		#include "GPUParticleShader_CS.shaderinc"
+
+		hr = g_graphicsDevice->g_cpDevice.Get()->CreateComputeShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpCS.GetAddressOf());
+		if (FAILED(hr)) {
+			assert(0 && "計算シェーダー作成失敗.");
+			return false;
+		}
+	}
+
 	//定数バッファ
 	if (!m_cb7Particle.Create()) {
 		assert(0 && "定数バッファ作成失敗.");
@@ -54,19 +65,26 @@ bool GPUParticleShader::Initialize()
 	}
 	m_cb7Particle.SetToDevice(RENDERER.use_slot_particle);
 
-	//
-
-	Vertex g_VertexList[]{
-		{ { -0.5f,  0.5f, 0.0f }, cfloat4x4::Red },
-		{ {  0.5f, -0.5f, 0.0f }, cfloat4x4::Red },
-		{ { -0.5f, -0.5f, 0.0f }, cfloat4x4::Red }
+	//頂点定義
+	float3 center = float3(0, 4, 0);
+	Vertex vertices[]{
+		{ center + float3( 0.5f, -0.5f,  0.5f), cfloat4x4::Red },
+		{ center + float3(-0.5f, -0.5f,  0.5f), cfloat4x4::Red },
+		{ center + float3( 0.5f, -0.5f, -0.5f), cfloat4x4::Red },
+		{ center + float3(-0.5f, -0.5f, -0.5f), cfloat4x4::Red },
 	};
 
-	const int size = 256;
+	const int size = sizeof(Vertex) * 4;
 	m_vertexBuffer = std::make_shared<Buffer>();
 	m_vertexBuffer->Create(D3D11_BIND_VERTEX_BUFFER, size, D3D11_USAGE_DYNAMIC, nullptr);
 
-	m_vertexBuffer->WriteData(g_graphicsDevice->g_cpContext.Get(), &g_VertexList[0], sizeof(Vertex) * 4);
+	m_vertexBuffer->WriteData(g_graphicsDevice->g_cpContext.Get(), &vertices[0], size);
+
+	//particle構造体
+	for (int i = 0; i < PARTICLE_COUNT; i++)
+	{
+
+	}
 
 	return true;
 }
@@ -76,7 +94,21 @@ bool GPUParticleShader::Initialize()
 //-----------------------------------------------------------------------------
 void GPUParticleShader::Update()
 {
+	// メルセンヌ・ツイスター法による擬似乱数生成器を、
+	// ハードウェア乱数をシードにして初期化
+	std::random_device seed_gen;
+	std::mt19937 engine(seed_gen());
 
+	// 一様実数分布
+	// [-5.0, 5.0)の値の範囲で、等確率に実数を生成する
+	std::uniform_real_distribution<> dist(-5.0, 5.0);
+
+	float x = static_cast<float>(dist(engine));
+	float y = static_cast<float>(dist(engine));
+	float z = static_cast<float>(dist(engine));
+
+	m_cb7Particle.Work().position = float3(x, y, z);
+	m_cb7Particle.Write();
 }
 
 //-----------------------------------------------------------------------------
@@ -88,7 +120,7 @@ void GPUParticleShader::Draw()
 	UINT strides = sizeof(Vertex); UINT offsets = 0;
 	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_vertexBuffer->GetAddress(), &strides, &offsets);
 
-	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	//シェーダー設定
 	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
@@ -98,6 +130,6 @@ void GPUParticleShader::Draw()
 
 	//描画
 	RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
-	g_graphicsDevice->g_cpContext.Get()->Draw(3, 0);
+	g_graphicsDevice->g_cpContext.Get()->Draw(4, 0);
 	RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
 }

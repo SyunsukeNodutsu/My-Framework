@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 //—±Žq’PˆÊ
-cbuffer cdObject : register(b4)
+cbuffer cdObject : register(b7)
 {
     float3 g_position;
     float3 g_velocity;

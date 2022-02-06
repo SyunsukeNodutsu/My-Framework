@@ -12,9 +12,12 @@ VertexOutput main(
 )
 {
     VertexOutput ret = (VertexOutput)0;
-    
     position.w = 1;
+    position.xyz += g_position;
+    
+    //ç¿ïWïœä∑
     ret.position = mul(position, g_world_matrix);
+    ret.wPosition = ret.position.xyz;
     ret.position = mul(ret.position, g_view_matrix);
     ret.position = mul(ret.position, g_proj_matrix);
     
