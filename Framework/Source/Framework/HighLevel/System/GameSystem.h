@@ -104,4 +104,7 @@ private:
 	// @return 成功...true
 	bool LoadScene(const std::string& filepath);
 
+	// @brief 読み込み中の画像描画
+	void DrawLoadingSprite();
+
 };

@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------
 VertexOutput main( float4 position : POSITION, float2 uv : TEXCOORD0 )
 {
-    VertexOutput ret;
+    VertexOutput ret = (VertexOutput)0;
 
 	// ’¸“_À•W‚ğË‰e•ÏŠ·
     ret.position = mul(position, g_world_matrix);

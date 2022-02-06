@@ -59,15 +59,19 @@ public:
 	static EffekseerDevice* g_effectDevice;	//エフェクトデバイス
 	static AudioDevice* g_audioDevice;		//オーディオデバイス
 	static InputDevice* g_inputDevice;		//入力デバイス
-
-	//TODO: ウィンドウが持った方がいいかも
 	static FpsTimer* g_fpsTimer;			//fps計測
+
+	/*
+	TODO: こっちのがいい(static)
+	const auto& horizontal = Input::GetAxis("Horizontal");
+	const auto& deltaTime = Time.deltaTime;
+	*/
 
 	//メインシステム
 	static GameSystem* g_gameSystem;		//ゲーム管理
 	static ImGuiSystem* g_imGuiSystem;		//プロファイラ デバッグ
 
-	//
+	//Imguiのdockingモニター用
 	Texture g_renderTarget;
 	Texture g_renderTargetZ;
 

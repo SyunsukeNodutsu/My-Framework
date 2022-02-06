@@ -186,19 +186,7 @@ void GameSystem::Draw2D()
 
 		if (!IsLoadingDone())
 		{
-			static int index = 0;
-
-			static float numTime = 0;
-			numTime += static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
-
-			if (numTime >= 0.5f)
-			{
-				numTime = 0.0f;
-				index++;
-				if (index >= 3) index = 0;
-			}
-
-			SHADER.GetSpriteShader().DrawTexture(m_spLoadingTex[index].get(), float2(0, 0));
+			DrawLoadingSprite();
 		}
 		else
 		{
@@ -208,6 +196,9 @@ void GameSystem::Draw2D()
 
 		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());
 	}
+
+	SHADER.GetGPUParticleShader().Update();
+	SHADER.GetGPUParticleShader().Draw();
 }
 
 //-----------------------------------------------------------------------------
@@ -373,4 +364,24 @@ bool GameSystem::LoadScene(const std::string& filepath)
 	m_isRequestChangeScene = false;
 
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+// 読み込み中の画像描画
+//-----------------------------------------------------------------------------
+void GameSystem::DrawLoadingSprite()
+{
+	static int index = 0;
+
+	static float numTime = 0;
+	numTime += static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
+
+	if (numTime >= 0.5f)
+	{
+		numTime = 0.0f;
+		index++;
+		if (index >= 3) index = 0;
+	}
+
+	SHADER.GetSpriteShader().DrawTexture(m_spLoadingTex[index].get(), float2::Zero);
 }

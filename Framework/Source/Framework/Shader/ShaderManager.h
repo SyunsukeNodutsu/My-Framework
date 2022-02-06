@@ -8,6 +8,7 @@
 #include "Effect/EffectShader.h"
 #include "Model/ModelShader.h"
 #include "Sprite/SpriteShader.h"
+#include "GPUParticle/GPUParticleShader.h"
 
 // シェーダーの管理クラス
 class ShaderManager
@@ -39,11 +40,15 @@ public:
 	// @return Spriteシェーダ
 	SpriteShader& GetSpriteShader() const { return *m_spSpriteShader; }
 
+	//
+	GPUParticleShader& GetGPUParticleShader() const { return *m_spGPUParticleShader; }
+
 private:
 
 	std::shared_ptr<EffectShader>	m_spEffectShader;	// Effect描画シェーダ
 	std::shared_ptr<ModelShader>	m_spModelShader;	// 3Dモデル描画シェーダ
 	std::shared_ptr<SpriteShader>	m_spSpriteShader;	// 画像描画用シェーダ
+	std::shared_ptr<GPUParticleShader>m_spGPUParticleShader;
 
 private:
 

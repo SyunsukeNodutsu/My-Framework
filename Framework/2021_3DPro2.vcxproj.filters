@@ -103,6 +103,9 @@
     <Filter Include="Source\Framework\Shader\PostProcess">
       <UniqueIdentifier>{becbb475-caf1-412f-8bcc-3518a6b46f52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Shader\GPUParticle">
+      <UniqueIdentifier>{8695382e-06dd-4f48-9bc9-ce4cf7f685c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -299,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="Source\Application\Actors\Environment\Tree.cpp">
       <Filter>Source\Application\Actors\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.cpp">
+      <Filter>Source\Framework\Shader\GPUParticle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -533,6 +539,9 @@
     <ClInclude Include="Source\Framework\Shader\PostProcess\PostProcessShader.h">
       <Filter>Source\Framework\Shader\PostProcess</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.h">
+      <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Framework\Shader\ConstantBuffer.hlsli">
@@ -559,6 +568,9 @@
     <None Include="Resource\Jsons\Serialize.json">
       <Filter>Jsons</Filter>
     </None>
+    <None Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.hlsli">
+      <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
@@ -584,6 +596,12 @@
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\Model\TerrainShader_PS.hlsl">
       <Filter>Source\Framework\Shader\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_VS.hlsl">
+      <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_PS.hlsl">
+      <Filter>Source\Framework\Shader\GPUParticle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
