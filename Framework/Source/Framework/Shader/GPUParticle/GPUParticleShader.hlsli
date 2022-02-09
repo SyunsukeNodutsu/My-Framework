@@ -4,18 +4,11 @@
 // ピクセルシェーダ
 //-----------------------------------------------------------------------------
 
-//粒子単位
-cbuffer cdObject : register(b7)
-{
-    float3 g_position;
-    float3 g_velocity;
-    float lifeSpan;
-};
-
 //パーティクル構造体 ※SRVでやり取り
 struct ParticleCompute
 {
     float3 pos;
+    float tmp;
     float3 vel;
     float life;
 };
@@ -24,8 +17,9 @@ struct ParticleCompute
 struct VertexOutput
 {
     float4 position     : SV_Position;  //射影座標
-    float4 color        : TEXCOORD0;    //色
-    float3 wPosition    : TEXCOORD1;    //ワールド3D座標
+    float2 uv           : TEXCOORD0;    //UV座標
+    float4 color        : TEXCOORD1;    //色
+    float3 wPosition    : TEXCOORD2;    //ワールド3D座標
 };
 
 //計算シェーダーに渡される値

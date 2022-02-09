@@ -123,7 +123,7 @@ bool Application::Initialize(int width, int height)
 
 	//オーディオデバイス
 	g_audioDevice->Initialize();
-	g_audioDevice->SetMasterVolume(0.4f);
+	g_audioDevice->SetMasterVolume(0.0f);
 	
 	//入力デバイス
 	g_inputDevice->Initialize(g_window->GetWndHandle(), InputMode::eRawInput);

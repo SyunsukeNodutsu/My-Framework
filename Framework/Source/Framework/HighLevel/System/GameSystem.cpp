@@ -356,8 +356,8 @@ bool GameSystem::LoadScene(const std::string& filepath)
 		object->Initialize();
 
 	//TODO: 課題提出の際 わかりやすくするため意図的にsleep
-	auto sleepTime = std::chrono::seconds(1);
-	std::this_thread::sleep_for(sleepTime);
+	/*auto sleepTime = std::chrono::seconds(1);
+	std::this_thread::sleep_for(sleepTime);*/
 
 	SetLockFlag(true);
 

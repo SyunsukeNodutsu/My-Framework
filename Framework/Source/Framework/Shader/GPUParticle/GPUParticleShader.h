@@ -16,13 +16,14 @@ class GPUParticleShader : public Shader
 	struct Vertex
 	{
 		float3 position;
-		float4 m_color;
+		float4 color;
 	};
 
-	//粒子単位 定数バッファ
-	struct cbParticle
+	//粒子単位 定数バッファ(SRV)
+	struct ParticleCompute
 	{
-		float3 position; float tmp;
+		float3 position;
+		float tmp;
 		float3 velocity;
 		float lifeSpan;
 	};
@@ -33,7 +34,10 @@ public:
 	GPUParticleShader();
 
 	//@brief デストラクタ
-	~GPUParticleShader() {}
+	~GPUParticleShader()
+	{
+		delete[] mpParticle;
+	}
 
 	//@brief 初期化
 	bool Initialize();
@@ -46,25 +50,28 @@ public:
 
 private:
 
+	int mParticleAmount;
 	ComPtr<ID3D11ComputeShader>	m_cpCS;
-	ConstantBuffer<cbParticle> m_cb7Particle;
 	std::shared_ptr<Buffer> m_spVertexBuffer;
 	std::shared_ptr<Texture> m_spTexture;
 	bool m_billboard;//ビルボード表示
 	bool m_cullNone;//背面カリングOFF
 
 	//TODO: fix
-	ID3D11Buffer* mpParticleBuffer;
-	ID3D11Buffer* mpResultBuffer;
-	ID3D11Buffer* mpPositionBuffer;
+	ParticleCompute* mpParticle;
+
+	ID3D11Buffer* mpParticleBuffer = nullptr;
+	ID3D11Buffer* mpResultBuffer = nullptr;
+	ID3D11Buffer* mpPositionBuffer = nullptr;
 	// SRV
-	ID3D11ShaderResourceView* mpParticleSRV;
-	ID3D11ShaderResourceView* mpPositionSRV;
+	ID3D11ShaderResourceView* mpParticleSRV = nullptr;
+	ID3D11ShaderResourceView* mpPositionSRV = nullptr;
 	// UAV
-	ID3D11UnorderedAccessView* mpResultUAV;
+	ID3D11UnorderedAccessView* mpResultUAV = nullptr;
 
 private:
 
+	HRESULT CreateStructuredBuffer(UINT uElementSize, UINT uCount, void* pInitData, ID3D11Buffer** ppBufOut, bool isUAV);
 	HRESULT CreateBufferSRV(ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut);
 	HRESULT CreateBufferUAV(ID3D11Buffer* pBuffer, ID3D11UnorderedAccessView** ppUAVOut);
 	ID3D11Buffer* CreateAndCopyToDebugBuf(ID3D11Buffer* pBuffer);

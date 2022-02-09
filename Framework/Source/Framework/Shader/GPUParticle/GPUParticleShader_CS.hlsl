@@ -10,9 +10,10 @@
 #define size_y   1
 #define size_z   1
 
-// In
+//“ü—Í
 StructuredBuffer<ParticleCompute> particle : register(t0); //SRV
-// Out
+
+//o—Í
 RWStructuredBuffer<ParticleCompute> BufOut : register(u0); //URV
 
 //-----------------------------------------------------------------------------
@@ -25,8 +26,10 @@ void main( const ComputeInput In )
     
     //À•W,ˆÚ“®—Ê,¶‘¶ŠúŠÔ‚ÌŒvZ
     float3 result = particle[index].pos + particle[index].vel;
+    
+    //BufOut[index].pos  = particle[index].pos + (particle[index].vel * g_delta_time);
     BufOut[index].pos = result;
-    BufOut[index].vel = BufOut[index].vel;
-    BufOut[index].life = BufOut[index].life - 1.0f;
-    //BufOut[index].life = BufOut[index].life - 1.0f * g_delta_time;
+    BufOut[index].vel = particle[index].vel;
+    BufOut[index].life = particle[index].life - 1.0f;
+    
 }
