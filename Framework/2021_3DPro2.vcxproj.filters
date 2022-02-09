@@ -603,9 +603,6 @@
     <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_PS.hlsl">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
     </FxCompile>
-    <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_GS.hlsl">
-      <Filter>Source\Framework\Shader\GPUParticle</Filter>
-    </FxCompile>
     <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_CS.hlsl">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
     </FxCompile>

@@ -105,12 +105,8 @@ private:
 	// @return 成功...true 失敗...false
 	bool CreateDSV(bool useMSAA = false);
 
-	//2D画像(resource)リソースから、最適なビューを作成する
-	//@param resource
-	//@param ppSRV
-	//@param ppRTV
-	//@param ppDSV
-	//@param useMSAA MSAA有効？
-	bool KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA);
+	// @brief 2D画像(resource)リソースから、最適なビューを作成する
+	// @param useMSAA MSAA有効？
+	bool KdCreateViewsFromTexture2D(ID3D11Texture2D* resource, ID3D11ShaderResourceView** ppSRV, ID3D11RenderTargetView** ppRTV, ID3D11DepthStencilView** ppDSV, bool useMSAA = false);
 
 };

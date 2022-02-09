@@ -6,14 +6,21 @@
 #include "../ConstantBuffer.hlsli"
 #include "GPUParticleShader.hlsli"
 
+StructuredBuffer<float3> Position : register(t2);//SRV
+
+//-----------------------------------------------------------------------------
+//頂点シェーダー
+//-----------------------------------------------------------------------------
 VertexOutput main(
     float4 position : POSITION,
-    float4 color    : COLOR
+    float4 color    : COLOR,
+    uint InstanceID : SV_InstanceID
 )
 {
     VertexOutput ret = (VertexOutput)0;
     position.w = 1;
-    position.xyz += g_position;
+    
+    position.xyz += Position[InstanceID];
     
     //座標変換
     ret.position = mul(position, g_world_matrix);
