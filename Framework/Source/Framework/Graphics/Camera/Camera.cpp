@@ -46,6 +46,7 @@ void Camera::SetToShader()
 
 		RENDERER.Getcb9().Work().m_camera_matrix = m_cameraMatrix;
 		RENDERER.Getcb9().Work().m_view_matrix = m_viewMatrix;
+		RENDERER.Getcb9().Work().m_inv_view_matrix = m_viewMatrix.Invert();
 		RENDERER.Getcb9().Write();
 	}
 

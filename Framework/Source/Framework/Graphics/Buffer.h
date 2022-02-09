@@ -25,14 +25,23 @@ public:
 	// @param initData 作成時に書き込むデータ nullptrだと何も書き込まない
 	bool Create(UINT bindFlags, UINT bufferSize, D3D11_USAGE bufferUsage, const D3D11_SUBRESOURCE_DATA* initData);
 
+	// @brief 構造化バッファを作成
+	// @param uElementSize 構造体のサイズ
+	// @param count 要素数
+	// @param isUAV 順不同アクセス使用想定
+	bool CreateStructured(UINT elementSize, UINT count, bool isUAV, const D3D11_SUBRESOURCE_DATA* initData = nullptr);
+
 	// @brief バッファへ指定データを書き込み
 	// @param pSrcData 書き込みたいデータの先頭アドレス
 	// @param size 書き込むサイズ(byte)
-	void WriteData(ID3D11DeviceContext* pd3dContext, const void* srcData, UINT size);
+	void WriteData(const void* srcData, UINT size);
 
 	// @brief GPU上でバッファのコピーを実行する
 	// @param srcBuffer コピー元バッファ
 	void CopyFrom(const Buffer& srcBuffer);
+
+	// UAVのバッファの内容を CPU から読み込み可能なバッファへコピーして返す
+	static ID3D11Buffer* CreateAndCopyToDebugBuf(ID3D11Buffer* pBuffer);
 
 	//--------------------------------------------------
 	// 取得
@@ -96,14 +105,11 @@ public:
 
 	// @brief 定数バッファへ書き込む
 	// @note m_isDirtyがtrueの時のみ、バッファに書き込まれる
-	void Write(ID3D11DeviceContext* pd3dContext = nullptr)
+	void Write()
 	{
 		if (!m_isDirty) return;
 
-		if (pd3dContext == nullptr)
-			m_buffer.WriteData(g_graphicsDevice->g_cpContext.Get(), &m_work, m_buffer.GetSize());
-		else
-			m_buffer.WriteData(pd3dContext, &m_work, m_buffer.GetSize());
+		m_buffer.WriteData(&m_work, m_buffer.GetSize());
 		m_isDirty = false;
 	}
 
@@ -139,11 +145,18 @@ public:
 		g_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
+	// @brief 計算シェーダにセット
+	// @param slot スロット番号
+	inline void CSSetToDevice(int slot) const {
+		g_graphicsDevice->g_cpContext.Get()->CSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+	}
+
 	// @brief 各シェーダにセット
 	// @param slot スロット番号
 	inline void SetToDevice(int slot) const {
 		g_graphicsDevice->g_cpContext.Get()->VSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 		g_graphicsDevice->g_cpContext.Get()->PSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
+		g_graphicsDevice->g_cpContext.Get()->CSSetConstantBuffers(slot, 1, m_buffer.GetAddress());
 	}
 
 private:

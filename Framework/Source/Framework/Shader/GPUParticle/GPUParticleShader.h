@@ -1,11 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
 //File: GPUParticleShader.h
 //
-//GPUによる粒子計算目標 とりあえず板ポリ表示まで
-//t ... シェーダー リソース ビュー(SRV)用
-//s ... サンプラー用
-//u ... 順序指定されていないアクセス ビュー(UAV)用
-//b ... 定数バッファー ビュー(CBV)用 
+//GPUによる粒子計算
 //-----------------------------------------------------------------------------
 #pragma once
 
@@ -16,6 +12,7 @@ class GPUParticleShader : public Shader
 	struct Vertex
 	{
 		float3 position;
+		float2 uv;
 		float4 color;
 	};
 
@@ -34,10 +31,7 @@ public:
 	GPUParticleShader();
 
 	//@brief デストラクタ
-	~GPUParticleShader()
-	{
-		delete[] mpParticle;
-	}
+	~GPUParticleShader();
 
 	//@brief 初期化
 	bool Initialize();
@@ -48,31 +42,35 @@ public:
 	//@brief 描画
 	void Draw();
 
+	//@テクスチャ設定
+	//@param pTexture 設定するテクスチャ
+	void SetTexture(std::shared_ptr<Texture> spTexture) { m_spTexture = spTexture; }
+
+	//TODO: エミッター作成
+	void Emit();
+	void End();
+
 private:
 
-	int mParticleAmount;
-	ComPtr<ID3D11ComputeShader>	m_cpCS;
-	std::shared_ptr<Buffer> m_spVertexBuffer;
-	std::shared_ptr<Texture> m_spTexture;
-	bool m_billboard;//ビルボード表示
-	bool m_cullNone;//背面カリングOFF
-
-	//TODO: fix
 	ParticleCompute* mpParticle;
+	ComPtr<ID3D11ComputeShader>	m_cpCS;
 
-	ID3D11Buffer* mpParticleBuffer = nullptr;
-	ID3D11Buffer* mpResultBuffer = nullptr;
-	ID3D11Buffer* mpPositionBuffer = nullptr;
+	//バッファー
+	std::shared_ptr<Buffer> m_spVertexBuffer;
+	std::shared_ptr<Buffer> m_spInputBuffer;
+	std::shared_ptr<Buffer> m_spResultBuffer;
+	std::shared_ptr<Buffer> m_spPositionBuffer;
+
 	// SRV
 	ID3D11ShaderResourceView* mpParticleSRV = nullptr;
 	ID3D11ShaderResourceView* mpPositionSRV = nullptr;
+
 	// UAV
 	ID3D11UnorderedAccessView* mpResultUAV = nullptr;
 
-private:
+	std::shared_ptr<Texture> m_spTexture;
+	bool m_billboard;//ビルボード表示
+	bool m_cullNone;//背面カリングOFF
+	int mParticleAmount;
 
-	HRESULT CreateStructuredBuffer(UINT uElementSize, UINT uCount, void* pInitData, ID3D11Buffer** ppBufOut, bool isUAV);
-	HRESULT CreateBufferSRV(ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut);
-	HRESULT CreateBufferUAV(ID3D11Buffer* pBuffer, ID3D11UnorderedAccessView** ppUAVOut);
-	ID3D11Buffer* CreateAndCopyToDebugBuf(ID3D11Buffer* pBuffer);
 };

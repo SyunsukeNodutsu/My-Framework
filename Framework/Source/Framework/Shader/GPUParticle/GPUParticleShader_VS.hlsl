@@ -21,6 +21,7 @@ VertexOutput main(
     VertexOutput ret = (VertexOutput)0;
     position.w = 1;
     
+    //計算シェーダーの結果からシミュレーション
     position.xyz += Position[InstanceID];
     
     //座標変換
@@ -32,16 +33,6 @@ VertexOutput main(
     ret.uv = uv * g_uv_tiling + g_uv_offset;
     
     ret.color = color;
-    ret.color.xyz = Position[InstanceID];
-    
-    //matrix wvp;
-    //wvp = mul(g_world_matrix, g_view_matrix);
-    //wvp = mul(wvp, g_proj_matrix);
-
-    //position.xyz += Position[InstanceID];
-
-    //ret.position = mul(position, wvp);
-    //ret.wPosition = mul(position, g_world_matrix);
     
 	return ret;
 }

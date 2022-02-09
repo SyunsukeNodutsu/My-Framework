@@ -8,6 +8,7 @@
 GraphicsDevice::GraphicsDevice()
 	: g_cpDevice(nullptr)
 	, g_cpContext(nullptr)
+	, g_viewport()
 	, m_cpGISwapChain(nullptr)
 	, m_spBackbuffer(nullptr)
 	, m_spDefaultZbuffer(nullptr)
@@ -304,7 +305,7 @@ void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIV
 	}
 
 	// 単純なDISCARDでの書き込み TODO: 修正
-	buffer->WriteData(pd3dContext, pVertexStream, totalSize);
+	buffer->WriteData(pVertexStream, totalSize);
 
 	// バインド
 	{
@@ -317,19 +318,43 @@ void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIV
 	pd3dContext->Draw(vertexCount, 0);
 }
 
-void GraphicsDevice::DrawFrameBuff()
+//-----------------------------------------------------------------------------
+// 構造化バッファーをもとにSRVを作成して返す
+//-----------------------------------------------------------------------------
+const HRESULT GraphicsDevice::CreateBufferSRV(ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut)
 {
-	if (m_rtScreen == nullptr)
-	{
-		m_rtScreen = std::make_shared<Texture>();
-		m_zScreen = std::make_shared<Texture>();
+	D3D11_BUFFER_DESC descBuf = {};
+	pBuffer->GetDesc(&descBuf);
 
-		m_rtScreen->CreateRenderTarget(900, 1600);
-		m_zScreen->CreateDepthStencil(900, 1600);
-	}
+	D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+	desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.BufferEx.FirstElement = 0;
+	desc.BufferEx.NumElements = descBuf.ByteWidth / descBuf.StructureByteStride;
 
-	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	g_cpContext->ClearRenderTargetView(m_rtScreen->RTV(), zeroClear);
-	g_cpContext->ClearDepthStencilView(m_zScreen->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	g_cpContext->OMSetRenderTargets(1, m_rtScreen->RTVAddress(), m_zScreen->DSV());
+	return g_cpDevice.Get()->CreateShaderResourceView(pBuffer, &desc, ppSRVOut);
 }
+
+//-----------------------------------------------------------------------------
+// 構造化バッファーをもとにUAVを作成して返す
+//-----------------------------------------------------------------------------
+const HRESULT GraphicsDevice::CreateBufferUAV(ID3D11Buffer* pBuffer, ID3D11UnorderedAccessView** ppUAVOut)
+{
+	D3D11_BUFFER_DESC descBuf = {};
+	pBuffer->GetDesc(&descBuf);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC desc = {};
+	desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.Buffer.FirstElement = 0;
+	desc.Buffer.NumElements = descBuf.ByteWidth / descBuf.StructureByteStride;
+
+	return g_cpDevice.Get()->CreateUnorderedAccessView(pBuffer, &desc, ppUAVOut);
+}
+
+/*
+* t ... シェーダー リソース ビュー(SRV)用
+* s ... サンプラー用
+* u ... 順序指定されていないアクセス ビュー(UAV)用
+* b ... 定数バッファー ビュー(CBV)用
+*/

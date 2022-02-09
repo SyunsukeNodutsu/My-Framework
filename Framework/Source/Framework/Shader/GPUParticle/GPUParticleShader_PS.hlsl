@@ -16,10 +16,8 @@ SamplerState g_samplerState : register(s0);
 //-----------------------------------------------------------------------------
 float4 main( VertexOutput In ) : SV_TARGET
 {
-    //if (color.a <= 0.0f) discard;
+    if (In.color.a <= 0.0f) discard;
     
-    //float4 albedo = g_texture.Sample(g_samplerState, In.uv);// * In.color;
-    //return albedo;
-    
-    return In.color;
+    float4 albedo = g_texture.Sample(g_samplerState, In.uv) * In.color;
+    return albedo;
 }

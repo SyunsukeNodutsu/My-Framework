@@ -105,6 +105,7 @@ private:
 		mfloat4x4 m_view_matrix;
 		mfloat4x4 m_proj_matrix;
 		mfloat4x4 m_camera_matrix;
+		mfloat4x4 m_inv_view_matrix;
 	};
 
 	// ライト
@@ -121,7 +122,7 @@ private:
 	struct cdTime
 	{
 		float m_totalTime = 0.0f; // 総経過時間
-		float m_deltaTime = 0.0f; // デルタティック
+		float m_deltaTime = 1.0f; // デルタティック
 		float tmp[2];
 	};
 

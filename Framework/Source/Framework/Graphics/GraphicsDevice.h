@@ -57,10 +57,6 @@ public:
 	// @param stride 1頂点のバイトサイズ
 	void DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
 
-	//
-	void DrawFrameBuff();
-	const std::shared_ptr<Texture>& GetFramebuffer() const { return m_rtScreen; }
-
 	//--------------------------------------------------
 	// 取得
 	//--------------------------------------------------
@@ -85,8 +81,14 @@ public:
 	// @return マルチサンプリングパラメータ
 	const DXGI_SAMPLE_DESC& GetSampleDesc() const { return m_sampleDesc; }
 
-	//
+	// @brief スワップチェインを返す
 	const ComPtr<IDXGISwapChain> GetSwapChain() const { return m_cpGISwapChain; }
+
+	// @brief  構造化バッファーをもとにSRVを作成して返す
+	const HRESULT CreateBufferSRV(ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut);
+
+	// @brief 構造化バッファーをもとにUAVを作成して返す
+	const HRESULT CreateBufferUAV(ID3D11Buffer* pBuffer, ID3D11UnorderedAccessView** ppUAVOut);
 
 public:
 
@@ -94,7 +96,8 @@ public:
 	ComPtr<ID3D11Device>			g_cpDevice;
 	ComPtr<ID3D11DeviceContext>		g_cpContext; // 即時コンテキスト
 
-	D3D11_VIEWPORT g_viewport;
+	//ビューポート
+	D3D11_VIEWPORT					g_viewport;
 
 private:
 

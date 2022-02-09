@@ -25,11 +25,9 @@ void main( const ComputeInput In )
     int index = In.dispatch.x;
     
     //À•W,ˆÚ“®—Ê,¶‘¶ŠúŠÔ‚ÌŒvZ
-    float3 result = particle[index].pos + particle[index].vel;
+    float3 result = particle[index].pos + (particle[index].vel * g_delta_time);
     
-    //BufOut[index].pos  = particle[index].pos + (particle[index].vel * g_delta_time);
     BufOut[index].pos = result;
     BufOut[index].vel = particle[index].vel;
-    BufOut[index].life = particle[index].life - 1.0f;
-    
+    BufOut[index].life = particle[index].life - g_delta_time;
 }

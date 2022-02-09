@@ -30,6 +30,7 @@ cbuffer cdObject : register(b9)
     row_major float4x4 g_view_matrix;   // ビュー変換
     row_major float4x4 g_proj_matrix;   // 射影変換
     row_major float4x4 g_camera_matrix; // カメラ
+    row_major float4x4 g_inv_view_matrix;
 }
 
 // ライト

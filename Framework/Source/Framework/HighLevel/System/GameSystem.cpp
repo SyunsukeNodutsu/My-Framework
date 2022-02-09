@@ -197,8 +197,11 @@ void GameSystem::Draw2D()
 		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());
 	}
 
-	SHADER.GetGPUParticleShader().Update();
-	SHADER.GetGPUParticleShader().Draw();
+	if (IsLoadingDone())
+	{
+		SHADER.GetGPUParticleShader().Update();
+		SHADER.GetGPUParticleShader().Draw();
+	}
 }
 
 //-----------------------------------------------------------------------------

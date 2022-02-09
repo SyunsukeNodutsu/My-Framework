@@ -38,6 +38,10 @@ bool Renderer::Initialize()
 	m_cb10Light.Work().m_enable = true;
 	m_cb10Light.Write();
 
+	m_cb12Time.Work().m_totalTime = 1;
+	m_cb12Time.Work().m_deltaTime = 1;
+	m_cb12Time.Write();
+
 	// 大気のパラメータを設定
 	m_cb13Atmosphere.Work().m_distance_fog_enable = 1;
 	m_cb13Atmosphere.Work().m_distance_fog_color = float3(0.5f, 0.6f, 0.7f);

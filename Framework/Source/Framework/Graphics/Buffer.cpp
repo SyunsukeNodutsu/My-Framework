@@ -57,33 +57,66 @@ bool Buffer::Create(UINT bindFlags, UINT bufferSize, D3D11_USAGE bufferUsage, co
 }
 
 //-----------------------------------------------------------------------------
+// 構造化バッファを作成
+//-----------------------------------------------------------------------------
+bool Buffer::CreateStructured(UINT elementSize, UINT count, bool isUAV, const D3D11_SUBRESOURCE_DATA* initData)
+{
+	// バッファ作成のための詳細データ
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth				= elementSize * count;
+	desc.MiscFlags				= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	desc.StructureByteStride	= elementSize;
+	desc.CPUAccessFlags			= D3D11_CPU_ACCESS_WRITE;
+
+	if (isUAV) {
+		//順不同アクセスビューの場合
+		desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+		m_usage = desc.Usage = D3D11_USAGE_DEFAULT;
+	}
+	else {
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		m_usage = desc.Usage = D3D11_USAGE_DYNAMIC;
+	}
+
+	// 作成
+	if (FAILED(g_graphicsDevice->g_cpDevice.Get()->CreateBuffer(&desc, initData, &m_cpBuffer))) {
+		assert(0 && "エラー：バッファ作成失敗.");
+		return false;
+	}
+
+	m_size = elementSize * count;
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // 書き込み
 //-----------------------------------------------------------------------------
-void Buffer::WriteData(ID3D11DeviceContext* pd3dContext, const void* srcData, UINT size)
+void Buffer::WriteData(const void* srcData, UINT size)
 {
 	// 動的バッファの場合
 	if (m_usage == D3D11_USAGE_DYNAMIC)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(pd3dContext->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		if (SUCCEEDED(g_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			pd3dContext->Unmap(m_cpBuffer.Get(), 0);
+			g_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 	// 静的バッファの場合
 	else if (m_usage == D3D11_USAGE_DEFAULT)
 	{
-		pd3dContext->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
+		g_graphicsDevice->g_cpContext.Get()->UpdateSubresource(m_cpBuffer.Get(), 0, 0, srcData, 0, 0);
 	}
 	// ステージングバッファの場合(読み書き両方)
 	else if (m_usage == D3D11_USAGE_STAGING)
 	{
 		D3D11_MAPPED_SUBRESOURCE pData;
-		if (SUCCEEDED(pd3dContext->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
+		if (SUCCEEDED(g_graphicsDevice->g_cpContext.Get()->Map(m_cpBuffer.Get(), 0, D3D11_MAP_READ_WRITE, 0, &pData)))
 		{
 			memcpy_s(pData.pData, m_size, srcData, size);
-			pd3dContext->Unmap(m_cpBuffer.Get(), 0);
+			g_graphicsDevice->g_cpContext.Get()->Unmap(m_cpBuffer.Get(), 0);
 		}
 	}
 }
@@ -97,6 +130,26 @@ void Buffer::CopyFrom(const Buffer& srcBuffer)
 	if (srcBuffer.Get() == nullptr) return;
 
 	g_graphicsDevice->g_cpContext.Get()->CopyResource(m_cpBuffer.Get(), srcBuffer.Get());
+}
+
+//-----------------------------------------------------------------------------
+// UAVのバッファの内容を CPU から読み込み可能なバッファへコピーする
+//-----------------------------------------------------------------------------
+ID3D11Buffer* Buffer::CreateAndCopyToDebugBuf(ID3D11Buffer* pBuffer)
+{
+	ID3D11Buffer* debugbuf = nullptr;
+
+	D3D11_BUFFER_DESC desc = {};
+	pBuffer->GetDesc(&desc);
+
+	//下記変更点
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	desc.Usage = D3D11_USAGE_STAGING;
+	desc.BindFlags = 0;
+	desc.MiscFlags = 0;
+	if (SUCCEEDED(g_graphicsDevice->g_cpDevice.Get()->CreateBuffer(&desc, nullptr, &debugbuf)))
+		g_graphicsDevice->g_cpContext.Get()->CopyResource(debugbuf, pBuffer);
+	return debugbuf;
 }
 
 /*

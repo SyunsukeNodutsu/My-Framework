@@ -81,7 +81,7 @@ void SpriteShader::Begin(ID3D11DeviceContext* pd3dContext, bool linear, bool dis
 	pd3dContext->RSGetViewports(&pNumVierports, &vp);
 
 	RENDERER.Getcb9().Work().m_proj_matrix = DirectX::XMMatrixOrthographicLH(vp.Width, vp.Height, 0, 1);
-	RENDERER.Getcb9().Write(pd3dContext);
+	RENDERER.Getcb9().Write();
 
 	//使用するステートをセット
 	
@@ -112,7 +112,7 @@ void SpriteShader::End(ID3D11DeviceContext* pd3dContext)
 	m_isBegin = false;
 
 	RENDERER.Getcb9().Work().m_proj_matrix = m_prevProjMat;
-	RENDERER.Getcb9().Write(pd3dContext);
+	RENDERER.Getcb9().Write();
 
 	RENDERER.SetDepthStencil(true, true);
 	RENDERER.SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
@@ -129,14 +129,14 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 	if (texture == nullptr) return;
 
 	RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
-	RENDERER.Getcb8().Write(g_graphicsDevice->g_cpContext.Get());
+	RENDERER.Getcb8().Write();
 
 	//テクスチャセット
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, texture->SRVAddress());
 
 	//色
 	if (color) m_cb4Sprite.Work().m_color = color;
-	m_cb4Sprite.Write(g_graphicsDevice->g_cpContext.Get());
+	m_cb4Sprite.Write();
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	texture->GetResource()->GetDesc(&desc);
@@ -182,14 +182,14 @@ void SpriteShader::DrawTexture(const Texture* texture, ID3D11DeviceContext* pd3d
 	float2 position = float2::Zero;
 
 	RENDERER.Getcb8().Work().m_world_matrix = worldMatrix;
-	RENDERER.Getcb8().Write(pd3dContext);
+	RENDERER.Getcb8().Write();
 
 	//テクスチャセット
 	pd3dContext->PSSetShaderResources(0, 1, texture->SRVAddress());
 
 	//色
 	if (color) m_cb4Sprite.Work().m_color = color;
-	m_cb4Sprite.Write(pd3dContext);
+	m_cb4Sprite.Write();
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	texture->GetResource()->GetDesc(&desc);
