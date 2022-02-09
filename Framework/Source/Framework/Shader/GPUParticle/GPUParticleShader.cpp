@@ -1,14 +1,22 @@
 ﻿#include "GPUParticleShader.h"
 
+const int GPUParticleShader::PARTICLE_MAX = 256000 * 2;
+
 //-----------------------------------------------------------------------------
 //コンストラクタ
 //-----------------------------------------------------------------------------
 GPUParticleShader::GPUParticleShader()
-	: mParticleAmount(128000 * 1)
+	: m_pParticle(nullptr)
 	, m_cpCS(nullptr)
 	, m_spVertexBuffer(nullptr)
+	, m_spInputBuffer(nullptr)
+	, m_spResultBuffer(nullptr)
+	, m_spPositionBuffer(nullptr)
+	, m_cpInputSRV(nullptr)
+	, m_cpPositionSRV(nullptr)
+	, m_cpResultUAV(nullptr)
 	, m_spTexture(nullptr)
-	, m_billboard(true)
+	, m_billboard(false)
 	, m_cullNone(true)
 {
 }
@@ -18,7 +26,7 @@ GPUParticleShader::GPUParticleShader()
 //-----------------------------------------------------------------------------
 GPUParticleShader::~GPUParticleShader()
 {
-	delete[] mpParticle;
+	delete[] m_pParticle;
 }
 
 //-----------------------------------------------------------------------------
@@ -93,22 +101,22 @@ bool GPUParticleShader::Initialize()
 
 		//シミュレーション入力データ用バッファーの作成
 		m_spInputBuffer = std::make_shared<Buffer>();
-		m_spInputBuffer->CreateStructured(sizeof(ParticleCompute), (UINT)mParticleAmount, false);
+		m_spInputBuffer->CreateStructured(sizeof(ParticleCompute), (UINT)PARTICLE_MAX, false);
 
 		//計算シェーダからの結果受け取り用バッファーの作成
 		m_spResultBuffer = std::make_shared<Buffer>();
-		m_spResultBuffer->CreateStructured(sizeof(ParticleCompute), (UINT)mParticleAmount, true);
+		m_spResultBuffer->CreateStructured(sizeof(ParticleCompute), (UINT)PARTICLE_MAX, true);
 
 		//計算結果から座標を取得してそれを入力用バッファーの作成
 		m_spPositionBuffer = std::make_shared<Buffer>();
-		m_spPositionBuffer->CreateStructured(sizeof(float3), (UINT)mParticleAmount, false);
+		m_spPositionBuffer->CreateStructured(sizeof(float3), (UINT)PARTICLE_MAX, false);
 
 		//SRVの生成
-		hr = g_graphicsDevice->CreateBufferSRV(m_spInputBuffer->Get(), &mpParticleSRV);
-		hr = g_graphicsDevice->CreateBufferSRV(m_spPositionBuffer->Get(), &mpPositionSRV);
+		hr = g_graphicsDevice->CreateBufferSRV(m_spInputBuffer->Get(), m_cpInputSRV.GetAddressOf());
+		hr = g_graphicsDevice->CreateBufferSRV(m_spPositionBuffer->Get(), m_cpPositionSRV.GetAddressOf());
 
 		//UAVの生成
-		hr = g_graphicsDevice->CreateBufferUAV(m_spResultBuffer->Get(), &mpResultUAV);
+		hr = g_graphicsDevice->CreateBufferUAV(m_spResultBuffer->Get(), m_cpResultUAV.GetAddressOf());
 	}
 
 	//パーティクル構造体の初期化
@@ -122,22 +130,23 @@ bool GPUParticleShader::Initialize()
 		std::uniform_real_distribution<float> dist(-4.0f, 4.0f);
 
 		//particle生成
-		mpParticle = new ParticleCompute[mParticleAmount];
-		for (int i = 0; i < mParticleAmount; i++)
+		m_pParticle = new ParticleCompute[PARTICLE_MAX];
+		for (int i = 0; i < PARTICLE_MAX; i++)
 		{
 			float x = dist(engine);
 			float y = dist(engine);
 			float z = dist(engine);
 
-			mpParticle[i].position = float3(0, 0, 0);
-			mpParticle[i].velocity = float3(x, y, z);
-			mpParticle[i].lifeSpan = 30.0f;
+			m_pParticle[i].position = float3(0, 0, 0);
+			m_pParticle[i].velocity = float3(x, y, z);
+			m_pParticle[i].lifeSpan = 30.0f;
 		}
 	}
 
 	//テクスチャ
 	m_spTexture = std::make_shared<Texture>();
-	m_spTexture->Create("Resource/Texture/sample.jpg");
+	//m_spTexture->Create("Resource/Texture/sample.jpg");
+	m_spTexture = g_graphicsDevice->GetWhiteTex();
 
 	return true;
 }
@@ -148,14 +157,14 @@ bool GPUParticleShader::Initialize()
 void GPUParticleShader::Update()
 {
 	//粒子シミュレーション用データの書き込み
-	m_spInputBuffer->WriteData(mpParticle, sizeof(ParticleCompute) * mParticleAmount);
+	m_spInputBuffer->WriteData(m_pParticle, sizeof(ParticleCompute) * PARTICLE_MAX);
 
 	//コンピュートシェーダー実行/粒子のシュミレーション
 	{
-		ID3D11ShaderResourceView* pSRVs[1] = { mpParticleSRV };
+		ID3D11ShaderResourceView* pSRVs[1] = { m_cpInputSRV.Get() };
 		g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(0, 1, pSRVs);
 		g_graphicsDevice->g_cpContext.Get()->CSSetShader(m_cpCS.Get(), 0, 0);
-		g_graphicsDevice->g_cpContext.Get()->CSSetUnorderedAccessViews(0, 1, &mpResultUAV, 0);
+		g_graphicsDevice->g_cpContext.Get()->CSSetUnorderedAccessViews(0, 1, m_cpResultUAV.GetAddressOf(), 0);
 		g_graphicsDevice->g_cpContext.Get()->Dispatch(256, 1, 1);//X次元256でディスパッチ
 	}
 
@@ -167,8 +176,8 @@ void GPUParticleShader::Update()
 		D3D11_MAPPED_SUBRESOURCE pData;
 		if (SUCCEEDED(g_graphicsDevice->g_cpContext.Get()->Map(pResultBufCpy, 0, D3D11_MAP_READ, 0, &pData)))
 		{
-			size_t size = sizeof(ParticleCompute) * mParticleAmount;
-			memcpy_s(mpParticle, size, pData.pData, size);
+			size_t size = sizeof(ParticleCompute) * PARTICLE_MAX;
+			memcpy_s(m_pParticle, size, pData.pData, size);
 			g_graphicsDevice->g_cpContext.Get()->Unmap(pResultBufCpy, 0);
 			pResultBufCpy->Release();
 		}
@@ -178,11 +187,11 @@ void GPUParticleShader::Update()
 	{
 		//構造体の特定メンバ(position)のみのアドレス配列作成
 		//TODO: 粒子構造体で作成してもいいかも
-		float3* posPtr = new float3[mParticleAmount];
-		for (int v = 0; v < mParticleAmount; v++)
-			posPtr[v] = mpParticle[v].position;
+		float3* posPtr = new float3[PARTICLE_MAX];
+		for (int v = 0; v < PARTICLE_MAX; v++)
+			posPtr[v] = m_pParticle[v].position;
 
-		m_spPositionBuffer->WriteData(posPtr, sizeof(float3) * mParticleAmount);
+		m_spPositionBuffer->WriteData(posPtr, sizeof(float3) * PARTICLE_MAX);
 
 		delete[] posPtr;
 	}
@@ -211,7 +220,7 @@ void GPUParticleShader::Draw()
 	{
 		RENDERER.SetResources(m_spTexture.get(), 0);
 	}
-	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(2, 1, &mpPositionSRV);
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(2, 1, m_cpPositionSRV.GetAddressOf());
 
 	//シェーダー設定
 	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
@@ -221,7 +230,7 @@ void GPUParticleShader::Draw()
 
 	//インスタンシング描画
 	if (m_cullNone) RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
-	g_graphicsDevice->g_cpContext.Get()->DrawInstanced(4, mParticleAmount, 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->DrawInstanced(4, PARTICLE_MAX, 0, 0);
 	if (m_cullNone) RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
 
 	//nullresourceの設定

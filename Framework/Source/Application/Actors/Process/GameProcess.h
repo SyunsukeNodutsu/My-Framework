@@ -16,6 +16,9 @@ public:
 	//@brief 初期化
 	void Initialize() override;
 
+	//
+	void Draw(float) override;
+
 private:
 
 };

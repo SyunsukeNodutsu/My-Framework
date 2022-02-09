@@ -123,7 +123,7 @@ bool Application::Initialize(int width, int height)
 
 	//オーディオデバイス
 	g_audioDevice->Initialize();
-	g_audioDevice->SetMasterVolume(0.0f);
+	g_audioDevice->SetMasterVolume(0.2f);
 	
 	//入力デバイス
 	g_inputDevice->Initialize(g_window->GetWndHandle(), InputMode::eRawInput);
@@ -288,7 +288,7 @@ void Application::Execute()
 				timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
 				if (timecount >= 3.0f)
 				{
-					const auto& pos = float3(0, 4, 0);
+					const auto& pos = float3(20, 4, 0);
 					g_effectDevice->Play(u"Resource/Effect/electric_dust.efk", pos);
 
 					timecount = 0.0f;

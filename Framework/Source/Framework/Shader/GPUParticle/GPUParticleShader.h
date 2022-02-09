@@ -2,6 +2,7 @@
 //File: GPUParticleShader.h
 //
 //GPUによる粒子計算
+//とりあえず一回きりの発生
 //-----------------------------------------------------------------------------
 #pragma once
 
@@ -50,27 +51,26 @@ public:
 	void Emit();
 	void End();
 
+	static const int PARTICLE_MAX;//粒子の数
+
 private:
 
-	ParticleCompute* mpParticle;
+	ParticleCompute* m_pParticle;//粒子
 	ComPtr<ID3D11ComputeShader>	m_cpCS;
 
 	//バッファー
 	std::shared_ptr<Buffer> m_spVertexBuffer;
-	std::shared_ptr<Buffer> m_spInputBuffer;
-	std::shared_ptr<Buffer> m_spResultBuffer;
+	std::shared_ptr<Buffer> m_spInputBuffer;//シミュレーション準備データ(入力SRV)
+	std::shared_ptr<Buffer> m_spResultBuffer;//シミュレーション結果データ(出力UAV)
 	std::shared_ptr<Buffer> m_spPositionBuffer;
 
-	// SRV
-	ID3D11ShaderResourceView* mpParticleSRV = nullptr;
-	ID3D11ShaderResourceView* mpPositionSRV = nullptr;
+	//各ビュー
+	ComPtr<ID3D11ShaderResourceView> m_cpInputSRV;
+	ComPtr<ID3D11ShaderResourceView> m_cpPositionSRV;
+	ComPtr<ID3D11UnorderedAccessView> m_cpResultUAV;
 
-	// UAV
-	ID3D11UnorderedAccessView* mpResultUAV = nullptr;
-
-	std::shared_ptr<Texture> m_spTexture;
+	std::shared_ptr<Texture> m_spTexture;//テクスチャ
 	bool m_billboard;//ビルボード表示
 	bool m_cullNone;//背面カリングOFF
-	int mParticleAmount;
 
 };

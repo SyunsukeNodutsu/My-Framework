@@ -34,5 +34,7 @@ VertexOutput main(
     
     ret.color = color;
     
+    ret.color.xyz = Position[InstanceID];
+    
 	return ret;
 }

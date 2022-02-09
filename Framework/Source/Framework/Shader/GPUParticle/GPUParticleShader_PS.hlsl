@@ -18,6 +18,5 @@ float4 main( VertexOutput In ) : SV_TARGET
 {
     if (In.color.a <= 0.0f) discard;
     
-    float4 albedo = g_texture.Sample(g_samplerState, In.uv) * In.color;
-    return albedo;
+    return g_texture.Sample(g_samplerState, In.uv) * In.color;
 }

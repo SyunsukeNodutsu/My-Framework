@@ -141,6 +141,11 @@ void GameSystem::Draw()
 
 	for (auto& object : m_spActorList)
 		object->Draw(deltaTime);
+
+	RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
+	RENDERER.Getcb8().Write();
+	SHADER.GetGPUParticleShader().Update();
+	SHADER.GetGPUParticleShader().Draw();
 }
 
 //-----------------------------------------------------------------------------
@@ -195,12 +200,6 @@ void GameSystem::Draw2D()
 		}
 
 		SHADER.GetSpriteShader().End(ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get());
-	}
-
-	if (IsLoadingDone())
-	{
-		SHADER.GetGPUParticleShader().Update();
-		SHADER.GetGPUParticleShader().Draw();
 	}
 }
 

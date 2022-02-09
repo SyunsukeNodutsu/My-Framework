@@ -11,8 +11,15 @@ EditorCamera::EditorCamera()
 	, m_mousePosNow(float2::Zero)
 {
 	g_priority = FLT_MIN;
-	m_position = GetCameraMatrix().Translation();
 	m_transform = std::make_shared<Transform>();
+
+	float3 pos = float3(-40, 20, -40);
+	SetCameraMatrix(mfloat4x4::CreateTranslation(pos));
+	m_position = GetCameraMatrix().Translation();
+
+	float3 rot = float3(20, 45, 0);
+	m_transform->SetAngle(rot);
+	m_rotation = rot;
 }
 
 //-----------------------------------------------------------------------------

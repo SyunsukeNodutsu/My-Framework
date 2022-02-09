@@ -9,7 +9,7 @@ Human::Human()
 	: m_spCamera(nullptr)
 	, m_animator()
 	, m_rotation(float3::Zero)
-	, m_zoom(2.0f)
+	, m_zoom(10.0f)
 {
 }
 
