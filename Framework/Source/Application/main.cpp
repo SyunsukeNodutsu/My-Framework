@@ -283,7 +283,7 @@ void Application::Execute()
 			g_gameSystem->Draw();
 
 			//エフェクトテスト
-			{
+			/*{
 				static float timecount = 0.0f;
 				timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
 				if (timecount >= 3.0f)
@@ -293,7 +293,7 @@ void Application::Execute()
 
 					timecount = 0.0f;
 				}
-			}
+			}*/
 
 			//エフェクト
 			g_effectDevice->Draw();

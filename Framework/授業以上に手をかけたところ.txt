@@ -1,0 +1,26 @@
+■手をかけたところ
+・ImGui導入(dockingブランチ)
+・リソース管理を効率化
+・新規シェーダー(GPUパーティクルシェーダー)実装
+・DeltaTimeとTotalTimeを時間用定数バッファとして実装
+・パフォーマンスカウンタを使用したFPS計測タイマ実装
+・学校のフレームワークはシングルトンを多用しすぎと思ったので新しく設計
+・非同期コンピュートによるパーティクルシミュレーションの実装(GPUパーティクル)
+・Microsoftのサンプルを参考にしてX2AudioとX3DAudioを一から実装
+・左右に音を振り分けるパン機能実装
+・サウンドのピークメータ(瞬間最大値)とRMSメータ(平均値)をImGuiに表示
+・RawInputAPIを使用した入力デバイスの実装
+・Effekseer実装
+・x64とx86のどちらでもビルドが通るように条件コンパイルや環境変数でライブラリリンクを再実装
+・ディザリング、タンジェントスペースの法線、TrowBridge-Reitz(GGX) NDF(夏休みのシェーダーセミナー)
+・resourceの非同期読み込みと読み込み中のローディング画面実装
+・非同期読み込みの実装にあたって、Contextを使用しないようにDirectXTexの実装(スレッドセーフ性の担保)
+
+※授業だとDirectXToolKitを使用して読み込みをしていましたが
+ ミップマップを作成する際にコンテキストが必要なのでスレッドセーフではありませんでした
+ 第二引数のd3dContextを渡すとMipMapが生成されます
+HRESULT CreateWICTextureFromFile( ID3D11Device* d3dDevice,
+   ID3D11DeviceContext* d3dContext,
+   const wchar_t* szFileName,
+   ID3D11Resource** texture, ID3D11ShaderResourceView** textureView,
+   size_t maxsize = 0 );

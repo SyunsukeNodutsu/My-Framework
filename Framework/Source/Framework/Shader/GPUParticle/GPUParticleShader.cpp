@@ -84,7 +84,7 @@ bool GPUParticleShader::Initialize()
 	//バッファー/ビューの作成
 	{
 		//頂点定義
-		static constexpr cfloat4x4 color = cfloat4x4(1, 1, 1, 1.0f);
+		static constexpr cfloat4x4 color = cfloat4x4(1, 1, 1, 1);
 		static constexpr float rectSize = 0.2f;
 		Vertex vertices[]{
 			{ float3(-rectSize, -rectSize,  0.0f), float2(0, 1), color },
@@ -94,10 +94,9 @@ bool GPUParticleShader::Initialize()
 		};
 
 		//頂点バッファーの作成
-		const int size = sizeof(Vertex) * 4;
 		m_spVertexBuffer = std::make_shared<Buffer>();
-		m_spVertexBuffer->Create(D3D11_BIND_VERTEX_BUFFER, size, D3D11_USAGE_DYNAMIC, nullptr);
-		m_spVertexBuffer->WriteData(&vertices[0], size);
+		m_spVertexBuffer->Create(D3D11_BIND_VERTEX_BUFFER, sizeof(Vertex) * 4, D3D11_USAGE_DYNAMIC, nullptr);
+		m_spVertexBuffer->WriteData(&vertices[0], sizeof(Vertex) * 4);
 
 		//シミュレーション入力データ用バッファーの作成
 		m_spInputBuffer = std::make_shared<Buffer>();
@@ -145,7 +144,7 @@ bool GPUParticleShader::Initialize()
 
 	//テクスチャ
 	m_spTexture = std::make_shared<Texture>();
-	//m_spTexture->Create("Resource/Texture/sample.jpg");
+	//m_spTexture->Create("Resource/Texture/test.png");
 	m_spTexture = g_graphicsDevice->GetWhiteTex();
 
 	return true;
@@ -160,6 +159,7 @@ void GPUParticleShader::Update()
 	m_spInputBuffer->WriteData(m_pParticle, sizeof(ParticleCompute) * PARTICLE_MAX);
 
 	//コンピュートシェーダー実行/粒子のシュミレーション
+	//TODO: エミッターを複数作成した場合に エミッター毎にDispatchするのはよくない
 	{
 		ID3D11ShaderResourceView* pSRVs[1] = { m_cpInputSRV.Get() };
 		g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(0, 1, pSRVs);
@@ -228,10 +228,16 @@ void GPUParticleShader::Draw()
 	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
 	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
 
+	if (m_cullNone) {
+		RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
+	}
+
 	//インスタンシング描画
-	if (m_cullNone) RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
 	g_graphicsDevice->g_cpContext.Get()->DrawInstanced(4, PARTICLE_MAX, 0, 0);
-	if (m_cullNone) RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
+
+	if (m_cullNone) {
+		RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
+	}
 
 	//nullresourceの設定
 	ID3D11ShaderResourceView* nullSRVs[1] = { nullptr };

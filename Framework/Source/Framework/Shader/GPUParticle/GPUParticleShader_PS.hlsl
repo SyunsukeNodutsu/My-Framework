@@ -18,5 +18,7 @@ float4 main( VertexOutput In ) : SV_TARGET
 {
     if (In.color.a <= 0.0f) discard;
     
+    In.color.xyz *= cos(g_total_time);
+    
     return g_texture.Sample(g_samplerState, In.uv) * In.color;
 }

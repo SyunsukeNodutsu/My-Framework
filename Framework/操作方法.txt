@@ -1,0 +1,11 @@
+・起動するとタイトルなのでクリックしてください
+・読み込み後はWASDとマウス操作で人型のロボットが動きます。マウスホイールでカメラ距離を変更できます。
+・Escキーを押すとEditorカメラに切り替わり、マウスドラッグとWASDでカメラを動かせます。
+
+GPUパーティクルの数が多すぎてアプリが重たい場合は
+Framework\Source\Framework\Shader\GPUParticle\GPUParticleShader.cpp
+"const int GPUParticleShader::PARTICLE_MAX = 256000 * 2;"の部分を変更してください
+
+また、C++の一様分布で移動量を設定しているのですが
+移動量がfloat3(0, 0, 0)の粒子が一定数存在してしまい、
+ワールド座標でfloat3(0, 0, 0)にカメラを近づけるとものすごく重たくなるので注意してください(ごめんなさい)
