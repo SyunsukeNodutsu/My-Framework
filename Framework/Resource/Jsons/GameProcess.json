@@ -37,14 +37,6 @@
       "scaling": [ 1, 1, 1 ]
     },
     {
-      "class_name": "CesiumMan",
-      "model_filepath": "Resource/Model/CesiumMan/CesiumMan3.gltf",
-      "name": "CesiumMan3",
-      "position": [ 2, 0, 0 ],
-      "rotation": [ 0, 0, 0 ],
-      "scaling": [ 1, 1, 1 ]
-    },
-    {
       "class_name": "Tree",
       "model_filepath": "Resource/Model/Tree/02/Tree02.gltf",
       "name": "Tree_01",

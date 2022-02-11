@@ -14,16 +14,27 @@ class GPUParticleShader : public Shader
 	{
 		float3 position;
 		float2 uv;
-		float4 color;
 	};
 
 	//粒子単位 定数バッファ(SRV)
 	struct ParticleCompute
 	{
 		float3 position;
-		float tmp;
+		float lifeSpanMax;
 		float3 velocity;
 		float lifeSpan;
+		float4 color;
+	};
+
+public:
+
+	//発生情報
+	struct EmitData
+	{
+		float3 maxPosition; float3 minPosition;
+		float3 maxVelocity; float3 minVelocity;
+		float maxLifeSpan; float minLifeSpan;
+		float4 color;
 	};
 
 public:
@@ -43,17 +54,18 @@ public:
 	//@brief 描画
 	void Draw();
 
-	//@テクスチャ設定
-	//@param pTexture 設定するテクスチャ
-	void SetTexture(std::shared_ptr<Texture> spTexture) { m_spTexture = spTexture; }
+	//@brief 発生 ※とりあえず最低限の設定 TODO: 設定用に構造体を用意
+	//@param particleMax 発生させる粒子の数
+	//@param data 初期化データ
+	//@param spTexture 設定するテクスチャ(nullptrで白テクスチャ使用)
+	void Emit(UINT particleMax, EmitData data, std::string_view textureFilepath = "");
 
-	//TODO: エミッター作成
-	void Emit();
-	void End();
-
-	static const int PARTICLE_MAX;//粒子の数
+	//@brief 生存期間の計算を待たずに終了させる
+	void End(/*終了モード アルファ値を減少させながら とか*/);
 
 private:
+
+	int m_particleMax;//粒子の数
 
 	ParticleCompute* m_pParticle;//粒子
 	ComPtr<ID3D11ComputeShader>	m_cpCS;
@@ -72,5 +84,6 @@ private:
 	std::shared_ptr<Texture> m_spTexture;//テクスチャ
 	bool m_billboard;//ビルボード表示
 	bool m_cullNone;//背面カリングOFF
+	float m_lifeSpan;
 
 };

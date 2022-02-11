@@ -16,9 +16,10 @@ SamplerState g_samplerState : register(s0);
 //-----------------------------------------------------------------------------
 float4 main( VertexOutput In ) : SV_TARGET
 {
-    if (In.color.a <= 0.0f) discard;
+    if (In.color.a <= 0) discard;
     
-    In.color.xyz *= cos(g_total_time);
+    float4 texcolor = g_texture.Sample(g_samplerState, In.uv);
+    if (texcolor.a <= 0) discard;
     
-    return g_texture.Sample(g_samplerState, In.uv) * In.color;
+    return texcolor * In.color;
 }

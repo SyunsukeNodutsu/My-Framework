@@ -122,16 +122,18 @@ float4 main( VertexOutput In ) : SV_TARGET
     // 材質色
     //------------------------------------------
     
+    //テクスチャ
+    float4 textureColor = g_baseColorTexture.Sample(g_samplerState, In.uv);
+    if (textureColor.a <= 0) discard;
+    
     // 材質色
-    float4 albedo = g_baseColorTexture.Sample(g_samplerState, In.uv) * g_material.m_baseColor * In.color;
+    float4 albedo = textureColor * g_material.m_baseColor * In.color;
+    if (albedo.a <= 0.0f) discard;
     
     // メタリック/ラフネス テクスチャ
     float4 colorMR   = g_mrTexture.Sample(g_samplerState, In.uv);
     float metallic   = colorMR.b * g_material.m_metallic;   // 金属性
     float roughuness = colorMR.g * g_material.m_roughness;  // 粗さ
-    
-    // アルファテスト
-    if (albedo.a <= 0.0f) discard;
     
     //==========================================
 	//

@@ -8,9 +8,10 @@
 struct ParticleCompute
 {
     float3 pos;
-    float tmp;
+    float lifeSpanMax;
     float3 vel;
     float life;
+    float4 color;
 };
 
 //頂点シェーダが返す値
