@@ -1,7 +1,7 @@
 ﻿//-----------------------------------------------------------------------------
-// File: GameProcess.h
+//File: GameProcess.h
 //
-// ゲームプロセス管理
+//ゲームプロセス管理
 //-----------------------------------------------------------------------------
 #pragma once
 
@@ -16,9 +16,11 @@ public:
 	//@brief 初期化
 	void Initialize() override;
 
-	//
-	void Draw(float) override;
+	//@brief 更新
+	void Update(float) override;
 
 private:
+
+	GPUParticleShader::EmitData m_emitData;
 
 };

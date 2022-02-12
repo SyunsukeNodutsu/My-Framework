@@ -17,6 +17,9 @@ GPUParticleShader::GPUParticleShader()
 	, m_spTexture(nullptr)
 	, m_billboard(false)
 	, m_cullNone(true)
+	, m_lifeSpan(0)
+	, isGenerated(false)
+	, isGeneratedMutex()
 {
 }
 
@@ -25,11 +28,7 @@ GPUParticleShader::GPUParticleShader()
 //-----------------------------------------------------------------------------
 GPUParticleShader::~GPUParticleShader()
 {
-	if (m_pParticle != nullptr)
-	{
-		delete[] m_pParticle;
-		m_pParticle = nullptr;
-	}
+	End();
 }
 
 //-----------------------------------------------------------------------------
@@ -41,7 +40,7 @@ bool GPUParticleShader::Initialize()
 
 	//頂点シェーダ/入力レイアウト
 	{
-#include "GPUParticleShader_VS.shaderinc"
+		#include "GPUParticleShader_VS.shaderinc"
 
 		hr = g_graphicsDevice->g_cpDevice.Get()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpVS.GetAddressOf());
 		if (FAILED(hr)) {
@@ -63,7 +62,7 @@ bool GPUParticleShader::Initialize()
 
 	//ピクセルシェーダ
 	{
-#include "GPUParticleShader_PS.shaderinc"
+		#include "GPUParticleShader_PS.shaderinc"
 
 		hr = g_graphicsDevice->g_cpDevice.Get()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpPS.GetAddressOf());
 		if (FAILED(hr)) {
@@ -74,7 +73,7 @@ bool GPUParticleShader::Initialize()
 
 	//計算シェーダ
 	{
-#include "GPUParticleShader_CS.shaderinc"
+		#include "GPUParticleShader_CS.shaderinc"
 
 		hr = g_graphicsDevice->g_cpDevice.Get()->CreateComputeShader(compiledBuffer, sizeof(compiledBuffer), nullptr, m_cpCS.GetAddressOf());
 		if (FAILED(hr)) {
@@ -105,7 +104,7 @@ bool GPUParticleShader::Initialize()
 //-----------------------------------------------------------------------------
 void GPUParticleShader::Update()
 {
-	if (m_pParticle == nullptr) return;
+	if (!Done()) return;
 
 	//粒子シミュレーション用データの書き込み
 	m_spInputBuffer->WriteData(m_pParticle, sizeof(ParticleCompute) * m_particleMax);
@@ -156,7 +155,7 @@ void GPUParticleShader::Update()
 //-----------------------------------------------------------------------------
 void GPUParticleShader::Draw()
 {
-	if (m_pParticle == nullptr) return;
+	if (!Done()) return;
 
 	//バッファセット
 	constexpr static UINT strides = sizeof(Vertex);
@@ -201,13 +200,14 @@ void GPUParticleShader::Draw()
 //-----------------------------------------------------------------------------
 //発生
 //-----------------------------------------------------------------------------
-void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view textureFilepath)
+void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view textureFilepath, bool flip)
 {
 	if (particleMax == 0) return;
 
 	m_particleMax = particleMax;
 	m_lifeSpan = data.maxLifeSpan;
 
+	//ここはスレッドセーフじゃない
 	{
 		//シミュレーション入力データ用バッファーの作成
 		m_spInputBuffer = std::make_shared<Buffer>();
@@ -229,36 +229,6 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 		g_graphicsDevice->CreateBufferUAV(m_spResultBuffer->Get(), m_cpResultUAV.GetAddressOf());
 	}
 
-	//擬似乱数生成器の初期化
-	std::random_device seed_gen;
-	std::mt19937 engine(seed_gen());
-
-	//一様実数分布
-	//TOOD: コストがバカ高そう...発生に関しても計算シェーダーでよさそう
-	//TOOD: 最小値が最大値を上回ってないかの確認(expression invalid min max arguments for uniform_real)
-	std::uniform_real_distribution<float> distr_pos_x(data.minPosition.x, data.maxPosition.x);
-	std::uniform_real_distribution<float> distr_pos_y(data.minPosition.y, data.maxPosition.y);
-	std::uniform_real_distribution<float> distr_pos_z(data.minPosition.z, data.maxPosition.z);
-
-	std::uniform_real_distribution<float> distr_vel_x(data.minVelocity.x, data.maxVelocity.x);
-	std::uniform_real_distribution<float> distr_vel_y(data.minVelocity.y, data.maxVelocity.y);
-	std::uniform_real_distribution<float> distr_vel_z(data.minVelocity.z, data.maxVelocity.z);
-
-	std::uniform_real_distribution<float> distr_life(data.minLifeSpan, data.maxLifeSpan);
-
-	std::uniform_real_distribution<float> distr_col(0.0f, 1.0f);
-
-	//粒子生成
-	m_pParticle = new ParticleCompute[m_particleMax];
-	for (int i = 0; i < m_particleMax; i++)
-	{
-		m_pParticle[i].position = float3(distr_pos_x(engine), distr_pos_y(engine), distr_pos_z(engine));
-		m_pParticle[i].velocity = float3(distr_vel_x(engine), distr_vel_y(engine), distr_vel_z(engine));
-		m_pParticle[i].lifeSpan = distr_life(engine);
-		m_pParticle[i].color = float4(distr_col(engine), distr_col(engine), distr_col(engine), 1);
-		m_pParticle[i].lifeSpanMax = m_pParticle[i].lifeSpan;
-	}
-
 	//テクスチャ
 	m_spTexture = std::make_shared<Texture>();
 	if (textureFilepath.empty()) {
@@ -268,6 +238,48 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 	else {
 		m_spTexture->Create(textureFilepath.data());
 	}
+
+	{
+		std::lock_guard<std::mutex> lock(isGeneratedMutex);
+		isGenerated = false;
+	}
+
+	std::thread([=]
+		{
+			//擬似乱数生成器の初期化
+			std::random_device seed_gen;
+			std::mt19937 engine(seed_gen());
+
+			//一様実数分布
+			//TOOD: コストがバカ高そう...発生に関しても計算シェーダーでよさそう
+			//TOOD: 最小値が最大値を上回ってないかの確認(expression invalid min max arguments for uniform_real)
+			std::uniform_real_distribution<float> distr_pos_x(data.minPosition.x, data.maxPosition.x);
+			std::uniform_real_distribution<float> distr_pos_y(data.minPosition.y, data.maxPosition.y);
+			std::uniform_real_distribution<float> distr_pos_z(data.minPosition.z, data.maxPosition.z);
+
+			std::uniform_real_distribution<float> distr_vel_x(data.minVelocity.x, data.maxVelocity.x);
+			std::uniform_real_distribution<float> distr_vel_y(data.minVelocity.y, data.maxVelocity.y);
+			std::uniform_real_distribution<float> distr_vel_z(data.minVelocity.z, data.maxVelocity.z);
+
+			std::uniform_real_distribution<float> distr_life(data.minLifeSpan, data.maxLifeSpan);
+
+			std::uniform_real_distribution<float> distr_col(0.0f, 1.0f);
+
+			//粒子生成
+			m_pParticle = new ParticleCompute[m_particleMax];
+			for (int i = 0; i < m_particleMax; i++)
+			{
+				m_pParticle[i].position = float3(distr_pos_x(engine), distr_pos_y(engine), distr_pos_z(engine));
+				m_pParticle[i].velocity = float3(distr_vel_x(engine), distr_vel_y(engine), distr_vel_z(engine));
+				m_pParticle[i].lifeSpan = distr_life(engine);
+				m_pParticle[i].color = float4(distr_col(engine), distr_col(engine), distr_col(engine), 1);
+				m_pParticle[i].lifeSpanMax = m_pParticle[i].lifeSpan;
+			}
+
+			std::lock_guard<std::mutex> lock(isGeneratedMutex);
+			isGenerated = true;
+		}
+	).detach();
 }
 
 //-----------------------------------------------------------------------------
@@ -275,9 +287,15 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 //-----------------------------------------------------------------------------
 void GPUParticleShader::End()
 {
-	if (m_pParticle != nullptr)
+	for (;;)
 	{
-		delete[] m_pParticle;
-		m_pParticle = nullptr;
+		if (!Done()) continue;
+
+		if (m_pParticle != nullptr)
+		{
+			delete[] m_pParticle;
+			m_pParticle = nullptr;
+			break;
+		}
 	}
 }

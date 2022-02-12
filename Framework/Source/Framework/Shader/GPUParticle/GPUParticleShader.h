@@ -9,7 +9,8 @@
 //非同期コンピュート GPUによるparticle
 class GPUParticleShader : public Shader
 {
-	//1頂点
+#pragma region struct private
+	//頂点単位
 	struct Vertex
 	{
 		float3 position;
@@ -25,6 +26,7 @@ class GPUParticleShader : public Shader
 		float lifeSpan;
 		float4 color;
 	};
+#pragma endregion
 
 public:
 
@@ -54,14 +56,18 @@ public:
 	//@brief 描画
 	void Draw();
 
-	//@brief 発生 ※とりあえず最低限の設定 TODO: 設定用に構造体を用意
+	//@brief 発生
 	//@param particleMax 発生させる粒子の数
 	//@param data 初期化データ
 	//@param spTexture 設定するテクスチャ(nullptrで白テクスチャ使用)
-	void Emit(UINT particleMax, EmitData data, std::string_view textureFilepath = "");
+	//@param flip 非同期ではなく現在のスレッドで即座に発生させるかどうか ※TODO: 実装中
+	void Emit(UINT particleMax, EmitData data, std::string_view textureFilepath = "", bool flip = false);
 
 	//@brief 生存期間の計算を待たずに終了させる
 	void End(/*終了モード アルファ値を減少させながら とか*/);
+
+	//@brief 終了しているかどうかを返す
+	bool IsEnd() { return (m_pParticle == nullptr && Done()); }
 
 private:
 
@@ -85,5 +91,16 @@ private:
 	bool m_billboard;//ビルボード表示
 	bool m_cullNone;//背面カリングOFF
 	float m_lifeSpan;
+
+	//非同期生成用
+	bool isGenerated;//生成完了
+	std::mutex isGeneratedMutex;
+
+private:
+
+	//
+	bool Done() {
+		std::lock_guard<std::mutex> lock(isGeneratedMutex); return isGenerated;
+	}
 
 };
