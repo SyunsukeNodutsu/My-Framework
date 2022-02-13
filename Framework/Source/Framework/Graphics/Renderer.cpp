@@ -87,17 +87,18 @@ void Renderer::SetDefaultState()
 //-----------------------------------------------------------------------------
 // シェーダーリソースをバインド
 //-----------------------------------------------------------------------------
-void Renderer::SetResources(Texture* texture, int slot)
+void Renderer::SetResources(ID3D11ShaderResourceView* resource, int slot)
 {
 	if (!g_graphicsDevice) return;
 	if (!g_graphicsDevice->g_cpContext) return;
-	if (!texture) return;
+	if (!resource) return;
 
 	if (slot > D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT && slot < 0) return;
 
-	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
-	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
-	g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(slot, 1, texture->SRVAddress());
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, &resource);
+	g_graphicsDevice->g_cpContext.Get()->GSSetShaderResources(slot, 1, &resource);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, &resource);
+	g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(slot, 1, &resource);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +113,9 @@ void Renderer::SetNullResources(int slot)
 
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, &nullSRV);
+	g_graphicsDevice->g_cpContext.Get()->GSSetShaderResources(slot, 1, &nullSRV);
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, &nullSRV);
+	g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(slot, 1, &nullSRV);
 }
 
 //-----------------------------------------------------------------------------

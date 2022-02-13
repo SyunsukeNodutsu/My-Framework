@@ -24,17 +24,19 @@ void GameProcess::Initialize()
 		//sound->SetFilter(XAUDIO2_FILTER_TYPE::LowPassFilter, 0.2f);
 	}
 
-	m_emitData.minPosition = float3(-10.0f, 20.0f, -10.0f);
-	m_emitData.maxPosition = float3(10.0f, 40.0f, 10.0f);
+	auto& particleSystem = g_application->g_gameSystem->g_particleSystem;
+	
+	m_deta.minPosition = float3(-10.0f, 20.0f, -10.0f);
+	m_deta.maxPosition = float3(10.0f, 40.0f, 10.0f);
 
-	m_emitData.minVelocity = float3(-2.0f, -2.0f, -2.0f);
-	m_emitData.maxVelocity = float3(2.0f, 2.0f, 2.0f);
+	m_deta.minVelocity = float3(-2.0f, -2.0f, -2.0f);
+	m_deta.maxVelocity = float3(2.0f, 2.0f, 2.0f);
 
-	m_emitData.minLifeSpan = 5.0f;
-	m_emitData.maxLifeSpan = 6.0f;
-	m_emitData.color = cfloat4x4::White;
+	m_deta.minLifeSpan = 10.0f;
+	m_deta.maxLifeSpan = 11.0f;
+	m_deta.color = cfloat4x4::White;
 
-	SHADER.GetGPUParticleShader().Emit(256000 * 2, m_emitData, "Resource/Texture/test.png");
+	particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
 }
 
 //-----------------------------------------------------------------------------
@@ -42,6 +44,18 @@ void GameProcess::Initialize()
 //-----------------------------------------------------------------------------
 void GameProcess::Update(float deltaTime)
 {
-	if (SHADER.GetGPUParticleShader().IsEnd())
-		SHADER.GetGPUParticleShader().Emit(256000 * 2, m_emitData, "Resource/Texture/test.png");
+	static float timer = 0.0f;
+	timer += deltaTime;
+
+	if (timer >= 6.0f)
+	{
+		timer = 0.0f;
+
+		auto& particleSystem = g_application->g_gameSystem->g_particleSystem;
+
+		m_deta.minPosition = float3(0.0f, 10.0f, 10.0f);
+		m_deta.maxPosition = float3(0.0f, 10.0f, 10.0f);
+
+		particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
+	}
 }

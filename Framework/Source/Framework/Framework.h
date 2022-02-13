@@ -54,6 +54,8 @@
 
 #include "Graphics/Camera/Camera.h"
 
+#include "Graphics/Particle/ParticleSystem.h"
+
 #include "Graphics/Effect/EffekseerDevice.h"
 #include "Graphics/Effect/EffekseerDeviceChild.h"
 #include "Graphics/Effect/EffekseerEffect.h"

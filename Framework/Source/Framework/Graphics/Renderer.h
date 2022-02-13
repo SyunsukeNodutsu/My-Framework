@@ -36,9 +36,10 @@ public:
 	void SetDefaultState();
 
 	// @brief シェーダーリソースをバインド
-	// @param texture リソース(テクスチャ)
+	// @param resource リソース
 	// @param slot 使用スロット
-	void SetResources(Texture* texture, int slot = 0);
+	void SetResources(ID3D11ShaderResourceView* resource, int slot = 0);
+	void SetResources(Texture* resource, int slot = 0) { SetResources(resource->SRV(), slot); }
 
 	// @brief Nullリソースをバインド
 	// @param slot 使用スロット

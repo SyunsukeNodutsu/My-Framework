@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------
 GameSystem::GameSystem()
 	: g_cameraSystem()
+	, g_particleSystem()
 	, g_sceneFilepath("")
 	, m_spActorList()
 	, m_debugLines()
@@ -144,8 +145,9 @@ void GameSystem::Draw()
 
 	RENDERER.Getcb8().Work().m_world_matrix = mfloat4x4::Identity;
 	RENDERER.Getcb8().Write();
-	SHADER.GetGPUParticleShader().Update();
-	SHADER.GetGPUParticleShader().Draw();
+
+	g_particleSystem.Update(deltaTime);
+	g_particleSystem.Draw(deltaTime);
 }
 
 //-----------------------------------------------------------------------------

@@ -21,6 +21,6 @@ public:
 
 private:
 
-	GPUParticleShader::EmitData m_emitData;
+	EmitData m_deta;
 
 };

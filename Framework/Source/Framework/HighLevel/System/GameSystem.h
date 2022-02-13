@@ -75,6 +75,7 @@ public:
 
 public:
 	CameraSystem g_cameraSystem;//カメラ管理システム
+	ParticleSystem g_particleSystem;
 	std::string g_sceneFilepath;//シーンのjsonファイルパス
 
 private:
