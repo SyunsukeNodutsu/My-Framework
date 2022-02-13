@@ -69,6 +69,10 @@ public:
 	//@brief 終了しているかどうかを返す
 	bool IsEnd() { return (m_pParticle == nullptr && Done()); }
 
+	void Begin();
+
+	ID3D11ComputeShader* GetSimulationComputeShader() { return m_cpCS.Get(); }
+
 private:
 
 	int m_particleMax;//粒子の数
@@ -98,9 +102,16 @@ private:
 
 private:
 
-	//
+	//@brief 生成完了かどうかを返す
 	bool Done() {
-		std::lock_guard<std::mutex> lock(isGeneratedMutex); return isGenerated;
+		std::lock_guard<std::mutex> lock(isGeneratedMutex);
+		return isGenerated;
+	}
+
+	//@brief 生成完了かどうかを設定
+	void SetDone(bool done) {
+		std::lock_guard<std::mutex> lock(isGeneratedMutex);
+		isGenerated = done;
 	}
 
 };

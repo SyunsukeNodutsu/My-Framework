@@ -97,6 +97,7 @@ void Renderer::SetResources(Texture* texture, int slot)
 
 	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(slot, 1, texture->SRVAddress());
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(slot, 1, texture->SRVAddress());
+	g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(slot, 1, texture->SRVAddress());
 }
 
 //-----------------------------------------------------------------------------

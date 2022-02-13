@@ -25,6 +25,7 @@ void main( const ComputeInput In )
     float3 result = particle[index].pos + (particle[index].vel * g_delta_time);
     
     BufOut[index].pos = result;
+    BufOut[index].pos += float3(0, -1 * g_delta_time, 0);//èdóÕ
     BufOut[index].vel = particle[index].vel;
     BufOut[index].life = particle[index].life - g_delta_time;
     BufOut[index].color = particle[index].color;

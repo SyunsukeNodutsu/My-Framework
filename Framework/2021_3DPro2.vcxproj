@@ -53,6 +53,7 @@
     <ClCompile Include="Source\Framework\Graphics\Effect\EffekseerEffect.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="Source\Framework\Graphics\GraphicsDeviceChild.cpp" />
+    <ClCompile Include="Source\Framework\Graphics\Particle\ParticleSystem.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Renderer.cpp" />
     <ClCompile Include="Source\Framework\Graphics\Texture.cpp" />
     <ClCompile Include="Source\Framework\HighLevel\Actor.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Source\Framework\Graphics\Effect\EffekseerEffect.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDevice.h" />
     <ClInclude Include="Source\Framework\Graphics\GraphicsDeviceChild.h" />
+    <ClInclude Include="Source\Framework\Graphics\Particle\ParticleSystem.h" />
     <ClInclude Include="Source\Framework\Graphics\Renderer.h" />
     <ClInclude Include="Source\Framework\Graphics\Texture.h" />
     <ClInclude Include="Source\Framework\HighLevel\Actor.h" />

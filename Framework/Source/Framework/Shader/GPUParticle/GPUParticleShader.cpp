@@ -100,6 +100,28 @@ bool GPUParticleShader::Initialize()
 }
 
 //-----------------------------------------------------------------------------
+//シェーダーセットアップ
+//-----------------------------------------------------------------------------
+void GPUParticleShader::Begin()
+{
+	//TODO: テクスチャとvertexシェーダーはエミッターごとに変える
+
+	constexpr static UINT strides = sizeof(Vertex);
+	constexpr static UINT offsets = 0;
+	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_spVertexBuffer->GetAddress(), &strides, &offsets);
+
+	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	//テクスチャ/座標(SRV)
+	if (m_spTexture != nullptr) RENDERER.SetResources(m_spTexture.get(), 0);
+
+	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
+
+	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
+}
+
+//-----------------------------------------------------------------------------
 //更新
 //-----------------------------------------------------------------------------
 void GPUParticleShader::Update()
@@ -137,17 +159,18 @@ void GPUParticleShader::Update()
 	//座標データバインド ※頂点シェーダーで使用
 	m_spPositionBuffer->WriteData(m_pParticle, sizeof(ParticleCompute) * m_particleMax);
 
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(2, 1, m_cpPositionSRV.GetAddressOf());
+
 	//nullresourceの設定
 	ID3D11ShaderResourceView* nullSRVs[1] = { nullptr };
 	ID3D11UnorderedAccessView* nullUAVs[1] = { nullptr };
 	g_graphicsDevice->g_cpContext.Get()->CSSetShaderResources(0, 1, nullSRVs);
 	g_graphicsDevice->g_cpContext.Get()->CSSetUnorderedAccessViews(0, 1, nullUAVs, 0);
 
+	//生存期間の確認
 	m_lifeSpan -= static_cast<float>(ApplicationChilled::GetApplication()->g_fpsTimer->GetDeltaTime());
 	if (m_lifeSpan <= 0)
-	{
 		End();
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -157,39 +180,10 @@ void GPUParticleShader::Draw()
 {
 	if (!Done()) return;
 
-	//バッファセット
-	constexpr static UINT strides = sizeof(Vertex);
-	constexpr static UINT offsets = 0;
-	g_graphicsDevice->g_cpContext.Get()->IASetVertexBuffers(0, 1, m_spVertexBuffer->GetAddress(), &strides, &offsets);
-
-	g_graphicsDevice->g_cpContext.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-	//テクスチャ/座標(SRV)
-	if (m_spTexture != nullptr)
-	{
-		RENDERER.SetResources(m_spTexture.get(), 0);
-	}
-	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(2, 1, m_cpPositionSRV.GetAddressOf());
-
-	//シェーダー設定
-	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
-
-	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_cpPS.Get(), 0, 0);
-
-	if (m_cullNone) {
-		RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
-	}
-
-	//Samplerステートをセット
-	RENDERER.SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
+	Begin();
 
 	//インスタンシング描画
 	g_graphicsDevice->g_cpContext.Get()->DrawInstanced(4, m_particleMax, 0, 0);
-
-	if (m_cullNone) {
-		RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
-	}
 
 	//nullresourceの設定
 	ID3D11ShaderResourceView* nullSRVs[1] = { nullptr };
@@ -239,10 +233,7 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 		m_spTexture->Create(textureFilepath.data());
 	}
 
-	{
-		std::lock_guard<std::mutex> lock(isGeneratedMutex);
-		isGenerated = false;
-	}
+	SetDone(false);
 
 	std::thread([=]
 		{
@@ -276,8 +267,7 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 				m_pParticle[i].lifeSpanMax = m_pParticle[i].lifeSpan;
 			}
 
-			std::lock_guard<std::mutex> lock(isGeneratedMutex);
-			isGenerated = true;
+			SetDone(true);
 		}
 	).detach();
 }
@@ -287,6 +277,10 @@ void GPUParticleShader::Emit(UINT particleMax, EmitData data, std::string_view t
 //-----------------------------------------------------------------------------
 void GPUParticleShader::End()
 {
+	m_spInputBuffer.reset();
+	m_spResultBuffer.reset();
+	m_spPositionBuffer.reset();
+
 	for (;;)
 	{
 		if (!Done()) continue;

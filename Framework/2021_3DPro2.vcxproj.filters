@@ -106,6 +106,9 @@
     <Filter Include="Source\Framework\Shader\GPUParticle">
       <UniqueIdentifier>{8695382e-06dd-4f48-9bc9-ce4cf7f685c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Framework\Graphics\Particle">
+      <UniqueIdentifier>{b96f1be7-fe18-444c-ad9e-531eda0957e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -305,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.cpp">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Graphics\Particle\ParticleSystem.cpp">
+      <Filter>Source\Framework\Graphics\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -541,6 +547,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.h">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\Graphics\Particle\ParticleSystem.h">
+      <Filter>Source\Framework\Graphics\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
