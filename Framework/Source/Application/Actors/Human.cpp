@@ -55,7 +55,14 @@ void Human::Finalize()
 //-----------------------------------------------------------------------------
 void Human::Update(float deltaTime)
 {
-	if (g_application->g_gameSystem->g_cameraSystem.IsEditorMode()) return;
+	if (g_application->g_gameSystem->g_cameraSystem.IsEditorMode()) {
+
+		//さびしいから動いて
+		m_animator.AdvanceTime(m_modelWork.WorkNodes(), 60.0f * deltaTime);
+		m_modelWork.CalcNodeMatrices();
+
+		return;
+	}
 
 	//現在のステート更新 各種更新を記述
 	if (m_spState)

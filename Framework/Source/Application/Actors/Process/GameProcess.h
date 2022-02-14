@@ -22,5 +22,6 @@ public:
 private:
 
 	EmitData m_deta;
+	std::shared_ptr<SoundWork> m_sound;
 
 };

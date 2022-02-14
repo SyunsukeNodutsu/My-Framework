@@ -90,8 +90,9 @@ void ParticleWork::Draw()
 	if (m_pParticle == nullptr) return;
 
 	//リソース設定
-	RENDERER.SetResources(m_psTexture->SRV(), 0);//テクスチャ/座標(SRV)
-	RENDERER.SetResources(m_cpPositionSRV.Get(), 2);//UAVからの出力結果
+	//RENDERER.SetResources(.get(), 0);
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, m_psTexture->SRVAddress());//テクスチャ/座標(SRV)
+	g_graphicsDevice->g_cpContext.Get()->VSSetShaderResources(2, 1, m_cpPositionSRV.GetAddressOf());//UAVからの出力結果
 
 	//インスタンシング描画
 	g_graphicsDevice->g_cpContext.Get()->DrawInstanced(4, m_particleMax, 0, 0);
@@ -214,7 +215,7 @@ void ParticleWork::SetupViews()
 //コンストラクタ
 //-----------------------------------------------------------------------------
 ParticleSystem::ParticleSystem()
-	: m_spParticleVector()
+	: m_spParticleList()
 {
 }
 
@@ -225,7 +226,7 @@ void ParticleSystem::Update(float deltaTime)
 {
 	const auto& cs = SHADER.GetGPUParticleShader().GetSimulationComputeShader();
 
-	for (auto itr = m_spParticleVector.begin(); itr != m_spParticleVector.end();)
+	for (auto itr = m_spParticleList.begin(); itr != m_spParticleList.end();)
 	{
 		if ((*itr) == nullptr) continue;
 
@@ -234,7 +235,7 @@ void ParticleSystem::Update(float deltaTime)
 
 		//除外
 		if ((*itr)->IsEnd() == true) {
-			itr = m_spParticleVector.erase(itr);
+			itr = m_spParticleList.erase(itr);
 		}
 		else ++itr;
 	}
@@ -249,7 +250,7 @@ void ParticleSystem::Draw(float deltaTime)
 
 	SHADER.GetGPUParticleShader().Begin();
 
-	for (auto&& particle : m_spParticleVector)
+	for (auto&& particle : m_spParticleList)
 	{
 		particle->Draw();
 	}
@@ -258,11 +259,13 @@ void ParticleSystem::Draw(float deltaTime)
 }
 
 //-----------------------------------------------------------------------------
+//発生させる
 //-----------------------------------------------------------------------------
 void ParticleSystem::Emit(UINT particleMax, EmitData data, bool loop, std::string_view filepath)
 {
 	std::shared_ptr<ParticleWork> particle = std::make_shared<ParticleWork>();
 	particle->Emit(particleMax, data, loop, filepath);
 
-	m_spParticleVector.push_back(particle);
+	//描画順の関係上 先頭に追加する必要がある
+	m_spParticleList.push_front(particle);
 }

@@ -49,7 +49,7 @@ public:
 	void End();
 
 	//@brief 終了しているかどうかを返す
-	bool IsEnd() { return (m_pParticle == nullptr); }
+	bool IsEnd() { return (m_pParticle == nullptr && Done()); }
 
 private:
 
@@ -121,6 +121,6 @@ public:
 
 private:
 
-	std::vector<std::shared_ptr<ParticleWork>> m_spParticleVector;
+	std::list<std::shared_ptr<ParticleWork>> m_spParticleList;
 
 };
