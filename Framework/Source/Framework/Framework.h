@@ -34,7 +34,7 @@
 //--------------------------------------------------
 
 // エイリアスが含まれているので最優先
-// TODO: Windo 各Deice はまとめた方がいいかも
+// TODO: Window 各Deice はまとめた方がいいかも
 #include "Utility/Types.h"
 #include "Utility/Utility.h"
 

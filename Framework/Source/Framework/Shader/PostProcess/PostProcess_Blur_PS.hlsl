@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 //File: PostProcess_Blur_PS.hlsl
 //
-//
+//ブラー ピクセルシェーダー
 //-----------------------------------------------------------------------------
 #include "../ConstantBuffer.hlsli"
 #include "PostProcessShader.hlsli"
@@ -9,7 +9,7 @@
 Texture2D g_texture : register(t0);
 SamplerState g_samplerState : register(s0);
 
-cbuffer cb : register(b0)
+cbuffer cb : register(b5)
 {
     float4 g_offset[31]; //ピクセルのずれ分
 };

@@ -114,17 +114,34 @@ void ImGuiSystem::DrawImGui()
 	//ゲームモニター
 	if (ImGui::Begin("Scene", nullptr, wflags | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 	{
-		const auto& sceneRT = ApplicationChilled::GetApplication()->g_renderTarget;
+		const auto& sceneRT = ApplicationChilled::GetApplication()->GetScreenRT();
 
 		//サイズ調整
 		const auto& sizeWd = ImGui::GetWindowSize();
-		const auto& sizeRT = float2((float)sceneRT.GetDesc().Width, (float)sceneRT.GetDesc().Height);
+		const auto& sizeRT = float2((float)sceneRT->GetDesc().Width, (float)sceneRT->GetDesc().Height);
 
 		//TODO: バーのサイズがどうなってるか調査
 		float sizeBar = 36.0f;
 		float rate = (sizeWd.y - sizeBar) / sizeRT.y;
 
-		ImGui::Image((ImTextureID)sceneRT.SRV(), ImVec2(sizeRT.x, sizeRT.y) * rate);
+		ImGui::Image((ImTextureID)sceneRT->SRV(), ImVec2(sizeRT.x, sizeRT.y) * rate);
+	}
+	ImGui::End();
+
+	//高輝度抽出テクスチャ
+	if (ImGui::Begin("HeightBright Texture", nullptr, ImGuiWindowFlags_NoCollapse))
+	{
+		const auto& hbRT = ApplicationChilled::GetApplication()->GetHeightBrightRT();
+
+		//サイズ調整
+		const auto& sizeWd = ImGui::GetWindowSize();
+		const auto& sizeRT = float2((float)hbRT->GetDesc().Width, (float)hbRT->GetDesc().Height);
+
+		//TODO: バーのサイズがどうなってるか調査
+		float sizeBar = 36.0f;
+		float rate = (sizeWd.y - sizeBar) / sizeRT.y;
+
+		ImGui::Image((ImTextureID)hbRT->SRV(), ImVec2(sizeRT.x, sizeRT.y) * rate);
 	}
 	ImGui::End();
 

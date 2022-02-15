@@ -117,6 +117,9 @@ private:
 		float3 m_directional_light_color = float3(1, 1, 1);	// 色
 		float m_ambient_power = 0.4f;						// 環境光の強さ
 		mfloat4x4 m_directional_light_vp;					// ライトカメラのビュー行列x射影行列
+		float g_hbright_threshold;							// HBrightの抽出閾値
+		float g_gpu_particle_color_rate;					// GPUパーティクルのカラーに乗算
+		float2 tmp;
 	};
 
 	// 時間系

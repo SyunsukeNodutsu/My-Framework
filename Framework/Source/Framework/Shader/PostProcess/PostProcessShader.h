@@ -1,30 +1,15 @@
 ﻿//-----------------------------------------------------------------------------
-// File: PostProcessShader.h
+//File: PostProcessShader.h
 //
-// 加工シェーダー
+//加工シェーダー
 //-----------------------------------------------------------------------------
 #pragma once
 
 //高輝度抽出用のTexdture
-struct BlurTexture
+struct BlurTexture : public GraphicsDeviceChild
 {
 	//作成
-	void Create(int width, int height)
-	{
-		int divideValue = 2;
-		for (int i = 0; i < 5; i++)
-		{
-			float _width = width / divideValue;
-			float _height = height / divideValue;
-
-			m_rt[i][0] = std::make_shared<Texture>();
-			m_rt[i][0]->CreateRenderTarget(_height, _width, false, DXGI_FORMAT_R16G16B16A16_FLOAT);
-
-			m_rt[i][1] = std::make_shared<Texture>();
-			m_rt[i][1]->CreateRenderTarget(_height, _width, false, DXGI_FORMAT_R16G16B16A16_FLOAT);
-			divideValue *= 2;
-		}
-	}
+	void Create(int width, int height, bool useMSAA);
 
 	std::shared_ptr<Texture> m_rt[5][2];
 };

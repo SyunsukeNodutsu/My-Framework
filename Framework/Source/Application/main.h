@@ -53,6 +53,15 @@ public:
 	//@param onoff 編集モードにするかどうか
 	void SetEditorMode(bool onoff) { m_editorMode = onoff; }
 
+	//@brief ブラーの値を設定する
+	void SetBlurValue(float2 blurValue) { m_blurValue = blurValue; }
+
+	//@brief ImGuiDockingWindowの際にテクスチャとして使用するRTを返す
+	Texture* GetScreenRT() { return  m_spScreenRT.get(); }
+
+	//@brief 高輝度抽出テクスチャを返す
+	Texture* GetHeightBrightRT() { return  m_spHeightBrightTex.get(); }
+
 public:
 
 	//ウィンドウ ※"static inline"でメモリ確保できる
@@ -75,27 +84,17 @@ public:
 	static GameSystem* g_gameSystem;		//ゲーム管理
 	static ImGuiSystem* g_imGuiSystem;		//プロファイラ デバッグ
 
-	//Imguiのdockingモニター用
-	Texture g_renderTarget;
-	Texture g_renderTargetZ;
-
 private:
-
-	//スレッドごとの値(static)
-	static const int m_numPerSceneRenderThreads = 4;//レンダリングスレッド数
-	static HANDLE m_hPerSceneRenderDeferredThread[m_numPerSceneRenderThreads];//スレッドハンドル
-	static HANDLE m_hBeginPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads];//Beginイベント
-	static HANDLE m_hEndPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads];//Endイベント
-	static int m_perSceneThreadInstanceData[m_numPerSceneRenderThreads];//
-	static ID3D11DeviceContext* m_contextDeferred[m_numPerSceneRenderThreads];
-	static ID3D11CommandList* m_commandList[m_numPerSceneRenderThreads];
-
-	static bool m_bClearStateUponBeginCommandList;
-	static bool m_bClearStateUponFinishCommandList;
-	static bool m_bClearStateUponExecuteCommandList;
 
 	bool m_endFlag = false;//ゲーム終了フラグ
 	bool m_editorMode = false;//ImGuiによる編集モード
+
+	//ポストプロセス用
+	std::shared_ptr<Texture> m_spScreenRT;//加工用レンダーターゲット
+	std::shared_ptr<Texture> m_spScreenZ;
+	std::shared_ptr<Texture> m_spHeightBrightTex;//ブルーム用
+	BlurTexture m_blurTex;//ブラー用
+	float2 m_blurValue;
 
 private:
 
@@ -107,8 +106,5 @@ private:
 
 	//@brief アプリケーション解放
 	void Release();
-
-	//
-	static inline unsigned int WINAPI PerSceneRenderDeferredProc(LPVOID lparam);
 
 };

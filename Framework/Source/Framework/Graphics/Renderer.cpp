@@ -36,6 +36,8 @@ bool Renderer::Initialize()
 	m_cb10Light.Work().m_directional_light_dir = float3(1, -1, 0);
 	m_cb10Light.Work().m_directional_light_dir.Normalize();
 	m_cb10Light.Work().m_enable = true;
+	m_cb10Light.Work().g_hbright_threshold = 1.0f;
+	m_cb10Light.Work().g_gpu_particle_color_rate = 1.2f;
 	m_cb10Light.Write();
 
 	m_cb12Time.Work().m_totalTime = 1;

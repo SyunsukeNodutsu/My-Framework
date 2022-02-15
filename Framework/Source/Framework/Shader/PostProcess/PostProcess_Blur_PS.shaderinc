@@ -19,7 +19,7 @@
 // ------------------------------ ---------- ------- ----------- -------------- ------
 // g_samplerState                    sampler      NA          NA             s0      1 
 // g_texture                         texture  float4          2d             t0      1 
-// cb                                cbuffer      NA          NA            cb0      1 
+// cb                                cbuffer      NA          NA            cb5      1 
 //
 //
 //
@@ -39,7 +39,7 @@
 //
 ps_5_0
 dcl_globalFlags refactoringAllowed
-dcl_constantbuffer CB0[31], dynamicIndexed
+dcl_constantbuffer CB5[31], dynamicIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xy
@@ -49,9 +49,9 @@ mov r0.xyzw, l(0,0,0,0)
 loop 
   ige r1.x, r0.w, l(31)
   breakc_nz r1.x
-  add r1.xy, v1.xyxx, cb0[r0.w + 0].xyxx
+  add r1.xy, v1.xyxx, cb5[r0.w + 0].xyxx
   sample_indexable(texture2d)(float,float,float,float) r1.xyz, r1.xyxx, t0.xyzw, s0
-  mad r0.xyz, r1.xyzx, cb0[r0.w + 0].zzzz, r0.xyzx
+  mad r0.xyz, r1.xyzx, cb5[r0.w + 0].zzzz, r0.xyzx
   iadd r0.w, r0.w, l(1)
 endloop 
 mov o0.xyz, r0.xyzx
@@ -62,10 +62,10 @@ ret
 
 const BYTE compiledBuffer[] =
 {
-     68,  88,  66,  67,  67, 152, 
-     98,   8, 227, 133, 218, 103, 
-    200, 249,  56,  36,   9, 241, 
-    128, 220,   1,   0,   0,   0, 
+     68,  88,  66,  67, 232, 222, 
+    207, 237,  94, 143,  10, 247, 
+    103, 144, 206, 135, 211,  28, 
+     10, 238,   1,   0,   0,   0, 
      44,   4,   0,   0,   5,   0, 
       0,   0,  52,   0,   0,   0, 
     144,   1,   0,   0, 232,   1, 
@@ -96,7 +96,7 @@ const BYTE compiledBuffer[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
-      0,   0,   0,   0,   1,   0, 
+      5,   0,   0,   0,   1,   0, 
       0,   0,   1,   0,   0,   0, 
     103,  95, 115,  97, 109, 112, 
     108, 101, 114,  83, 116,  97, 
@@ -156,7 +156,7 @@ const BYTE compiledBuffer[] =
       0,   0,  80,   0,   0,   0, 
      91,   0,   0,   0, 106,   8, 
       0,   1,  89,   8,   0,   4, 
-     70, 142,  32,   0,   0,   0, 
+     70, 142,  32,   0,   5,   0, 
       0,   0,  31,   0,   0,   0, 
      90,   0,   0,   3,   0,  96, 
      16,   0,   0,   0,   0,   0, 
@@ -184,7 +184,7 @@ const BYTE compiledBuffer[] =
       0,   9,  50,   0,  16,   0, 
       1,   0,   0,   0,  70,  16, 
      16,   0,   1,   0,   0,   0, 
-     70, 128,  32,   4,   0,   0, 
+     70, 128,  32,   4,   5,   0, 
       0,   0,  58,   0,  16,   0, 
       0,   0,   0,   0,  69,   0, 
       0, 139, 194,   0,   0, 128, 
@@ -198,7 +198,7 @@ const BYTE compiledBuffer[] =
      16,   0,   0,   0,   0,   0, 
      70,   2,  16,   0,   1,   0, 
       0,   0, 166, 138,  32,   4, 
-      0,   0,   0,   0,  58,   0, 
+      5,   0,   0,   0,  58,   0, 
      16,   0,   0,   0,   0,   0, 
      70,   2,  16,   0,   0,   0, 
       0,   0,  30,   0,   0,   7, 

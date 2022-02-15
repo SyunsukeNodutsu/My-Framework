@@ -12,7 +12,7 @@ SamplerState g_samplerState : register(s0);
 float4 main(VertexOutput In) : SV_Target0
 {
     float4 texturecolor = g_texture.Sample(g_samplerState, In.uv);
-    if (texturecolor.a <= 0) discard;
+    //if (texturecolor.a <= 0) discard;
     
     //float4 result = texturecolor * color;
     float4 result = texturecolor;

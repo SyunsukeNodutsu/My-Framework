@@ -12,18 +12,6 @@ FpsTimer* Application::g_fpsTimer = 0;
 GameSystem* Application::g_gameSystem = 0;
 ImGuiSystem* Application::g_imGuiSystem = 0;
 
-//スレッド
-HANDLE Application::m_hPerSceneRenderDeferredThread[m_numPerSceneRenderThreads] = { 0 };
-HANDLE Application::m_hBeginPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads] = { 0 };
-HANDLE Application::m_hEndPerSceneRenderDeferredEvent[m_numPerSceneRenderThreads] = { 0 };
-int Application::m_perSceneThreadInstanceData[m_numPerSceneRenderThreads] = { 0 };
-ID3D11DeviceContext* Application::m_contextDeferred[m_numPerSceneRenderThreads] = { nullptr };
-ID3D11CommandList* Application::m_commandList[m_numPerSceneRenderThreads] = { nullptr };
-
-bool Application::m_bClearStateUponBeginCommandList = false;
-bool Application::m_bClearStateUponFinishCommandList = false;
-bool Application::m_bClearStateUponExecuteCommandList = false;
-
 //-----------------------------------------------------------------------------
 // メインエントリ
 //-----------------------------------------------------------------------------
@@ -113,7 +101,7 @@ bool Application::Initialize(int width, int height)
 	desc.m_refreshRate	= 0;
 	desc.m_windowed		= true;
 	desc.m_useHDR		= false;
-	desc.m_useMSAA		= true;
+	desc.m_useMSAA		= false;
 	desc.m_debugMode	= false;
 	desc.m_hwnd			= g_window->GetWndHandle();
 	g_graphicsDevice->Initialize(desc);
@@ -144,9 +132,17 @@ bool Application::Initialize(int width, int height)
 	//imGui(プロファイラー)
 	g_imGuiSystem->Initialize(g_graphicsDevice->g_cpDevice.Get(), g_graphicsDevice->g_cpContext.Get());
 
-	//レンダーターゲット作成
-	g_renderTarget.CreateRenderTarget(height, width, desc.m_useMSAA);
-	g_renderTargetZ.CreateDepthStencil(height, width, desc.m_useMSAA);
+	//ポストプロセス用にテクスチャ作成
+	m_spScreenRT = std::make_shared<Texture>();
+	m_spScreenRT->CreateRenderTarget(height, width, desc.m_useMSAA, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+	m_spScreenZ = std::make_shared<Texture>();
+	m_spScreenZ->CreateDepthStencil(height, width, desc.m_useMSAA);
+
+	m_spHeightBrightTex = std::make_shared<Texture>();
+	m_spHeightBrightTex->CreateRenderTarget(height, width, desc.m_useMSAA, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+	m_blurTex.Create(width, height, desc.m_useMSAA);
 
 	return true;
 }
@@ -156,15 +152,6 @@ bool Application::Initialize(int width, int height)
 //-----------------------------------------------------------------------------
 void Application::Release()
 {
-	//スレッド
-	for (int i = 0; i < m_numPerSceneRenderThreads; i++)
-	{
-		CloseHandle(m_hPerSceneRenderDeferredThread[i]);
-		CloseHandle(m_hEndPerSceneRenderDeferredEvent[i]);
-		CloseHandle(m_hBeginPerSceneRenderDeferredEvent[i]);
-		SafeRelease(m_contextDeferred[i]);
-	}
-
 	//アプリケーション
 	g_imGuiSystem->Finalize();
 	g_gameSystem->Finalize();
@@ -188,37 +175,6 @@ void Application::Release()
 	delete g_inputDevice;
 	delete g_fpsTimer;
 	delete g_window;
-}
-
-//-----------------------------------------------------------------------------
-// スレッド関数
-//-----------------------------------------------------------------------------
-inline unsigned int __stdcall Application::PerSceneRenderDeferredProc(LPVOID lparam)
-{
-	//スレッドのローカルデータを取得
-	const int instance = *(int*)lparam;
-	ID3D11DeviceContext* pd3dDeferredContext = m_contextDeferred[instance];
-	ID3D11CommandList*& pd3dCommandList = m_commandList[instance];
-
-	for (;;)
-	{
-		//メインスレッドからの準備完了の合図を待機
-		WaitForSingleObject(m_hBeginPerSceneRenderDeferredEvent[instance], INFINITE);
-
-		if (m_bClearStateUponBeginCommandList)
-			pd3dDeferredContext->ClearState();
-
-		//ここで描画
-		//例) RenderDirect(pd3dDeferredContext);
-
-		//グラフィックコマンドを記録
-		pd3dDeferredContext->FinishCommandList(!m_bClearStateUponFinishCommandList, &pd3dCommandList);
-
-		//メインスレッドのコマンドリストが終了したことを送信
-		SetEvent(m_hEndPerSceneRenderDeferredEvent[instance]);
-	}
-
-	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -271,28 +227,60 @@ void Application::Execute()
 		g_effectDevice->Update();
 
 		// 描画
+		g_graphicsDevice->Begin();
 		{
 			const auto& d3d11context = g_graphicsDevice->g_cpContext;
 
-			d3d11context->ClearRenderTargetView(g_renderTarget.RTV(), cfloat4x4::Blue);
-			d3d11context->ClearDepthStencilView(g_renderTargetZ.DSV(), D3D11_CLEAR_DEPTH, 1, 0);
+			{
+				RestoreRenderTarget rrt = {};
 
-			d3d11context->OMSetRenderTargets(1, g_renderTarget.RTVAddress(), g_renderTargetZ.DSV());
+				d3d11context->OMSetRenderTargets(1, m_spScreenRT->RTVAddress(), m_spScreenZ->DSV());
+				d3d11context->ClearRenderTargetView(m_spScreenRT->RTV(), cfloat4x4::Blue);
+				d3d11context->ClearDepthStencilView(m_spScreenZ->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
-			//3D想定
-			g_gameSystem->Draw();
+				//3D想定
+				g_gameSystem->Draw();
 
-			//エフェクト
-			g_effectDevice->Draw();
+				//エフェクトテスト
+				{
+					static float timecount = 0.0f;
+					timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
+					if (timecount >= 3.0f)
+					{
+						const auto& pos = float3(20, 0, 0);
+						g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
+						timecount = 0.0f;
+					}
+				}
 
-			//2D想定
-			g_gameSystem->Draw2D();
+				//エフェクト
+				g_effectDevice->Draw();
 
-			//SHADER.GetPostProcessShader().DrawAfterEffect(&g_renderTarget);
+				//2D想定
+				g_gameSystem->Draw2D();
+			}
 
-			//ここでレンダーターゲット復帰
-			//TODO: リストア
-			g_graphicsDevice->Begin();
+			//ブラー描画
+			SHADER.GetPostProcessShader().BlurDraw(m_spScreenRT.get(), m_blurValue);
+
+			if (true)
+			{
+				//しきい値以上のピクセルを抽出
+				SHADER.GetPostProcessShader().BrightFiltering(m_spHeightBrightTex.get(), m_spScreenRT.get());
+
+				//一定以上の明るさを持ったテクスチャを各サイズぼかし画像作成
+				SHADER.GetPostProcessShader().GenerateBlur(m_blurTex, m_spHeightBrightTex.get());
+
+				//加算合成に変更
+				RENDERER.SetBlend(BlendMode::eAdd);
+
+				//各サイズの画像を加算合成
+				for (int bCnt = 0; bCnt < 5; bCnt++)
+					SHADER.GetPostProcessShader().DrawColor(m_blurTex.m_rt[bCnt][0].get());
+
+				//合成方法をもとに戻す
+				RENDERER.SetBlend(BlendMode::eAlpha);
+			}
 
 			if (m_editorMode)
 			{
@@ -300,13 +288,6 @@ void Application::Execute()
 				g_imGuiSystem->Begin();
 				g_imGuiSystem->DrawImGui();
 				g_imGuiSystem->End();
-			}
-			else
-			{
-				//通常全画描画
-				SHADER.GetSpriteShader().Begin(g_graphicsDevice->g_cpContext.Get(), true, true);
-				SHADER.GetSpriteShader().DrawTexture(&g_renderTarget, float2::Zero);
-				SHADER.GetSpriteShader().End(g_graphicsDevice->g_cpContext.Get());
 			}
 		}
 		g_graphicsDevice->End();

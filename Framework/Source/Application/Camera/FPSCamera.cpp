@@ -45,6 +45,22 @@ void FPSCamera::Update()
 
 	// 回転制御
 	m_degAngle.x = std::clamp(m_degAngle.x, m_minAngleX, m_maxAngleX);
+
+	//移動時のぼかし
+	if (true)
+	{
+		float threshold = 30.0f;
+		if ((mouseMove.x >=  threshold) || (mouseMove.y >=  threshold) ||
+			(mouseMove.x <= -threshold) || (mouseMove.y <= -threshold))
+		{
+			constexpr float rate = 60.0f;
+			ApplicationChilled::GetApplication()->SetBlurValue(mouseMove * rate * deltaTime);
+		}
+		else
+		{
+			ApplicationChilled::GetApplication()->SetBlurValue(float2::Zero);
+		}
+	}	
 }
 
 //-----------------------------------------------------------------------------

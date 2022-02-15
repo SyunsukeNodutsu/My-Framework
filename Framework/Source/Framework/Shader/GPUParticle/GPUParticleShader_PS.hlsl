@@ -21,5 +21,5 @@ float4 main( VertexOutput In ) : SV_TARGET
     float4 texcolor = g_texture.Sample(g_samplerState, In.uv);
     if (texcolor.a <= 0) discard;
     
-    return texcolor * In.color;
+    return texcolor * In.color * 1.4f;
 }

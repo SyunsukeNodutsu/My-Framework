@@ -1,6 +1,26 @@
 ﻿#include "PostProcessShader.h"
 
 //-----------------------------------------------------------------------------
+//作成
+//-----------------------------------------------------------------------------
+void BlurTexture::Create(int width, int height, bool useMSAA)
+{
+	int divideValue = 2;
+	for (int i = 0; i < 5; i++)
+	{
+		int _width = width / divideValue;
+		int _height = height / divideValue;
+
+		m_rt[i][0] = std::make_shared<Texture>();
+		m_rt[i][0]->CreateRenderTarget(_height, _width, useMSAA, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+		m_rt[i][1] = std::make_shared<Texture>();
+		m_rt[i][1]->CreateRenderTarget(_height, _width, useMSAA, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		divideValue *= 2;
+	}
+}
+
+//-----------------------------------------------------------------------------
 //コンストラクタ
 //-----------------------------------------------------------------------------
 PostProcessShader::PostProcessShader()
@@ -105,7 +125,7 @@ void PostProcessShader::DrawColor(Texture* texture)
 
 	//Z判定、Z書き込み無効のステートをセット
 	RENDERER.SetDepthStencil(false, false);
-	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eWrap);
+	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eClamp);
 	RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
 
 	g_graphicsDevice->DrawVertices(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, &vOrthographic[0], sizeof(Vertex));
@@ -113,6 +133,10 @@ void PostProcessShader::DrawColor(Texture* texture)
 	RENDERER.SetDepthStencil(true, true);
 	RENDERER.SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
 	RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
+
+	//NULLリソースの設定
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, &nullSRV);
 }
 
 //-----------------------------------------------------------------------------
@@ -125,7 +149,7 @@ void PostProcessShader::BlurDraw(Texture* texture, float2 dir)
 	g_graphicsDevice->g_cpContext.Get()->OMGetDepthStencilState(&saveDS, &saveStencilRef);
 
 	RENDERER.SetDepthStencil(false, false);
-	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eWrap);
+	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eClamp);
 
 	//サンプリング
 	{
@@ -158,7 +182,7 @@ void PostProcessShader::BlurDraw(Texture* texture, float2 dir)
 		}
 
 		m_cb0Blur.Write();
-		m_cb0Blur.SetToDevice(0);
+		m_cb0Blur.SetToDevice(5);
 	}
 
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, texture->SRVAddress());
@@ -195,7 +219,9 @@ void PostProcessShader::GenerateBlur(BlurTexture& blurTex, Texture* srcTex)
 	for (int i = 0; i < 5; i++)
 	{
 		g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, blurTex.m_rt[i][0]->RTVAddress(), nullptr);
-		g_graphicsDevice->g_cpContext.Get()->RSSetViewports(1, &g_graphicsDevice->g_viewport);
+
+		D3D11_VIEWPORT vp = { 0.0f, 0.0f, (float)blurTex.m_rt[i][0]->GetDesc().Width,(float)blurTex.m_rt[i][0]->GetDesc().Height, 0.0f, 1.0f };
+		g_graphicsDevice->g_cpContext.Get()->RSSetViewports(1, &vp);
 
 		if (i == 0) {
 			DrawColor(srcTex);
@@ -223,36 +249,46 @@ void PostProcessShader::GenerateBlur(BlurTexture& blurTex, Texture* srcTex)
 void PostProcessShader::BrightFiltering(Texture* destRT, Texture* srcTex)
 {
 	RestoreRenderTarget rrt = {};
+	g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, destRT->RTVAddress(), nullptr);
 
+	//ビューポート記憶
 	D3D11_VIEWPORT saveVP = {};
 	UINT numVP = 1;
 	g_graphicsDevice->g_cpContext.Get()->RSGetViewports(&numVP, &saveVP);
 
-	g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, destRT->RTVAddress(), nullptr);
+	//ソーステクスチャに応じたビューポート設定
+	D3D11_VIEWPORT vp = { 0.0f, 0.0f,(float)destRT->GetDesc().Width, (float)destRT->GetDesc().Height, 0.0f, 1.0f };
+	g_graphicsDevice->g_cpContext.Get()->RSSetViewports(1, &vp);
 
-	g_graphicsDevice->g_cpContext.Get()->RSSetViewports(1, &g_graphicsDevice->g_viewport);
-
+	//デプスステンシル記憶
 	ID3D11DepthStencilState* saveDS = {};
 	UINT saveStencilRef = 0;
 	g_graphicsDevice->g_cpContext.Get()->OMGetDepthStencilState(&saveDS, &saveStencilRef);
 
+	//サンプラー/デプスステンシル設定
 	RENDERER.SetDepthStencil(false, false);
+	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eClamp);
 
-	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, srcTex->SRVAddress());
-	RENDERER.SetSampler(SS_FilterMode::eLinear, SS_AddressMode::eWrap);
+	{
+		g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, srcTex->SRVAddress());
 
-	g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
-	g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
-	g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_HBrightPS.Get(), 0, 0);
+		g_graphicsDevice->g_cpContext.Get()->IASetInputLayout(m_cpInputLayout.Get());
 
-	g_graphicsDevice->DrawVertices(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, &vOrthographic[0], sizeof(Vertex));
+		g_graphicsDevice->g_cpContext.Get()->VSSetShader(m_cpVS.Get(), 0, 0);
+		g_graphicsDevice->g_cpContext.Get()->PSSetShader(m_HBrightPS.Get(), 0, 0);
 
+		g_graphicsDevice->DrawVertices(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, &vOrthographic[0], sizeof(Vertex));
+	}
+
+	//NULLリソース設定
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	g_graphicsDevice->g_cpContext.Get()->PSSetShaderResources(0, 1, &nullSRV);
 
+	//サンプラー/デプスステンシル復元
 	RENDERER.SetSampler(SS_FilterMode::eAniso, SS_AddressMode::eWrap);
 	g_graphicsDevice->g_cpContext.Get()->OMSetDepthStencilState(saveDS, saveStencilRef);
 	saveDS->Release();
 
+	//記憶したビューポートから復元
 	g_graphicsDevice->g_cpContext.Get()->RSSetViewports(1, &saveVP);
 }

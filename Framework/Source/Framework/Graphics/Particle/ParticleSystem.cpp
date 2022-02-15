@@ -247,6 +247,7 @@ void ParticleSystem::Update(float deltaTime)
 void ParticleSystem::Draw(float deltaTime)
 {
 	RENDERER.SetRasterize(RS_CullMode::eCullNone, RS_FillMode::eSolid);
+	RENDERER.SetBlend(BlendMode::eAdd);
 
 	SHADER.GetGPUParticleShader().Begin();
 
@@ -256,6 +257,7 @@ void ParticleSystem::Draw(float deltaTime)
 	}
 
 	RENDERER.SetRasterize(RS_CullMode::eBack, RS_FillMode::eSolid);
+	RENDERER.SetBlend(BlendMode::eAlpha);
 }
 
 //-----------------------------------------------------------------------------
