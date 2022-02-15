@@ -50,12 +50,11 @@ public:
 	void End(UINT syncInterval = 0, UINT flags = 0);
 
 	// @brief 頂点を描画する簡易的な関数
-	// @param pd3dContext 描画コンテキスト
 	// @param topology 頂点をどのような形状で描画するか
 	// @param vertexCount 頂点数
 	// @param pVertexStream 頂点配列の先頭アドレス
 	// @param stride 1頂点のバイトサイズ
-	void DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
+	void DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride);
 
 	//--------------------------------------------------
 	// 取得

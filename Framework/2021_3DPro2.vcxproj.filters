@@ -312,6 +312,9 @@
     <ClCompile Include="Source\Framework\Graphics\Particle\ParticleSystem.cpp">
       <Filter>Source\Framework\Graphics\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Framework\Shader\PostProcess\PostProcessShader.cpp">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Pch.h">
@@ -580,6 +583,9 @@
     <None Include="Source\Framework\Shader\GPUParticle\GPUParticleShader.hlsli">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
     </None>
+    <None Include="Source\Framework\Shader\PostProcess\PostProcessShader.hlsli">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Framework\Shader\Sprite\SpriteShader_PS.hlsl">
@@ -614,6 +620,18 @@
     </FxCompile>
     <FxCompile Include="Source\Framework\Shader\GPUParticle\GPUParticleShader_CS.hlsl">
       <Filter>Source\Framework\Shader\GPUParticle</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\PostProcess\PostProcessShader_VS.hlsl">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\PostProcess\PostProcess_Blur_PS.hlsl">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\PostProcess\PostProcess_Color_PS.hlsl">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\Framework\Shader\PostProcess\PostProcess_HBright_PS.hlsl">
+      <Filter>Source\Framework\Shader\PostProcess</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

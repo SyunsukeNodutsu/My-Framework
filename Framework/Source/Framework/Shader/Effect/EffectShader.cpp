@@ -87,5 +87,5 @@ void EffectShader::DrawLine(const float3& p1, const float3& p2, const cfloat4x4&
 	};
 
 	// 頂点を描画
-	g_graphicsDevice->DrawVertices(g_graphicsDevice->g_cpContext.Get(), D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, 2, &vertex[0], sizeof(Vertex));
+	g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, 2, &vertex[0], sizeof(Vertex));
 }

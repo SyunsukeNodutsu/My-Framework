@@ -408,3 +408,24 @@ ComPtr<ID3D11BlendState> Renderer::CreateBlend(BlendMode flag)
 
 	return state;
 }
+
+//-----------------------------------------------------------------------------
+//コンストラクタ レンダーターゲット記憶
+//-----------------------------------------------------------------------------
+RestoreRenderTarget::RestoreRenderTarget()
+{
+	g_graphicsDevice->g_cpContext.Get()->OMGetRenderTargets(1, &m_pSaveRT, &m_pSaveZ);
+}
+
+//-----------------------------------------------------------------------------
+//デストラクタ レンダーターゲット復帰
+//-----------------------------------------------------------------------------
+RestoreRenderTarget::~RestoreRenderTarget()
+{
+	//レンダーターゲット変更
+	g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, &m_pSaveRT, m_pSaveZ);
+
+	//解放
+	if (m_pSaveRT) m_pSaveRT->Release();
+	if (m_pSaveZ)  m_pSaveZ->Release();
+}

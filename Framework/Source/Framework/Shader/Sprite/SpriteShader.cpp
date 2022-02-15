@@ -165,7 +165,7 @@ void SpriteShader::DrawTexture(const Texture* texture, float2 position, const cf
 	};
 
 	//描画
-	g_graphicsDevice->DrawVertices(g_graphicsDevice->g_cpContext.Get(), D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
+	g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
 
 	//セットしたテクスチャを解除しておく
 	ID3D11ShaderResourceView* null_srv = nullptr;
@@ -218,7 +218,7 @@ void SpriteShader::DrawTexture(const Texture* texture, ID3D11DeviceContext* pd3d
 	};
 
 	//描画
-	g_graphicsDevice->DrawVertices(pd3dContext, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
+	g_graphicsDevice->DrawVertices(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 4, vertex, sizeof(Vertex));
 
 	//セットしたテクスチャを解除しておく
 	ID3D11ShaderResourceView* null_srv = nullptr;

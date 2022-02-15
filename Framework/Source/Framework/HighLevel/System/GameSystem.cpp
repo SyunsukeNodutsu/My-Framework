@@ -176,8 +176,8 @@ void GameSystem::Draw2D()
 		if (m_debugLines.size() >= 1)
 		{
 			ApplicationChilled::GetApplication()->g_graphicsDevice->DrawVertices(
-				ApplicationChilled::GetApplication()->g_graphicsDevice->g_cpContext.Get(),
-				D3D_PRIMITIVE_TOPOLOGY_LINELIST, (UINT)m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex));
+				D3D_PRIMITIVE_TOPOLOGY_LINELIST, (UINT)m_debugLines.size(), &m_debugLines[0], sizeof(EffectShader::Vertex)
+			);
 			m_debugLines.clear();
 		}
 

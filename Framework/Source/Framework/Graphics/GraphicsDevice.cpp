@@ -280,7 +280,7 @@ void GraphicsDevice::End(UINT syncInterval, UINT flags)
 //-----------------------------------------------------------------------------
 // 頂点を描画する簡易的な関数
 //-----------------------------------------------------------------------------
-void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
+void GraphicsDevice::DrawVertices(D3D_PRIMITIVE_TOPOLOGY topology, int vertexCount, const void* pVertexStream, UINT stride)
 {
 	// 全頂点の総バイトサイズ
 	UINT totalSize = vertexCount * stride;
@@ -309,13 +309,13 @@ void GraphicsDevice::DrawVertices(ID3D11DeviceContext* pd3dContext, D3D_PRIMITIV
 
 	// バインド
 	{
-		pd3dContext->IASetPrimitiveTopology(topology);
+		g_cpContext.Get()->IASetPrimitiveTopology(topology);
 
 		UINT offset = 0;
-		pd3dContext->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
+		g_cpContext.Get()->IASetVertexBuffers(0, 1, buffer->GetAddress(), &stride, &offset);
 	}
 
-	pd3dContext->Draw(vertexCount, 0);
+	g_cpContext.Get()->Draw(vertexCount, 0);
 }
 
 //-----------------------------------------------------------------------------

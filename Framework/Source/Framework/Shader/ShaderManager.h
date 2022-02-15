@@ -1,61 +1,50 @@
 ﻿//-----------------------------------------------------------------------------
-// File: ShaderManager.h
+//File: ShaderManager.h
 //
-// シェーダーの管理
-// TODO: Shader基底クラスの作成
+//シェーダーの管理
 //-----------------------------------------------------------------------------
 #pragma once
 #include "Effect/EffectShader.h"
 #include "Model/ModelShader.h"
 #include "Sprite/SpriteShader.h"
 #include "GPUParticle/GPUParticleShader.h"
+#include "PostProcess/PostProcessShader.h"
 
-// シェーダーの管理クラス
+//シェーダーの管理クラス
 class ShaderManager
 {
 public:
 
-	// @brief 初期化
+	//@brief 初期化
 	void Initialize();
 
-	//--------------------------------------------------
-	// 取得
-	//--------------------------------------------------
-
-	// @brief インスタンスを返す
-	// @return シングルトン・インスタンス
+	//@brief インスタンスを返す
+	//@return シングルトン・インスタンス
 	static ShaderManager& GetInstance() {
 		static ShaderManager instance; return instance;
 	}
 
-	// @brief Effectシェーダを返す
-	// @return Effectシェーダ
+	//シェーダーー取得
 	EffectShader& GetEffectShader() const { return *m_spEffectShader; }
-
-	// @brief Modelシェーダを返す
-	// @return Modelシェーダ
 	ModelShader& GetModelShader() const { return *m_spModelShader; }
-
-	// @brief Spriteシェーダを返す
-	// @return Spriteシェーダ
 	SpriteShader& GetSpriteShader() const { return *m_spSpriteShader; }
-
-	//
 	GPUParticleShader& GetGPUParticleShader() const { return *m_spGPUParticleShader; }
+	PostProcessShader& GetPostProcessShader() const { return *m_spPostProcessShader; }
 
 private:
 
-	std::shared_ptr<EffectShader>	m_spEffectShader;	// Effect描画シェーダ
-	std::shared_ptr<ModelShader>	m_spModelShader;	// 3Dモデル描画シェーダ
-	std::shared_ptr<SpriteShader>	m_spSpriteShader;	// 画像描画用シェーダ
-	std::shared_ptr<GPUParticleShader>m_spGPUParticleShader;
+	std::shared_ptr<EffectShader>		m_spEffectShader;		//Effect描画シェーダ
+	std::shared_ptr<ModelShader>		m_spModelShader;		//3Dモデル描画シェーダ
+	std::shared_ptr<SpriteShader>		m_spSpriteShader;		//画像描画用シェーダ
+	std::shared_ptr<GPUParticleShader>	m_spGPUParticleShader;	//非同期コンピュート 粒子シミュレーションシェーダー
+	std::shared_ptr<PostProcessShader>	m_spPostProcessShader;	//加工シェーダー
 
 private:
 
-	// @brief コンストラクタ
+	//@brief コンストラクタ
 	ShaderManager();
 
-	// @brief デストラクタ
+	//@brief デストラクタ
 	~ShaderManager() = default;
 };
 

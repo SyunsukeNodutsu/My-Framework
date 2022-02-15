@@ -9,6 +9,17 @@
 
 class SpriteShader : public Shader
 {
+	struct Vertex
+	{
+		float3 m_position;
+		float2 m_uv;
+	};
+
+	struct cbSprite
+	{
+		float4 m_color = float4::One;
+	};
+
 public:
 
 	//@brief コンストラクタ
@@ -35,21 +46,8 @@ public:
 
 private:
 
-	//1頂点
-	struct Vertex {
-		float3 m_pos;
-		float2 m_uv;
-	};
-
-	//定数バッファ
-	struct cbSprite {
-		float4 m_color = { 1, 1, 1, 1 };
-	};
-
-private:
-
-	ConstantBuffer<cbSprite>	m_cb4Sprite;	//画像描画用 定数バッファ
-	mfloat4x4					m_prevProjMat;	//保存用 射影行列
-	bool						m_isBegin;		//Flag
+	ConstantBuffer<cbSprite> m_cb4Sprite;	//画像描画用 定数バッファ
+	mfloat4x4 m_prevProjMat;				//保存用 射影行列
+	bool m_isBegin;
 
 };

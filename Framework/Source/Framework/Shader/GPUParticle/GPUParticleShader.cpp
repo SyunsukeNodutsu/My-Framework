@@ -65,8 +65,8 @@ bool GPUParticleShader::Initialize()
 	Vertex vertices[]{
 		{ float3(-rectSize, -rectSize,  0.0f), float2(0, 1) },
 		{ float3(-rectSize,  rectSize,  0.0f), float2(0, 0) },
-		{ float3(rectSize, -rectSize,  0.0f), float2(1, 1) },
-		{ float3(rectSize,  rectSize,  0.0f), float2(1, 0) },
+		{ float3( rectSize, -rectSize,  0.0f), float2(1, 1) },
+		{ float3( rectSize,  rectSize,  0.0f), float2(1, 0) },
 	};
 
 	//頂点バッファーの作成

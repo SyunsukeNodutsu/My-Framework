@@ -14,10 +14,10 @@ GameProcess::GameProcess()
 void GameProcess::Initialize()
 {
 	//BGM再生
-	//auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/minzoku28_maoudamasii.wav", true, true);
-	//auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/New Happy Day by fennec beats.wav", true, true);
-	m_sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/VK  Wings Of Piano.wav", true, true);
-	//auto sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Colors feat Shion_Kirara Magic.wav", true, true);
+	//m_sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/minzoku28_maoudamasii.wav", true, true);
+	//m_sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/New Happy Day by fennec beats.wav", true, true);
+	//m_sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/VK  Wings Of Piano.wav", true, true);
+	m_sound = SOUND_DIRECTOR.CreateSoundWork("Resource/Audio/BGM/Colors feat Shion_Kirara Magic.wav", true, true);
 	if (m_sound) {
 		m_sound->Play(1000);
 		m_sound->SetVolume(1.0f);
@@ -26,9 +26,9 @@ void GameProcess::Initialize()
 
 	auto& particleSystem = g_application->g_gameSystem->g_particleSystem;
 
-	const float vel = 10.0f;
+	const float vel = 20.0f;
 	m_deta.minVelocity = float3(-vel, -vel, -vel);
-	m_deta.maxVelocity = float3(vel, vel, vel);
+	m_deta.maxVelocity = float3( vel,  vel,  vel);
 
 	m_deta.minLifeSpan = 10.0f;
 	m_deta.maxLifeSpan = 11.0f;
@@ -68,5 +68,12 @@ void GameProcess::Update(float deltaTime)
 		m_deta.maxPosition = float3(-30.0f, 14.0f, z + 10);
 
 		particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
+	}
+
+	static bool editorMode = false;
+	if (g_application->g_inputDevice->IsKeyPressed(KeyCode::F1))
+	{
+		editorMode = !editorMode;
+		g_application->SetEditorMode(editorMode);
 	}
 }

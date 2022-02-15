@@ -49,6 +49,10 @@ public:
 	//@brief アプリケーションを終了させる
 	void End() { m_endFlag = true; }
 
+	//@brief 編集モードを設定する
+	//@param onoff 編集モードにするかどうか
+	void SetEditorMode(bool onoff) { m_editorMode = onoff; }
+
 public:
 
 	//ウィンドウ ※"static inline"でメモリ確保できる
@@ -90,8 +94,8 @@ private:
 	static bool m_bClearStateUponFinishCommandList;
 	static bool m_bClearStateUponExecuteCommandList;
 
-	//ゲーム終了フラグ
-	bool m_endFlag = false;
+	bool m_endFlag = false;//ゲーム終了フラグ
+	bool m_editorMode = false;//ImGuiによる編集モード
 
 private:
 

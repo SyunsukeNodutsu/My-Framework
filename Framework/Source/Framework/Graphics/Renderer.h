@@ -252,3 +252,15 @@ enum RS_FillMode
 	eSolid	= 0x00000002,	// 塗りつぶし
 };
 #pragma endregion
+
+//
+class RestoreRenderTarget : public GraphicsDeviceChild
+{
+public:
+	RestoreRenderTarget();
+	~RestoreRenderTarget();
+
+private:
+	ID3D11RenderTargetView* m_pSaveRT = nullptr;
+	ID3D11DepthStencilView* m_pSaveZ = nullptr;
+};

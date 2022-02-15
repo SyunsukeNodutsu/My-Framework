@@ -282,33 +282,32 @@ void Application::Execute()
 			//3D想定
 			g_gameSystem->Draw();
 
-			//エフェクトテスト
-			/*{
-				static float timecount = 0.0f;
-				timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
-				if (timecount >= 3.0f)
-				{
-					const auto& pos = float3(20, 4, 0);
-					g_effectDevice->Play(u"Resource/Effect/electric_dust.efk", pos);
-
-					timecount = 0.0f;
-				}
-			}*/
-
 			//エフェクト
 			g_effectDevice->Draw();
 
 			//2D想定
 			g_gameSystem->Draw2D();
 
+			//SHADER.GetPostProcessShader().DrawAfterEffect(&g_renderTarget);
+
 			//ここでレンダーターゲット復帰
 			//TODO: リストア
 			g_graphicsDevice->Begin();
 
-			//ImGui 描画
-			g_imGuiSystem->Begin();
-			g_imGuiSystem->DrawImGui();
-			g_imGuiSystem->End();
+			if (m_editorMode)
+			{
+				//ImGui 描画
+				g_imGuiSystem->Begin();
+				g_imGuiSystem->DrawImGui();
+				g_imGuiSystem->End();
+			}
+			else
+			{
+				//通常全画描画
+				SHADER.GetSpriteShader().Begin(g_graphicsDevice->g_cpContext.Get(), true, true);
+				SHADER.GetSpriteShader().DrawTexture(&g_renderTarget, float2::Zero);
+				SHADER.GetSpriteShader().End(g_graphicsDevice->g_cpContext.Get());
+			}
 		}
 		g_graphicsDevice->End();
 
