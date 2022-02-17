@@ -52,22 +52,23 @@ void GameProcess::Update(float deltaTime)
 
 		auto& particleSystem = g_application->g_gameSystem->g_particleSystem;
 
-		const float z = 40.0f;
+		constexpr float z = 40.0f;
+		constexpr int emitnum = 2560 * 6;
 
 		m_deta.minPosition = float3(30.0f, 20.0f, z);
 		m_deta.maxPosition = float3(30.0f, 20.0f, z);
 
-		particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
+		particleSystem.Emit(emitnum, m_deta, false, "Resource/Texture/test.png");
 
 		m_deta.minPosition = float3(0.0f, 40.0f, z + 30);
 		m_deta.maxPosition = float3(0.0f, 40.0f, z + 30);
 
-		particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
+		particleSystem.Emit(emitnum, m_deta, false, "Resource/Texture/test.png");
 
 		m_deta.minPosition = float3(-30.0f, 14.0f, z + 10);
 		m_deta.maxPosition = float3(-30.0f, 14.0f, z + 10);
 
-		particleSystem.Emit(2560 * 2, m_deta, false, "Resource/Texture/test.png");
+		particleSystem.Emit(emitnum, m_deta, false, "Resource/Texture/test.png");
 	}
 
 	static bool editorMode = false;

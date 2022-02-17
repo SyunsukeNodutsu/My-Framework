@@ -144,11 +144,12 @@ ID3D11Buffer* Buffer::CreateAndCopyToDebugBuf(ID3D11Buffer* pBuffer)
 
 	//下記変更点
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	desc.Usage = D3D11_USAGE_STAGING;
-	desc.BindFlags = 0;
-	desc.MiscFlags = 0;
-	if (SUCCEEDED(g_graphicsDevice->g_cpDevice.Get()->CreateBuffer(&desc, nullptr, &debugbuf)))
+	desc.Usage			= D3D11_USAGE_STAGING;
+	desc.BindFlags		= 0;
+	desc.MiscFlags		= 0;
+	if (SUCCEEDED(g_graphicsDevice->g_cpDevice.Get()->CreateBuffer(&desc, nullptr, &debugbuf))) {
 		g_graphicsDevice->g_cpContext.Get()->CopyResource(debugbuf, pBuffer);
+	}
 	return debugbuf;
 }
 

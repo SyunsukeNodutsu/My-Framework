@@ -253,10 +253,9 @@ void GraphicsDevice::Finalize()
 //-----------------------------------------------------------------------------
 // 開始
 //-----------------------------------------------------------------------------
-void GraphicsDevice::Begin(const float* clearColor)
+void GraphicsDevice::Begin(const cfloat4x4 clearColor)
 {
-	constexpr float zeroClear[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor ? clearColor : zeroClear);
+	g_cpContext->ClearRenderTargetView(m_spBackbuffer->RTV(), clearColor);
 	g_cpContext->ClearDepthStencilView(m_spDefaultZbuffer->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	g_cpContext->RSSetViewports(1, &g_viewport);

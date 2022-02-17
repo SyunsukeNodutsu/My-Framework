@@ -187,7 +187,7 @@ float4 main( VertexOutput In ) : SV_TARGET
         //------------------------------------------
         // 環境光
         //------------------------------------------
-        diffuseColor += 0.8f * albedo.rgb * albedo.a;
+        diffuseColor += 0.8f * albedo.rgb * albedo.a * g_ambient_power;
         
         //------------------------------------------
 		// エミッシブ

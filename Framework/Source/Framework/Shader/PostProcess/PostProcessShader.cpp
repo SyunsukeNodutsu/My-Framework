@@ -230,12 +230,12 @@ void PostProcessShader::GenerateBlur(BlurTexture& blurTex, Texture* srcTex)
 			DrawColor(blurTex.m_rt[i - 1][0].get());
 		}
 
+		//縦ぼかし
 		g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, blurTex.m_rt[i][1]->RTVAddress(), nullptr);
-
 		BlurDraw(blurTex.m_rt[i][0].get(), float2(1, 0));
 
+		//横ぼかし
 		g_graphicsDevice->g_cpContext.Get()->OMSetRenderTargets(1, blurTex.m_rt[i][0]->RTVAddress(), nullptr);
-
 		BlurDraw(blurTex.m_rt[i][1].get(), float2(0, 1));
 	}
 

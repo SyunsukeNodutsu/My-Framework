@@ -23,6 +23,8 @@ void Sky::Update(float deltaTime)
 //-----------------------------------------------------------------------------
 void Sky::Draw(float deltaTime)
 {
+	return;
+
 	RENDERER.Getcb10().Work().m_enable = false;
 	RENDERER.Getcb10().Write();
 	Actor::Draw(deltaTime);

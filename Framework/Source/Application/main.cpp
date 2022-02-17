@@ -144,6 +144,11 @@ bool Application::Initialize(int width, int height)
 
 	m_blurTex.Create(width, height, desc.m_useMSAA);
 
+	RENDERER.Getcb10().Work().m_ambient_power = 0.6f;
+	RENDERER.Getcb10().Write();
+
+	g_audioDevice->SetMasterVolume(0);
+
 	return true;
 }
 
@@ -235,23 +240,11 @@ void Application::Execute()
 				RestoreRenderTarget rrt = {};
 
 				d3d11context->OMSetRenderTargets(1, m_spScreenRT->RTVAddress(), m_spScreenZ->DSV());
-				d3d11context->ClearRenderTargetView(m_spScreenRT->RTV(), cfloat4x4::Blue);
+				d3d11context->ClearRenderTargetView(m_spScreenRT->RTV(), cfloat4x4::Black);
 				d3d11context->ClearDepthStencilView(m_spScreenZ->DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 				//3D想定
 				g_gameSystem->Draw();
-
-				//エフェクトテスト
-				{
-					static float timecount = 0.0f;
-					timecount += static_cast<float>(g_fpsTimer->GetDeltaTime());
-					if (timecount >= 3.0f)
-					{
-						const auto& pos = float3(20, 0, 0);
-						g_effectDevice->Play(u"Resource/Effect/Explosion.efk", pos);
-						timecount = 0.0f;
-					}
-				}
 
 				//エフェクト
 				g_effectDevice->Draw();
@@ -263,7 +256,7 @@ void Application::Execute()
 			//ブラー描画
 			SHADER.GetPostProcessShader().BlurDraw(m_spScreenRT.get(), m_blurValue);
 
-			if (true)
+			//ブルーム
 			{
 				//しきい値以上のピクセルを抽出
 				SHADER.GetPostProcessShader().BrightFiltering(m_spHeightBrightTex.get(), m_spScreenRT.get());
@@ -282,9 +275,9 @@ void Application::Execute()
 				RENDERER.SetBlend(BlendMode::eAlpha);
 			}
 
+			//ImGui描画
 			if (m_editorMode)
 			{
-				//ImGui 描画
 				g_imGuiSystem->Begin();
 				g_imGuiSystem->DrawImGui();
 				g_imGuiSystem->End();

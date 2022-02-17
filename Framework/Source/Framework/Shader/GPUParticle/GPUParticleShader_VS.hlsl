@@ -1,16 +1,13 @@
 //-----------------------------------------------------------------------------
-// File: GPUParticleShader_VS.hlsl
+//File: GPUParticleShader_VS.hlsl
 //
-// 頂点シェーダ
+//粒子シミュレーション 頂点シェーダ
 //-----------------------------------------------------------------------------
 #include "../ConstantBuffer.hlsli"
 #include "GPUParticleShader.hlsli"
 
 StructuredBuffer<ParticleCompute> particle : register(t2); //SRV
 
-//-----------------------------------------------------------------------------
-//頂点シェーダー
-//-----------------------------------------------------------------------------
 VertexOutput main(float4 position : POSITION, float2 uv : TEXCOORD0, uint InstanceID : SV_InstanceID)
 {
     VertexOutput ret = (VertexOutput)0;
