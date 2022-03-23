@@ -2,24 +2,24 @@
 暇つぶし自作フレームワーク
 DirectX11/C++/HLSL
 
-// ■フレームワーク全体像(2022/02/04)
-// 
-// Application(main.h)------AudioDevice
-//   |    |  |                   |
-// Window |  |             AudioDeviceChild
-//		  |  |                |        |
-//		  |  ┗-----┓  SoundDirector Sound
-//		  |         |                  |
-//	 InputDevice    |                Sound3D
-//	  |       |     |
-// Keyboard   Mouse |
-//					|
-//			  GraphicsDevice                         Model---Animation
-//					|                                |   |
-//			GraphicsDeviceChild---------------------Mesh |
-//			 |      |       |  ┗-------┓               |
-//		   Buffer Texture Shader   |  EffectDevice   Material
-//			 |              |      |         |
+  ■フレームワーク全体像(2022/02/04)
+  
+  Application(main.h)------AudioDevice
+  |    |  |                   |
+  Window |  |             AudioDeviceChild
+  |  |                |        |
+  |  ┗-----┓  SoundDirector Sound
+  |         |                  |
+	 InputDevice    |                Sound3D
+	  |       |     |
+ Keyboard   Mouse |
+					|
+          GraphicsDevice                         Model---Animation
+          |                                |   |
+          GraphicsDeviceChild---------------------Mesh |
+			 |      |       |  ┗-------┓               |
+		   Buffer Texture Shader   |  EffectDevice   Material
+			 |              |      |         |
 //	   ConstantBuffer -- 各Shader  |   EffectDeviceChild
 //			 |                     |
 //			 ┗------------------Renderer
